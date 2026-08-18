@@ -100,7 +100,7 @@ export const CardVisual: React.FC<CardVisualProps> = ({
         }}
       >
         {/* Holographic Sheen Pattern Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/5 pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-tr from-white/10 via-transparent to-white/5 pointer-events-none" />
         <div className="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-white/5 blur-2xl pointer-events-none" />
         <div className="absolute -left-12 -bottom-12 w-48 h-48 rounded-full bg-black/20 blur-2xl pointer-events-none" />
 
@@ -111,7 +111,7 @@ export const CardVisual: React.FC<CardVisualProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {/* Gold EMV Chip */}
-                <div className="w-11 h-8 rounded-lg bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 p-0.5 shadow-md flex items-center justify-center">
+                <div className="w-11 h-8 rounded-lg bg-linear-to-br from-amber-200 via-amber-400 to-amber-600 p-0.5 shadow-md flex items-center justify-center">
                   <div className="w-full h-full border border-amber-900/30 rounded-[5px] grid grid-cols-3 grid-rows-2 gap-0.5 opacity-90 p-0.5">
                     <div className="border-r border-b border-amber-900/30" />
                     <div className="border-b border-amber-900/30" />
@@ -187,7 +187,7 @@ export const CardVisual: React.FC<CardVisualProps> = ({
                   <Lock className="w-6 h-6 text-amber-400" />
                 </div>
                 <p className="font-extrabold text-sm tracking-wide text-amber-300">CARD TEMPORARILY FROZEN</p>
-                <p className="text-[11px] text-slate-300 mt-1 max-w-[240px]">
+                <p className="text-[11px] text-slate-300 mt-1 max-w-60">
                   All ATM, POS, and online transactions are paused. Unfreeze anytime.
                 </p>
               </div>
@@ -200,7 +200,7 @@ export const CardVisual: React.FC<CardVisualProps> = ({
                   <ShieldAlert className="w-6 h-6 text-rose-400" />
                 </div>
                 <p className="font-extrabold text-sm tracking-wide text-rose-300">CARD PERMANENTLY BLOCKED</p>
-                <p className="text-[11px] text-rose-200 mt-1 max-w-[240px]">
+                <p className="text-[11px] text-rose-200 mt-1 max-w-60">
                   {card.blockReason || 'Card reported lost/stolen. Inactive permanently.'}
                 </p>
               </div>
@@ -208,9 +208,9 @@ export const CardVisual: React.FC<CardVisualProps> = ({
           </div>
         ) : (
           /* BACK SIDE */
-          <div className="relative z-10 flex flex-col justify-between h-full text-white [transform:rotateY(180deg)]">
+          <div className="relative z-10 flex flex-col justify-between h-full text-white transform-[rotateY(180deg)]">
             {/* Magnetic Stripe */}
-            <div className="-mx-6 -mt-1 h-10 bg-gradient-to-r from-slate-900 via-black to-slate-900 shadow-inner" />
+            <div className="-mx-6 -mt-1 h-10 bg-linear-to-r from-slate-900 via-black to-slate-900 shadow-inner" />
 
             {/* Signature & CVV Panel */}
             <div className="space-y-1 my-auto">
