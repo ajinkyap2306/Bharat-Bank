@@ -146,7 +146,7 @@ export const ScannerModal: React.FC = () => {
                   <motion.div
                     animate={{ y: [-130, 130] }}
                     transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut', repeatType: 'reverse' }}
-                    className="absolute w-full h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#34d399]"
+                    className="absolute w-full h-1 bg-linear-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#34d399]"
                   />
 
                   <div className="text-center text-white/60 text-xs px-4">
@@ -291,17 +291,17 @@ export const ScannerModal: React.FC = () => {
               <div className="my-5 p-4 bg-white rounded-2xl shadow-inner border border-slate-200 inline-block">
                 <svg viewBox="0 0 100 100" className="w-44 h-44 fill-slate-900">
                   {/* Stylized QR Matrix Pattern */}
-                  <rect x="5" y="5" width="26" height="26" rx="4" fill="#0B5CAB" />
+                  <rect x="5" y="5" width="26" height="26" rx="4" fill="#005dd4" />
                   <rect x="9" y="9" width="18" height="18" fill="white" />
-                  <rect x="13" y="13" width="10" height="10" fill="#0B5CAB" />
+                  <rect x="13" y="13" width="10" height="10" fill="#005dd4" />
 
-                  <rect x="69" y="5" width="26" height="26" rx="4" fill="#0B5CAB" />
+                  <rect x="69" y="5" width="26" height="26" rx="4" fill="#005dd4" />
                   <rect x="73" y="9" width="18" height="18" fill="white" />
-                  <rect x="77" y="13" width="10" height="10" fill="#0B5CAB" />
+                  <rect x="77" y="13" width="10" height="10" fill="#005dd4" />
 
-                  <rect x="5" y="69" width="26" height="26" rx="4" fill="#0B5CAB" />
+                  <rect x="5" y="69" width="26" height="26" rx="4" fill="#005dd4" />
                   <rect x="9" y="73" width="18" height="18" fill="white" />
-                  <rect x="13" y="77" width="10" height="10" fill="#0B5CAB" />
+                  <rect x="13" y="77" width="10" height="10" fill="#005dd4" />
 
                   {/* Data blocks */}
                   <rect x="36" y="8" width="6" height="6" />
@@ -310,7 +310,7 @@ export const ScannerModal: React.FC = () => {
                   <rect x="48" y="20" width="6" height="6" />
                   <rect x="8" y="38" width="6" height="8" />
                   <rect x="20" y="38" width="8" height="6" />
-                  <rect x="38" y="38" width="24" height="24" rx="4" fill="#0B5CAB" />
+                  <rect x="38" y="38" width="24" height="24" rx="4" fill="#005dd4" />
                   <circle cx="50" cy="50" r="6" fill="white" />
                   <rect x="68" y="38" width="8" height="8" />
                   <rect x="82" y="38" width="10" height="6" />
@@ -330,7 +330,7 @@ export const ScannerModal: React.FC = () => {
 
         {/* Bottom Simulated Scan Helpers */}
         {step === 'camera' && activeMode === 'scan' && (
-          <div className="p-6 text-center z-20 bg-gradient-to-t from-black/90 to-transparent">
+          <div className="p-6 text-center z-20 bg-linear-to-t from-black/90 to-transparent">
             <p className="text-xs text-white/70 mb-3">Simulate Scanning Quick Merchants:</p>
             <div className="flex flex-wrap gap-2 justify-center">
               <button

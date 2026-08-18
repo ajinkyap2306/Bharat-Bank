@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Building2, 
   ShieldCheck, 
@@ -23,15 +23,20 @@ import { useBanking } from '../../context/BankingContext';
 import { motion } from 'motion/react';
 
 export const CorporateProfile: React.FC = () => {
-  const { user, logout, toggleDarkMode, isDarkMode, addToast } = useBanking();
+  const { user, logout, toggleDarkMode, isDarkMode, addToast, setBottomNavHidden } = useBanking();
   const [fido2KeyEnabled, setFido2KeyEnabled] = useState(true);
   const [dualApprovalThreshold, setDualApprovalThreshold] = useState(1000000);
   const [showRMModal, setShowRMModal] = useState(false);
 
+  useEffect(() => {
+    setBottomNavHidden(showRMModal);
+    return () => setBottomNavHidden(false);
+  }, [showRMModal, setBottomNavHidden]);
+
   return (
     <div className="p-4 space-y-5 pb-28 max-w-lg mx-auto">
       {/* Entity Master Header Card */}
-      <div className="bg-gradient-to-br from-slate-950 via-teal-950 to-slate-900 rounded-3xl p-5 text-white shadow-xl border border-teal-800/40 relative overflow-hidden">
+      <div className="bg-linear-to-br from-slate-950 via-teal-950 to-slate-900 rounded-3xl p-5 text-white shadow-xl border border-teal-800/40 relative overflow-hidden">
         <div className="relative z-10 flex items-center gap-4">
           <div className="relative">
             <img
@@ -163,7 +168,7 @@ export const CorporateProfile: React.FC = () => {
       </div>
 
       {/* Relationship Manager Contact */}
-      <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-4 text-white shadow-md flex items-center justify-between">
+      <div className="bg-linear-to-r from-slate-900 to-slate-800 rounded-2xl p-4 text-white shadow-md flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center">
             <Briefcase className="w-5 h-5" />

@@ -5,7 +5,6 @@ import {
   Eye, 
   EyeOff, 
   SendHorizontal, 
-  Receipt, 
   Scan, 
   CreditCard, 
   PiggyBank, 
@@ -37,10 +36,14 @@ import {
   Tag,
   Gift,
   Check,
-  Building2
+  Building2,
+  IndianRupee
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { BankAccount, Transaction } from '../../types/banking';
+
+const SERVICE_ICON_BOX =
+  'w-11 h-11 rounded-2xl bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-congress-blue-700 group-hover:text-white transition-all shadow-2xs';
 
 export const RetailHome: React.FC = () => {
   const { 
@@ -52,7 +55,9 @@ export const RetailHome: React.FC = () => {
     openScanner,
     addMoneyToAccount,
     addToast,
-    setBottomNavHidden 
+    setBottomNavHidden,
+    getPrimaryAccount,
+    getVisibleAccounts,
   } = useBanking();
 
   const [hiddenAccounts, setHiddenAccounts] = useState<Record<string, boolean>>({});
@@ -113,8 +118,9 @@ export const RetailHome: React.FC = () => {
     return () => setBottomNavHidden(false);
   }, [hasActiveModal, setBottomNavHidden]);
 
-  const totalRelationshipBalance = accounts.reduce((acc, curr) => acc + curr.balance, 0);
-  const primaryAccount = accounts[0] || { id: 'acc_01', balance: 0, accountType: 'Savings' };
+  const totalRelationshipBalance = getVisibleAccounts().reduce((acc, curr) => acc + curr.balance, 0);
+  const primaryAccount = getPrimaryAccount() || { id: 'acc_01', balance: 0, accountType: 'Savings', availableBalance: 0, maskedNumber: '' };
+  const visibleAccounts = getVisibleAccounts();
   const creditCard = cards.find(c => c.cardType === 'credit');
 
   const handleAddMoneySubmit = (e: React.FormEvent) => {
@@ -197,17 +203,17 @@ export const RetailHome: React.FC = () => {
 
         {/* Account Cards Horizontal Snap */}
         <div className="flex gap-3 overflow-x-auto no-scrollbar py-1 -mx-4 px-4 snap-x">
-          {accounts.map((acc, idx) => {
-            const isPrimary = idx === 0;
+          {visibleAccounts.map((acc) => {
+            const isPrimary = acc.id === primaryAccount.id;
             const isHidden = !!hiddenAccounts[acc.id];
             return (
               <motion.div
                 key={acc.id}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setRetailTab('accounts')}
-                className={`min-w-[280px] sm:min-w-[300px] p-4.5 rounded-3xl cursor-pointer snap-center shadow-lg transition-all ${
+                className={`min-w-70 sm:min-w-75 p-4.5 rounded-3xl cursor-pointer snap-center shadow-lg transition-all ${
                   isPrimary
-                    ? 'bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 text-white shadow-blue-500/20'
+                    ? 'bg-linear-to-tr from-blue-700 via-blue-600 to-indigo-600 text-white shadow-blue-500/20'
                     : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white'
                 }`}
               >
@@ -270,14 +276,14 @@ export const RetailHome: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. Quick Actions — Single Card containing all 4 Actions in a Single Horizontal Line (1x4) */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-        <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+      {/* 2. Quick Actions */}
+      <div>
+        <div className="flex items-center justify-between mb-3.5">
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">
               Quick Actions
             </h3>
-            <span className="text-[10px] font-bold px-2 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-full">
+            <span className="text-[10px] font-bold px-2 py-0.5 bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 rounded-full">
               Instant (24/7)
             </span>
           </div>
@@ -290,10 +296,10 @@ export const RetailHome: React.FC = () => {
             onClick={() => setRetailTab('transfers')}
             className="flex flex-col items-center justify-center p-1.5 sm:p-2 text-center group cursor-pointer"
           >
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/25 group-hover:scale-105 transition-transform mb-2">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-linear-to-tr from-congress-blue-600 to-congress-blue-800 text-white flex items-center justify-center shadow-md shadow-congress-blue-500/25 group-hover:scale-105 transition-transform mb-2">
               <SendHorizontal className="w-6 h-6" />
             </div>
-            <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors whitespace-nowrap">
+            <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-congress-blue-700 dark:group-hover:text-congress-blue-400 transition-colors whitespace-nowrap">
               Send Money
             </span>
             <span className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 hidden sm:block whitespace-nowrap mt-0.5">
@@ -307,10 +313,10 @@ export const RetailHome: React.FC = () => {
             onClick={() => setRetailTab('bills')}
             className="flex flex-col items-center justify-center p-1.5 sm:p-2 text-center group cursor-pointer"
           >
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center shadow-md shadow-amber-500/25 group-hover:scale-105 transition-transform mb-2">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-linear-to-tr from-congress-blue-600 to-congress-blue-800 text-white flex items-center justify-center shadow-md shadow-congress-blue-500/25 group-hover:scale-105 transition-transform mb-2">
               <Zap className="w-6 h-6" />
             </div>
-            <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors whitespace-nowrap">
+            <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-congress-blue-700 dark:group-hover:text-congress-blue-400 transition-colors whitespace-nowrap">
               Pay Bills
             </span>
             <span className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 hidden sm:block whitespace-nowrap mt-0.5">
@@ -324,10 +330,10 @@ export const RetailHome: React.FC = () => {
             onClick={openScanner}
             className="flex flex-col items-center justify-center p-1.5 sm:p-2 text-center group cursor-pointer"
           >
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/25 group-hover:scale-105 transition-transform mb-2">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-linear-to-tr from-congress-blue-600 to-congress-blue-800 text-white flex items-center justify-center shadow-md shadow-congress-blue-500/25 group-hover:scale-105 transition-transform mb-2">
               <Scan className="w-6 h-6" />
             </div>
-            <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors whitespace-nowrap">
+            <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-congress-blue-700 dark:group-hover:text-congress-blue-400 transition-colors whitespace-nowrap">
               Scan & Pay
             </span>
             <span className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 hidden sm:block whitespace-nowrap mt-0.5">
@@ -341,10 +347,10 @@ export const RetailHome: React.FC = () => {
             onClick={() => setShowAddMoneyModal(true)}
             className="flex flex-col items-center justify-center p-1.5 sm:p-2 text-center group cursor-pointer"
           >
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-600 text-white flex items-center justify-center shadow-md shadow-purple-500/25 group-hover:scale-105 transition-transform mb-2">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-linear-to-tr from-congress-blue-600 to-congress-blue-800 text-white flex items-center justify-center shadow-md shadow-congress-blue-500/25 group-hover:scale-105 transition-transform mb-2">
               <PlusCircle className="w-6 h-6" />
             </div>
-            <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors whitespace-nowrap">
+            <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-congress-blue-700 dark:group-hover:text-congress-blue-400 transition-colors whitespace-nowrap">
               Add Money
             </span>
             <span className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 hidden sm:block whitespace-nowrap mt-0.5">
@@ -361,13 +367,13 @@ export const RetailHome: React.FC = () => {
             <h3 className="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">
               Banking Services
             </h3>
-            <span className="text-[10px] font-bold px-2 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-full">
+            <span className="text-[10px] font-bold px-2 py-0.5 bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 rounded-full">
               16 Modules
             </span>
           </div>
           <button
             onClick={() => setRetailTab('services')}
-            className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
+            className="text-xs font-bold text-congress-blue-700 dark:text-congress-blue-400 hover:underline flex items-center gap-0.5"
           >
             All Services <ChevronRight className="w-3.5 h-3.5" />
           </button>
@@ -382,7 +388,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setRetailTab('accounts')}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <Wallet className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Accounts</span>
@@ -394,7 +400,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setRetailTab('cards')}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <CreditCard className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Cards</span>
@@ -406,7 +412,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setRetailTab('transfers')}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <ArrowLeftRight className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Transfers</span>
@@ -418,7 +424,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setRetailTab('deposits')}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <PiggyBank className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Deposits</span>
@@ -431,7 +437,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setRetailTab('loans')}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-rose-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <Landmark className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Loans</span>
@@ -443,7 +449,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setRetailTab('investments')}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <TrendingUp className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Investments</span>
@@ -455,7 +461,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setShowInsuranceModal(true)}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-cyan-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <ShieldCheck className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Insurance</span>
@@ -467,7 +473,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setShowForexModal(true)}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-amber-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <Globe className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Forex</span>
@@ -480,8 +486,8 @@ export const RetailHome: React.FC = () => {
             onClick={() => setRetailTab('bills')}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-orange-600 group-hover:text-white transition-all shadow-2xs">
-              <Receipt className="w-5 h-5" />
+            <div className={SERVICE_ICON_BOX}>
+              <IndianRupee className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Bill Payments</span>
           </motion.button>
@@ -492,7 +498,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setShowRechargeModal(true)}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-sky-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <Smartphone className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Recharge</span>
@@ -504,7 +510,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setShowUpiModal(true)}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <QrCode className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">UPI / QR</span>
@@ -516,7 +522,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setRetailTab('beneficiaries')}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-lime-50 dark:bg-lime-950/60 text-lime-700 dark:text-lime-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-lime-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <Users className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Beneficiaries</span>
@@ -529,7 +535,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setRetailTab('statements')}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-blue-700 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <FileText className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Statements</span>
@@ -541,7 +547,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setShowOffersModal(true)}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-pink-50 dark:bg-pink-950/60 text-pink-600 dark:text-pink-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-pink-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <Tag className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Offers</span>
@@ -553,7 +559,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setShowRewardsModal(true)}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-amber-600 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <Award className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Rewards</span>
@@ -565,7 +571,7 @@ export const RetailHome: React.FC = () => {
             onClick={() => setRetailTab('services')}
             className="flex flex-col items-center group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-slate-700 group-hover:text-white transition-all shadow-2xs">
+            <div className={SERVICE_ICON_BOX}>
               <Layers className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">More</span>
@@ -575,7 +581,7 @@ export const RetailHome: React.FC = () => {
 
       {/* Credit Card Snapshot Banner */}
       {creditCard && (
-        <div className="p-4.5 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white shadow-xl border border-slate-700/80">
+        <div className="p-4.5 rounded-3xl bg-linear-to-r from-slate-900 via-slate-800 to-slate-900 text-white shadow-xl border border-slate-700/80">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2.5">
               <span className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-amber-400">
@@ -676,7 +682,7 @@ export const RetailHome: React.FC = () => {
       </div>
 
       {/* 5. Pre-Approved Offer Banner */}
-      <div className="p-4 rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg flex items-center justify-between">
+      <div className="p-4 rounded-3xl bg-linear-to-r from-blue-600 to-indigo-700 text-white shadow-lg flex items-center justify-between">
         <div className="space-y-1">
           <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase bg-white/20 px-2 py-0.5 rounded-full">
             <Sparkles className="w-3 h-3 text-amber-300" /> Pre-Approved Offer
@@ -782,7 +788,7 @@ export const RetailHome: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isAddingMoney}
-                  className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-2xl shadow-lg shadow-purple-500/20 text-xs flex items-center justify-center gap-2 active:scale-95 transition-all"
+                  className="w-full py-3.5 bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-2xl shadow-lg shadow-purple-500/20 text-xs flex items-center justify-center gap-2 active:scale-95 transition-all"
                 >
                   {isAddingMoney ? (
                     <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -918,7 +924,7 @@ export const RetailHome: React.FC = () => {
               </div>
 
               {/* Multi-Currency Card Balance */}
-              <div className="mt-4 p-3.5 bg-gradient-to-r from-amber-600 to-amber-700 rounded-2xl text-white">
+              <div className="mt-4 p-3.5 bg-linear-to-r from-amber-600 to-amber-700 rounded-2xl text-white">
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider text-amber-200">
                   <span>Bharat World Forex Card</span>
                   <span>Active</span>
@@ -1335,7 +1341,7 @@ export const RetailHome: React.FC = () => {
                 </button>
               </div>
 
-              <div className="my-4 p-4 bg-gradient-to-tr from-amber-500 via-amber-600 to-yellow-500 rounded-3xl text-white shadow-lg shadow-amber-500/20">
+              <div className="my-4 p-4 bg-linear-to-tr from-amber-500 via-amber-600 to-yellow-500 rounded-3xl text-white shadow-lg shadow-amber-500/20">
                 <p className="text-[11px] font-bold text-amber-100 uppercase tracking-wider">Available Balance</p>
                 <h3 className="text-3xl font-extrabold mt-1 tracking-tight">{rewardPoints.toLocaleString('en-IN')}</h3>
                 <p className="text-xs text-amber-100 mt-1">Cash value: ≈ ₹{(rewardPoints * 0.25).toLocaleString('en-IN')}</p>

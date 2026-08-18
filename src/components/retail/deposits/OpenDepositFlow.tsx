@@ -26,13 +26,14 @@ interface OpenDepositFlowProps {
 type Step = 'intro' | 'configure' | 'payout' | 'account' | 'review' | 'success';
 
 export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose }) => {
-  const { accounts, createFixedDeposit, createRecurringDeposit, addToast } = useBanking();
+  const { accounts, createFixedDeposit, createRecurringDeposit, addToast, getDefaultDebitAccount } = useBanking();
+  const defaultDebit = getDefaultDebitAccount();
   const [step, setStep] = useState<Step>('intro');
   const [amount, setAmount] = useState(type === 'FD' ? 100000 : 10000);
   const [tenure, setTenure] = useState(type === 'FD' ? 12 : 24);
   const [payout, setPayout] = useState<'Monthly' | 'Quarterly' | 'On Maturity'>('On Maturity');
   const [maturityInstruction, setMaturityInstruction] = useState<'Renew Principal + Interest' | 'Renew Principal Only' | 'Transfer to Account'>('Renew Principal + Interest');
-  const [selectedAccountId, setSelectedAccountId] = useState(accounts[0].id);
+  const [selectedAccountId, setSelectedAccountId] = useState(defaultDebit.id);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   const selectedAccount = accounts.find(a => a.id === selectedAccountId);
@@ -145,7 +146,7 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
               exit={{ opacity: 0, y: -20 }}
               className="space-y-6"
             >
-              <div className="w-20 h-20 rounded-[32px] bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-8">
+              <div className="w-20 h-20 rounded-4xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-8">
                 {type === 'FD' ? (
                   <PiggyBank className="w-10 h-10 text-blue-600" />
                 ) : (
@@ -336,7 +337,7 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
                     <button
                       key={acc.id}
                       onClick={() => setSelectedAccountId(acc.id)}
-                      className={`w-full p-5 rounded-[32px] border-2 text-left transition-all ${
+                      className={`w-full p-5 rounded-4xl border-2 text-left transition-all ${
                         selectedAccountId === acc.id 
                           ? 'border-blue-600 bg-blue-50/30 dark:bg-blue-900/20' 
                           : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900'
@@ -383,7 +384,7 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
               animate={{ opacity: 1, scale: 1 }}
               className="space-y-6"
             >
-              <div className="p-6 rounded-[32px] bg-slate-900 text-white space-y-6">
+              <div className="p-6 rounded-4xl bg-slate-900 text-white space-y-6">
                 <div className="flex justify-between items-center pb-4 border-b border-white/10">
                   <div>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Investing</p>
@@ -454,7 +455,7 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
 
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-slate-900 dark:text-white">Deposit Confirmed!</h3>
-                <p className="text-sm text-slate-500 max-w-[280px] mx-auto leading-relaxed">
+                <p className="text-sm text-slate-500 max-w-70 mx-auto leading-relaxed">
                   Your {type === 'FD' ? 'Fixed' : 'Recurring'} Deposit has been successfully created and linked to your account.
                 </p>
               </div>

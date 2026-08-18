@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useBanking } from '../../context/BankingContext';
 import { Header } from '../common/Header';
@@ -9,8 +9,14 @@ import { InsurancePolicyDetails } from './insurance/InsurancePolicyDetails';
 import { InsuranceClaimFlow } from './insurance/InsuranceClaimFlow';
 
 export const RetailInsurance: React.FC = () => {
+  const { setBottomNavHidden } = useBanking();
   const [activeFlow, setActiveFlow] = useState<'overview' | 'browse' | 'details' | 'claim'>('overview');
   const [selectedPolicy, setSelectedPolicy] = useState<InsurancePolicy | null>(null);
+
+  useEffect(() => {
+    setBottomNavHidden(activeFlow !== 'overview');
+    return () => setBottomNavHidden(false);
+  }, [activeFlow, setBottomNavHidden]);
 
   const handleBrowsePlans = () => {
     setActiveFlow('browse');

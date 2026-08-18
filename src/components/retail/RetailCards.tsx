@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useBanking } from '../../context/BankingContext';
+import { ScreenHeader } from '../common/ScreenHeader';
 import { CardTransaction, CreditDebitCard } from '../../types/banking';
 
 // Sub-views
@@ -40,10 +41,9 @@ export const RetailCards: React.FC = () => {
     resolveSecurityAlert,
     reportCardTransaction,
     hideBottomNav,
-    showBottomNav,
-    activeDetailFlow,
     openDetailFlow,
-    closeDetailFlow
+    closeDetailFlow,
+    setRetailTab,
   } = useBanking();
 
   const [view, setView] = useState<CardView>('overview');
@@ -61,14 +61,35 @@ export const RetailCards: React.FC = () => {
 
   const selectedCard = cards.find(c => c.id === selectedCardId) || cards[0];
 
-  // Sync BottomNav visibility with active flows or deep views
+  // Hide bottom nav during card detail views and modals (tab-level hide handles overview)
   useEffect(() => {
-    if (view !== 'overview' || isAddCardOpen || isPinModalOpen || isBlockModalOpen || isFreezeModalOpen || isReplaceModalOpen || isBillPayOpen || isTrackerOpen) {
+    const shouldHide =
+      view !== 'overview' ||
+      isAddCardOpen ||
+      isPinModalOpen ||
+      isBlockModalOpen ||
+      isFreezeModalOpen ||
+      isReplaceModalOpen ||
+      isBillPayOpen ||
+      isTrackerOpen;
+
+    if (shouldHide) {
       hideBottomNav();
     } else {
-      showBottomNav();
+      closeDetailFlow();
     }
-  }, [view, isAddCardOpen, isPinModalOpen, isBlockModalOpen, isFreezeModalOpen, isReplaceModalOpen, isBillPayOpen, isTrackerOpen]);
+  }, [
+    view,
+    isAddCardOpen,
+    isPinModalOpen,
+    isBlockModalOpen,
+    isFreezeModalOpen,
+    isReplaceModalOpen,
+    isBillPayOpen,
+    isTrackerOpen,
+    hideBottomNav,
+    closeDetailFlow,
+  ]);
 
   // Transition Helpers
   const navigateTo = (newView: CardView) => {
@@ -110,6 +131,11 @@ export const RetailCards: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
           >
+            <ScreenHeader
+              title="Card Management"
+              subtitle="Debit & credit cards"
+              onBack={() => setRetailTab('home')}
+            />
             <CardsOverview
               cards={cards}
               selectedCard={selectedCard}

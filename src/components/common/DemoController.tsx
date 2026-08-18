@@ -26,7 +26,8 @@ export const DemoController: React.FC = () => {
     logout, 
     setAuthScreen,
     openScanner,
-    addToast
+    addToast,
+    triggerSessionTimeout,
   } = useBanking();
   
   const [isOpen, setIsOpen] = useState(false);
@@ -126,6 +127,17 @@ export const DemoController: React.FC = () => {
               >
                 <Scan className="w-3.5 h-3.5 text-emerald-400" />
                 <span>QR Scanner</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  triggerSessionTimeout();
+                  setIsOpen(false);
+                }}
+                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center gap-1.5 text-[11px] text-slate-300"
+              >
+                <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+                <span>Session Timeout</span>
               </button>
 
               <button

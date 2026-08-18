@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { LoanAccount } from '../../types/banking';
+import { ScreenHeader } from '../common/ScreenHeader';
 import { 
   LoanCategoryType, 
   LoanApplicationState, 
@@ -69,7 +70,15 @@ type LoanFlowStep =
   | 'disbursement';
 
 export const RetailLoans: React.FC = () => {
-  const { loans, applyForLoan, setBottomNavHidden, addToast } = useBanking();
+  const {
+    loans,
+    applyForLoan,
+    setBottomNavHidden,
+    openDetailFlow,
+    closeDetailFlow,
+    addToast,
+    setRetailTab,
+  } = useBanking();
 
   // Active Flow Step State
   const [currentStep, setCurrentStep] = useState<LoanFlowStep>('home');
@@ -86,16 +95,34 @@ export const RetailLoans: React.FC = () => {
   const [homeCalcAmount, setHomeCalcAmount] = useState<number>(500000);
   const [homeCalcTenureYears, setHomeCalcTenureYears] = useState<number>(3);
 
-  // Bottom Navigation Visibility Control:
-  // Strictly hide bottom nav when user is in the loan application flow
+  // Hide global header + bottom nav during loan application flow and loan modals
+  const isInLoanFlow =
+    currentStep !== 'home' || !!selectedLoanForDetail || !!selectedLoanForSchedule;
+
   useEffect(() => {
-    if (currentStep !== 'home') {
+    if (isInLoanFlow) {
       setBottomNavHidden(true);
+      openDetailFlow(
+        currentStep !== 'home' ? `loan_${currentStep}` : 'loan_modal'
+      );
     } else {
       setBottomNavHidden(false);
+      closeDetailFlow();
     }
-    return () => setBottomNavHidden(false);
-  }, [currentStep, setBottomNavHidden]);
+
+    return () => {
+      setBottomNavHidden(false);
+      closeDetailFlow();
+    };
+  }, [
+    isInLoanFlow,
+    currentStep,
+    selectedLoanForDetail,
+    selectedLoanForSchedule,
+    setBottomNavHidden,
+    openDetailFlow,
+    closeDetailFlow,
+  ]);
 
   // Home calculator math
   const homeRate = LOAN_TYPES_CONFIG[homeCalcType].interestRateStart;
@@ -181,8 +208,10 @@ export const RetailLoans: React.FC = () => {
           animate={{ opacity: 1 }}
           className="space-y-5"
         >
+          <ScreenHeader title="Loans" subtitle="Apply & manage your loans" onBack={() => setRetailTab('home')} />
+
           {/* Top Banner with Quick Apply */}
-          <div className="p-5 rounded-3xl bg-gradient-to-tr from-blue-700 via-indigo-700 to-blue-900 text-white shadow-xl space-y-4 relative overflow-hidden">
+          <div className="p-5 rounded-3xl bg-linear-to-tr from-blue-700 via-indigo-700 to-blue-900 text-white shadow-xl space-y-4 relative overflow-hidden">
             <div className="flex items-center justify-between">
               <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase bg-white/20 px-2.5 py-1 rounded-full backdrop-blur-xs">
                 <Sparkles className="w-3 h-3 text-amber-300" /> Digital Instant Sanction
@@ -289,7 +318,7 @@ export const RetailLoans: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Offer 1: Pre-approved Personal Loan */}
-              <div className="p-4.5 rounded-3xl bg-gradient-to-tr from-amber-500/10 via-orange-500/5 to-transparent border border-amber-200/80 dark:border-amber-900/50 space-y-3">
+              <div className="p-4.5 rounded-3xl bg-linear-to-tr from-amber-500/10 via-orange-500/5 to-transparent border border-amber-200/80 dark:border-amber-900/50 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-extrabold uppercase bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                     <Zap className="w-3 h-3 text-amber-500" /> Pre-Approved
@@ -319,7 +348,7 @@ export const RetailLoans: React.FC = () => {
               </div>
 
               {/* Offer 2: Festive Home Loan */}
-              <div className="p-4.5 rounded-3xl bg-gradient-to-tr from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-200/80 dark:border-emerald-900/50 space-y-3">
+              <div className="p-4.5 rounded-3xl bg-linear-to-tr from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-200/80 dark:border-emerald-900/50 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-extrabold uppercase bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                     <Award className="w-3 h-3 text-emerald-600" /> Special Rate
@@ -495,6 +524,9 @@ export const RetailLoans: React.FC = () => {
         </motion.div>
       )}
 
+      {/* Loan application flow — full-screen overlay without global header/nav */}
+      {currentStep !== 'home' && (
+        <div className="fixed inset-0 z-40 bg-slate-50 dark:bg-slate-950 overflow-y-auto no-scrollbar px-4 py-3 safe-top safe-bottom">
       {/* STEP 1: LOAN TYPE SELECTION */}
       {currentStep === 'type' && (
         <LoanTypeStep
@@ -647,6 +679,8 @@ export const RetailLoans: React.FC = () => {
           createdLoan={createdLoan}
           onViewLoanAccount={handleFinishToLoanAccount}
         />
+      )}
+        </div>
       )}
 
       {/* MODAL: Active Loan Account Details */}

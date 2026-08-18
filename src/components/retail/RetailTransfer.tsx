@@ -27,19 +27,28 @@ export const RetailTransfer: React.FC = () => {
     addBeneficiary, 
     executeTransfer, 
     addToast,
-    setBottomNavHidden 
+    setBottomNavHidden,
+    getDefaultDebitAccount,
+    defaultDebitAccountId,
   } = useBanking();
+
+  const defaultDebit = getDefaultDebitAccount();
 
   // Wizard state: 'select_payee' | 'enter_amount' | 'review' | 'mpin' | 'success' | 'add_beneficiary'
   const [step, setStep] = useState<'select_payee' | 'enter_amount' | 'review' | 'mpin' | 'success' | 'add_beneficiary'>('select_payee');
   const [transferMode, setTransferMode] = useState<'IMPS' | 'NEFT' | 'RTGS' | 'UPI' | 'Internal'>('IMPS');
-  const [selectedDebitAccount, setSelectedDebitAccount] = useState<BankAccount>(accounts[0]);
+  const [selectedDebitAccount, setSelectedDebitAccount] = useState<BankAccount>(defaultDebit);
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary | null>(null);
   const [amount, setAmount] = useState('');
   const [remarks, setRemarks] = useState('');
   const [pin, setPin] = useState(['', '', '', '']);
   const [isProcessing, setIsProcessing] = useState(false);
   const [completedTxn, setCompletedTxn] = useState<Transaction | null>(null);
+
+  // Sync default debit account from profile preferences
+  useEffect(() => {
+    setSelectedDebitAccount(getDefaultDebitAccount());
+  }, [defaultDebitAccountId]);
 
   // Bottom Navigation visibility: ONLY visible on Payments Home ('select_payee'), HIDDEN during active transfer flow & add beneficiary
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useBanking } from '../../context/BankingContext';
 import { Header } from '../common/Header';
@@ -8,9 +8,14 @@ import BeneficiaryDetailsView from './beneficiaries/BeneficiaryDetailsView';
 import { Beneficiary } from '../../types/banking';
 
 const RetailBeneficiaries: React.FC = () => {
-  const { setRetailTab, hideBottomNav, showBottomNav } = useBanking();
+  const { setRetailTab, setBottomNavHidden } = useBanking();
   const [view, setView] = useState<'list' | 'add' | 'details'>('list');
   const [selectedBeneficiaryId, setSelectedBeneficiaryId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setBottomNavHidden(view !== 'list');
+    return () => setBottomNavHidden(false);
+  }, [view, setBottomNavHidden]);
 
   const handleSelect = (ben: Beneficiary) => {
     setSelectedBeneficiaryId(ben.id);

@@ -63,7 +63,7 @@ export const BharatBankLogo: React.FC<BharatBankLogoProps> = ({
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
-            <h1 className="font-black text-sm text-[#1B51A1] dark:text-blue-400 tracking-tight leading-none uppercase">
+            <h1 className="font-black text-sm text-congress-blue-900 dark:text-congress-blue-400 tracking-tight leading-none uppercase">
               Bharat Corporate
             </h1>
             <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-red-600 text-white leading-none">
@@ -85,7 +85,7 @@ export const BharatBankLogo: React.FC<BharatBankLogoProps> = ({
           <LogoEmblem emblemClass="w-8 h-8" />
         </div>
         <div>
-          <h2 className="font-extrabold text-xs text-[#1B51A1] dark:text-blue-300 leading-tight">
+          <h2 className="font-extrabold text-xs text-congress-blue-900 dark:text-congress-blue-300 leading-tight">
             Bharat Co-operative Bank
           </h2>
           <p className="text-[8px] font-bold text-red-600 tracking-wider uppercase">
@@ -106,7 +106,7 @@ export const BharatBankLogo: React.FC<BharatBankLogoProps> = ({
 
       {/* Typography */}
       <div className="min-w-0 flex flex-col justify-center">
-        <div className="font-extrabold tracking-tight text-[#1B51A1] dark:text-blue-400 leading-none">
+        <div className="font-extrabold tracking-tight text-congress-blue-900 dark:text-congress-blue-400 leading-none">
           <div className={`${size === 'lg' || size === 'xl' ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'} font-black`}>
             Bharat Co-operative
           </div>
@@ -119,7 +119,7 @@ export const BharatBankLogo: React.FC<BharatBankLogoProps> = ({
         <div className="w-full h-0.5 bg-red-600 my-1 rounded-full opacity-90" />
 
         {/* Subtitle */}
-        <div className="text-[8px] sm:text-[9px] font-extrabold text-[#1B51A1] dark:text-blue-300 tracking-[0.18em] uppercase whitespace-nowrap">
+        <div className="text-[8px] sm:text-[9px] font-extrabold text-congress-blue-900 dark:text-congress-blue-300 tracking-[0.18em] uppercase whitespace-nowrap">
           {subtitle}
         </div>
       </div>

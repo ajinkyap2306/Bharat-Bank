@@ -366,11 +366,19 @@ export interface InvestmentItem {
 export interface Biller {
   id: string;
   name: string;
-  category: 'electricity' | 'water' | 'gas' | 'mobile' | 'broadband' | 'dth' | 'insurance' | 'fastag';
+  nickname?: string;
+  category: 'electricity' | 'water' | 'gas' | 'mobile' | 'broadband' | 'dth' | 'insurance' | 'fastag' | 'credit_card' | 'education' | 'municipal';
   consumerNumber: string;
+  customerName?: string;
+  serviceArea?: string;
+  providerId?: string;
   lastBilledAmount?: number;
   dueDate?: string;
+  lastPaymentDate?: string;
+  billStatus?: 'due' | 'overdue' | 'paid';
   isAutoPay: boolean;
+  autoPayRule?: 'full' | 'max_amount';
+  autoPayMaxAmount?: number;
   iconName: string;
 }
 

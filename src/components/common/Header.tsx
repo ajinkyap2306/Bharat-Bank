@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { NotificationsModal } from './NotificationsModal';
-import { BharatBankLogo } from './BharatBankLogo';
 
 export const Header: React.FC = () => {
   const { 
@@ -31,17 +30,7 @@ export const Header: React.FC = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors">
-        {/* Top Mini Brand Bar */}
-        <div className="px-4 pt-2 pb-1 flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/70 dark:bg-slate-950/40 text-[10px]">
-          <BharatBankLogo variant="compact" />
-          <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-500 dark:text-slate-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="hidden xs:inline">RBI Scheduled</span>
-            <span>• 256-Bit TLS</span>
-          </div>
-        </div>
-
+      <header className="fixed top-0 left-0 right-0 z-30 w-full safe-top bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors">
         <div className="px-4 py-2.5 flex items-center justify-between gap-3">
           {/* User / Profile Info */}
           <div className="flex items-center gap-2.5 min-w-0">

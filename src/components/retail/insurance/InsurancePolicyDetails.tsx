@@ -33,7 +33,7 @@ export const InsurancePolicyDetails: React.FC<InsurancePolicyDetailsProps> = ({
   onClose,
   onRaiseClaim 
 }) => {
-  const { payInsurancePremium, renewInsurancePolicy, accounts } = useBanking();
+  const { payInsurancePremium, renewInsurancePolicy, getDefaultDebitAccount } = useBanking();
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [isRenewOpen, setIsRenewOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -52,9 +52,9 @@ export const InsurancePolicyDetails: React.FC<InsurancePolicyDetailsProps> = ({
   const handleAuthSuccess = () => {
     setIsAuthOpen(false);
     if (authType === 'pay') {
-      payInsurancePremium(policy.id, policy.premiumAmount, accounts[0].id);
+      payInsurancePremium(policy.id, policy.premiumAmount, getDefaultDebitAccount().id);
     } else {
-      renewInsurancePolicy(policy.id, policy.premiumAmount, accounts[0].id);
+      renewInsurancePolicy(policy.id, policy.premiumAmount, getDefaultDebitAccount().id);
       setIsRenewOpen(false);
     }
   };
@@ -83,7 +83,7 @@ export const InsurancePolicyDetails: React.FC<InsurancePolicyDetailsProps> = ({
       <div className="flex-1 overflow-y-auto no-scrollbar pb-24">
         {/* Status Card */}
         <div className="p-6">
-          <div className={`p-6 rounded-[32px] text-white space-y-6 relative overflow-hidden ${
+          <div className={`p-6 rounded-4xl text-white space-y-6 relative overflow-hidden ${
             policy.type === 'Health' ? 'bg-rose-600' : 
             policy.type === 'Life' ? 'bg-blue-600' : 'bg-orange-600'
           }`}>

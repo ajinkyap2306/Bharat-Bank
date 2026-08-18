@@ -1,10 +1,39 @@
 @import "tailwindcss";
 
+@theme {
+  --color-congress-blue-50: #ebf8ff;
+  --color-congress-blue-100: #d2eeff;
+  --color-congress-blue-200: #afe3ff;
+  --color-congress-blue-300: #78d3ff;
+  --color-congress-blue-400: #38b9ff;
+  --color-congress-blue-500: #0b99ff;
+  --color-congress-blue-600: #0083ff;
+  --color-congress-blue-700: #0076ff;
+  --color-congress-blue-800: #005dd4;
+  --color-congress-blue-900: #024491;
+  --color-congress-blue-950: #072f64;
+
+  /* Use congress-blue as the default blue scale across the app */
+  --color-blue-50: #ebf8ff;
+  --color-blue-100: #d2eeff;
+  --color-blue-200: #afe3ff;
+  --color-blue-300: #78d3ff;
+  --color-blue-400: #38b9ff;
+  --color-blue-500: #0b99ff;
+  --color-blue-600: #0083ff;
+  --color-blue-700: #0076ff;
+  --color-blue-800: #005dd4;
+  --color-blue-900: #024491;
+  --color-blue-950: #072f64;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   :root {
-    --color-primary: #0B5CAB;
+    --color-primary: #005dd4;
+    --color-primary-light: #0076ff;
+    --color-primary-dark: #024491;
     --color-secondary: #0F766E;
     --color-bg: #F8FAFC;
     --color-surface: #FFFFFF;

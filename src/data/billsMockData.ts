@@ -1,0 +1,361 @@
+import { BillProvider, BillPaymentRecord, UpcomingBill } from '../types/bills';
+
+export const BILL_CATEGORIES = [
+  { id: 'electricity' as const, label: 'Electricity', icon: 'Zap' },
+  { id: 'water' as const, label: 'Water', icon: 'Droplet' },
+  { id: 'gas' as const, label: 'Gas', icon: 'Flame' },
+  { id: 'mobile' as const, label: 'Mobile', icon: 'Smartphone' },
+  { id: 'broadband' as const, label: 'Broadband', icon: 'Wifi' },
+  { id: 'dth' as const, label: 'DTH', icon: 'Tv' },
+  { id: 'fastag' as const, label: 'FASTag', icon: 'Car' },
+  { id: 'insurance' as const, label: 'Insurance', icon: 'Shield' },
+  { id: 'credit_card' as const, label: 'Credit Card', icon: 'CreditCard' },
+  { id: 'education' as const, label: 'Education', icon: 'GraduationCap' },
+  { id: 'municipal' as const, label: 'Municipal', icon: 'Building2' },
+  { id: 'more' as const, label: 'More', icon: 'Grid3x3' },
+];
+
+export const BILL_PROVIDERS: BillProvider[] = [
+  {
+    id: 'prov_ele_adani',
+    name: 'Adani Electricity Mumbai',
+    category: 'electricity',
+    serviceArea: 'Mumbai Metropolitan',
+    identifierFields: [
+      { key: 'consumerNumber', label: 'Consumer Number', placeholder: 'Enter 12-digit consumer number', required: true },
+      { key: 'mobile', label: 'Registered Mobile', placeholder: '10-digit mobile number', required: true, type: 'tel' },
+    ],
+    allowsPartialPayment: false,
+    processingInfo: 'Bill fetch may take up to 30 seconds',
+    paymentMethod: 'BBPS',
+    iconName: 'Zap',
+  },
+  {
+    id: 'prov_ele_tata',
+    name: 'Tata Power DDL',
+    category: 'electricity',
+    serviceArea: 'Delhi NCR',
+    identifierFields: [
+      { key: 'consumerNumber', label: 'Consumer Number', placeholder: 'Enter consumer number', required: true },
+      { key: 'mobile', label: 'Mobile Number', placeholder: '10-digit mobile', required: true, type: 'tel' },
+    ],
+    allowsPartialPayment: false,
+    paymentMethod: 'BBPS',
+    iconName: 'Zap',
+  },
+  {
+    id: 'prov_ele_mseb',
+    name: 'MSEB Maharashtra',
+    category: 'electricity',
+    serviceArea: 'Maharashtra',
+    identifierFields: [
+      { key: 'consumerNumber', label: 'Consumer Number', placeholder: 'Enter consumer number', required: true },
+    ],
+    allowsPartialPayment: false,
+    paymentMethod: 'BBPS',
+    iconName: 'Zap',
+  },
+  {
+    id: 'prov_ele_bescom',
+    name: 'BESCOM Karnataka',
+    category: 'electricity',
+    serviceArea: 'Bengaluru',
+    identifierFields: [
+      { key: 'consumerNumber', label: 'RR Number', placeholder: 'Enter RR number', required: true },
+    ],
+    allowsPartialPayment: false,
+    paymentMethod: 'BBPS',
+    iconName: 'Zap',
+  },
+  {
+    id: 'prov_bb_airtel',
+    name: 'Airtel Broadband & Fiber',
+    category: 'broadband',
+    serviceArea: 'Pan India',
+    identifierFields: [
+      { key: 'customerId', label: 'Customer ID', placeholder: 'Landline / Account ID', required: true },
+      { key: 'mobile', label: 'Registered Mobile', placeholder: '10-digit mobile', required: true, type: 'tel' },
+    ],
+    allowsPartialPayment: false,
+    paymentMethod: 'BBPS',
+    iconName: 'Wifi',
+  },
+  {
+    id: 'prov_bb_jio',
+    name: 'JioFiber',
+    category: 'broadband',
+    serviceArea: 'Pan India',
+    identifierFields: [
+      { key: 'customerId', label: 'Customer ID', placeholder: 'JioFiber account ID', required: true },
+    ],
+    allowsPartialPayment: false,
+    paymentMethod: 'BBPS',
+    iconName: 'Wifi',
+  },
+  {
+    id: 'prov_mob_jio',
+    name: 'Jio 5G Postpaid',
+    category: 'mobile',
+    serviceArea: 'Pan India',
+    identifierFields: [
+      { key: 'mobile', label: 'Mobile Number', placeholder: '10-digit mobile number', required: true, type: 'tel' },
+      { key: 'operator', label: 'Operator', placeholder: 'Select operator', required: true, type: 'select', options: ['Jio', 'Airtel', 'Vi', 'BSNL'] },
+    ],
+    allowsPartialPayment: true,
+    paymentMethod: 'BBPS',
+    iconName: 'Smartphone',
+  },
+  {
+    id: 'prov_mob_airtel',
+    name: 'Airtel Postpaid',
+    category: 'mobile',
+    serviceArea: 'Pan India',
+    identifierFields: [
+      { key: 'mobile', label: 'Mobile Number', placeholder: '10-digit mobile number', required: true, type: 'tel' },
+    ],
+    allowsPartialPayment: true,
+    paymentMethod: 'BBPS',
+    iconName: 'Smartphone',
+  },
+  {
+    id: 'prov_dth_tata',
+    name: 'Tata Play DTH',
+    category: 'dth',
+    serviceArea: 'Pan India',
+    identifierFields: [
+      { key: 'subscriberId', label: 'Subscriber ID', placeholder: 'Enter subscriber ID', required: true },
+      { key: 'mobile', label: 'Registered Mobile', placeholder: '10-digit mobile', required: true, type: 'tel' },
+    ],
+    allowsPartialPayment: true,
+    paymentMethod: 'BBPS',
+    iconName: 'Tv',
+  },
+  {
+    id: 'prov_dth_dish',
+    name: 'Dish TV',
+    category: 'dth',
+    serviceArea: 'Pan India',
+    identifierFields: [
+      { key: 'subscriberId', label: 'Subscriber ID', placeholder: 'Enter subscriber ID', required: true },
+    ],
+    allowsPartialPayment: true,
+    paymentMethod: 'BBPS',
+    iconName: 'Tv',
+  },
+  {
+    id: 'prov_gas_mgl',
+    name: 'Mahanagar Gas Limited',
+    category: 'gas',
+    serviceArea: 'Mumbai',
+    identifierFields: [
+      { key: 'consumerNumber', label: 'BP Number', placeholder: 'Enter BP number', required: true },
+    ],
+    allowsPartialPayment: false,
+    paymentMethod: 'BBPS',
+    iconName: 'Flame',
+  },
+  {
+    id: 'prov_water_mcg',
+    name: 'Mumbai Water Board',
+    category: 'water',
+    serviceArea: 'Mumbai',
+    identifierFields: [
+      { key: 'consumerNumber', label: 'Consumer Number', placeholder: 'Enter consumer number', required: true },
+    ],
+    allowsPartialPayment: false,
+    paymentMethod: 'BBPS',
+    iconName: 'Droplet',
+  },
+  {
+    id: 'prov_fastag_icici',
+    name: 'ICICI FASTag',
+    category: 'fastag',
+    serviceArea: 'NHAI Toll Network',
+    identifierFields: [
+      { key: 'vehicleNumber', label: 'Vehicle Number / FASTag ID', placeholder: 'MH01AB1234', required: true },
+    ],
+    allowsPartialPayment: true,
+    paymentMethod: 'BBPS',
+    iconName: 'Car',
+  },
+  {
+    id: 'prov_ins_lic',
+    name: 'LIC Premium',
+    category: 'insurance',
+    serviceArea: 'Pan India',
+    identifierFields: [
+      { key: 'policyNumber', label: 'Policy Number', placeholder: 'Enter policy number', required: true },
+    ],
+    allowsPartialPayment: false,
+    paymentMethod: 'BBPS',
+    iconName: 'Shield',
+  },
+  {
+    id: 'prov_cc_hdfc',
+    name: 'HDFC Credit Card',
+    category: 'credit_card',
+    serviceArea: 'Pan India',
+    identifierFields: [
+      { key: 'cardLast4', label: 'Card Last 4 Digits', placeholder: '1234', required: true },
+      { key: 'mobile', label: 'Registered Mobile', placeholder: '10-digit mobile', required: true, type: 'tel' },
+    ],
+    allowsPartialPayment: true,
+    paymentMethod: 'BBPS',
+    iconName: 'CreditCard',
+  },
+];
+
+export const INITIAL_UPCOMING_BILLS: UpcomingBill[] = [
+  {
+    id: 'up_01',
+    billerName: 'Adani Electricity Mumbai',
+    category: 'electricity',
+    dueDate: '22 Aug 2026',
+    dueLabel: 'Due 22 Aug',
+    amount: 2450,
+    status: 'due',
+    savedBillerId: 'bil_01',
+    providerId: 'prov_ele_adani',
+  },
+  {
+    id: 'up_02',
+    billerName: 'Airtel Broadband & Fiber',
+    category: 'broadband',
+    dueDate: '21 Aug 2026',
+    dueLabel: 'Due in 3 days',
+    amount: 999,
+    status: 'due',
+    savedBillerId: 'bil_02',
+    providerId: 'prov_bb_airtel',
+  },
+  {
+    id: 'up_03',
+    billerName: 'Jio 5G Postpaid Mobile',
+    category: 'mobile',
+    dueDate: '19 Aug 2026',
+    dueLabel: 'Due tomorrow',
+    amount: 799,
+    status: 'due',
+    savedBillerId: 'bil_04',
+    providerId: 'prov_mob_jio',
+  },
+];
+
+export const INITIAL_BILL_PAYMENT_HISTORY: BillPaymentRecord[] = [
+  {
+    id: 'bpay_01',
+    txnId: 'TXN-BBPS-8842101',
+    referenceNumber: 'REF-20260818-4421',
+    billerName: 'Adani Electricity Mumbai',
+    category: 'electricity',
+    customerName: 'Arjun Mehta',
+    consumerNumberMasked: '•••• •••• 1029',
+    billNumber: 'BILL-EL-202607',
+    amount: 2450,
+    convenienceFee: 0,
+    totalPaid: 2450,
+    paymentDate: '18 Aug 2026',
+    debitAccountId: 'acc_ret_sav_01',
+    debitAccountMasked: '•••• •••• 0012',
+    debitAccountType: 'Savings',
+    status: 'completed',
+    paymentMethod: 'BBPS',
+  },
+  {
+    id: 'bpay_02',
+    txnId: 'TXN-BBPS-8839102',
+    referenceNumber: 'REF-20260810-3312',
+    billerName: 'Airtel Broadband & Fiber',
+    category: 'broadband',
+    customerName: 'Arjun Mehta',
+    consumerNumberMasked: '•••• 2918',
+    billNumber: 'BILL-BB-202607',
+    amount: 999,
+    convenienceFee: 0,
+    totalPaid: 999,
+    paymentDate: '10 Aug 2026',
+    debitAccountId: 'acc_ret_sav_01',
+    debitAccountMasked: '•••• •••• 0012',
+    debitAccountType: 'Savings',
+    status: 'completed',
+    paymentMethod: 'BBPS',
+  },
+  {
+    id: 'bpay_03',
+    txnId: 'TXN-BBPS-8822103',
+    referenceNumber: 'REF-20260805-2298',
+    billerName: 'Jio 5G Postpaid Mobile',
+    category: 'mobile',
+    customerName: 'Arjun Mehta',
+    consumerNumberMasked: '•••• 3210',
+    billNumber: 'BILL-MOB-202607',
+    amount: 599,
+    convenienceFee: 0,
+    totalPaid: 599,
+    paymentDate: '05 Aug 2026',
+    debitAccountId: 'acc_ret_sav_01',
+    debitAccountMasked: '•••• •••• 0012',
+    debitAccountType: 'Savings',
+    status: 'completed',
+    paymentMethod: 'BBPS',
+  },
+];
+
+export const maskConsumerNumber = (value: string): string => {
+  if (value.length <= 4) return value;
+  return '•••• ' + value.slice(-4);
+};
+
+export const mockFetchBill = (
+  provider: BillProvider,
+  formData: Record<string, string>
+): import('../types/bills').FetchedBill => {
+  const consumerKey = formData.consumerNumber || formData.customerId || formData.mobile || formData.subscriberId || formData.vehicleNumber || formData.policyNumber || '0000';
+  const amounts: Record<string, number> = {
+    electricity: 2450,
+    broadband: 999,
+    mobile: 799,
+    dth: 349,
+    gas: 980,
+    water: 650,
+    fastag: 500,
+    insurance: 12500,
+    credit_card: 8500,
+    education: 15000,
+    municipal: 1200,
+  };
+
+  const dueDates: Record<string, string> = {
+    electricity: '22 Aug 2026',
+    broadband: '21 Aug 2026',
+    mobile: '19 Aug 2026',
+    dth: '25 Aug 2026',
+    gas: '02 Sep 2026',
+    water: '28 Aug 2026',
+    fastag: 'No due date',
+    insurance: '15 Sep 2026',
+    credit_card: '05 Sep 2026',
+    education: '01 Sep 2026',
+    municipal: '30 Aug 2026',
+  };
+
+  const amount = amounts[provider.category] || 999;
+  const isOverdue = provider.category === 'electricity';
+
+  return {
+    providerId: provider.id,
+    billerName: provider.name,
+    category: provider.category,
+    customerName: 'Arjun Mehta',
+    consumerNumber: consumerKey,
+    maskedConsumerNumber: maskConsumerNumber(consumerKey),
+    billNumber: `BILL-${provider.category.toUpperCase().slice(0, 3)}-${Date.now().toString().slice(-6)}`,
+    billDate: '01 Aug 2026',
+    dueDate: dueDates[provider.category] || '30 Aug 2026',
+    amount,
+    status: isOverdue ? 'overdue' : 'due',
+    lateFeeNote: isOverdue ? 'Late payment charges may apply according to biller terms.' : undefined,
+    convenienceFee: 0,
+    allowsPartialPayment: provider.allowsPartialPayment,
+  };
+};

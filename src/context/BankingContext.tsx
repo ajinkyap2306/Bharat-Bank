@@ -56,6 +56,45 @@ import {
   INITIAL_NOTIFICATIONS,
   INITIAL_RETAIL_STATEMENTS
 } from '../data/mockData';
+import { BillPaymentRecord, FetchedBill, BillProvider } from '../types/bills';
+import {
+  BILL_PROVIDERS,
+  INITIAL_BILL_PAYMENT_HISTORY,
+  INITIAL_UPCOMING_BILLS,
+  mockFetchBill,
+} from '../data/billsMockData';
+import { UpcomingBill } from '../types/bills';
+import { ServiceRoute } from '../types/services';
+import {
+  DEFAULT_FAVORITE_SERVICE_IDS,
+  DEFAULT_RECENT_SERVICE_IDS,
+} from '../data/servicesCatalog';
+import {
+  PersonalInfo,
+  KycDetails,
+  TrustedDevice,
+  ActiveSession,
+  LoginActivityEvent,
+  ProfileDocument,
+  ServiceRequest,
+  NotificationPreferences,
+  AppPreferences,
+  SecuritySettings,
+  PrivacyPreferences,
+} from '../types/profile';
+import {
+  INITIAL_PERSONAL_INFO,
+  INITIAL_KYC_DETAILS,
+  INITIAL_TRUSTED_DEVICES,
+  INITIAL_ACTIVE_SESSIONS,
+  INITIAL_LOGIN_ACTIVITY,
+  INITIAL_PROFILE_DOCUMENTS,
+  INITIAL_SERVICE_REQUESTS,
+  INITIAL_NOTIFICATION_PREFS,
+  INITIAL_APP_PREFS,
+  INITIAL_SECURITY_SETTINGS,
+  INITIAL_PRIVACY_PREFS,
+} from '../data/profileMockData';
 
 export interface ToastMessage {
   id: string;
@@ -139,6 +178,29 @@ interface BankingContextType {
   resolveSecurityAlert: (alertId: string, isLegit: boolean) => void;
   reportCardTransaction: (transactionId: string, reason: string) => void;
   payBiller: (billerId: string, amount: number, accountId: string) => void;
+  billProviders: BillProvider[];
+  billPaymentHistory: BillPaymentRecord[];
+  upcomingBills: UpcomingBill[];
+  fetchBill: (providerId: string, formData: Record<string, string>) => FetchedBill | null;
+  processBillPayment: (params: {
+    fetchedBill: FetchedBill;
+    amount: number;
+    accountId: string;
+    saveBiller?: boolean;
+    nickname?: string;
+  }) => BillPaymentRecord;
+  addSavedBiller: (biller: Omit<Biller, 'id'>) => Biller;
+  updateSavedBiller: (billerId: string, updates: Partial<Biller>) => void;
+  deleteSavedBiller: (billerId: string) => void;
+  toggleBillerAutoPay: (billerId: string, enabled: boolean, rule?: Biller['autoPayRule'], maxAmount?: number) => void;
+
+  // Services navigation
+  profileDeepLink: string | null;
+  clearProfileDeepLink: () => void;
+  favoriteServiceIds: string[];
+  recentServiceIds: string[];
+  toggleFavoriteService: (serviceId: string) => void;
+  navigateService: (serviceId: string, route: ServiceRoute) => void;
   
   // Deposits actions
   createFixedDeposit: (principal: number, tenureMonths: number, payout: FixedDeposit['payoutFrequency'], maturityInstruction: FixedDeposit['maturityInstruction'], accountId: string) => FixedDeposit;
@@ -177,6 +239,42 @@ interface BankingContextType {
   activeDetailFlow: string | null;
   openDetailFlow: (flowName: string) => void;
   closeDetailFlow: () => void;
+
+  // Profile & Preferences
+  primaryAccountId: string;
+  defaultDebitAccountId: string;
+  defaultCardId: string;
+  hiddenAccountIds: string[];
+  personalInfo: PersonalInfo;
+  kycDetails: KycDetails;
+  trustedDevices: TrustedDevice[];
+  activeSessions: ActiveSession[];
+  loginActivity: LoginActivityEvent[];
+  profileDocuments: ProfileDocument[];
+  serviceRequests: ServiceRequest[];
+  notificationPrefs: NotificationPreferences;
+  appPrefs: AppPreferences;
+  securitySettings: SecuritySettings;
+  privacyPrefs: PrivacyPreferences;
+  setPrimaryAccount: (accountId: string) => void;
+  setDefaultDebitAccount: (accountId: string) => void;
+  setDefaultCard: (cardId: string) => void;
+  updateAccountNickname: (accountId: string, nickname: string) => void;
+  toggleAccountVisibility: (accountId: string) => void;
+  isAccountHidden: (accountId: string) => boolean;
+  getPrimaryAccount: () => BankAccount;
+  getDefaultDebitAccount: () => BankAccount;
+  getVisibleAccounts: () => BankAccount[];
+  updatePersonalInfo: (updates: Partial<PersonalInfo>) => void;
+  updateNotificationPrefs: (updates: Partial<NotificationPreferences>) => void;
+  updateAppPrefs: (updates: Partial<AppPreferences>) => void;
+  updateSecuritySettings: (updates: Partial<SecuritySettings>) => void;
+  updatePrivacyPrefs: (updates: Partial<PrivacyPreferences>) => void;
+  removeTrustedDevice: (deviceId: string) => void;
+  signOutSession: (sessionId: string) => void;
+  signOutAllOtherSessions: () => void;
+  addServiceRequest: (type: string, details: string) => string;
+  triggerSessionTimeout: () => void;
 }
 
 const BankingContext = createContext<BankingContextType | undefined>(undefined);
@@ -285,11 +383,49 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [loans, setLoans] = useState<LoanAccount[]>(INITIAL_LOANS);
   const [investments, setInvestments] = useState<InvestmentItem[]>(INITIAL_INVESTMENTS);
   const [billers, setBillers] = useState<Biller[]>(INITIAL_BILLERS);
+  const [billPaymentHistory, setBillPaymentHistory] = useState<BillPaymentRecord[]>(INITIAL_BILL_PAYMENT_HISTORY);
+  const [upcomingBills, setUpcomingBills] = useState<UpcomingBill[]>(INITIAL_UPCOMING_BILLS);
+  const billProviders = BILL_PROVIDERS;
   const [employees] = useState<CorporateEmployee[]>(INITIAL_CORPORATE_EMPLOYEES);
   const [corporateUsers] = useState<CorporateUser[]>(INITIAL_CORPORATE_USERS);
   const [securityLogs] = useState<SecurityLog[]>(INITIAL_SECURITY_LOGS);
   const [notifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
   const [statements, setStatements] = useState<Statement[]>(INITIAL_RETAIL_STATEMENTS);
+
+  // Profile & Preferences
+  const [primaryAccountId, setPrimaryAccountId] = useState('acc_ret_sav_01');
+  const [defaultDebitAccountId, setDefaultDebitAccountId] = useState('acc_ret_sav_01');
+  const [defaultCardId, setDefaultCardId] = useState(INITIAL_RETAIL_CARDS[0]?.id || '');
+  const [hiddenAccountIds, setHiddenAccountIds] = useState<string[]>([]);
+  const [personalInfo, setPersonalInfo] = useState<PersonalInfo>(INITIAL_PERSONAL_INFO);
+  const [kycDetails] = useState<KycDetails>(INITIAL_KYC_DETAILS);
+  const [trustedDevices, setTrustedDevices] = useState<TrustedDevice[]>(INITIAL_TRUSTED_DEVICES);
+  const [activeSessions, setActiveSessions] = useState<ActiveSession[]>(INITIAL_ACTIVE_SESSIONS);
+  const [loginActivity] = useState<LoginActivityEvent[]>(INITIAL_LOGIN_ACTIVITY);
+  const [profileDocuments] = useState<ProfileDocument[]>(INITIAL_PROFILE_DOCUMENTS);
+  const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>(INITIAL_SERVICE_REQUESTS);
+  const [notificationPrefs, setNotificationPrefs] = useState<NotificationPreferences>(INITIAL_NOTIFICATION_PREFS);
+  const [appPrefs, setAppPrefs] = useState<AppPreferences>(INITIAL_APP_PREFS);
+  const [securitySettings, setSecuritySettings] = useState<SecuritySettings>(INITIAL_SECURITY_SETTINGS);
+  const [privacyPrefs, setPrivacyPrefs] = useState<PrivacyPreferences>(INITIAL_PRIVACY_PREFS);
+
+  const [profileDeepLink, setProfileDeepLink] = useState<string | null>(null);
+  const [favoriteServiceIds, setFavoriteServiceIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('apex_favorite_services');
+      return saved ? JSON.parse(saved) : DEFAULT_FAVORITE_SERVICE_IDS;
+    } catch {
+      return DEFAULT_FAVORITE_SERVICE_IDS;
+    }
+  });
+  const [recentServiceIds, setRecentServiceIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('apex_recent_services');
+      return saved ? JSON.parse(saved) : DEFAULT_RECENT_SERVICE_IDS;
+    } catch {
+      return DEFAULT_RECENT_SERVICE_IDS;
+    }
+  });
 
   // Active user depending on bankingType
   const user = bankingType === 'retail' ? INITIAL_RETAIL_USER : INITIAL_CORPORATE_USER;
@@ -952,6 +1088,171 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }));
   };
 
+  const fetchBill = (providerId: string, formData: Record<string, string>): FetchedBill | null => {
+    const provider = billProviders.find((p) => p.id === providerId);
+    if (!provider) return null;
+    return mockFetchBill(provider, formData);
+  };
+
+  const processBillPayment = ({
+    fetchedBill,
+    amount,
+    accountId,
+    saveBiller,
+    nickname,
+  }: {
+    fetchedBill: FetchedBill;
+    amount: number;
+    accountId: string;
+    saveBiller?: boolean;
+    nickname?: string;
+  }): BillPaymentRecord => {
+    const account = retailAccounts.find((a) => a.id === accountId);
+    const txnId = `TXN-BBPS-${Math.floor(1000000 + Math.random() * 9000000)}`;
+    const refNum = `REF-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    executeTransfer({
+      fromAccountId: accountId,
+      beneficiaryName: fetchedBill.billerName,
+      beneficiaryAccount: fetchedBill.consumerNumber,
+      bankName: 'Bharat BillPay System (BBPS)',
+      amount,
+      mode: 'UPI',
+      remarks: `BBPS Bill Payment - ${fetchedBill.billNumber}`,
+    });
+
+    const record: BillPaymentRecord = {
+      id: 'bpay_' + Math.random().toString(36).slice(2, 9),
+      txnId,
+      referenceNumber: refNum,
+      billerName: fetchedBill.billerName,
+      category: fetchedBill.category,
+      customerName: fetchedBill.customerName,
+      consumerNumberMasked: fetchedBill.maskedConsumerNumber,
+      billNumber: fetchedBill.billNumber,
+      amount,
+      convenienceFee: fetchedBill.convenienceFee,
+      totalPaid: amount + fetchedBill.convenienceFee,
+      paymentDate: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+      debitAccountId: accountId,
+      debitAccountMasked: account?.maskedNumber || '•••• ••••',
+      debitAccountType: account?.accountType || 'Savings',
+      status: 'completed',
+      paymentMethod: 'BBPS',
+    };
+
+    setBillPaymentHistory((prev) => [record, ...prev]);
+    setUpcomingBills((prev) => prev.filter((b) => b.providerId !== fetchedBill.providerId));
+
+    const existing = billers.find((b) => b.providerId === fetchedBill.providerId || b.consumerNumber === fetchedBill.consumerNumber);
+    if (existing) {
+      setBillers((prev) =>
+        prev.map((b) =>
+          b.id === existing.id
+            ? {
+                ...b,
+                lastBilledAmount: 0,
+                dueDate: 'Paid',
+                lastPaymentDate: record.paymentDate,
+                billStatus: 'paid' as const,
+              }
+            : b
+        )
+      );
+    } else if (saveBiller) {
+      const provider = billProviders.find((p) => p.id === fetchedBill.providerId);
+      addSavedBiller({
+        name: fetchedBill.billerName,
+        nickname: nickname || fetchedBill.billerName,
+        category: fetchedBill.category,
+        consumerNumber: fetchedBill.consumerNumber,
+        customerName: fetchedBill.customerName,
+        serviceArea: provider?.serviceArea,
+        providerId: fetchedBill.providerId,
+        lastBilledAmount: 0,
+        dueDate: 'Paid',
+        lastPaymentDate: record.paymentDate,
+        billStatus: 'paid',
+        isAutoPay: false,
+        iconName: provider?.iconName || 'Zap',
+      });
+    }
+
+    addToast({
+      type: 'success',
+      title: 'Bill Paid Successfully',
+      message: `₹${amount.toLocaleString('en-IN')} paid to ${fetchedBill.billerName}`,
+    });
+
+    return record;
+  };
+
+  const addSavedBiller = (biller: Omit<Biller, 'id'>): Biller => {
+    const newBiller: Biller = { ...biller, id: 'bil_' + Math.random().toString(36).slice(2, 9) };
+    setBillers((prev) => [...prev, newBiller]);
+    addToast({ type: 'success', title: 'Biller Saved', message: `${newBiller.nickname || newBiller.name} added to saved billers.` });
+    return newBiller;
+  };
+
+  const updateSavedBiller = (billerId: string, updates: Partial<Biller>) => {
+    setBillers((prev) => prev.map((b) => (b.id === billerId ? { ...b, ...updates } : b)));
+    addToast({ type: 'success', title: 'Biller Updated', message: 'Saved biller details updated.' });
+  };
+
+  const deleteSavedBiller = (billerId: string) => {
+    setBillers((prev) => prev.filter((b) => b.id !== billerId));
+    addToast({ type: 'info', title: 'Biller Removed', message: 'Saved biller has been deleted.' });
+  };
+
+  const toggleBillerAutoPay = (
+    billerId: string,
+    enabled: boolean,
+    rule?: Biller['autoPayRule'],
+    maxAmount?: number
+  ) => {
+    setBillers((prev) =>
+      prev.map((b) =>
+        b.id === billerId
+          ? { ...b, isAutoPay: enabled, autoPayRule: rule || 'full', autoPayMaxAmount: maxAmount }
+          : b
+      )
+    );
+    addToast({
+      type: enabled ? 'success' : 'info',
+      title: enabled ? 'AutoPay Enabled' : 'AutoPay Disabled',
+      message: enabled ? 'Bills will be paid automatically as per your rule.' : 'AutoPay has been turned off.',
+    });
+  };
+
+  const clearProfileDeepLink = () => setProfileDeepLink(null);
+
+  const toggleFavoriteService = (serviceId: string) => {
+    setFavoriteServiceIds((prev) => {
+      const next = prev.includes(serviceId) ? prev.filter((id) => id !== serviceId) : [...prev, serviceId];
+      localStorage.setItem('apex_favorite_services', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const navigateService = (serviceId: string, route: ServiceRoute) => {
+    setRecentServiceIds((prev) => {
+      const next = [serviceId, ...prev.filter((id) => id !== serviceId)].slice(0, 8);
+      localStorage.setItem('apex_recent_services', JSON.stringify(next));
+      return next;
+    });
+
+    if (route.kind === 'tab') {
+      setRetailTab(route.tab);
+    } else if (route.kind === 'profile') {
+      setProfileDeepLink(route.screen);
+      setRetailTab('profile');
+    } else if (route.kind === 'scanner') {
+      openScanner();
+    } else if (route.kind === 'toast') {
+      addToast({ type: 'info', title: route.title, message: route.message });
+    }
+  };
+
   // Create Fixed Deposit
   const createFixedDeposit = (principal: number, tenureMonths: number, payout: FixedDeposit['payoutFrequency'], maturityInstruction: FixedDeposit['maturityInstruction'], accountId: string): FixedDeposit => {
     const rate = tenureMonths >= 18 ? 7.75 : 7.25;
@@ -1338,6 +1639,104 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
+  const triggerSessionTimeout = () => setIsSessionTimeoutModalOpen(true);
+
+  const setPrimaryAccount = (accountId: string) => {
+    setPrimaryAccountId(accountId);
+    setDefaultDebitAccountId(accountId);
+    addToast({
+      type: 'success',
+      title: 'Primary Account Updated',
+      message: 'This account is now your default for eligible payments.',
+    });
+  };
+
+  const setDefaultDebitAccount = (accountId: string) => {
+    setDefaultDebitAccountId(accountId);
+    addToast({
+      type: 'success',
+      title: 'Default Debit Account Updated',
+      message: 'Payment flows will use this account by default.',
+    });
+  };
+
+  const setDefaultCard = (cardId: string) => setDefaultCardId(cardId);
+
+  const updateAccountNickname = (accountId: string, nickname: string) => {
+    setRetailAccounts((prev) =>
+      prev.map((a) => (a.id === accountId ? { ...a, nickname } : a))
+    );
+    addToast({ type: 'success', title: 'Nickname Updated', message: 'Account nickname saved.' });
+  };
+
+  const toggleAccountVisibility = (accountId: string) => {
+    setHiddenAccountIds((prev) =>
+      prev.includes(accountId) ? prev.filter((id) => id !== accountId) : [...prev, accountId]
+    );
+  };
+
+  const isAccountHidden = (accountId: string) => hiddenAccountIds.includes(accountId);
+
+  const getPrimaryAccount = (): BankAccount =>
+    retailAccounts.find((a) => a.id === primaryAccountId) || retailAccounts[0];
+
+  const getDefaultDebitAccount = (): BankAccount =>
+    retailAccounts.find((a) => a.id === defaultDebitAccountId) || getPrimaryAccount();
+
+  const getVisibleAccounts = (): BankAccount[] =>
+    retailAccounts.filter((a) => !hiddenAccountIds.includes(a.id));
+
+  const updatePersonalInfo = (updates: Partial<PersonalInfo>) => {
+    setPersonalInfo((prev) => ({ ...prev, ...updates }));
+  };
+
+  const updateNotificationPrefs = (updates: Partial<NotificationPreferences>) => {
+    setNotificationPrefs((prev) => ({ ...prev, ...updates }));
+  };
+
+  const updateAppPrefs = (updates: Partial<AppPreferences>) => {
+    setAppPrefs((prev) => ({ ...prev, ...updates }));
+  };
+
+  const updateSecuritySettings = (updates: Partial<SecuritySettings>) => {
+    setSecuritySettings((prev) => ({ ...prev, ...updates }));
+  };
+
+  const updatePrivacyPrefs = (updates: Partial<PrivacyPreferences>) => {
+    setPrivacyPrefs((prev) => ({ ...prev, ...updates }));
+  };
+
+  const removeTrustedDevice = (deviceId: string) => {
+    setTrustedDevices((prev) => prev.filter((d) => d.id !== deviceId));
+  };
+
+  const signOutSession = (sessionId: string) => {
+    setActiveSessions((prev) => prev.filter((s) => s.id !== sessionId));
+  };
+
+  const signOutAllOtherSessions = () => {
+    setActiveSessions((prev) => prev.filter((s) => s.isCurrent));
+  };
+
+  const addServiceRequest = (type: string, _details: string): string => {
+    const id = `SR-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+    const newRequest: ServiceRequest = {
+      id,
+      type,
+      status: 'created',
+      createdDate: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+      lastUpdated: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+      timeline: [
+        { label: 'Request Created', completed: true, date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) },
+        { label: 'Under Review', completed: false },
+        { label: 'Action Required', completed: false },
+        { label: 'Resolved', completed: false },
+      ],
+    };
+    setServiceRequests((prev) => [newRequest, ...prev]);
+    return id;
+  };
+
   const resetDemoData = () => {
     setRetailAccounts(INITIAL_RETAIL_ACCOUNTS);
     setCorporateAccounts(INITIAL_CORPORATE_ACCOUNTS);
@@ -1352,6 +1751,20 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setLoans(INITIAL_LOANS);
     setInvestments(INITIAL_INVESTMENTS);
     setBillers(INITIAL_BILLERS);
+    setBillPaymentHistory(INITIAL_BILL_PAYMENT_HISTORY);
+    setUpcomingBills(INITIAL_UPCOMING_BILLS);
+    setPrimaryAccountId('acc_ret_sav_01');
+    setDefaultDebitAccountId('acc_ret_sav_01');
+    setDefaultCardId(INITIAL_RETAIL_CARDS[0]?.id || '');
+    setHiddenAccountIds([]);
+    setPersonalInfo(INITIAL_PERSONAL_INFO);
+    setTrustedDevices(INITIAL_TRUSTED_DEVICES);
+    setActiveSessions(INITIAL_ACTIVE_SESSIONS);
+    setServiceRequests(INITIAL_SERVICE_REQUESTS);
+    setNotificationPrefs(INITIAL_NOTIFICATION_PREFS);
+    setAppPrefs(INITIAL_APP_PREFS);
+    setSecuritySettings(INITIAL_SECURITY_SETTINGS);
+    setPrivacyPrefs(INITIAL_PRIVACY_PREFS);
     addToast({
       type: 'info',
       title: 'Data Reset',
@@ -1418,6 +1831,15 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       resolveSecurityAlert,
       reportCardTransaction,
       payBiller,
+      billProviders,
+      billPaymentHistory,
+      upcomingBills,
+      fetchBill,
+      processBillPayment,
+      addSavedBiller,
+      updateSavedBiller,
+      deleteSavedBiller,
+      toggleBillerAutoPay,
       createFixedDeposit,
       createRecurringDeposit,
       closeDeposit,
@@ -1446,7 +1868,47 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       showBottomNav,
       activeDetailFlow,
       openDetailFlow,
-      closeDetailFlow
+      closeDetailFlow,
+      primaryAccountId,
+      defaultDebitAccountId,
+      defaultCardId,
+      hiddenAccountIds,
+      personalInfo,
+      kycDetails,
+      trustedDevices,
+      activeSessions,
+      loginActivity,
+      profileDocuments,
+      serviceRequests,
+      notificationPrefs,
+      appPrefs,
+      securitySettings,
+      privacyPrefs,
+      setPrimaryAccount,
+      setDefaultDebitAccount,
+      setDefaultCard,
+      updateAccountNickname,
+      toggleAccountVisibility,
+      isAccountHidden,
+      getPrimaryAccount,
+      getDefaultDebitAccount,
+      getVisibleAccounts,
+      updatePersonalInfo,
+      updateNotificationPrefs,
+      updateAppPrefs,
+      updateSecuritySettings,
+      updatePrivacyPrefs,
+      removeTrustedDevice,
+      signOutSession,
+      signOutAllOtherSessions,
+      addServiceRequest,
+      triggerSessionTimeout,
+      profileDeepLink,
+      clearProfileDeepLink,
+      favoriteServiceIds,
+      recentServiceIds,
+      toggleFavoriteService,
+      navigateService,
     }}>
       {children}
     </BankingContext.Provider>

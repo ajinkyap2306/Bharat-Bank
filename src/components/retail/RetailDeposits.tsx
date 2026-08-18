@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useBanking } from '../../context/BankingContext';
-import { Header } from '../common/Header';
+import { ScreenHeader } from '../common/ScreenHeader';
 import { FixedDeposit, RecurringDeposit } from '../../types/banking';
 import { DepositsOverview } from './deposits/DepositsOverview';
 import { OpenDepositFlow } from './deposits/OpenDepositFlow';
 import { DepositDetailsView } from './deposits/DepositDetailsView';
 
 export const RetailDeposits: React.FC = () => {
+  const { setBottomNavHidden, setRetailTab } = useBanking();
   const [activeFlow, setActiveFlow] = useState<'overview' | 'open_fd' | 'open_rd' | 'details'>('overview');
   const [selectedDeposit, setSelectedDeposit] = useState<{data: FixedDeposit | RecurringDeposit, type: 'FD' | 'RD'} | null>(null);
+
+  useEffect(() => {
+    setBottomNavHidden(activeFlow !== 'overview');
+    return () => setBottomNavHidden(false);
+  }, [activeFlow, setBottomNavHidden]);
 
   const handleOpenDeposit = (type: 'FD' | 'RD') => {
     setActiveFlow(type === 'FD' ? 'open_fd' : 'open_rd');
@@ -27,9 +33,15 @@ export const RetailDeposits: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-slate-950">
-      {activeFlow === 'overview' && <Header title="Deposits" />}
+      {activeFlow === 'overview' && (
+        <ScreenHeader
+          title="Fixed Deposits"
+          subtitle="FD & RD accounts"
+          onBack={() => setRetailTab('home')}
+        />
+      )}
       
-      <div className={`flex-1 ${activeFlow === 'overview' ? 'p-6' : ''} overflow-y-auto no-scrollbar`}>
+      <div className={`flex-1 ${activeFlow === 'overview' ? 'px-0 pt-3 pb-6' : ''} overflow-y-auto no-scrollbar`}>
         <AnimatePresence mode="wait">
           {activeFlow === 'overview' && (
             <motion.div
@@ -37,6 +49,7 @@ export const RetailDeposits: React.FC = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
+              className="px-4"
             >
               <DepositsOverview 
                 onOpenDeposit={handleOpenDeposit}

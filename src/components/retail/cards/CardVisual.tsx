@@ -56,7 +56,7 @@ export const CardVisual: React.FC<CardVisualProps> = ({
       return 'linear-gradient(135deg, #064E3B 0%, #047857 50%, #065F46 100%)';
     }
     if (card.tier === 'Platinum') {
-      return 'linear-gradient(135deg, #0B5CAB 0%, #1D4ED8 50%, #172554 100%)';
+      return 'linear-gradient(135deg, #005dd4 0%, #0076ff 50%, #024491 100%)';
     }
     return 'linear-gradient(135deg, #0369A1 0%, #0284C7 50%, #0C4A6E 100%)';
   };
