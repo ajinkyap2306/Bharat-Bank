@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  X, 
-  ChevronLeft, 
   AlertCircle, 
   Calendar, 
   FileText, 
@@ -16,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
 import { InsurancePolicy } from '../../../types/banking';
+import { ScreenHeader } from '../../common/ScreenHeader';
 
 interface InsuranceClaimFlowProps {
   policy: InsurancePolicy;
@@ -60,26 +59,19 @@ export const InsuranceClaimFlow: React.FC<InsuranceClaimFlowProps> = ({ policy, 
     ? ['Accident', 'Theft', 'Third Party Liability', 'Natural Calamity']
     : ['Natural Death', 'Accidental Death', 'Terminal Illness'];
 
+  const handleHeaderBack = () => {
+    if (step === 'type' || step === 'success') onClose();
+    else handleBack();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 bg-white dark:bg-slate-950 flex flex-col h-full overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
-        <div className="flex items-center gap-3">
-          {step !== 'type' && step !== 'success' && (
-            <button onClick={handleBack} className="p-2 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-              <ChevronLeft className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-            </button>
-          )}
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-            {step === 'success' ? 'Claim Raised' : 'Raise Insurance Claim'}
-          </h2>
-        </div>
-        {step !== 'success' && (
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-            <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-          </button>
-        )}
-      </div>
+    <div className="fixed inset-0 z-50 bg-slate-50 dark:bg-slate-950 flex flex-col h-full overflow-hidden">
+      <ScreenHeader
+        edgeToEdge={false}
+        title={step === 'success' ? 'Claim Raised' : 'Raise Insurance Claim'}
+        subtitle={step !== 'success' ? policy.planName : undefined}
+        onBack={handleHeaderBack}
+      />
 
       {/* Progress Bar */}
       {step !== 'success' && (
@@ -228,7 +220,7 @@ export const InsuranceClaimFlow: React.FC<InsuranceClaimFlowProps> = ({ policy, 
               animate={{ opacity: 1, scale: 1 }}
               className="space-y-6"
             >
-              <div className="p-6 rounded-[32px] bg-slate-900 text-white space-y-6">
+              <div className="p-6 rounded-4xl bg-slate-900 text-white space-y-6">
                 <div className="flex justify-between items-center pb-4 border-b border-white/10">
                   <div>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Claim Amount</p>
@@ -276,7 +268,7 @@ export const InsuranceClaimFlow: React.FC<InsuranceClaimFlowProps> = ({ policy, 
 
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-slate-900 dark:text-white">Claim Submitted</h3>
-                <p className="text-sm text-slate-500 max-w-[280px] mx-auto leading-relaxed">
+                <p className="text-sm text-slate-500 max-w-70 mx-auto leading-relaxed">
                   Your claim has been registered and assigned a unique Reference Number for tracking.
                 </p>
               </div>

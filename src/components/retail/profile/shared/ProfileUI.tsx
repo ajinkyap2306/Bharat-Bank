@@ -11,7 +11,7 @@ export const ProfileLayout: React.FC<{
   rightAction?: React.ReactNode;
   footer?: React.ReactNode;
 }> = ({ title, subtitle, onBack, children, rightAction, footer }) => (
-  <div className="pb-6 max-w-lg mx-auto">
+  <div className="pb-6">
     <ScreenHeader title={title} subtitle={subtitle} onBack={onBack} rightAction={rightAction} />
     <div className="pt-3 space-y-4">{children}</div>
     {footer}
@@ -161,7 +161,7 @@ export const StickyCTA: React.FC<{
   variant?: 'primary' | 'danger';
   disabled?: boolean;
 }> = ({ label, onClick, variant = 'primary', disabled }) => (
-  <div className="fixed bottom-0 left-0 right-0 z-30 p-4 bg-linear-to-t from-slate-50 via-slate-50/95 to-transparent dark:from-slate-950 dark:via-slate-950/95 pb-safe max-w-lg mx-auto">
+  <div className="fixed bottom-0 left-0 right-0 z-30 px-3 pb-4 pt-2 bg-linear-to-t from-slate-50 via-slate-50/95 to-transparent dark:from-slate-950 dark:via-slate-950/95 pb-safe">
     <button
       type="button"
       disabled={disabled}

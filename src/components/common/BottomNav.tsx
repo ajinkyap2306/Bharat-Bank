@@ -33,7 +33,7 @@ export const BottomNav: React.FC = () => {
   const pendingApprovalsCount = approvals.filter(a => a.status === 'pending').length;
 
   const isRetailNativeScreen =
-    bankingType === 'retail' && ['loans', 'deposits', 'cards'].includes(retailTab);
+    bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance'].includes(retailTab);
 
   const isVisible =
     isAuthenticated &&
@@ -96,7 +96,7 @@ export const BottomNav: React.FC = () => {
             <button
               onClick={() => setRetailTab('services')}
               className={`${RETAIL_NAV_ITEM} ${
-                retailTab === 'services' || retailTab === 'cards' || retailTab === 'bills' || retailTab === 'deposits' || retailTab === 'loans' || retailTab === 'investments'
+                retailTab === 'services' || retailTab === 'cards' || retailTab === 'bills' || retailTab === 'deposits' || retailTab === 'loans' || retailTab === 'investments' || retailTab === 'insurance'
                   ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold' 
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
               }`}

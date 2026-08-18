@@ -42,7 +42,7 @@ export const ProfileHome: React.FC<ProfileHomeProps> = ({ onNavigate, onLogout }
   const linkedCount = accounts.filter((a) => ['Savings', 'Current'].includes(a.accountType)).length;
 
   return (
-    <div className="pt-1 pb-24 max-w-lg mx-auto space-y-5">
+    <div className="pt-1 pb-24 space-y-5">
       {/* Header Card */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}

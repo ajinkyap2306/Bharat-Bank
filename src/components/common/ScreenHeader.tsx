@@ -6,6 +6,7 @@ interface ScreenHeaderProps {
   onBack: () => void;
   subtitle?: string;
   rightAction?: React.ReactNode;
+  edgeToEdge?: boolean;
 }
 
 export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
@@ -13,9 +14,10 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   onBack,
   subtitle,
   rightAction,
+  edgeToEdge = true,
 }) => {
   return (
-    <div className="sticky top-0 z-20 -mx-4 px-4 py-2.5 safe-top bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 flex items-center gap-2.5">
+    <div className={`sticky top-0 z-20 ${edgeToEdge ? '-mx-3 px-3' : 'px-3'} py-2.5 safe-top bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 flex items-center gap-2.5`}>
       <button
         type="button"
         onClick={onBack}

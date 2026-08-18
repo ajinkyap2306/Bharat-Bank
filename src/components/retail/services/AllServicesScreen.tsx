@@ -6,7 +6,7 @@ import {
   getServiceById,
   DEFAULT_RECENT_SERVICE_IDS,
 } from '../../../data/servicesCatalog';
-import { ServiceCard, SectionLabel, ContextAlertCard, ServiceIcon } from './shared/ServiceUI';
+import { ServiceGridItem, ServiceSectionCard, ContextAlertCard } from './shared/ServiceUI';
 import { ServiceItem } from '../../../types/services';
 
 interface AllServicesScreenProps {
@@ -45,7 +45,7 @@ export const AllServicesScreen: React.FC<AllServicesScreenProps> = ({
   const renewingPolicy = insurancePolicies.find((p) => p.status === 'active');
 
   return (
-    <div className="pt-1 pb-24 max-w-lg mx-auto bg-[#F7F9FC] dark:bg-slate-950 min-h-full px-4">
+    <div className="pt-1 pb-24 min-h-full -mx-3 px-3 bg-[#F7F9FC] dark:bg-slate-950">
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
@@ -114,65 +114,52 @@ export const AllServicesScreen: React.FC<AllServicesScreenProps> = ({
 
       {/* Recently Used */}
       {recentServices.length > 0 && (
-        <div className="mb-4">
-          <SectionLabel title="Recently Used" />
-          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1 pb-1">
-            {recentServices.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => onSelectService(s)}
-                className="shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs min-h-11"
-              >
-                <ServiceIcon name={s.icon} className="w-4 h-4 text-congress-blue-700" />
-                <span className="text-xs font-semibold text-[#111827] dark:text-white whitespace-nowrap">{s.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+        <ServiceSectionCard title="Recently Used" count={recentServices.slice(0, 4).length}>
+          {recentServices.slice(0, 4).map((s) => (
+            <ServiceGridItem
+              key={s.id}
+              name={s.name}
+              icon={s.icon}
+              badge={s.badge}
+              onClick={() => onSelectService(s)}
+            />
+          ))}
+        </ServiceSectionCard>
       )}
 
       {/* Favorites */}
       {favoriteServices.length > 0 && (
-        <div className="mb-4">
-          <SectionLabel title="My Services" />
-          <div className="space-y-2">
-            {favoriteServices.map((s) => (
-              <ServiceCard
-                key={s.id}
-                name={s.name}
-                description={s.description}
-                icon={s.icon}
-                badge={s.badge}
-                isFavorite
-                onToggleFavorite={() => toggleFavoriteService(s.id)}
-                onClick={() => onSelectService(s)}
-              />
-            ))}
-          </div>
-        </div>
+        <ServiceSectionCard title="My Services" count={favoriteServices.length}>
+          {favoriteServices.map((s) => (
+            <ServiceGridItem
+              key={s.id}
+              name={s.name}
+              icon={s.icon}
+              badge={s.badge}
+              isFavorite
+              onToggleFavorite={() => toggleFavoriteService(s.id)}
+              onClick={() => onSelectService(s)}
+            />
+          ))}
+        </ServiceSectionCard>
       )}
 
       {/* All categories */}
       {SERVICES_CATALOG.map((category) => (
-        <div key={category.id} className="mb-3">
-          <SectionLabel title={category.title} />
-          <div className="space-y-2">
-            {category.services.map((service) => (
-              <ServiceCard
-                key={service.id}
-                name={service.name}
-                description={service.description}
-                icon={service.icon}
-                badge={service.badge}
-                isFavorite={favoriteServiceIds.includes(service.id)}
-                onToggleFavorite={() => toggleFavoriteService(service.id)}
-                onClick={() => onSelectService(service)}
-                emergency={service.id === 'emergency-block'}
-              />
-            ))}
-          </div>
-        </div>
+        <ServiceSectionCard key={category.id} title={category.title} count={category.services.length}>
+          {category.services.map((service) => (
+            <ServiceGridItem
+              key={service.id}
+              name={service.name}
+              icon={service.icon}
+              badge={service.badge}
+              isFavorite={favoriteServiceIds.includes(service.id)}
+              onToggleFavorite={() => toggleFavoriteService(service.id)}
+              onClick={() => onSelectService(service)}
+              emergency={service.id === 'emergency-block'}
+            />
+          ))}
+        </ServiceSectionCard>
       ))}
     </div>
   );

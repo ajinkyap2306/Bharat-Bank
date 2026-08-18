@@ -46,6 +46,76 @@ export const ServiceBadgePill: React.FC<{ badge: ServiceBadge }> = ({ badge }) =
   </span>
 );
 
+export const ServiceGridItem: React.FC<{
+  name: string;
+  icon: string;
+  badge?: ServiceBadge;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
+  onClick: () => void;
+  emergency?: boolean;
+}> = ({ name, icon, badge, isFavorite, onToggleFavorite, onClick, emergency }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`relative flex flex-col items-center group text-center active:scale-95 transition-transform py-1 ${
+      emergency ? 'col-span-4 flex-row gap-3 p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50' : ''
+    }`}
+  >
+    {onToggleFavorite && (
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
+        className="absolute top-0 right-0 p-1 rounded-lg z-10"
+        aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+      >
+        <StarIcon className={`w-3 h-3 ${isFavorite ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} />
+      </button>
+    )}
+    {badge && !emergency && (
+      <span className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-orange-500 z-10" aria-hidden />
+    )}
+    <div className={`rounded-2xl flex items-center justify-center shrink-0 ${
+      emergency ? 'mb-0' : 'mb-1.5'
+    } ${
+      emergency
+        ? 'w-10 h-10 bg-rose-100 dark:bg-rose-950/50 text-rose-600'
+        : 'w-11 h-11 bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 shadow-2xs group-hover:bg-congress-blue-700 group-hover:text-white'
+    } group-hover:scale-105 transition-transform`}>
+      <ServiceIcon name={icon} className="w-5 h-5" />
+    </div>
+    <span className={`text-[10px] font-bold leading-tight line-clamp-2 w-full px-0.5 ${
+      emergency ? 'text-rose-700 dark:text-rose-300 text-left flex-1' : 'text-[#111827] dark:text-slate-200'
+    }`}>
+      {name}
+    </span>
+  </button>
+);
+
+export const ServiceSectionCard: React.FC<{
+  title: string;
+  count?: number;
+  children: React.ReactNode;
+}> = ({ title, count, children }) => (
+  <div className="mb-4">
+    <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+      <div className="flex items-center justify-between pb-3 mb-1 border-b border-slate-100 dark:border-slate-800">
+        <h3 className="text-[11px] font-bold text-[#667085] dark:text-slate-500 uppercase tracking-wider">
+          {title}
+        </h3>
+        {count !== undefined && (
+          <span className="text-[10px] font-bold px-2 py-0.5 bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 rounded-full">
+            {count}
+          </span>
+        )}
+      </div>
+      <div className="grid grid-cols-4 gap-y-4 gap-x-2 pt-1">
+        {children}
+      </div>
+    </div>
+  </div>
+);
+
 export const ServiceCard: React.FC<{
   name: string;
   description: string;

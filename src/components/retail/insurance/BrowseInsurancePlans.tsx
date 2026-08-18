@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  X, 
   Search, 
   Heart, 
   Car, 
@@ -20,6 +19,7 @@ import {
 import { useBanking } from '../../../context/BankingContext';
 import { InsurancePlan } from '../../../types/banking';
 import { SecureAuthModal } from '../../common/SecureAuthModal';
+import { ScreenHeader } from '../../common/ScreenHeader';
 
 interface BrowseInsurancePlansProps {
   onClose: () => void;
@@ -58,27 +58,30 @@ export const BrowseInsurancePlans: React.FC<BrowseInsurancePlansProps> = ({ onCl
     }
   };
 
+  const handleHeaderBack = () => {
+    if (step === 'list' || step === 'success') {
+      onClose();
+      return;
+    }
+    if (step === 'details') setStep('list');
+    else if (step === 'customize') setStep('details');
+    else if (step === 'nominee') setStep('customize');
+    else if (step === 'review') setStep('nominee');
+  };
+
+  const headerTitle =
+    step === 'list' ? 'Browse Insurance' :
+    step === 'success' ? 'Policy Issued' :
+    selectedPlan?.name ?? 'Insurance Plan';
+
   return (
-    <div className="fixed inset-0 z-50 bg-white dark:bg-slate-950 flex flex-col h-full overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
-        <div className="flex items-center gap-3">
-          {step !== 'list' && step !== 'success' && (
-            <button onClick={() => setStep(step === 'details' ? 'list' : step === 'customize' ? 'details' : step === 'nominee' ? 'customize' : 'nominee')} className="p-2 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-              <ChevronRight className="w-5 h-5 text-slate-600 dark:text-slate-400 rotate-180" />
-            </button>
-          )}
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-            {step === 'list' ? 'Browse Insurance' : 
-             step === 'success' ? 'Policy Issued' : selectedPlan?.name}
-          </h2>
-        </div>
-        {step !== 'success' && (
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-            <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-          </button>
-        )}
-      </div>
+    <div className="fixed inset-0 z-50 bg-slate-50 dark:bg-slate-950 flex flex-col h-full overflow-hidden">
+      <ScreenHeader
+        edgeToEdge={false}
+        title={headerTitle}
+        subtitle={step === 'list' ? 'Compare plans & buy online' : undefined}
+        onBack={handleHeaderBack}
+      />
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto no-scrollbar">
@@ -114,7 +117,7 @@ export const BrowseInsurancePlans: React.FC<BrowseInsurancePlansProps> = ({ onCl
                     key={plan.id}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleSelectPlan(plan)}
-                    className="p-5 rounded-[32px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4"
+                    className="p-5 rounded-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4"
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex gap-3">
@@ -256,7 +259,7 @@ export const BrowseInsurancePlans: React.FC<BrowseInsurancePlansProps> = ({ onCl
                 </div>
               </div>
 
-              <div className="p-6 rounded-[32px] bg-blue-600 text-white">
+              <div className="p-6 rounded-4xl bg-blue-600 text-white">
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-[10px] font-bold text-blue-100 uppercase tracking-widest">Monthly Premium</p>
@@ -352,7 +355,7 @@ export const BrowseInsurancePlans: React.FC<BrowseInsurancePlansProps> = ({ onCl
 
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-slate-900 dark:text-white">Policy Issued!</h3>
-                <p className="text-sm text-slate-500 max-w-[280px] mx-auto leading-relaxed">
+                <p className="text-sm text-slate-500 max-w-70 mx-auto leading-relaxed">
                   Your insurance policy has been successfully issued. Digital copy sent to your registered email.
                 </p>
               </div>

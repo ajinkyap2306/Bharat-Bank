@@ -202,7 +202,7 @@ export const RetailHome: React.FC = () => {
         </div>
 
         {/* Account Cards Horizontal Snap */}
-        <div className="flex gap-3 overflow-x-auto no-scrollbar py-1 -mx-4 px-4 snap-x">
+        <div className="flex gap-3 overflow-x-auto no-scrollbar py-1 -mx-3 px-3 snap-x">
           {visibleAccounts.map((acc) => {
             const isPrimary = acc.id === primaryAccount.id;
             const isHidden = !!hiddenAccounts[acc.id];

@@ -33,9 +33,9 @@ export const InsuranceOverview: React.FC<InsuranceOverviewProps> = ({
   const pendingClaims = insuranceClaims.filter(c => c.status !== 'settled');
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-6 pb-6">
       {/* Insurance Hero Card */}
-      <div className="p-6 rounded-[32px] bg-gradient-to-br from-blue-700 to-indigo-800 text-white shadow-xl relative overflow-hidden">
+      <div className="p-6 rounded-4xl bg-linear-to-br from-blue-700 to-indigo-800 text-white shadow-xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl" />
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12 blur-2xl" />
         
@@ -115,12 +115,12 @@ export const InsuranceOverview: React.FC<InsuranceOverviewProps> = ({
 
         <div className="space-y-3">
           {activePolicies.length === 0 ? (
-            <div className="p-8 rounded-[32px] bg-slate-50 dark:bg-slate-900/50 border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-center">
+            <div className="p-8 rounded-4xl bg-slate-50 dark:bg-slate-900/50 border border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-center">
               <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3">
                 <ShieldCheck className="w-6 h-6 text-slate-400" />
               </div>
               <h4 className="text-sm font-bold text-slate-900 dark:text-white">No active policies</h4>
-              <p className="text-xs text-slate-500 mt-1 max-w-[200px]">Secure your future with our flexible plans.</p>
+              <p className="text-xs text-slate-500 mt-1 max-w-50">Secure your future with our flexible plans.</p>
               <button 
                 onClick={onBrowsePlans}
                 className="mt-4 text-xs font-bold text-blue-600"

@@ -32,7 +32,7 @@ export const RetailDeposits: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-slate-950">
+    <div className="flex flex-col h-full -mx-3 px-3 bg-white dark:bg-slate-950 min-h-full">
       {activeFlow === 'overview' && (
         <ScreenHeader
           title="Fixed Deposits"
@@ -49,7 +49,6 @@ export const RetailDeposits: React.FC = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="px-4"
             >
               <DepositsOverview 
                 onOpenDeposit={handleOpenDeposit}

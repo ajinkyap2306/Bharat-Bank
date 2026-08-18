@@ -19,7 +19,7 @@ export const BillPaymentHome: React.FC<BillPaymentHomeProps> = ({ onNavigate, on
   const reminders = upcomingBills.filter((b) => b.dueLabel.includes('tomorrow') || b.dueLabel.includes('2 days') || b.dueLabel.includes('3 days'));
 
   return (
-    <div className="pt-1 pb-24 max-w-lg mx-auto space-y-5">
+    <div className="pt-1 pb-24 space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

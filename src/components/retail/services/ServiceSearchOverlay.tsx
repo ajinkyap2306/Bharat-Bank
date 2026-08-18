@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { Search, ChevronLeft } from 'lucide-react';
 import { ALL_SERVICES } from '../../../data/servicesCatalog';
 import { ServiceItem } from '../../../types/services';
-import { ServiceCard, SectionLabel } from './shared/ServiceUI';
+import { ServiceGridItem, ServiceSectionCard } from './shared/ServiceUI';
 
 interface ServiceSearchOverlayProps {
   onClose: () => void;
@@ -45,8 +45,8 @@ export const ServiceSearchOverlay: React.FC<ServiceSearchOverlayProps> = ({
       exit={{ opacity: 0, y: 8 }}
       className="fixed inset-0 z-50 bg-[#F7F9FC] dark:bg-slate-950 flex flex-col"
     >
-      <div className="px-4 pt-3 pb-2 safe-top border-b border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
-        <div className="flex items-center gap-2 max-w-lg mx-auto">
+      <div className="px-3 pt-3 pb-2 safe-top border-b border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={onClose}
@@ -65,10 +65,10 @@ export const ServiceSearchOverlay: React.FC<ServiceSearchOverlayProps> = ({
             />
           </div>
         </div>
-        <p className="text-xs font-bold text-[#111827] dark:text-white mt-3 max-w-lg mx-auto">Search services</p>
+        <p className="text-xs font-bold text-[#111827] dark:text-white mt-3">Search services</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-3 max-w-lg mx-auto w-full">
+      <div className="flex-1 overflow-y-auto px-3 py-3 w-full">
         {query.trim() === '' ? (
           <p className="text-sm text-[#667085] text-center py-12">Search by service name, category, or keyword</p>
         ) : results.length === 0 ? (
@@ -78,22 +78,18 @@ export const ServiceSearchOverlay: React.FC<ServiceSearchOverlayProps> = ({
           </div>
         ) : (
           Array.from(grouped.entries()).map(([category, items]) => (
-            <div key={category} className="mb-4">
-              <SectionLabel title={category} />
-              <div className="space-y-2">
-                {items.map((s) => (
-                  <ServiceCard
-                    key={s.id}
-                    name={s.name}
-                    description={s.description}
-                    icon={s.icon}
-                    badge={s.badge}
-                    onClick={() => onSelectService(s)}
-                    emergency={s.id === 'emergency-block'}
-                  />
-                ))}
-              </div>
-            </div>
+            <ServiceSectionCard key={category} title={category} count={items.length}>
+              {items.map((s) => (
+                <ServiceGridItem
+                  key={s.id}
+                  name={s.name}
+                  icon={s.icon}
+                  badge={s.badge}
+                  onClick={() => onSelectService(s)}
+                  emergency={s.id === 'emergency-block'}
+                />
+              ))}
+            </ServiceSectionCard>
           ))
         )}
       </div>

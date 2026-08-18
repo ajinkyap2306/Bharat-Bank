@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useBanking } from '../../context/BankingContext';
-import { Header } from '../common/Header';
+import { ScreenHeader } from '../common/ScreenHeader';
 import { InsurancePolicy } from '../../types/banking';
 import { InsuranceOverview } from './insurance/InsuranceOverview';
 import { BrowseInsurancePlans } from './insurance/BrowseInsurancePlans';
@@ -9,7 +9,7 @@ import { InsurancePolicyDetails } from './insurance/InsurancePolicyDetails';
 import { InsuranceClaimFlow } from './insurance/InsuranceClaimFlow';
 
 export const RetailInsurance: React.FC = () => {
-  const { setBottomNavHidden } = useBanking();
+  const { setBottomNavHidden, setRetailTab } = useBanking();
   const [activeFlow, setActiveFlow] = useState<'overview' | 'browse' | 'details' | 'claim'>('overview');
   const [selectedPolicy, setSelectedPolicy] = useState<InsurancePolicy | null>(null);
 
@@ -38,10 +38,16 @@ export const RetailInsurance: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-slate-950">
-      {activeFlow === 'overview' && <Header title="Insurance" />}
-      
-      <div className={`flex-1 ${activeFlow === 'overview' ? 'p-6' : ''} overflow-y-auto no-scrollbar`}>
+    <div className="flex flex-col h-full -mx-3 px-3 bg-white dark:bg-slate-950 min-h-full">
+      {activeFlow === 'overview' && (
+        <ScreenHeader
+          title="Insurance"
+          subtitle="Policies, claims & renewals"
+          onBack={() => setRetailTab('home')}
+        />
+      )}
+
+      <div className={`flex-1 ${activeFlow === 'overview' ? 'px-0 pt-3 pb-6' : ''} overflow-y-auto no-scrollbar`}>
         <AnimatePresence mode="wait">
           {activeFlow === 'overview' && (
             <motion.div

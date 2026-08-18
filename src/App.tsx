@@ -50,7 +50,7 @@ const BankingAppContent: React.FC = () => {
   const showGlobalHeader = (isRetailHome || isCorporateHome) && !isScannerOpen;
 
   const isRetailNativeScreen =
-    bankingType === 'retail' && ['loans', 'deposits', 'cards'].includes(retailTab);
+    bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance'].includes(retailTab);
 
   const showBottomNav =
     !isScannerOpen &&
@@ -72,7 +72,7 @@ const BankingAppContent: React.FC = () => {
       {showGlobalHeader && <Header />}
 
       <main
-        className={`flex-1 w-full overflow-y-auto no-scrollbar px-4 ${
+        className={`flex-1 w-full overflow-y-auto no-scrollbar px-3 ${
           showGlobalHeader ? 'pt-17' : 'pt-0'
         } ${showBottomNav ? 'pb-24' : 'pb-4'}`}
       >

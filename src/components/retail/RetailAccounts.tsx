@@ -80,7 +80,7 @@ export const RetailAccounts: React.FC = () => {
   return (
     <div className="space-y-5 pb-6">
       {/* Account Selector Tabs */}
-      <div className="flex gap-2 overflow-x-auto no-scrollbar py-1 -mx-4 px-4">
+      <div className="flex gap-2 overflow-x-auto no-scrollbar py-1 -mx-3 px-3">
         {accounts.map(acc => {
           const isSelected = acc.id === selectedAccount.id;
           return (
@@ -100,7 +100,7 @@ export const RetailAccounts: React.FC = () => {
       </div>
 
       {/* Selected Account Details Card */}
-      <div className="p-5 rounded-3xl bg-gradient-to-tr from-slate-900 via-slate-800 to-slate-900 text-white border border-slate-700/80 shadow-xl">
+      <div className="p-5 rounded-3xl bg-linear-to-tr from-slate-900 via-slate-800 to-slate-900 text-white border border-slate-700/80 shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <div>
             <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
