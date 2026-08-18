@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --color-primary: #0B5CAB;
+    --color-secondary: #0F766E;
+    --color-bg: #F8FAFC;
+    --color-surface: #FFFFFF;
+    --color-text-primary: #0F172A;
+    --color-text-secondary: #64748B;
+  }
+
+  .dark {
+    --color-bg: #090D16;
+    --color-surface: #111827;
+    --color-text-primary: #F8FAFC;
+    --color-text-secondary: #94A3B8;
+  }
+
+  /* Remove default tap highlight on mobile devices */
+  * {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  input, textarea {
+    user-select: text;
+  }
+}
+
+/* Custom mobile scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* iOS Safe Area padding */
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Pulse shimmer for native skeleton loaders */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+.dark .animate-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}

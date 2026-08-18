@@ -1,0 +1,10 @@
+{
+  "name": "Remix Apex Unified Banking",
+  "description": "Unified Retail and Corporate Mobile Banking platform with seamless authentication, account management, maker-checker approvals, fund transfers, and financial services.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
