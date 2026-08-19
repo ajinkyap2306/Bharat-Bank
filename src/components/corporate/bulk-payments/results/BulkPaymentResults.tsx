@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useBulkBatchId } from '../../../../utils/bulkPaymentRoutes';
 import { useBanking } from '../../../../context/BankingContext';
 import { fetchBulkPaymentResults } from '../../../../data/corporateBulkPaymentResultsMock';
 import type {
@@ -25,7 +26,7 @@ const statusTone: Record<BulkPaymentResultStatus, string> = {
 };
 
 export const BulkPaymentResults: React.FC = () => {
-  const { batchId = '' } = useParams<{ batchId: string }>();
+  const batchId = useBulkBatchId();
   const navigate = useNavigate();
   const { addToast, setBottomNavHidden, openDetailFlow, closeDetailFlow } = useBanking();
 

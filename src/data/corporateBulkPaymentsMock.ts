@@ -15,7 +15,7 @@ export const BULK_ACCOUNTS: BulkPaymentAccount[] = [
     id: 'acc_corp_op_01',
     name: 'Operating Account',
     maskedNumber: '•••• 4582',
-    availableBalance: 1245000,
+    availableBalance: 5000000,
     currency: '₹',
     bulkEligible: true,
   },

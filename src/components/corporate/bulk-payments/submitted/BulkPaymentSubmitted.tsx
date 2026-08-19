@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useBulkBatchId } from '../../../../utils/bulkPaymentRoutes';
 import { useBanking } from '../../../../context/BankingContext';
 import { fetchBatchTracking } from '../../../../data/corporateBulkBatchStatusMock';
 import type { BulkBatchTrackingData } from '../../../../types/corporateBulkBatchStatus';
@@ -21,7 +22,7 @@ import { BatchStatusMoreSheet } from './BatchStatusMoreSheet';
 const SUBMISSION_TOAST_KEY = 'bulkSubmissionToastShown';
 
 export const BulkPaymentSubmitted: React.FC = () => {
-  const { batchId = '' } = useParams<{ batchId: string }>();
+  const batchId = useBulkBatchId();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { addToast, setBottomNavHidden, openDetailFlow, closeDetailFlow, corporateSession } = useBanking();
@@ -153,33 +154,6 @@ export const BulkPaymentSubmitted: React.FC = () => {
     setPullDistance(0);
   };
 
-  const showSuccessHero =
-    (data.status === 'pending_approval' && !variant) || data.status === 'completed';
-  const showStickyCta =
-    data &&
-    (data.status === 'pending_approval' ||
-      data.status === 'processing' ||
-      data.status === 'rejected' ||
-      data.status === 'returned' ||
-      data.status === 'partially_completed');
-
-  const stickyLabel = (() => {
-    if (!data) return '';
-    if (data.viewerRole === 'checker' && data.status === 'pending_approval') return 'Review Batch';
-    if (data.status === 'processing') return 'View Batch Details';
-    if (data.status === 'rejected' || data.status === 'returned') return 'View Batch Details';
-    if (data.status === 'partially_completed') return 'View Payment Results';
-    return 'View Approval Status';
-  })();
-
-  const stickyAction = () => {
-    if (!data) return;
-    if (data.status === 'partially_completed') handleViewResults();
-    else if (data.status === 'processing' || data.status === 'rejected' || data.status === 'returned')
-      handleViewDetails();
-    else handleViewApproval();
-  };
-
   if (loading && !data) {
     return (
       <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] -mx-3">
@@ -201,6 +175,30 @@ export const BulkPaymentSubmitted: React.FC = () => {
       </div>
     );
   }
+
+  const showSuccessHero =
+    (data.status === 'pending_approval' && !variant) || data.status === 'completed';
+  const showStickyCta =
+    data.status === 'pending_approval' ||
+    data.status === 'processing' ||
+    data.status === 'rejected' ||
+    data.status === 'returned' ||
+    data.status === 'partially_completed';
+
+  const stickyLabel = (() => {
+    if (data.viewerRole === 'checker' && data.status === 'pending_approval') return 'Review Batch';
+    if (data.status === 'processing') return 'View Batch Details';
+    if (data.status === 'rejected' || data.status === 'returned') return 'View Batch Details';
+    if (data.status === 'partially_completed') return 'View Payment Results';
+    return 'View Approval Status';
+  })();
+
+  const stickyAction = () => {
+    if (data.status === 'partially_completed') handleViewResults();
+    else if (data.status === 'processing' || data.status === 'rejected' || data.status === 'returned')
+      handleViewDetails();
+    else handleViewApproval();
+  };
 
   return (
     <div

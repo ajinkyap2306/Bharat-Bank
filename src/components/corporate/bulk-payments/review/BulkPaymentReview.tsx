@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useBulkBatchId } from '../../../../utils/bulkPaymentRoutes';
 import { useBanking } from '../../../../context/BankingContext';
 import { clonePreferences } from '../../../../data/corporateAccountPreferencesMock';
 import {
@@ -31,7 +32,7 @@ import { SubmitErrorState } from './SubmitErrorState';
 import { HighValueBatchWarning } from './HighValueBatchWarning';
 
 export const BulkPaymentReview: React.FC = () => {
-  const { batchId = '' } = useParams<{ batchId: string }>();
+  const batchId = useBulkBatchId();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { addToast, setBottomNavHidden, openDetailFlow, closeDetailFlow } = useBanking();

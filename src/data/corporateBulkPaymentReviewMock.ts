@@ -8,7 +8,7 @@ import {
 import { saveBatchSubmission } from './corporateBulkBatchStatusMock';
 
 const HIGH_VALUE_THRESHOLD = 10_000_000;
-const REVIEW_ACCOUNT_BALANCE = 2_500_000;
+const REVIEW_ACCOUNT_BALANCE = 5_000_000;
 
 export function createReadyForReviewBatch(): BulkBatchReview {
   const account = BULK_ACCOUNTS[0];
@@ -176,8 +176,11 @@ export function getBatchReviewData(batchId: string, variant?: string | null): Bu
     return { ...base, totalAmount: 12_000_000, fee: 5000, totalDebit: 12_005_000, isHighValue: true };
   }
 
+  const resolvedBatchId =
+    batchId || loadBulkBatchDraft()?.id || 'batch_aug_vendor_01';
+
   const draft = loadBulkBatchDraft();
-  if (draft && draft.id === batchId) {
+  if (draft && draft.id === resolvedBatchId) {
     const pendingDup = draft.duplicates.filter((d) => d.resolution === 'pending').length;
     if (draft.errorCount === 0 && pendingDup === 0 && draft.validCount > 0) {
       const ready = createReadyForReviewBatch();
@@ -195,8 +198,9 @@ export function getBatchReviewData(batchId: string, variant?: string | null): Bu
     }
   }
 
-  if (batchId === 'batch_aug_vendor_01' || batchId.startsWith('batch_')) {
-    return createReadyForReviewBatch();
+  if (resolvedBatchId === 'batch_aug_vendor_01' || resolvedBatchId.startsWith('batch_')) {
+    const ready = createReadyForReviewBatch();
+    return { ...ready, batchId: resolvedBatchId };
   }
 
   return null;

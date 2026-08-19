@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useBulkBatchId } from '../../../../utils/bulkPaymentRoutes';
 import { useBanking } from '../../../../context/BankingContext';
 import { fetchBatchTracking } from '../../../../data/corporateBulkBatchStatusMock';
 import { fetchBulkPaymentResults } from '../../../../data/corporateBulkPaymentResultsMock';
@@ -11,7 +12,7 @@ import { BatchStatusSkeleton } from '../submitted/BatchStatusSkeleton';
 import { formatPaymentCurrency, PayCard } from '../../payments/shared/CorporatePaymentsUI';
 
 export const BulkBatchDetailsScreen: React.FC = () => {
-  const { batchId = '' } = useParams<{ batchId: string }>();
+  const batchId = useBulkBatchId();
   const navigate = useNavigate();
   const { addToast, setBottomNavHidden, openDetailFlow, closeDetailFlow, corporateSession } = useBanking();
 

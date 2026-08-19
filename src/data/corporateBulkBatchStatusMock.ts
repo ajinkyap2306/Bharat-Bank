@@ -180,7 +180,11 @@ export function getBatchTrackingData(
 
   if (batchId.startsWith('batch_') || batchId === 'BATCH-20260818-00125') {
     const data = withStatus(status, viewerRole);
-    return { ...data, batchRef: batchId.startsWith('batch_') ? batchId : data.batchRef };
+    return {
+      ...data,
+      batchId,
+      batchRef: batchId,
+    };
   }
 
   const submitted = sessionStorage.getItem(SUBMISSION_KEY);
