@@ -18,12 +18,14 @@ export type ProfileScreen =
   | 'default-debit'
   | 'account-nickname'
   | 'hide-account'
+  | 'freeze-account'
   | 'cards-payments'
   | 'default-card'
   | 'payment-preferences'
   | 'security-center'
   | 'change-password'
   | 'change-mpin'
+  | 'change-tpin'
   | 'biometric-settings'
   | 'transaction-auth'
   | 'login-activity'
@@ -41,7 +43,9 @@ export type ProfileScreen =
   | 'account-management'
   | 'account-closure'
   | 'account-closure-success'
-  | 'logout-confirm';
+  | 'logout-confirm'
+  | 'my-activity'
+  | 'transaction-limits';
 
 export interface ProfileNavigation {
   screen: ProfileScreen;

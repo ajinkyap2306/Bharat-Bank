@@ -3,7 +3,9 @@ import { RetailTab } from './banking';
 export type ServiceRoute =
   | { kind: 'tab'; tab: RetailTab }
   | { kind: 'profile'; screen: string }
+  | { kind: 'bill'; screen: string }
   | { kind: 'scanner' }
+  | { kind: 'locator'; locatorType: 'atm' | 'branch' }
   | { kind: 'toast'; title: string; message: string };
 
 export type ServiceBadge = 'Active' | 'Pending' | 'Due Soon' | 'Action Required' | 'New' | 'Available';

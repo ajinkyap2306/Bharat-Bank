@@ -4,6 +4,19 @@ const tab = (t: import('../types/banking').RetailTab) => ({ kind: 'tab' as const
 const profile = (screen: string) => ({ kind: 'profile' as const, screen });
 const toast = (title: string, message: string) => ({ kind: 'toast' as const, title, message });
 const cheque = () => ({ kind: 'tab' as const, tab: 'cheque' as const });
+const epassbook = () => ({ kind: 'tab' as const, tab: 'epassbook' as const });
+const estatement = () => ({ kind: 'tab' as const, tab: 'estatement' as const });
+const nach = () => ({ kind: 'tab' as const, tab: 'nach' as const });
+const nominee = () => ({ kind: 'tab' as const, tab: 'nominee' as const });
+const taxPayment = () => ({ kind: 'bill' as const, screen: 'tax-payment' });
+const scheduled = () => ({ kind: 'tab' as const, tab: 'scheduled' as const });
+const requestMoney = () => ({ kind: 'tab' as const, tab: 'request-money' as const });
+const openAccount = () => ({ kind: 'tab' as const, tab: 'open-account' as const });
+const cardless = () => ({ kind: 'tab' as const, tab: 'cardless' as const });
+const myActivity = () => ({ kind: 'profile' as const, screen: 'my-activity' });
+const txnLimits = () => ({ kind: 'profile' as const, screen: 'transaction-limits' });
+const atmLocator = () => ({ kind: 'locator' as const, locatorType: 'atm' as const });
+const branchLocator = () => ({ kind: 'locator' as const, locatorType: 'branch' as const });
 
 export const SERVICES_CATALOG: ServiceCategory[] = [
   {
@@ -11,7 +24,7 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
     title: 'ACCOUNT & BANKING',
     services: [
       { id: 'acc-details', name: 'Account Details', description: 'View your account information and balances.', icon: 'Wallet', keywords: ['account', 'balance', 'details'], route: tab('accounts') },
-      { id: 'open-account', name: 'Open New Account', description: 'Explore savings and current account options.', icon: 'PlusCircle', keywords: ['open', 'new account'], badge: 'Available', route: toast('Open Account', 'Account opening journey will be available shortly.') },
+      { id: 'open-account', name: 'Open New Account', description: 'Explore savings and current account options.', icon: 'PlusCircle', keywords: ['open', 'new account'], badge: 'Available', route: openAccount() },
       { id: 'linked-accounts', name: 'Manage Linked Accounts', description: 'View and manage all linked accounts.', icon: 'Link', keywords: ['linked', 'accounts'], route: profile('linked-accounts') },
       { id: 'set-primary', name: 'Set Primary Account', description: 'Choose your default account for eligible payments and transfers.', icon: 'Star', keywords: ['primary', 'default account'], route: profile('set-primary') },
       { id: 'default-debit', name: 'Default Debit Account', description: 'Set the default account for debits and bill payments.', icon: 'CreditCard', keywords: ['debit', 'default'], route: profile('default-debit') },
@@ -20,7 +33,7 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
       { id: 'update-kyc', name: 'Update KYC', description: 'Review or update your KYC information.', icon: 'ShieldCheck', keywords: ['kyc', 'verification'], route: profile('kyc-details') },
       { id: 'update-contact', name: 'Update Contact Details', description: 'Change mobile number or email address.', icon: 'Phone', keywords: ['contact', 'mobile', 'email'], route: profile('contact-details') },
       { id: 'update-address', name: 'Update Address', description: 'Update residential or mailing address.', icon: 'MapPin', keywords: ['address', 'mailing'], route: profile('edit-address') },
-      { id: 'update-nominee', name: 'Update Nominee', description: 'View, add, or amend registered nominees.', icon: 'Users', keywords: ['nominee'], route: toast('Update Nominee', 'Nominee update flow initiated with OTP verification.') },
+      { id: 'update-nominee', name: 'Update Nominee', description: 'View, add, or amend registered nominees.', icon: 'Users', keywords: ['nominee'], route: nominee() },
       { id: 'interest-cert-acct', name: 'Interest Certificate', description: 'Download interest certificates for your accounts.', icon: 'FileText', keywords: ['interest', 'certificate'], route: profile('documents') },
       { id: 'account-upgrade', name: 'Account Upgrade', description: 'Explore premium banking tiers and benefits.', icon: 'TrendingUp', keywords: ['upgrade', 'premium'], badge: 'New', route: profile('account-management') },
     ],
@@ -32,14 +45,17 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
       { id: 'fund-transfer', name: 'Fund Transfer', description: 'Transfer money securely to any account.', icon: 'SendHorizontal', keywords: ['transfer', 'neft', 'imps', 'fund'], route: tab('transfers') },
       { id: 'beneficiaries', name: 'Manage Beneficiaries', description: 'Add, edit, or remove payment beneficiaries.', icon: 'UserPlus', keywords: ['beneficiary', 'payee'], route: tab('beneficiaries') },
       { id: 'upi-qr', name: 'UPI / QR Payments', description: 'Scan and pay using UPI or QR codes.', icon: 'QrCode', keywords: ['upi', 'qr', 'scan'], route: { kind: 'scanner' } },
-      { id: 'request-money', name: 'Request Money', description: 'Request payments from contacts via UPI.', icon: 'HandCoins', keywords: ['request', 'money', 'collect'], route: toast('Request Money', 'UPI collect request feature coming soon.') },
-      { id: 'scheduled-transfer', name: 'Scheduled Transfers', description: 'Set up future-dated or recurring transfers.', icon: 'CalendarClock', keywords: ['scheduled', 'recurring', 'standing'], route: toast('Scheduled Transfers', 'Schedule a transfer from the payments module.') },
+      { id: 'request-money', name: 'Request Money', description: 'Request payments from contacts via UPI.', icon: 'HandCoins', keywords: ['request', 'money', 'collect'], route: requestMoney() },
+      { id: 'scheduled-transfer', name: 'Scheduled Transfers', description: 'Set up future-dated or recurring transfers.', icon: 'CalendarClock', keywords: ['scheduled', 'recurring', 'standing'], route: scheduled() },
       { id: 'bill-payments', name: 'Bill Payments', description: 'Pay electricity, mobile, broadband and more.', icon: 'Receipt', keywords: ['bill', 'bbps', 'utility'], route: tab('bills') },
       { id: 'mobile-recharge', name: 'Mobile Recharge', description: 'Recharge prepaid or pay postpaid bills.', icon: 'Smartphone', keywords: ['recharge', 'mobile', 'prepaid'], route: tab('bills') },
       { id: 'fastag-recharge', name: 'FASTag Recharge', description: 'Top up your FASTag wallet instantly.', icon: 'Car', keywords: ['fastag', 'toll'], route: tab('bills') },
       { id: 'autopay', name: 'AutoPay', description: 'Manage automatic bill payments.', icon: 'RefreshCw', keywords: ['autopay', 'auto pay'], route: tab('bills') },
+      { id: 'nach-mandates', name: 'NACH Mandates', description: 'View and cancel registered e-mandates.', icon: 'FileSignature', keywords: ['nach', 'mandate', 'autopay'], route: nach() },
       { id: 'payment-history', name: 'Payment History', description: 'View bill payment and transfer history.', icon: 'History', keywords: ['history', 'payments'], route: tab('bills') },
       { id: 'txn-receipts', name: 'Transaction Receipts', description: 'Download receipts for past transactions.', icon: 'Download', keywords: ['receipt', 'download'], route: tab('statements') },
+      { id: 'epassbook', name: 'ePassbook', description: 'View passbook with running balance entries.', icon: 'BookOpen', keywords: ['passbook', 'epassbook'], route: epassbook() },
+      { id: 'estatement', name: 'eStatement Request', description: 'Request, stop, and manage statement delivery.', icon: 'Mail', keywords: ['estatement', 'email statement'], route: estatement() },
     ],
   },
   {
@@ -54,9 +70,9 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
       { id: 'change-pin', name: 'Change PIN', description: 'Reset your debit or credit card PIN securely.', icon: 'KeyRound', keywords: ['pin', 'change'], route: tab('cards') },
       { id: 'block-card', name: 'Block / Unblock Card', description: 'Instantly block or unblock your card.', icon: 'Ban', keywords: ['block', 'unblock'], route: tab('cards') },
       { id: 'replace-card', name: 'Replace Card', description: 'Request a replacement for damaged or lost cards.', icon: 'RefreshCcw', keywords: ['replace', 'lost'], route: tab('cards') },
-      { id: 'atm-locator', name: 'ATM Locator', description: 'Find nearby ATMs and cash withdrawal points.', icon: 'MapPinned', keywords: ['atm', 'locator', 'nearby'], route: toast('ATM Locator', 'Showing ATMs near your location.') },
-      { id: 'branch-locator', name: 'Branch Locator', description: 'Locate branches and service centres.', icon: 'Building2', keywords: ['branch', 'locator'], route: toast('Branch Locator', 'Showing branches near you.') },
-      { id: 'cardless-cash', name: 'Cardless Cash Withdrawal', description: 'Withdraw cash without your physical card.', icon: 'Banknote', keywords: ['cardless', 'cash'], badge: 'New', route: toast('Cardless Cash', 'Generate a cardless cash withdrawal code.') },
+      { id: 'atm-locator', name: 'ATM Locator', description: 'Find nearby ATMs and cash withdrawal points.', icon: 'MapPinned', keywords: ['atm', 'locator', 'nearby'], route: atmLocator() },
+      { id: 'branch-locator', name: 'Branch Locator', description: 'Locate branches and service centres.', icon: 'Building2', keywords: ['branch', 'locator'], route: branchLocator() },
+      { id: 'cardless-cash', name: 'Cardless Cash Withdrawal', description: 'Withdraw cash without your physical card.', icon: 'Banknote', keywords: ['cardless', 'cash'], badge: 'New', route: cardless() },
     ],
   },
   {
@@ -131,7 +147,7 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
       { id: 'form-15g', name: 'Form 15G / 15H Submission', description: 'Submit eligible tax declaration forms.', icon: 'FileInput', keywords: ['15g', '15h', 'form', 'tds'], route: toast('Form 15G/15H', 'Tax declaration form submission initiated.') },
       { id: 'tds-certificate', name: 'TDS Certificate', description: 'Download TDS certificates for tax filing.', icon: 'FileText', keywords: ['tds', 'certificate', 'tax'], route: profile('documents') },
       { id: 'interest-cert-govt', name: 'Interest Certificate', description: 'Download interest earned certificates.', icon: 'FileSpreadsheet', keywords: ['interest', 'certificate'], route: profile('documents') },
-      { id: 'tax-services', name: 'Tax Services', description: 'Access tax-related banking services.', icon: 'Calculator', keywords: ['tax', 'itr'], route: toast('Tax Services', 'Tax services hub opened.') },
+      { id: 'tax-services', name: 'Tax Payment Online', description: 'Pay income tax, GST and other government dues.', icon: 'Calculator', keywords: ['tax', 'itr', 'gst'], route: taxPayment() },
       { id: 'govt-schemes', name: 'Government Scheme Information', description: 'Learn about supported government schemes.', icon: 'Info', keywords: ['government', 'scheme'], route: toast('Government Schemes', 'Scheme information catalogue opened.') },
     ],
   },
@@ -159,9 +175,9 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
       { id: 'positive-pay', name: 'Positive Pay', description: 'Register high-value cheques for added security.', icon: 'ShieldCheck', keywords: ['positive pay', 'cheque'], badge: 'New', route: cheque() },
       { id: 'cash-deposit', name: 'Cash Deposit', description: 'Find cash deposit options at branches and CDMs.', icon: 'ArrowDownToLine', keywords: ['cash', 'deposit'], route: toast('Cash Deposit', 'Nearest cash deposit points displayed.') },
       { id: 'cash-withdrawal', name: 'Cash Withdrawal', description: 'Locate ATMs and withdrawal services.', icon: 'Banknote', keywords: ['cash', 'withdrawal', 'atm'], route: toast('Cash Withdrawal', 'ATM locator opened.') },
-      { id: 'atm-locator-cash', name: 'ATM Locator', description: 'Find nearby ATMs for cash withdrawal.', icon: 'MapPinned', keywords: ['atm', 'locator'], route: toast('ATM Locator', 'Showing nearby ATMs.') },
+      { id: 'atm-locator-cash', name: 'ATM Locator', description: 'Find nearby ATMs for cash withdrawal.', icon: 'MapPinned', keywords: ['atm', 'locator'], route: atmLocator() },
       { id: 'cdm-locator', name: 'Cash Deposit Machine Locator', description: 'Find cash deposit machines near you.', icon: 'MapPin', keywords: ['cdm', 'deposit machine'], route: toast('CDM Locator', 'Showing nearby cash deposit machines.') },
-      { id: 'branch-locator-cash', name: 'Branch Locator', description: 'Find branches for cash and cheque services.', icon: 'Building2', keywords: ['branch', 'locator'], route: toast('Branch Locator', 'Showing nearby branches.') },
+      { id: 'branch-locator-cash', name: 'Branch Locator', description: 'Find branches for cash and cheque services.', icon: 'Building2', keywords: ['branch', 'locator'], route: branchLocator() },
     ],
   },
   {
@@ -183,6 +199,8 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
     title: 'SUPPORT & REQUESTS',
     services: [
       { id: 'help-support', name: 'Help & Support', description: 'Get help with your banking queries.', icon: 'Headphones', keywords: ['help', 'support'], route: profile('help-support') },
+      { id: 'my-activity', name: 'My Activity', description: 'View login, transfer and profile activity.', icon: 'Activity', keywords: ['activity', 'audit', 'history'], route: myActivity() },
+      { id: 'txn-limits', name: 'Transaction Limits', description: 'Update channel-wise daily limits.', icon: 'Gauge', keywords: ['limits', 'transaction'], route: txnLimits() },
       { id: 'faqs', name: 'FAQs', description: 'Find answers to frequently asked questions.', icon: 'HelpCircle', keywords: ['faq', 'questions'], route: profile('help-support') },
       { id: 'contact-bank', name: 'Contact Bank', description: 'Call or message customer care.', icon: 'Phone', keywords: ['contact', 'call'], route: profile('help-support') },
       { id: 'chat-support', name: 'Chat Support', description: 'Chat with our support team.', icon: 'MessageCircle', keywords: ['chat', 'support'], route: profile('help-support') },

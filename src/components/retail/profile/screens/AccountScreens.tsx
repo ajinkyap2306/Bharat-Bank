@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Wallet, Star, Eye, EyeOff, CreditCard } from 'lucide-react';
+import { Wallet, Star, Eye, EyeOff, CreditCard, Snowflake } from 'lucide-react';
 import { useBanking } from '../../../../context/BankingContext';
 import { BankAccount } from '../../../../types/banking';
 import { ProfileScreen } from '../profileTypes';
@@ -22,7 +22,9 @@ interface ScreenProps {
 }
 
 const eligibleAccounts = (accounts: BankAccount[]) =>
-  accounts.filter((a) => ['Savings', 'Current'].includes(a.accountType));
+  accounts.filter((a) =>
+    ['Savings', 'Current', 'NRE Savings', 'Overdraft', 'BDD'].includes(a.accountType)
+  );
 
 export const AccountsPreferencesScreen: React.FC<ScreenProps> = ({ onNavigate, onBack }) => (
   <ProfileLayout title="Accounts & Preferences" onBack={onBack}>
@@ -30,7 +32,8 @@ export const AccountsPreferencesScreen: React.FC<ScreenProps> = ({ onNavigate, o
       <MenuItem icon={<Wallet className="w-4 h-4" />} label="Linked Accounts" description="View and manage all accounts" onClick={() => onNavigate('linked-accounts')} />
       <MenuItem icon={<Star className="w-4 h-4" />} label="Set Primary Account" description="Default for payments & transfers" onClick={() => onNavigate('set-primary')} />
       <MenuItem icon={<CreditCard className="w-4 h-4" />} label="Default Debit Account" description="Fund transfer & bill payments" onClick={() => onNavigate('default-debit')} />
-      <MenuItem icon={<Eye className="w-4 h-4" />} label="Hide / Show Account" description="Control dashboard visibility" onClick={() => onNavigate('hide-account')} />
+      <MenuItem icon={<EyeOff className="w-4 h-4" />} label="Hide / Show Account" description="Control dashboard visibility" onClick={() => onNavigate('hide-account')} />
+      <MenuItem icon={<Snowflake className="w-4 h-4" />} label="Freeze Account" description="Block outgoing debits temporarily" onClick={() => onNavigate('freeze-account')} />
     </MenuGroup>
   </ProfileLayout>
 );
@@ -79,6 +82,7 @@ export const AccountDetailsScreen: React.FC<ScreenProps> = ({ onNavigate, onBack
         <MenuItem icon={<Star className="w-4 h-4" />} label="Set as Primary" description={account.id === primaryAccountId ? 'Currently primary' : 'Use for default payments'} onClick={() => onNavigate('set-primary', { accountId: account.id })} />
         <MenuItem icon={<Wallet className="w-4 h-4" />} label="Edit Nickname" description={account.nickname || 'Add a personal name'} onClick={() => onNavigate('account-nickname', { accountId: account.id })} />
         <MenuItem icon={<EyeOff className="w-4 h-4" />} label="Account Preferences" description="Hide from dashboard" onClick={() => onNavigate('hide-account', { accountId: account.id })} />
+        <MenuItem icon={<Snowflake className="w-4 h-4" />} label={account.status === 'frozen' ? 'Unfreeze Account' : 'Freeze Account'} description={account.status === 'frozen' ? 'Restore debits' : 'Block outgoing debits'} onClick={() => onNavigate('freeze-account', { accountId: account.id })} />
       </MenuGroup>
     </ProfileLayout>
   );
@@ -295,6 +299,73 @@ export const HideAccountScreen: React.FC<ScreenProps> = ({ onNavigate, onBack, p
         </button>
       </BottomSheet>
     </>
+  );
+};
+
+export const FreezeAccountScreen: React.FC<ScreenProps> = ({ onBack, params }) => {
+  const { accounts, freezeAccount, unfreezeAccount } = useBanking();
+  const linked = eligibleAccounts(accounts);
+  const [selectedId, setSelectedId] = useState(params?.accountId || linked[0]?.id || '');
+  const [showAuth, setShowAuth] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const selected = linked.find((a) => a.id === selectedId);
+  const isFrozen = selected?.status === 'frozen';
+
+  if (done) {
+    return (
+      <SuccessState
+        title={isFrozen ? 'Account Frozen' : 'Account Unfrozen'}
+        message={
+          isFrozen
+            ? 'Outgoing debits are blocked. Credits will still be accepted.'
+            : 'Your account is fully operational again.'
+        }
+        actionLabel="Done"
+        onAction={onBack}
+      />
+    );
+  }
+
+  return (
+    <ProfileLayout
+      title={isFrozen ? 'Unfreeze Account' : 'Freeze Account'}
+      subtitle="Temporarily block outgoing debits for security"
+      onBack={onBack}
+    >
+      <InfoCard className="space-y-3">
+        <p className="text-xs text-slate-500 leading-relaxed">
+          Freezing blocks transfers, bill payments, and cheques from this account. You can unfreeze anytime with MPIN authentication.
+        </p>
+        <select
+          value={selectedId}
+          onChange={(e) => setSelectedId(e.target.value)}
+          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm bg-white dark:bg-slate-900"
+        >
+          {linked.map((acc) => (
+            <option key={acc.id} value={acc.id}>
+              {acc.accountType} {acc.maskedNumber} {acc.status === 'frozen' ? '(Frozen)' : ''}
+            </option>
+          ))}
+        </select>
+      </InfoCard>
+      <StickyCTA
+        label={isFrozen ? 'Unfreeze Account' : 'Freeze Account'}
+        onClick={() => setShowAuth(true)}
+      />
+      <SecureAuthModal
+        isOpen={showAuth}
+        onClose={() => setShowAuth(false)}
+        onSuccess={() => {
+          if (!selectedId) return;
+          if (isFrozen) unfreezeAccount(selectedId);
+          else freezeAccount(selectedId);
+          setShowAuth(false);
+          setDone(true);
+        }}
+        title="Authenticate account change"
+      />
+    </ProfileLayout>
   );
 };
 

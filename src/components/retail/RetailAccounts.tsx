@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { BankAccount, Transaction } from '../../types/banking';
+import { MiniStatementSheet } from '../common/MiniStatementSheet';
 
 export const RetailAccounts: React.FC = () => {
   const { accounts, transactions, addToast, setBottomNavHidden } = useBanking();
@@ -34,17 +35,18 @@ export const RetailAccounts: React.FC = () => {
   const [selectedTxn, setSelectedTxn] = useState<Transaction | null>(null);
   const [showStatementModal, setShowStatementModal] = useState(false);
   const [showAccountDetailsModal, setShowAccountDetailsModal] = useState(false);
+  const [showMiniStatement, setShowMiniStatement] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
 
   // Bottom Navigation visibility: HIDDEN during Account Details, Transaction Details, or Statement flow
   useEffect(() => {
-    if (selectedTxn || showStatementModal || showAccountDetailsModal) {
+    if (selectedTxn || showStatementModal || showAccountDetailsModal || showMiniStatement) {
       setBottomNavHidden(true);
     } else {
       setBottomNavHidden(false);
     }
     return () => setBottomNavHidden(false);
-  }, [selectedTxn, showStatementModal, showAccountDetailsModal, setBottomNavHidden]);
+  }, [selectedTxn, showStatementModal, showAccountDetailsModal, showMiniStatement, setBottomNavHidden]);
 
   const filteredTransactions = transactions.filter(t => {
     const matchesSearch = t.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -106,6 +108,11 @@ export const RetailAccounts: React.FC = () => {
             <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
               {selectedAccount.nickname || `${selectedAccount.accountType} Account`}
             </span>
+            {selectedAccount.status === 'frozen' && (
+              <span className="ml-2 text-[9px] uppercase font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                Frozen
+              </span>
+            )}
             <p className="text-xs text-slate-400 font-mono mt-1">{selectedAccount.maskedNumber}</p>
           </div>
           <button
@@ -177,6 +184,12 @@ export const RetailAccounts: React.FC = () => {
           <p className="text-[11px] text-slate-400">Official digitally signed bank statement</p>
         </div>
         <div className="flex gap-1.5">
+          <button
+            onClick={() => setShowMiniStatement(true)}
+            className="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1 transition-all"
+          >
+            <Layers className="w-3.5 h-3.5" /> Mini
+          </button>
           <button
             onClick={() => handleExportStatement('PDF')}
             disabled={isExporting}
@@ -365,6 +378,13 @@ export const RetailAccounts: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      <MiniStatementSheet
+        isOpen={showMiniStatement}
+        onClose={() => setShowMiniStatement(false)}
+        account={selectedAccount}
+        transactions={transactions}
+      />
     </div>
   );
 };

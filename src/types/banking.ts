@@ -25,7 +25,16 @@ export type RetailTab =
   | 'beneficiaries'
   | 'statements'
   | 'profile'
-  | 'cheque';
+  | 'cheque'
+  | 'epassbook'
+  | 'estatement'
+  | 'locator'
+  | 'nach'
+  | 'nominee'
+  | 'scheduled'
+  | 'request-money'
+  | 'open-account'
+  | 'cardless';
 
 export type CorporateTab = 
   | 'home'
@@ -63,7 +72,7 @@ export interface BankAccount {
   id: string;
   accountNumber: string;
   maskedNumber: string;
-  accountType: 'Savings' | 'Current' | 'Fixed Deposit' | 'Salary' | 'Operating' | 'Escrow' | 'Payroll' | 'Collection' | 'Forex';
+  accountType: 'Savings' | 'Current' | 'Fixed Deposit' | 'Salary' | 'NRE Savings' | 'Overdraft' | 'BDD' | 'Operating' | 'Escrow' | 'Payroll' | 'Collection' | 'Forex';
   balance: number;
   availableBalance: number;
   currency: string;
@@ -73,6 +82,12 @@ export interface BankAccount {
   status: 'active' | 'frozen' | 'dormant';
   interestRate?: number;
   holdAmount?: number;
+  nominees?: {
+    name: string;
+    relationship: string;
+    allocation: number;
+    dateOfBirth?: string;
+  }[];
 }
 
 export interface Transaction {
@@ -90,6 +105,15 @@ export interface Transaction {
   remarks?: string;
   receiptUrl?: string;
   balanceAfter?: number;
+}
+
+export interface TransferRepeatPayload {
+  beneficiaryName: string;
+  beneficiaryAccount?: string;
+  bankName?: string;
+  amount: number;
+  mode: Transaction['paymentMode'];
+  remarks?: string;
 }
 
 export interface Beneficiary {

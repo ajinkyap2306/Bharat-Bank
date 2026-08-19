@@ -20,6 +20,7 @@ import {
 import { useBanking } from '../../context/BankingContext';
 import { Beneficiary, BankAccount, Transaction } from '../../types/banking';
 import { NumericPinInput } from '../common/NumericPinInput';
+import { MOBILE_PAY_CONTACTS } from '../../data/level3Mock';
 
 export const RetailTransfer: React.FC = () => {
   const { 
@@ -31,6 +32,9 @@ export const RetailTransfer: React.FC = () => {
     setBottomNavHidden,
     getDefaultDebitAccount,
     defaultDebitAccountId,
+    lookupBanlName,
+    transferRepeat,
+    clearTransferRepeat,
   } = useBanking();
 
   const defaultDebit = getDefaultDebitAccount();
@@ -70,6 +74,31 @@ export const RetailTransfer: React.FC = () => {
   const [newBenType, setNewBenType] = useState<'retail_internal' | 'retail_other' | 'upi'>('retail_other');
 
   const [searchBeneficiary, setSearchBeneficiary] = useState('');
+  const [banlResult, setBanlResult] = useState<ReturnType<typeof lookupBanlName> | null>(null);
+  const [banlLoading, setBanlLoading] = useState(false);
+
+  useEffect(() => {
+    if (!transferRepeat) return;
+    const match = beneficiaries.find(
+      (b) =>
+        b.name === transferRepeat.beneficiaryName ||
+        b.accountNumber === transferRepeat.beneficiaryAccount
+    );
+    if (match) {
+      setSelectedBeneficiary(match);
+      setTransferMode(
+        transferRepeat.mode === 'UPI'
+          ? 'UPI'
+          : transferRepeat.mode === 'Internal'
+            ? 'Internal'
+            : (transferRepeat.mode as 'IMPS' | 'NEFT' | 'RTGS')
+      );
+    }
+    setAmount(String(transferRepeat.amount));
+    setRemarks(transferRepeat.remarks || '');
+    setStep('enter_amount');
+    clearTransferRepeat();
+  }, [transferRepeat, beneficiaries, clearTransferRepeat]);
 
   const filteredBeneficiaries = beneficiaries.filter(b => 
     b.name.toLowerCase().includes(searchBeneficiary.toLowerCase()) ||
@@ -87,6 +116,46 @@ export const RetailTransfer: React.FC = () => {
     }
     setStep('enter_amount');
   };
+
+  const handleMobileContactPay = (contactId: string) => {
+    const contact = MOBILE_PAY_CONTACTS.find((c) => c.id === contactId);
+    if (!contact) return;
+
+    const existing = beneficiaries.find(
+      (b) => b.accountNumber === contact.accountNumber || b.phone === contact.mobile
+    );
+    if (existing) {
+      handleSelectBeneficiary(existing);
+      return;
+    }
+
+    const tempBen: Beneficiary = {
+      id: `contact_${contact.id}`,
+      name: contact.name,
+      accountNumber: contact.accountNumber,
+      maskedAccount: `•••• ${contact.accountNumber.slice(-4)}`,
+      bankName: contact.bankName,
+      ifsc: contact.ifsc,
+      type: contact.bankName.toLowerCase().includes('bharat') ? 'retail_internal' : 'retail_other',
+      transferLimit: 200000,
+      status: 'active',
+      phone: contact.mobile,
+    };
+    setSelectedBeneficiary(tempBen);
+    setTransferMode(contact.upiId ? 'UPI' : tempBen.type === 'retail_internal' ? 'Internal' : 'IMPS');
+    addToast({
+      type: 'info',
+      title: 'Contact Selected',
+      message: `Paying ${contact.name} (${contact.mobile})`,
+    });
+    setStep('enter_amount');
+  };
+
+  const filteredMobileContacts = MOBILE_PAY_CONTACTS.filter(
+    (c) =>
+      c.name.toLowerCase().includes(searchBeneficiary.toLowerCase()) ||
+      c.mobile.includes(searchBeneficiary)
+  );
 
   const handleProceedToMpin = () => {
     const numAmount = Number(amount);
@@ -115,23 +184,28 @@ export const RetailTransfer: React.FC = () => {
     setIsProcessing(true);
     setTimeout(() => {
       setIsProcessing(false);
-      const txn = executeTransfer({
-        fromAccountId: selectedDebitAccount.id,
-        beneficiaryName: selectedBeneficiary?.name || 'Payee',
-        beneficiaryAccount: selectedBeneficiary?.accountNumber || 'Acc',
-        bankName: selectedBeneficiary?.bankName || 'Bank',
-        amount: Number(amount),
-        mode: transferMode,
-        remarks: remarks || 'Fund Transfer via Bharat Corporate Banking',
-      });
-      setCompletedTxn(txn);
-      setStep('success');
+      try {
+        const txn = executeTransfer({
+          fromAccountId: selectedDebitAccount.id,
+          beneficiaryName: selectedBeneficiary?.name || 'Payee',
+          beneficiaryAccount: selectedBeneficiary?.accountNumber || 'Acc',
+          bankName: selectedBeneficiary?.bankName || 'Bank',
+          amount: Number(amount),
+          mode: transferMode,
+          remarks: remarks || 'Fund Transfer via Bharat Corporate Banking',
+        });
+        setCompletedTxn(txn);
+        setStep('success');
 
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 },
-      });
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
+      } catch {
+        setPin('');
+        setStep('enter_amount');
+      }
     }, 1000);
   }, [
     isProcessing,
@@ -148,6 +222,30 @@ export const RetailTransfer: React.FC = () => {
       submitTransfer();
     }
   }, [step, pin, isProcessing, submitTransfer]);
+
+  const handleBanlLookup = () => {
+    if (newBenType === 'upi' || newBenAccount.length < 8 || newBenIfsc.length < 11) {
+      addToast({ type: 'error', title: 'BANL', message: 'Enter valid account number and IFSC.' });
+      return;
+    }
+    setBanlLoading(true);
+    setTimeout(() => {
+      const result = lookupBanlName(newBenAccount, newBenIfsc);
+      setBanlResult(result);
+      if (result.matchStatus === 'matched' || result.matchStatus === 'partial') {
+        setNewBenName(result.accountHolderName);
+        setNewBenBank(result.bankName);
+        addToast({
+          type: 'success',
+          title: 'BANL Verified',
+          message: `Account name: ${result.accountHolderName}`,
+        });
+      } else {
+        addToast({ type: 'error', title: 'BANL Failed', message: 'Could not verify beneficiary name.' });
+      }
+      setBanlLoading(false);
+    }, 900);
+  };
 
   const handleCreateBeneficiary = (e: React.FormEvent) => {
     e.preventDefault();
@@ -251,6 +349,31 @@ export const RetailTransfer: React.FC = () => {
               ))}
             </div>
           </div>
+
+          {/* Pay via Mobile Contact */}
+          {filteredMobileContacts.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1 flex items-center gap-1.5">
+                <Smartphone className="w-3.5 h-3.5" /> Pay via Contact
+              </h4>
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                {filteredMobileContacts.map((contact) => (
+                  <button
+                    key={contact.id}
+                    type="button"
+                    onClick={() => handleMobileContactPay(contact.id)}
+                    className="shrink-0 w-28 p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-left active:scale-95 transition-transform"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center font-bold text-sm mb-2">
+                      {contact.name.charAt(0)}
+                    </div>
+                    <p className="text-[11px] font-bold text-slate-900 dark:text-white truncate">{contact.name}</p>
+                    <p className="text-[10px] text-slate-400 font-mono">{contact.mobile}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </motion.div>
       )}
 
@@ -356,14 +479,34 @@ export const RetailTransfer: React.FC = () => {
                   <input
                     type="text"
                     value={newBenIfsc}
-                    onChange={(e) => setNewBenIfsc(e.target.value.toUpperCase())}
+                    onChange={(e) => {
+                      setNewBenIfsc(e.target.value.toUpperCase());
+                      setBanlResult(null);
+                    }}
                     placeholder="HDFC0000120"
                     className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white outline-none focus:border-blue-500 font-mono"
                     required
                   />
-                  <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1 font-semibold">
-                    <ShieldCheck className="w-3 h-3" /> Branch Verified: HDFC Bank - BKC Branch, Mumbai
-                  </p>
+                  <div className="flex items-center justify-between mt-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={handleBanlLookup}
+                      disabled={banlLoading}
+                      className="text-[10px] font-bold text-blue-600 border border-blue-200 px-2 py-1 rounded-lg"
+                    >
+                      {banlLoading ? 'Verifying…' : 'BANL Name Lookup'}
+                    </button>
+                    {banlResult && banlResult.matchStatus !== 'not_found' && (
+                      <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                        <ShieldCheck className="w-3 h-3" /> {banlResult.accountHolderName}
+                      </p>
+                    )}
+                  </div>
+                  {!banlResult && (
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Demo: 501009182901 + HDFC0000120 → Priya Sharma
+                    </p>
+                  )}
                 </div>
               </>
             )}

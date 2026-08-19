@@ -20,6 +20,7 @@ import {
 import { useBanking } from '../../../context/BankingContext';
 import { FixedDeposit, RecurringDeposit } from '../../../types/banking';
 import { BottomSheet } from '../../common/BottomSheet';
+import { SecureAuthModal } from '../../common/SecureAuthModal';
 
 interface DepositDetailsViewProps {
   deposit: FixedDeposit | RecurringDeposit;
@@ -28,10 +29,12 @@ interface DepositDetailsViewProps {
 }
 
 export const DepositDetailsView: React.FC<DepositDetailsViewProps> = ({ deposit, type, onClose }) => {
-  const { closeDeposit, updateMaturityInstruction, getDepositTransactions, addToast } = useBanking();
+  const { closeDeposit, updateMaturityInstruction, getDepositTransactions, addToast, payRdInstallment, getDefaultDebitAccount } = useBanking();
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [isClosureConfirmOpen, setIsClosureConfirmOpen] = useState(false);
   const [isInstructionOpen, setIsInstructionOpen] = useState(false);
+  const [showRdPayAuth, setShowRdPayAuth] = useState(false);
+  const defaultDebit = getDefaultDebitAccount();
 
   const transactions = getDepositTransactions(deposit.id);
 
@@ -51,6 +54,16 @@ export const DepositDetailsView: React.FC<DepositDetailsViewProps> = ({ deposit,
   const isFD = type === 'FD';
   const fd = deposit as FixedDeposit;
   const rd = deposit as RecurringDeposit;
+
+  const handleDownloadAdvice = () => {
+    const num = isFD ? fd.fdNumber : rd.rdNumber;
+    addToast({
+      type: 'success',
+      title: 'Deposit Advice Downloaded',
+      message: `${type} advice for ${num} saved as PDF.`,
+    });
+    setIsOptionsOpen(false);
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-white dark:bg-slate-950 flex flex-col h-full overflow-hidden">
@@ -152,6 +165,20 @@ export const DepositDetailsView: React.FC<DepositDetailsViewProps> = ({ deposit,
               <ChevronRight className="w-4 h-4 text-slate-300" />
             </div>
           )}
+
+          {!isFD && (
+            <div className="flex items-center gap-4 p-5 rounded-[28px] bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20">
+              <div className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center shrink-0">
+                <Calendar className="w-5 h-5 text-amber-600" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white">Next RD Installment</h4>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  ₹{rd.monthlyAmount.toLocaleString('en-IN')} due {rd.nextInstallmentDate}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Transaction History */}
@@ -199,11 +226,23 @@ export const DepositDetailsView: React.FC<DepositDetailsViewProps> = ({ deposit,
       {/* Quick Actions Footer */}
       <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md absolute bottom-0 left-0 right-0">
         <div className="flex gap-3">
-          <button 
-            className="flex-1 py-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold rounded-2xl flex items-center justify-center gap-2"
-          >
-            <Download className="w-4 h-4" /> Statement
-          </button>
+          {!isFD ? (
+            <button
+              type="button"
+              onClick={() => setShowRdPayAuth(true)}
+              className="flex-1 py-4 bg-blue-600 text-white font-bold rounded-2xl flex items-center justify-center gap-2"
+            >
+              Pay ₹{rd.monthlyAmount.toLocaleString('en-IN')} Installment
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleDownloadAdvice}
+              className="flex-1 py-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold rounded-2xl flex items-center justify-center gap-2"
+            >
+              <Download className="w-4 h-4" /> Deposit Advice
+            </button>
+          )}
           <button 
             onClick={() => setIsClosureConfirmOpen(true)}
             className="flex-1 py-4 bg-red-50 dark:bg-red-950/30 text-red-600 font-bold rounded-2xl flex items-center justify-center gap-2"
@@ -220,7 +259,7 @@ export const DepositDetailsView: React.FC<DepositDetailsViewProps> = ({ deposit,
         title="Deposit Options"
       >
         <div className="space-y-2 p-2">
-          <button className="w-full p-4 flex items-center gap-4 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
+          <button type="button" onClick={handleDownloadAdvice} className="w-full p-4 flex items-center gap-4 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
             <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">
               <Download className="w-5 h-5" />
             </div>
@@ -335,6 +374,16 @@ export const DepositDetailsView: React.FC<DepositDetailsViewProps> = ({ deposit,
           ))}
         </div>
       </BottomSheet>
+
+      <SecureAuthModal
+        isOpen={showRdPayAuth}
+        onClose={() => setShowRdPayAuth(false)}
+        onSuccess={() => {
+          payRdInstallment(rd.id, defaultDebit.id);
+          setShowRdPayAuth(false);
+        }}
+        title="Authenticate RD installment"
+      />
     </div>
   );
 };

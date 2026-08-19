@@ -26,7 +26,8 @@ import {
   CorporateUser, 
   SecurityLog, 
   NotificationItem,
-  Statement
+  Statement,
+  TransferRepeatPayload,
 } from '../types/banking';
 import {
   INITIAL_RETAIL_USER,
@@ -87,6 +88,30 @@ import {
   INITIAL_POSITIVE_PAY,
   generateChequeReference,
 } from '../data/chequeServicesMock';
+import {
+  EStatementSubscription,
+  INITIAL_ESTATEMENT_SUBSCRIPTIONS,
+  generateEStatementRef,
+  lookupBanl,
+  type BanlLookupResult,
+} from '../data/accountServicesMock';
+import {
+  NachMandate,
+  INITIAL_NACH_MANDATES,
+  AUTO_FAVORITE_TXN_THRESHOLD,
+} from '../data/level3Mock';
+import {
+  ScheduledTransfer,
+  MoneyRequest,
+  CardlessWithdrawal,
+  ActivityEvent,
+  RetailTransactionLimits,
+  INITIAL_SCHEDULED_TRANSFERS,
+  INITIAL_MONEY_REQUESTS,
+  INITIAL_ACTIVITY_EVENTS,
+  DEFAULT_RETAIL_LIMITS,
+  generateCardlessOtp,
+} from '../data/level4Mock';
 import {
   PersonalInfo,
   KycDetails,
@@ -186,6 +211,15 @@ interface BankingContextType {
   issuedCheques: ChequeRecord[];
   depositedCheques: ChequeRecord[];
   positivePayRegs: PositivePayRegistration[];
+  eStatementSubscriptions: EStatementSubscription[];
+  locatorType: 'atm' | 'branch';
+  transferRepeat: TransferRepeatPayload | null;
+  nachMandates: NachMandate[];
+  scheduledTransfers: ScheduledTransfer[];
+  moneyRequests: MoneyRequest[];
+  cardlessWithdrawals: CardlessWithdrawal[];
+  activityEvents: ActivityEvent[];
+  retailTransactionLimits: RetailTransactionLimits;
 
   // Action methods
   executeTransfer: (params: {
@@ -243,9 +277,49 @@ interface BankingContextType {
     issueDate: string;
   }) => string;
 
+  lookupBanlName: (accountNumber: string, ifsc: string) => BanlLookupResult;
+  requestEStatement: (params: {
+    accountId: string;
+    frequency: EStatementSubscription['frequency'];
+    format: EStatementSubscription['format'];
+    email: string;
+  }) => string;
+  stopEStatement: (subscriptionId: string) => void;
+  resumeEStatement: (subscriptionId: string) => void;
+  updateEStatementFrequency: (subscriptionId: string, frequency: EStatementSubscription['frequency']) => void;
+  freezeAccount: (accountId: string) => void;
+  unfreezeAccount: (accountId: string) => void;
+  setTransferRepeat: (payload: TransferRepeatPayload) => void;
+  clearTransferRepeat: () => void;
+  setLocatorType: (type: 'atm' | 'branch') => void;
+  deleteNachMandate: (mandateId: string) => void;
+  updateAccountNominees: (
+    accountId: string,
+    nominees: NonNullable<BankAccount['nominees']>
+  ) => void;
+  processTaxPayment: (params: {
+    accountId: string;
+    amount: number;
+    taxType: string;
+    pan: string;
+    assessmentYear: string;
+  }) => string;
+  createScheduledTransfer: (params: Omit<ScheduledTransfer, 'id' | 'status' | 'scheduledDate' | 'nextExecution'> & { frequency: ScheduledTransfer['frequency'] }) => void;
+  cancelScheduledTransfer: (id: string) => void;
+  toggleScheduledTransferPause: (id: string) => void;
+  createMoneyRequest: (params: { counterpartyName: string; counterpartyUpi: string; amount: number; note: string }) => void;
+  respondToMoneyRequest: (id: string, action: 'paid' | 'declined') => void;
+  generateCardlessWithdrawal: (accountId: string, amount: number) => { otp: string; expiresAt: string };
+  updateRetailTransactionLimits: (limits: RetailTransactionLimits) => void;
+  openRetailAccount: (type: 'savings' | 'current' | 'nre-savings', nickname?: string) => BankAccount;
+  payRdInstallment: (rdId: string, accountId: string) => void;
+  addActivityEvent: (event: Omit<ActivityEvent, 'id'>) => void;
+
   // Services navigation
   profileDeepLink: string | null;
   clearProfileDeepLink: () => void;
+  billDeepLink: string | null;
+  clearBillDeepLink: () => void;
   favoriteServiceIds: string[];
   recentServiceIds: string[];
   toggleFavoriteService: (serviceId: string) => void;
@@ -489,6 +563,17 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [issuedCheques, setIssuedCheques] = useState<ChequeRecord[]>(INITIAL_ISSUED_CHEQUES);
   const [depositedCheques, setDepositedCheques] = useState<ChequeRecord[]>(INITIAL_DEPOSITED_CHEQUES);
   const [positivePayRegs, setPositivePayRegs] = useState<PositivePayRegistration[]>(INITIAL_POSITIVE_PAY);
+  const [eStatementSubscriptions, setEStatementSubscriptions] = useState<EStatementSubscription[]>(
+    INITIAL_ESTATEMENT_SUBSCRIPTIONS
+  );
+  const [locatorType, setLocatorType] = useState<'atm' | 'branch'>('atm');
+  const [transferRepeat, setTransferRepeatState] = useState<TransferRepeatPayload | null>(null);
+  const [nachMandates, setNachMandates] = useState<NachMandate[]>(INITIAL_NACH_MANDATES);
+  const [scheduledTransfers, setScheduledTransfers] = useState<ScheduledTransfer[]>(INITIAL_SCHEDULED_TRANSFERS);
+  const [moneyRequests, setMoneyRequests] = useState<MoneyRequest[]>(INITIAL_MONEY_REQUESTS);
+  const [cardlessWithdrawals, setCardlessWithdrawals] = useState<CardlessWithdrawal[]>([]);
+  const [activityEvents, setActivityEvents] = useState<ActivityEvent[]>(INITIAL_ACTIVITY_EVENTS);
+  const [retailTransactionLimits, setRetailTransactionLimits] = useState<RetailTransactionLimits>(DEFAULT_RETAIL_LIMITS);
 
   // Profile & Preferences
   const [primaryAccountId, setPrimaryAccountId] = useState('acc_ret_sav_01');
@@ -511,6 +596,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [privacyPrefs, setPrivacyPrefs] = useState<PrivacyPreferences>(INITIAL_PRIVACY_PREFS);
 
   const [profileDeepLink, setProfileDeepLink] = useState<string | null>(null);
+  const [billDeepLink, setBillDeepLink] = useState<string | null>(null);
   const [favoriteServiceIds, setFavoriteServiceIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('apex_favorite_services');
@@ -654,6 +740,17 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     mode: 'UPI' | 'NEFT' | 'RTGS' | 'IMPS' | 'Internal';
     remarks?: string;
   }): Transaction => {
+    const sourceAccounts = bankingType === 'retail' ? retailAccounts : corporateAccounts;
+    const fromAccount = sourceAccounts.find((a) => a.id === fromAccountId);
+    if (fromAccount?.status === 'frozen') {
+      addToast({
+        type: 'error',
+        title: 'Account Frozen',
+        message: 'Debits are blocked on this account. Unfreeze to continue transfers.',
+      });
+      throw new Error('Account frozen');
+    }
+
     const refNum = `${mode}${Math.floor(1000000000 + Math.random() * 9000000000)}`;
     const now = new Date();
     const formattedDate = `Today, ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
@@ -704,6 +801,29 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     if (bankingType === 'retail') {
       setRetailTransactions(prev => [newTxn, ...prev]);
+
+      setRetailBeneficiaries((prev) => {
+        const match = prev.find(
+          (b) =>
+            b.accountNumber === beneficiaryAccount ||
+            b.name.toLowerCase() === beneficiaryName.toLowerCase()
+        );
+        if (!match) return prev;
+        const countKey = `apex_ben_txn_${match.id}`;
+        const nextCount = parseInt(localStorage.getItem(countKey) || '0', 10) + 1;
+        localStorage.setItem(countKey, String(nextCount));
+        if (nextCount >= AUTO_FAVORITE_TXN_THRESHOLD && !match.isFavourite) {
+          window.setTimeout(() => {
+            addToast({
+              type: 'info',
+              title: 'Added to Favourites',
+              message: `${match.name} was auto-added after ${AUTO_FAVORITE_TXN_THRESHOLD} transfers.`,
+            });
+          }, 400);
+          return prev.map((b) => (b.id === match.id ? { ...b, isFavourite: true } : b));
+        }
+        return prev;
+      });
     } else {
       setCorporateTransactions(prev => [newTxn, ...prev]);
     }
@@ -1386,6 +1506,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const clearProfileDeepLink = () => setProfileDeepLink(null);
+  const clearBillDeepLink = () => setBillDeepLink(null);
 
   const toggleFavoriteService = (serviceId: string) => {
     setFavoriteServiceIds((prev) => {
@@ -1473,6 +1594,325 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return ref;
   };
 
+  const lookupBanlName = (accountNumber: string, ifsc: string): BanlLookupResult =>
+    lookupBanl(accountNumber, ifsc);
+
+  const requestEStatement = (params: {
+    accountId: string;
+    frequency: EStatementSubscription['frequency'];
+    format: EStatementSubscription['format'];
+    email: string;
+  }): string => {
+    const account = retailAccounts.find((a) => a.id === params.accountId);
+    const ref = generateEStatementRef();
+    const sub: EStatementSubscription = {
+      id: `est_${Date.now()}`,
+      accountId: params.accountId,
+      accountLabel: `${account?.accountType ?? 'Account'} ${account?.maskedNumber ?? ''}`,
+      frequency: params.frequency,
+      email: params.email,
+      format: params.format,
+      status: 'active',
+      nextDelivery: '01 Sep 2026',
+      startedOn: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+    };
+    setEStatementSubscriptions((prev) => [sub, ...prev]);
+    addToast({
+      type: 'success',
+      title: 'eStatement Requested',
+      message: `Reference ${ref}. Delivery scheduled ${params.frequency}.`,
+    });
+    return ref;
+  };
+
+  const stopEStatement = (subscriptionId: string) => {
+    setEStatementSubscriptions((prev) =>
+      prev.map((s) => (s.id === subscriptionId ? { ...s, status: 'stopped' as const } : s))
+    );
+  };
+
+  const resumeEStatement = (subscriptionId: string) => {
+    setEStatementSubscriptions((prev) =>
+      prev.map((s) => (s.id === subscriptionId ? { ...s, status: 'active' as const } : s))
+    );
+  };
+
+  const updateEStatementFrequency = (
+    subscriptionId: string,
+    frequency: EStatementSubscription['frequency']
+  ) => {
+    setEStatementSubscriptions((prev) =>
+      prev.map((s) => (s.id === subscriptionId ? { ...s, frequency, status: 'active' as const } : s))
+    );
+    addToast({ type: 'success', title: 'Updated', message: `Frequency set to ${frequency}.` });
+  };
+
+  const freezeAccount = (accountId: string) => {
+    setRetailAccounts((prev) =>
+      prev.map((a) => (a.id === accountId ? { ...a, status: 'frozen' as const } : a))
+    );
+    addToast({
+      type: 'warning',
+      title: 'Account Frozen',
+      message: 'Outgoing debits are blocked. Credits will continue to be accepted.',
+    });
+  };
+
+  const unfreezeAccount = (accountId: string) => {
+    setRetailAccounts((prev) =>
+      prev.map((a) => (a.id === accountId ? { ...a, status: 'active' as const } : a))
+    );
+    addToast({ type: 'success', title: 'Account Unfrozen', message: 'Full account operations restored.' });
+  };
+
+  const setTransferRepeat = (payload: TransferRepeatPayload) => setTransferRepeatState(payload);
+  const clearTransferRepeat = () => setTransferRepeatState(null);
+
+  const deleteNachMandate = (mandateId: string) => {
+    setNachMandates((prev) =>
+      prev.map((m) => (m.id === mandateId ? { ...m, status: 'cancelled' as const } : m))
+    );
+  };
+
+  const updateAccountNominees = (
+    accountId: string,
+    nominees: NonNullable<BankAccount['nominees']>
+  ) => {
+    setRetailAccounts((prev) =>
+      prev.map((a) => (a.id === accountId ? { ...a, nominees } : a))
+    );
+    addToast({
+      type: 'success',
+      title: 'Nominee Updated',
+      message: 'Nominee details saved successfully.',
+    });
+  };
+
+  const processTaxPayment = (params: {
+    accountId: string;
+    amount: number;
+    taxType: string;
+    pan: string;
+    assessmentYear: string;
+  }): string => {
+    const ref = `CIN${Date.now().toString().slice(-10)}`;
+    setRetailAccounts((prev) =>
+      prev.map((acc) => {
+        if (acc.id !== params.accountId) return acc;
+        const bal = acc.balance - params.amount;
+        return { ...acc, balance: bal, availableBalance: bal - (acc.holdAmount || 0) };
+      })
+    );
+    const txn: Transaction = {
+      id: `txn_tax_${Date.now()}`,
+      referenceNumber: ref,
+      date: `Today, ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+      amount: params.amount,
+      type: 'debit',
+      category: 'tax',
+      description: `${params.taxType} — AY ${params.assessmentYear}`,
+      counterpartyName: 'Income Tax / GST',
+      status: 'completed',
+      paymentMode: 'Internal',
+      remarks: `PAN ${params.pan}`,
+    };
+    setRetailTransactions((prev) => [txn, ...prev]);
+    addToast({
+      type: 'success',
+      title: 'Tax Paid',
+      message: `₹${params.amount.toLocaleString('en-IN')} paid. Challan ${ref}.`,
+    });
+    return ref;
+  };
+
+  const addActivityEvent = (event: Omit<ActivityEvent, 'id'>) => {
+    setActivityEvents((prev) => [{ ...event, id: `act_${Date.now()}` }, ...prev].slice(0, 50));
+  };
+
+  const createScheduledTransfer = (
+    params: Omit<ScheduledTransfer, 'id' | 'status' | 'scheduledDate' | 'nextExecution'> & {
+      frequency: ScheduledTransfer['frequency'];
+    }
+  ) => {
+    const freqLabel =
+      params.frequency === 'monthly' ? '05 of every month' :
+      params.frequency === 'weekly' ? 'Every Monday' : 'Scheduled date';
+    const next =
+      params.frequency === 'monthly' ? '05 Sep 2026' :
+      params.frequency === 'weekly' ? '25 Aug 2026' : '01 Sep 2026';
+    const entry: ScheduledTransfer = {
+      ...params,
+      id: `sch_${Date.now()}`,
+      status: 'active',
+      scheduledDate: freqLabel,
+      nextExecution: next,
+    };
+    setScheduledTransfers((prev) => [entry, ...prev]);
+    addActivityEvent({
+      category: 'transfer',
+      title: 'Transfer Scheduled',
+      description: `₹${params.amount.toLocaleString('en-IN')} to ${params.beneficiaryName}`,
+      timestamp: 'Just now',
+      status: 'success',
+    });
+    addToast({ type: 'success', title: 'Scheduled', message: 'Transfer instruction created.' });
+  };
+
+  const cancelScheduledTransfer = (id: string) => {
+    setScheduledTransfers((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, status: 'cancelled' as const } : s))
+    );
+    addToast({ type: 'info', title: 'Cancelled', message: 'Scheduled transfer removed.' });
+  };
+
+  const toggleScheduledTransferPause = (id: string) => {
+    setScheduledTransfers((prev) =>
+      prev.map((s) => {
+        if (s.id !== id) return s;
+        const next = s.status === 'paused' ? 'active' : 'paused';
+        return { ...s, status: next };
+      })
+    );
+  };
+
+  const createMoneyRequest = (params: {
+    counterpartyName: string;
+    counterpartyUpi: string;
+    amount: number;
+    note: string;
+  }) => {
+    const entry: MoneyRequest = {
+      id: `mr_${Date.now()}`,
+      ...params,
+      status: 'pending',
+      createdAt: 'Just now',
+      direction: 'sent',
+    };
+    setMoneyRequests((prev) => [entry, ...prev]);
+    addToast({ type: 'success', title: 'Request Sent', message: `Collect request sent to ${params.counterpartyName}.` });
+  };
+
+  const respondToMoneyRequest = (id: string, action: 'paid' | 'declined') => {
+    setMoneyRequests((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, status: action } : r))
+    );
+    addToast({
+      type: action === 'paid' ? 'success' : 'info',
+      title: action === 'paid' ? 'Paid' : 'Declined',
+      message: action === 'paid' ? 'UPI collect request paid.' : 'Request declined.',
+    });
+  };
+
+  const generateCardlessWithdrawal = (accountId: string, amount: number) => {
+    const acc = retailAccounts.find((a) => a.id === accountId);
+    const otp = generateCardlessOtp();
+    const expires = new Date(Date.now() + 30 * 60 * 1000);
+    const expiresAt = expires.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const entry: CardlessWithdrawal = {
+      id: `cw_${Date.now()}`,
+      amount,
+      otp,
+      expiresAt,
+      atmHint: 'Any Bharat Bank ATM',
+      status: 'active',
+      createdAt: 'Just now',
+      accountLabel: `${acc?.accountType ?? 'Savings'} ${acc?.maskedNumber ?? ''}`,
+    };
+    setCardlessWithdrawals((prev) => [entry, ...prev]);
+    addToast({ type: 'success', title: 'Code Generated', message: `Valid until ${expiresAt}.` });
+    return { otp, expiresAt };
+  };
+
+  const updateRetailTransactionLimits = (limits: RetailTransactionLimits) => {
+    setRetailTransactionLimits(limits);
+    addActivityEvent({
+      category: 'security',
+      title: 'Limits Updated',
+      description: 'Transaction limits modified',
+      timestamp: 'Just now',
+      status: 'info',
+    });
+  };
+
+  const openRetailAccount = (
+    type: 'savings' | 'current' | 'nre-savings',
+    nickname?: string
+  ): BankAccount => {
+    const accountTypeMap = {
+      savings: 'Savings' as const,
+      current: 'Current' as const,
+      'nre-savings': 'NRE Savings' as const,
+    };
+    const num = String(Math.floor(100000000000 + Math.random() * 900000000000));
+    const last4 = num.slice(-4);
+    const account: BankAccount = {
+      id: `acc_ret_new_${Date.now()}`,
+      accountNumber: num,
+      maskedNumber: `•••• •••• ${last4}`,
+      accountType: accountTypeMap[type],
+      balance: 0,
+      availableBalance: 0,
+      currency: '₹',
+      ifsc: 'APEX0001048',
+      branch: 'Bandra Kurla Complex, Mumbai',
+      nickname: nickname || accountTypeMap[type],
+      status: 'active',
+      interestRate: type === 'nre-savings' ? 4.25 : type === 'savings' ? 3.5 : undefined,
+    };
+    setRetailAccounts((prev) => [...prev, account]);
+    addActivityEvent({
+      category: 'profile',
+      title: 'Account Opened',
+      description: `${account.accountType} •••• ${last4}`,
+      timestamp: 'Just now',
+      status: 'success',
+    });
+    return account;
+  };
+
+  const payRdInstallment = (rdId: string, accountId: string) => {
+    const rd = recurringDeposits.find((r) => r.id === rdId);
+    if (!rd) return;
+    setRetailAccounts((prev) =>
+      prev.map((acc) => {
+        if (acc.id !== accountId) return acc;
+        const bal = Math.max(0, acc.balance - rd.monthlyAmount);
+        return { ...acc, balance: bal, availableBalance: bal - (acc.holdAmount || 0) };
+      })
+    );
+    setRecurringDeposits((prev) =>
+      prev.map((r) =>
+        r.id === rdId
+          ? { ...r, totalInvested: r.totalInvested + rd.monthlyAmount, nextInstallmentDate: '05 Sep 2026' }
+          : r
+      )
+    );
+    const ref = `RD${Date.now().toString().slice(-8)}`;
+    setRetailTransactions((prev) => [
+      {
+        id: `txn_rd_${Date.now()}`,
+        referenceNumber: ref,
+        date: 'Today, Just now',
+        amount: rd.monthlyAmount,
+        type: 'debit',
+        category: 'investment',
+        description: `RD Installment — ${rd.rdNumber}`,
+        counterpartyName: 'Recurring Deposit',
+        status: 'completed',
+        paymentMode: 'Internal',
+      },
+      ...prev,
+    ]);
+    addActivityEvent({
+      category: 'deposit',
+      title: 'RD Installment Paid',
+      description: `₹${rd.monthlyAmount.toLocaleString('en-IN')} — ${rd.rdNumber}`,
+      timestamp: 'Just now',
+      status: 'success',
+    });
+    addToast({ type: 'success', title: 'Installment Paid', message: `₹${rd.monthlyAmount.toLocaleString('en-IN')} debited. Ref ${ref}.` });
+  };
+
   const navigateService = (serviceId: string, route: ServiceRoute) => {
     setRecentServiceIds((prev) => {
       const next = [serviceId, ...prev.filter((id) => id !== serviceId)].slice(0, 8);
@@ -1485,8 +1925,14 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } else if (route.kind === 'profile') {
       setProfileDeepLink(route.screen);
       setRetailTab('profile');
+    } else if (route.kind === 'bill') {
+      setBillDeepLink(route.screen);
+      setRetailTab('bills');
     } else if (route.kind === 'scanner') {
       openScanner();
+    } else if (route.kind === 'locator') {
+      setLocatorType(route.locatorType);
+      setRetailTab('locator');
     } else if (route.kind === 'toast') {
       addToast({ type: 'info', title: route.title, message: route.message });
     }
@@ -2037,6 +2483,14 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setIssuedCheques(INITIAL_ISSUED_CHEQUES);
     setDepositedCheques(INITIAL_DEPOSITED_CHEQUES);
     setPositivePayRegs(INITIAL_POSITIVE_PAY);
+    setEStatementSubscriptions(INITIAL_ESTATEMENT_SUBSCRIPTIONS);
+    setTransferRepeatState(null);
+    setNachMandates(INITIAL_NACH_MANDATES);
+    setScheduledTransfers(INITIAL_SCHEDULED_TRANSFERS);
+    setMoneyRequests(INITIAL_MONEY_REQUESTS);
+    setCardlessWithdrawals([]);
+    setActivityEvents(INITIAL_ACTIVITY_EVENTS);
+    setRetailTransactionLimits(DEFAULT_RETAIL_LIMITS);
     setPrimaryAccountId('acc_ret_sav_01');
     setDefaultDebitAccountId('acc_ret_sav_01');
     setDefaultCardId(INITIAL_RETAIL_CARDS[0]?.id || '');
@@ -2118,6 +2572,15 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       issuedCheques,
       depositedCheques,
       positivePayRegs,
+      eStatementSubscriptions,
+      locatorType,
+      transferRepeat,
+      nachMandates,
+      scheduledTransfers,
+      moneyRequests,
+      cardlessWithdrawals,
+      activityEvents,
+      retailTransactionLimits,
 
       executeTransfer,
       approveCorporatePayment,
@@ -2152,6 +2615,29 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       requestChequeBook,
       stopCheque,
       registerPositivePay,
+      lookupBanlName,
+      requestEStatement,
+      stopEStatement,
+      resumeEStatement,
+      updateEStatementFrequency,
+      freezeAccount,
+      unfreezeAccount,
+      setTransferRepeat,
+      clearTransferRepeat,
+      setLocatorType,
+      deleteNachMandate,
+      updateAccountNominees,
+      processTaxPayment,
+      createScheduledTransfer,
+      cancelScheduledTransfer,
+      toggleScheduledTransferPause,
+      createMoneyRequest,
+      respondToMoneyRequest,
+      generateCardlessWithdrawal,
+      updateRetailTransactionLimits,
+      openRetailAccount,
+      payRdInstallment,
+      addActivityEvent,
       createFixedDeposit,
       createRecurringDeposit,
       closeDeposit,
@@ -2227,6 +2713,8 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       triggerSessionTimeout,
       profileDeepLink,
       clearProfileDeepLink,
+      billDeepLink,
+      clearBillDeepLink,
       favoriteServiceIds,
       recentServiceIds,
       toggleFavoriteService,

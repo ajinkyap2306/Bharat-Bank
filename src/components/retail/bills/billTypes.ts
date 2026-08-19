@@ -10,7 +10,8 @@ export type BillScreen =
   | 'saved-billers'
   | 'add-biller'
   | 'edit-biller'
-  | 'autopay';
+  | 'autopay'
+  | 'tax-payment';
 
 export type BillPayStep =
   | 'category'

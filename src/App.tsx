@@ -34,6 +34,15 @@ import RetailStatements from './components/retail/RetailStatements';
 import { RetailServices } from './components/retail/RetailServices';
 import { RetailProfile } from './components/retail/RetailProfile';
 import { ChequeServicesModule } from './components/retail/cheque/ChequeServicesModule';
+import { EPassbookModule } from './components/retail/epassbook/EPassbookModule';
+import { EStatementModule } from './components/retail/estatement/EStatementModule';
+import { LocatorModule } from './components/retail/locator/LocatorModule';
+import { NachMandatesModule } from './components/retail/nach/NachMandatesModule';
+import { NomineeModule } from './components/retail/nominee/NomineeModule';
+import { ScheduledTransfersModule } from './components/retail/scheduled/ScheduledTransfersModule';
+import { RequestMoneyModule } from './components/retail/request-money/RequestMoneyModule';
+import { OpenAccountModule } from './components/retail/open-account/OpenAccountModule';
+import { CardlessCashModule } from './components/retail/cardless/CardlessCashModule';
 
 // Corporate Components
 import { CorporateHome } from './components/corporate/CorporateHome';
@@ -72,7 +81,7 @@ const BankingAppContent: React.FC = () => {
   const showGlobalHeader = isRetailHome && !isScannerOpen;
 
   const isRetailNativeScreen =
-    bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance', 'cheque'].includes(retailTab);
+    bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance', 'cheque', 'epassbook', 'estatement', 'locator', 'nach', 'nominee', 'scheduled', 'request-money', 'open-account', 'cardless'].includes(retailTab);
 
   const isCorporateRootTab =
     bankingType === 'corporate' && isCorporateBottomNavRoute(location.pathname);
@@ -226,6 +235,15 @@ const BankingAppContent: React.FC = () => {
             {retailTab === 'statements' && <RetailStatements />}
             {retailTab === 'services' && <RetailServices />}
             {retailTab === 'cheque' && <ChequeServicesModule />}
+            {retailTab === 'epassbook' && <EPassbookModule />}
+            {retailTab === 'estatement' && <EStatementModule />}
+            {retailTab === 'locator' && <LocatorModule />}
+            {retailTab === 'nach' && <NachMandatesModule />}
+            {retailTab === 'nominee' && <NomineeModule />}
+            {retailTab === 'scheduled' && <ScheduledTransfersModule />}
+            {retailTab === 'request-money' && <RequestMoneyModule />}
+            {retailTab === 'open-account' && <OpenAccountModule />}
+            {retailTab === 'cardless' && <CardlessCashModule />}
             {retailTab === 'profile' && <RetailProfile />}
           </>
         ) : (

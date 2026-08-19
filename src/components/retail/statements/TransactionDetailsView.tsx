@@ -20,6 +20,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { Transaction } from '../../../types/banking';
+import { useBanking } from '../../../context/BankingContext';
 
 interface TransactionDetailsViewProps {
   transaction: Transaction;
@@ -27,6 +28,28 @@ interface TransactionDetailsViewProps {
 }
 
 const TransactionDetailsView: React.FC<TransactionDetailsViewProps> = ({ transaction, onBack }) => {
+  const { setTransferRepeat, setRetailTab, addToast } = useBanking();
+
+  const handleRepeatTransfer = () => {
+    if (transaction.type !== 'debit' || transaction.category !== 'transfer') {
+      addToast({
+        type: 'info',
+        title: 'Repeat Transfer',
+        message: 'Only outbound transfer transactions can be repeated.',
+      });
+      return;
+    }
+    setTransferRepeat({
+      beneficiaryName: transaction.counterpartyName,
+      beneficiaryAccount: transaction.counterpartyAccount,
+      bankName: 'Beneficiary Bank',
+      amount: transaction.amount,
+      mode: transaction.paymentMode,
+      remarks: transaction.remarks || `Repeat: ${transaction.referenceNumber}`,
+    });
+    setRetailTab('transfers');
+    addToast({ type: 'info', title: 'Repeat Transfer', message: 'Transfer details pre-filled.' });
+  };
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 z-20">
       {/* Header */}
@@ -154,7 +177,17 @@ const TransactionDetailsView: React.FC<TransactionDetailsViewProps> = ({ transac
           </div>
 
           <div className="pt-4 space-y-4">
-            <button className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center justify-center space-x-2">
+            {transaction.type === 'debit' && (
+              <button
+                type="button"
+                onClick={handleRepeatTransfer}
+                className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold flex items-center justify-center space-x-2"
+              >
+                <ArrowRightLeft className="w-5 h-5" />
+                <span>Repeat Transfer</span>
+              </button>
+            )}
+            <button type="button" className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center justify-center space-x-2">
               <Download className="w-5 h-5" />
               <span>Download Receipt</span>
             </button>

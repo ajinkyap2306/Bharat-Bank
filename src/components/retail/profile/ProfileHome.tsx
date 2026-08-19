@@ -16,6 +16,7 @@ import {
   LogOut,
   ChevronRight,
   Building2,
+  History,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useBanking } from '../../../context/BankingContext';
@@ -165,6 +166,12 @@ export const ProfileHome: React.FC<ProfileHomeProps> = ({ onNavigate, onLogout }
           badge={securitySettings.securityScore}
           badgeTone="success"
           onClick={() => onNavigate('security-center')}
+        />
+        <MenuItem
+          icon={<History className="w-4 h-4" />}
+          label="My Activity"
+          description="Login, transfers & profile audit trail"
+          onClick={() => onNavigate('my-activity')}
         />
         <MenuItem
           icon={<Smartphone className="w-4 h-4" />}

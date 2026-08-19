@@ -96,6 +96,7 @@ export interface AppPreferences {
 export interface SecuritySettings {
   biometricEnabled: boolean;
   mpinActive: boolean;
+  tpinActive: boolean;
   transactionAuthEnabled: boolean;
   securityAlertsEnabled: boolean;
   authMethods: { mpin: boolean; otp: boolean; biometric: boolean };

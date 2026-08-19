@@ -4,6 +4,7 @@ import { BillScreen, BillPayContext } from './billTypes';
 import { BillCategory } from '../../../types/bills';
 import { BillPaymentHome } from './BillPaymentHome';
 import { BillPayFlow } from './BillPayFlow';
+import { TaxPaymentScreen } from './TaxPaymentScreen';
 import {
   BillSearchScreen,
   BillHistoryScreen,
@@ -16,7 +17,7 @@ import {
 } from './BillSupportingScreens';
 
 export const BillPaymentModule: React.FC = () => {
-  const { setBottomNavHidden, openDetailFlow, closeDetailFlow } = useBanking();
+  const { setBottomNavHidden, openDetailFlow, closeDetailFlow, billDeepLink, clearBillDeepLink } = useBanking();
   const [screen, setScreen] = useState<BillScreen>('home');
   const [params, setParams] = useState<Record<string, string>>({});
   const [payContext, setPayContext] = useState<BillPayContext>({});
@@ -36,6 +37,13 @@ export const BillPaymentModule: React.FC = () => {
     setParams({});
     setPayContext({});
   }, []);
+
+  useEffect(() => {
+    if (billDeepLink) {
+      setScreen(billDeepLink as BillScreen);
+      clearBillDeepLink();
+    }
+  }, [billDeepLink, clearBillDeepLink]);
 
   useEffect(() => {
     const showNav = screen === 'home' || screen === 'history';
@@ -73,6 +81,10 @@ export const BillPaymentModule: React.FC = () => {
         onViewReceipt={(id) => navigate('receipt', { paymentId: id })}
       />
     );
+  }
+
+  if (screen === 'tax-payment') {
+    return <TaxPaymentScreen onBack={goHome} />;
   }
 
   const screens: Record<string, React.ReactNode> = {

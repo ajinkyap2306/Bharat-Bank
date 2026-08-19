@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Search, HelpCircle, Bell, History, Plus,
+  Search, HelpCircle, Bell, History, Plus, Landmark,
 } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
 import { BILL_CATEGORIES } from '../../../data/billsMockData';
@@ -128,6 +128,22 @@ export const BillPaymentHome: React.FC<BillPaymentHomeProps> = ({ onNavigate, on
           </button>
         </div>
       </div>
+
+      {/* Tax Payment */}
+      <button
+        type="button"
+        onClick={() => onNavigate('tax-payment')}
+        className="w-full flex items-center gap-3 p-4 rounded-2xl bg-linear-to-r from-indigo-600 to-blue-600 text-white shadow-md active:scale-[0.99] transition-transform"
+      >
+        <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+          <Landmark className="w-5 h-5" />
+        </div>
+        <div className="text-left flex-1 min-w-0">
+          <p className="text-sm font-bold">Tax Payment Online</p>
+          <p className="text-[11px] text-blue-100">Income tax, GST, TDS & challan</p>
+        </div>
+        <span className="text-xs font-bold bg-white/20 px-2 py-1 rounded-lg">Pay</span>
+      </button>
 
       {/* Categories Grid */}
       <div className="space-y-2">

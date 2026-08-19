@@ -36,6 +36,7 @@ export const SecurityCenterScreen: React.FC<ScreenProps> = ({ onNavigate, onBack
   const checklist = [
     { label: 'Biometric login', value: securitySettings.biometricEnabled ? 'Enabled' : 'Disabled', ok: securitySettings.biometricEnabled },
     { label: 'MPIN', value: securitySettings.mpinActive ? 'Active' : 'Inactive', ok: securitySettings.mpinActive },
+    { label: 'TPIN', value: securitySettings.tpinActive ? 'Active' : 'Inactive', ok: securitySettings.tpinActive },
     { label: 'Transaction authentication', value: securitySettings.transactionAuthEnabled ? 'Enabled' : 'Disabled', ok: securitySettings.transactionAuthEnabled },
     { label: 'Trusted devices', value: String(trustedDevices.length), ok: true },
     { label: 'Security alerts', value: securitySettings.securityAlertsEnabled ? 'Enabled' : 'Disabled', ok: securitySettings.securityAlertsEnabled },
@@ -58,6 +59,8 @@ export const SecurityCenterScreen: React.FC<ScreenProps> = ({ onNavigate, onBack
       <MenuGroup title="Security Actions">
         <MenuItem icon={<Lock className="w-4 h-4" />} label="Change Password" onClick={() => onNavigate('change-password')} />
         <MenuItem icon={<KeyRound className="w-4 h-4" />} label="Change MPIN" onClick={() => onNavigate('change-mpin')} />
+        <MenuItem icon={<KeyRound className="w-4 h-4" />} label="Change TPIN" onClick={() => onNavigate('change-tpin')} />
+        <MenuItem icon={<Shield className="w-4 h-4" />} label="Transaction Limits" onClick={() => onNavigate('transaction-limits')} />
         <MenuItem icon={<Fingerprint className="w-4 h-4" />} label="Biometric Settings" onClick={() => onNavigate('biometric-settings')} />
         <MenuItem icon={<Shield className="w-4 h-4" />} label="Transaction Authentication" onClick={() => onNavigate('transaction-auth')} />
         <MenuItem icon={<Monitor className="w-4 h-4" />} label="Login Activity" onClick={() => onNavigate('login-activity')} />
@@ -147,6 +150,44 @@ export const ChangeMpinScreen: React.FC<ScreenProps> = ({ onNavigate, onBack }) 
           if (step === 'verify') setShowAuth(true);
           else if (step === 'new') setStep('confirm');
           else setDone(true);
+        }} />
+      </ProfileLayout>
+      <SecureAuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} onSuccess={() => { setShowAuth(false); setStep('new'); }} title="Verify Identity" />
+    </>
+  );
+};
+
+export const ChangeTpinScreen: React.FC<ScreenProps> = ({ onNavigate, onBack }) => {
+  const { updateSecuritySettings, addToast } = useBanking();
+  const [step, setStep] = useState<'verify' | 'new' | 'confirm'>('verify');
+  const [showAuth, setShowAuth] = useState(false);
+  const [done, setDone] = useState(false);
+
+  if (done) {
+    return (
+      <SuccessState title="TPIN Changed" message="Your 4-digit transaction PIN has been updated." actionLabel="Done" onAction={() => onNavigate('security-center')} />
+    );
+  }
+
+  return (
+    <>
+      <ProfileLayout title="Change TPIN" subtitle={step === 'verify' ? 'Verify your identity' : 'Set new TPIN'} onBack={onBack}>
+        <InfoCard className="text-center space-y-4">
+          <p className="text-sm text-slate-600">TPIN is used to authorize high-value transactions. Enter a new 4-digit TPIN.</p>
+          <div className="flex justify-center gap-2">
+            {Array(4).fill(0).map((_, i) => (
+              <div key={i} className="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-600" />
+            ))}
+          </div>
+        </InfoCard>
+        <StickyCTA label={step === 'verify' ? 'Verify Identity' : step === 'new' ? 'Continue' : 'Confirm TPIN'} onClick={() => {
+          if (step === 'verify') setShowAuth(true);
+          else if (step === 'new') setStep('confirm');
+          else {
+            updateSecuritySettings({ tpinActive: true });
+            addToast({ type: 'success', title: 'TPIN Updated', message: 'Your transaction PIN has been changed.' });
+            setDone(true);
+          }
         }} />
       </ProfileLayout>
       <SecureAuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} onSuccess={() => { setShowAuth(false); setStep('new'); }} title="Verify Identity" />

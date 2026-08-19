@@ -157,6 +157,7 @@ export const INITIAL_APP_PREFS: AppPreferences = {
 export const INITIAL_SECURITY_SETTINGS: SecuritySettings = {
   biometricEnabled: true,
   mpinActive: true,
+  tpinActive: true,
   transactionAuthEnabled: true,
   securityAlertsEnabled: true,
   authMethods: { mpin: true, otp: true, biometric: true },
