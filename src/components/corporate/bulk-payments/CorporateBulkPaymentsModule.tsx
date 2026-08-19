@@ -7,6 +7,7 @@ import { CreateBulkPayment } from './CreateBulkPayment';
 import { BulkPaymentReview } from './review/BulkPaymentReview';
 import { BulkPaymentSubmitted } from './submitted/BulkPaymentSubmitted';
 import { BulkPaymentResults } from './results/BulkPaymentResults';
+import { BulkBatchDetailsScreen } from './details/BulkBatchDetailsScreen';
 
 const BULK_HOME = '/corporate/bulk-payments';
 
@@ -37,7 +38,11 @@ export const CorporateBulkPaymentsModule: React.FC = () => {
     return /^\/corporate\/bulk-payments\/[^/]+\/results\/?$/.test(location.pathname);
   }, [location.pathname]);
 
-  const isDetailFlow = isCreate || isReview || isSubmitted || isResults;
+  const isDetails = useMemo(() => {
+    return /^\/corporate\/bulk-payments\/[^/]+\/details\/?$/.test(location.pathname);
+  }, [location.pathname]);
+
+  const isDetailFlow = isCreate || isReview || isSubmitted || isResults || isDetails;
   const isInvalidRoute = !isHome && !isDetailFlow;
 
   useEffect(() => {
@@ -64,6 +69,10 @@ export const CorporateBulkPaymentsModule: React.FC = () => {
       navigate(BULK_HOME, { replace: true });
     }
   }, [location.pathname, isInvalidRoute, navigate]);
+
+  if (isDetails) {
+    return <BulkBatchDetailsScreen />;
+  }
 
   if (isResults) {
     return <BulkPaymentResults />;

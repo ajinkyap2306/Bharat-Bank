@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useBanking } from '../../../context/BankingContext';
 import { CorporateApprovals } from './dashboard/CorporateApprovals';
 import { ApprovalDetails } from './details/ApprovalDetails';
+import { ApprovalAuditTrailScreen } from './details/ApprovalAuditTrailScreen';
 import { ApprovalResult } from './result/ApprovalResult';
 
 const APPROVALS_HOME = '/corporate/approvals';
@@ -15,9 +16,11 @@ export const CorporateApprovalsModule: React.FC = () => {
   const isHome =
     location.pathname === APPROVALS_HOME || location.pathname === `${APPROVALS_HOME}/`;
 
-  const detailMatch = location.pathname.match(/^\/corporate\/approvals\/([^/]+)(?:\/result)?\/?$/);
+  const detailMatch = location.pathname.match(/^\/corporate\/approvals\/([^/]+)(?:\/(result|history))?\/?$/);
   const approvalId = detailMatch?.[1];
-  const isResultRoute = /\/result\/?$/.test(location.pathname);
+  const subRoute = detailMatch?.[2];
+  const isResultRoute = subRoute === 'result';
+  const isHistoryRoute = subRoute === 'history';
 
   useEffect(() => {
     setCorporateTab('approvals');
@@ -32,7 +35,7 @@ export const CorporateApprovalsModule: React.FC = () => {
       return;
     }
 
-    if (approvalId || isResultRoute) {
+    if (approvalId || isResultRoute || isHistoryRoute) {
       setBottomNavHidden(true);
       openDetailFlow();
     }
@@ -41,6 +44,7 @@ export const CorporateApprovalsModule: React.FC = () => {
     isHome,
     approvalId,
     isResultRoute,
+    isHistoryRoute,
     setBottomNavHidden,
     closeDetailFlow,
     openDetailFlow,
@@ -54,6 +58,10 @@ export const CorporateApprovalsModule: React.FC = () => {
 
   if (isHome) {
     return <CorporateApprovals />;
+  }
+
+  if (isHistoryRoute && approvalId) {
+    return <ApprovalAuditTrailScreen />;
   }
 
   if (isResultRoute && approvalId) {

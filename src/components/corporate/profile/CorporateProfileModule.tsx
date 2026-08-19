@@ -10,6 +10,9 @@ import { CorporateLimitsScreen } from './screens/CorporateLimitsScreen';
 import { LoginSecurityScreen } from './screens/LoginSecurityScreen';
 import { NotificationPreferencesScreen } from './screens/NotificationPreferencesScreen';
 import { SupportScreen } from './screens/SupportScreen';
+import { UserAccessScreen } from './screens/UserAccessScreen';
+import { AuthorizedSignatoriesScreen } from './screens/AuthorizedSignatoriesScreen';
+import { ApprovalRulesScreen } from './screens/ApprovalRulesScreen';
 
 const SCREEN_TITLES: Record<Exclude<CorporateProfileScreen, 'home'>, string> = {
   company: 'Company Information',
@@ -67,6 +70,12 @@ export const CorporateProfileModule: React.FC = () => {
         return <LinkedAccountsScreen />;
       case 'limits':
         return <CorporateLimitsScreen />;
+      case 'users':
+        return <UserAccessScreen />;
+      case 'signatories':
+        return <AuthorizedSignatoriesScreen />;
+      case 'approval-rules':
+        return <ApprovalRulesScreen />;
       case 'security':
         return <LoginSecurityScreen />;
       case 'notifications':

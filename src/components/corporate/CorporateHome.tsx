@@ -107,6 +107,19 @@ export const CorporateHome: React.FC = () => {
         setCorporateTab('payments');
         navigate('/corporate/bulk-payments');
         break;
+      case 'payroll':
+        if (blockIfChecker('run payroll')) return;
+        setCorporateTab('payroll');
+        navigate('/corporate/payroll');
+        break;
+      case 'cards':
+        setCorporateTab('more');
+        navigate('/corporate/cards');
+        break;
+      case 'reports':
+        setCorporateTab('more');
+        navigate('/corporate/more/reports');
+        break;
       case 'approvals':
         goToApprovals();
         break;

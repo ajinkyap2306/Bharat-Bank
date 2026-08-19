@@ -7,6 +7,7 @@ import {
   Building2,
   CalendarClock,
   ClipboardList,
+  CreditCard,
   FileText,
   Landmark,
   Layers,
@@ -16,6 +17,7 @@ import {
   SendHorizontal,
   Shield,
   TrendingUp,
+  Users,
   Wallet,
   type LucideIcon,
 } from 'lucide-react';
@@ -34,11 +36,13 @@ const DEMO_SERVICE_IDS = new Set([
   'beneficiaries',
   'scheduled',
   'bulk',
+  'payroll',
+  'cards',
   'approvals',
   'statements',
   'transactions',
+  'reports',
   'account-services',
-  'more',
 ]);
 
 interface ServicesGridProps {
@@ -53,6 +57,8 @@ const SERVICE_DEFINITIONS: Omit<CorporateServiceItem, 'onClick'>[] = [
   { id: 'beneficiaries', label: 'Beneficiaries', icon: Building2 },
   { id: 'scheduled', label: 'Scheduled', icon: CalendarClock },
   { id: 'bulk', label: 'Bulk Payments', icon: Layers },
+  { id: 'payroll', label: 'Payroll', icon: Users },
+  { id: 'cards', label: 'Cards', icon: CreditCard },
   { id: 'approvals', label: 'Approvals', icon: ClipboardList },
   { id: 'statements', label: 'Statements', icon: FileText },
   { id: 'transactions', label: 'Transactions', icon: Receipt },
@@ -73,7 +79,7 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
 }) => {
   const visibleServices = SERVICE_DEFINITIONS.filter((service) => {
     if (!DEMO_SERVICE_IDS.has(service.id)) return false;
-    if (!canCreatePayment && (service.id === 'transfers' || service.id === 'bulk')) {
+    if (!canCreatePayment && (service.id === 'transfers' || service.id === 'bulk' || service.id === 'payroll')) {
       return false;
     }
     return true;

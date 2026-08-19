@@ -11,7 +11,6 @@ import { PwaLifecycle } from './components/common/PwaLifecycle';
 import { AuthContainer } from './components/auth/AuthContainer';
 import { CorporateOtpRoute } from './components/auth/corporate/CorporateOtpRoute';
 import { CorporateDeviceVerificationRoute } from './components/auth/corporate/CorporateDeviceVerificationRoute';
-import { CorporateForgotPasswordPlaceholder } from './components/auth/corporate/CorporateForgotPasswordPlaceholder';
 import { RetailRegistrationModule } from './components/auth/retail/RetailRegistrationModule';
 import { RegistrationEntry } from './components/auth/RegistrationEntry';
 import { CorporateRegistrationModule } from './components/auth/corporate/CorporateRegistrationModule';
@@ -63,8 +62,8 @@ import { CorporateAccounts } from './components/corporate/CorporateAccounts';
 import { CorporatePayroll } from './components/corporate/CorporatePayroll';
 import { CorporateCards } from './components/corporate/CorporateCards';
 import { CorporateUsers } from './components/corporate/CorporateUsers';
+import { CorporateSubScreenShell } from './components/corporate/shared/CorporateSubScreenShell';
 import { CorporateReports } from './components/corporate/CorporateReports';
-import { CorporateProfile } from './components/corporate/CorporateProfile';
 import { CorporateBeneficiaries } from './components/corporate/CorporateBeneficiaries';
 import { CorporateBulkPaymentsModule } from './components/corporate/bulk-payments/CorporateBulkPaymentsModule';
 import { CorporateMoreModule } from './components/corporate/more/CorporateMoreModule';
@@ -118,6 +117,9 @@ const BankingAppContent: React.FC = () => {
       '/corporate/approvals',
       '/corporate/more',
       '/corporate/profile',
+      '/corporate/payroll',
+      '/corporate/cards',
+      '/corporate/users',
     ];
     const isAllowed = allowedPrefixes.some((p) => path === p || path.startsWith(`${p}/`));
 
@@ -138,6 +140,12 @@ const BankingAppContent: React.FC = () => {
       setCorporateTab('payments');
     } else if (path.startsWith('/corporate/bulk-payments') && corporateTab !== 'payments') {
       setCorporateTab('payments');
+    } else if (path.startsWith('/corporate/payroll')) {
+      setCorporateTab('payroll');
+    } else if (path.startsWith('/corporate/cards')) {
+      setCorporateTab('more');
+    } else if (path.startsWith('/corporate/users')) {
+      setCorporateTab('more');
     } else if (
       (path.startsWith('/corporate/beneficiaries') ||
         path.startsWith('/corporate/more') ||
@@ -161,6 +169,27 @@ const BankingAppContent: React.FC = () => {
     if (path.startsWith('/corporate/bulk-payments')) {
       return <CorporateBulkPaymentsModule />;
     }
+    if (path.startsWith('/corporate/payroll')) {
+      return (
+        <CorporateSubScreenShell title="Salary Payments" subtitle="Payroll disbursement" backTo="/corporate/payments">
+          <CorporatePayroll />
+        </CorporateSubScreenShell>
+      );
+    }
+    if (path.startsWith('/corporate/cards')) {
+      return (
+        <CorporateSubScreenShell title="Corporate Cards" subtitle="Expense & commercial cards" backTo="/corporate/more">
+          <CorporateCards />
+        </CorporateSubScreenShell>
+      );
+    }
+    if (path.startsWith('/corporate/users')) {
+      return (
+        <CorporateSubScreenShell title="User & Access" subtitle="Corporate signatories & roles" backTo="/corporate/profile">
+          <CorporateUsers />
+        </CorporateSubScreenShell>
+      );
+    }
     if (path.startsWith('/corporate/profile')) {
       return <CorporateProfileModule />;
     }
@@ -182,13 +211,6 @@ const BankingAppContent: React.FC = () => {
     if (path === '/corporate/home' || path.startsWith('/corporate/home/')) {
       return <CorporateHome />;
     }
-    if (corporateTab === 'payroll') {
-      return <CorporatePayroll />;
-    }
-    if (corporateTab === 'profile') {
-      return <CorporateProfile />;
-    }
-    // Fallback when tab is home but URL hasn't synced yet
     return <CorporateHome />;
   };
 
@@ -303,10 +325,7 @@ const UnauthenticatedRoutes: React.FC = () => {
           path="/corporate/device-verification"
           element={<CorporateDeviceVerificationRoute />}
         />
-        <Route
-          path="/corporate/forgot-password"
-          element={<CorporateForgotPasswordPlaceholder />}
-        />
+        <Route path="/corporate/forgot-password" element={<ForgotPasswordModule />} />
         <Route
           path="*"
           element={

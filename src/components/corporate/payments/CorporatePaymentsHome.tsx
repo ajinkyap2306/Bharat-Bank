@@ -193,6 +193,7 @@ export const CorporatePaymentsHome: React.FC = () => {
           onTransfer={() => goToRoute('/corporate/payments/create/internal-transfer')}
           onScheduled={() => goToRoute('/corporate/payments/scheduled')}
           onBulk={() => goToRoute('/corporate/bulk-payments')}
+          onPayroll={() => goToRoute('/corporate/payroll')}
           onBeneficiary={() => goToRoute('/corporate/beneficiaries')}
         />
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeftRight, CalendarClock, Layers, UserPlus } from 'lucide-react';
+import { ArrowLeftRight, CalendarClock, Layers, UserPlus, Wallet } from 'lucide-react';
 
 const QUICK_ICON =
   'w-11 h-11 rounded-2xl bg-linear-to-tr from-[#0B5CAB] to-indigo-700 text-white flex items-center justify-center shadow-md shadow-[#0B5CAB]/20 mb-1.5 group-hover:scale-105 transition-transform';
@@ -10,6 +10,7 @@ interface PaymentQuickActionsProps {
   onScheduled: () => void;
   onBulk: () => void;
   onBeneficiary: () => void;
+  onPayroll: () => void;
   canCreatePayment?: boolean;
 }
 
@@ -17,6 +18,7 @@ const ACTIONS = [
   { id: 'transfer', label: 'Transfer', icon: ArrowLeftRight, handler: 'onTransfer' as const, requiresCreate: true },
   { id: 'scheduled', label: 'Scheduled', icon: CalendarClock, handler: 'onScheduled' as const, requiresCreate: false },
   { id: 'bulk', label: 'Bulk Pay', icon: Layers, handler: 'onBulk' as const, requiresCreate: true },
+  { id: 'payroll', label: 'Payroll', icon: Wallet, handler: 'onPayroll' as const, requiresCreate: true },
   { id: 'beneficiary', label: 'Beneficiary', icon: UserPlus, handler: 'onBeneficiary' as const, requiresCreate: false },
 ];
 
@@ -28,7 +30,7 @@ export const PaymentQuickActions: React.FC<PaymentQuickActionsProps> = ({
 
   return (
     <section className="px-3" aria-label="Quick payment actions">
-      <div className={`grid gap-1 ${visible.length <= 2 ? 'grid-cols-2' : visible.length === 3 ? 'grid-cols-3' : 'grid-cols-4'}`}>
+      <div className={`grid gap-1 ${visible.length <= 2 ? 'grid-cols-2' : visible.length === 3 ? 'grid-cols-3' : 'grid-cols-5'}`}>
         {visible.map(({ id, label, icon: Icon, handler }) => (
           <motion.button
             key={id}

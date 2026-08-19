@@ -3,6 +3,8 @@ import { ScreenHeader } from '../../../common/ScreenHeader';
 import { BENEFICIARY_TYPE_OPTIONS, findDuplicate } from '../../../../data/corporateBeneficiariesMock';
 import { CorporateBeneficiaryForm } from '../../../../types/corporateBeneficiaries';
 import { BenCard, ReviewBenRow, StickyBenCTA } from '../shared/CorporateBeneficiaryUI';
+import { lookupBanl } from '../../../../data/accountServicesMock';
+import { searchIfsc } from '../../../../data/corporateIfscMock';
 
 interface FlowProps {
   form: CorporateBeneficiaryForm;
@@ -64,16 +66,61 @@ export const AddBusinessScreen: React.FC<FlowProps> = ({ form, setForm, onBack, 
 };
 
 export const AddBankScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNext }) => {
+  const [ifscQuery, setIfscQuery] = useState('');
+  const [showIfscList, setShowIfscList] = useState(false);
+  const [banlResult, setBanlResult] = useState<ReturnType<typeof lookupBanl> | null>(null);
   const mismatch = form.accountNumber && form.confirmAccountNumber && form.accountNumber !== form.confirmAccountNumber;
+  const ifscMatches = searchIfsc(ifscQuery || form.ifsc).slice(0, 6);
+
+  const handleBanlLookup = () => {
+    const result = lookupBanl(form.accountNumber, form.ifsc);
+    setBanlResult(result);
+    if (result.matchStatus !== 'not_found' && result.bankName) {
+      setForm((f) => ({ ...f, bankName: result.bankName }));
+    }
+  };
+
   return (
     <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Bank Details" onBack={onBack} edgeToEdge={false} />
       <BenCard className="p-4 space-y-3">
+        <div>
+          <label className="text-xs font-bold text-[#667085]">IFSC</label>
+          <input
+            value={form.ifsc}
+            onChange={(e) => {
+              const value = e.target.value.toUpperCase();
+              setForm((f) => ({ ...f, ifsc: value }));
+              setIfscQuery(value);
+              setShowIfscList(true);
+            }}
+            onFocus={() => setShowIfscList(true)}
+            placeholder="HDFC0000060"
+            className="w-full mt-1 p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-sm font-mono"
+          />
+          {showIfscList && ifscMatches.length > 0 && (
+            <div className="mt-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+              {ifscMatches.map((item) => (
+                <button
+                  key={item.ifsc}
+                  type="button"
+                  onClick={() => {
+                    setForm((f) => ({ ...f, ifsc: item.ifsc, bankName: item.bankName }));
+                    setShowIfscList(false);
+                  }}
+                  className="w-full text-left px-3 py-2.5 border-b border-slate-100 dark:border-slate-800 last:border-0"
+                >
+                  <p className="text-xs font-bold font-mono">{item.ifsc}</p>
+                  <p className="text-[11px] text-[#667085]">{item.bankName} — {item.branch}</p>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         {[
           { key: 'bankName' as const, label: 'Bank Name', placeholder: 'HDFC Bank' },
           { key: 'accountNumber' as const, label: 'Account Number', placeholder: '50200045829101' },
           { key: 'confirmAccountNumber' as const, label: 'Confirm Account Number', placeholder: '50200045829101' },
-          { key: 'ifsc' as const, label: 'IFSC', placeholder: 'HDFC0000060' },
         ].map(({ key, label, placeholder }) => (
           <div key={key}>
             <label className="text-xs font-bold text-[#667085]">{label}</label>
@@ -85,6 +132,26 @@ export const AddBankScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNe
             />
           </div>
         ))}
+        <button
+          type="button"
+          onClick={handleBanlLookup}
+          disabled={!form.accountNumber || form.ifsc.length < 11}
+          className="w-full py-2.5 rounded-xl border border-[#0B5CAB] text-[#0B5CAB] text-xs font-bold disabled:opacity-40"
+        >
+          Verify via BANL (Name Lookup)
+        </button>
+        {banlResult && (
+          <div className={`p-3 rounded-xl text-xs ${banlResult.matchStatus === 'not_found' ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'}`}>
+            {banlResult.matchStatus === 'not_found' ? (
+              'Account not found. Check account number and IFSC.'
+            ) : (
+              <>
+                <p className="font-bold">{banlResult.accountHolderName}</p>
+                <p className="mt-1">{banlResult.bankName} • {banlResult.branch}</p>
+              </>
+            )}
+          </div>
+        )}
         <div>
           <label className="text-xs font-bold text-[#667085]">Account Type</label>
           <select

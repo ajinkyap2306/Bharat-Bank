@@ -4,9 +4,12 @@ import {
   BarChart3,
   Building2,
   ChevronRight,
+  CreditCard,
   Settings,
   Shield,
   UserCircle,
+  Users,
+  Wallet,
 } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
 
@@ -26,9 +29,30 @@ const PRIMARY_ITEMS: MoreMenuItem[] = [
     icon: Building2,
     route: '/corporate/beneficiaries',
   },
+  {
+    id: 'payroll',
+    label: 'Salary Payments',
+    description: 'Run payroll batches',
+    icon: Wallet,
+    route: '/corporate/payroll',
+  },
 ];
 
 const BUSINESS_ITEMS: MoreMenuItem[] = [
+  {
+    id: 'bulk',
+    label: 'Bulk Payments',
+    description: 'File-based vendor payouts',
+    icon: Building2,
+    route: '/corporate/bulk-payments',
+  },
+  {
+    id: 'cards',
+    label: 'Corporate Cards',
+    description: 'Expense cards & limits',
+    icon: CreditCard,
+    route: '/corporate/cards',
+  },
   {
     id: 'reports',
     label: 'Reports',
@@ -52,6 +76,13 @@ const ACCOUNT_ITEMS: MoreMenuItem[] = [
     description: 'Entity and user information',
     icon: UserCircle,
     route: '/corporate/profile',
+  },
+  {
+    id: 'users',
+    label: 'User & Access',
+    description: 'Signatories and corporate users',
+    icon: Users,
+    route: '/corporate/users',
   },
   {
     id: 'security',
@@ -108,6 +139,8 @@ export const CorporateMoreHome: React.FC = () => {
       setCorporateTab('more');
     } else if (item.route === '/corporate/accounts') {
       setCorporateTab('accounts');
+    } else if (item.route === '/corporate/payroll' || item.route === '/corporate/bulk-payments') {
+      setCorporateTab('payments');
     } else {
       setCorporateTab('more');
     }

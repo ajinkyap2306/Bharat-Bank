@@ -252,6 +252,15 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
           </button>
         </div>
 
+        {/* Administration */}
+        <div className="mt-5">
+          <ProfileSection title="Administration">
+            <ProfileMenuRow label="User & Access" onClick={() => onNavigate('users')} />
+            <ProfileMenuRow label="Authorized Signatories" onClick={() => onNavigate('signatories')} />
+            <ProfileMenuRow label="Approval Rules" onClick={() => onNavigate('approval-rules')} />
+          </ProfileSection>
+        </div>
+
         {/* Security */}
         <div className="mt-5">
           <ProfileSection title="Security">

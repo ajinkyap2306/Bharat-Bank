@@ -105,7 +105,7 @@ export const BulkPaymentSubmitted: React.FC = () => {
   };
 
   const handleViewDetails = () => {
-    addToast({ type: 'info', title: 'Batch details', message: 'Detailed batch view coming soon.' });
+    navigate(`/corporate/bulk-payments/${batchId}/details`);
   };
 
   const handleViewResults = () => {

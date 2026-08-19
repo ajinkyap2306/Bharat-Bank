@@ -368,9 +368,7 @@ export const ApprovalDetails: React.FC = () => {
       <ApprovalMoreSheet
         isOpen={showMore}
         onClose={() => setShowMore(false)}
-        onViewHistory={() =>
-          addToast({ type: 'info', title: 'Request history', message: 'Full audit trail coming soon.' })
-        }
+        onViewHistory={() => navigate(`/corporate/approvals/${approvalId}/history`)}
         onDownload={() =>
           addToast({ type: 'success', title: 'Details downloaded', message: 'Approval details saved.' })
         }
