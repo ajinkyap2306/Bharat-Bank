@@ -142,9 +142,13 @@ export const BulkPaymentsHome: React.FC = () => {
                 onClick={() => {
                   if (batch.id === 'batch_aug_vendor_01') {
                     navigate('/corporate/bulk-payments/create?demo=validated');
-                  } else {
-                    addToast({ type: 'info', title: batch.name, message: 'Batch details available in a future update.' });
+                    return;
                   }
+                  addToast({
+                    type: 'info',
+                    title: batch.name,
+                    message: 'Batch details available in a future update.',
+                  });
                 }}
                 className="w-full flex items-center justify-between gap-3 p-4 min-h-16 text-left active:bg-slate-50 dark:active:bg-slate-800/40"
               >

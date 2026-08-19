@@ -92,13 +92,13 @@ export const BulkPaymentReview: React.FC = () => {
     );
   }, [data, confirmed, submitting]);
 
-  const handleBack = () => navigate('/corporate/bulk-payments/create?demo=validated');
+  const handleBack = () => navigate('/corporate/bulk-payments/create');
 
-  const handleEdit = () => navigate('/corporate/bulk-payments/create?demo=validated');
+  const handleEdit = () => navigate('/corporate/bulk-payments/create');
 
-  const handleViewErrors = () => navigate('/corporate/bulk-payments/create?demo=validated');
+  const handleViewErrors = () => navigate('/corporate/bulk-payments/create');
 
-  const handleReviewDuplicates = () => navigate('/corporate/bulk-payments/create?demo=validated');
+  const handleReviewDuplicates = () => navigate('/corporate/bulk-payments/create');
 
   const handleViewAllPayments = () => {
     addToast({

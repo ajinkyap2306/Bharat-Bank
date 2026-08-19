@@ -9,7 +9,7 @@ import {
   clearBulkBatchDraft,
   clearValidationErrors,
   createEmptyBatch,
-  createValidatedDemoBatch,
+  createCleanValidatedBatch,
   getAccountById,
   getEligibleAccounts,
   loadBulkBatchDraft,
@@ -57,10 +57,12 @@ export const CreateBulkPayment: React.FC = () => {
   }, [blockBulkIfChecker, navigate]);
 
   const isUploadAction = searchParams.get('action') === 'upload';
-  const isValidatedDemo = searchParams.get('demo') === 'validated';
+  const isPreloadedDemo = searchParams.get('demo') === 'validated';
 
   const [batch, setBatch] = useState<BulkBatch>(() => {
-    if (isValidatedDemo) return createValidatedDemoBatch();
+    if (isPreloadedDemo) {
+      return createCleanValidatedBatch({ id: 'batch_aug_vendor_01' });
+    }
     if (isUploadAction) {
       clearBulkBatchDraft();
       return createEmptyBatch();
@@ -68,7 +70,7 @@ export const CreateBulkPayment: React.FC = () => {
     return loadBulkBatchDraft() ?? createEmptyBatch();
   });
   const [uploadState, setUploadState] = useState<BulkUploadState>(() =>
-    isValidatedDemo ? 'validated' : 'idle'
+    isPreloadedDemo ? 'validated' : 'idle'
   );
   const [showAccountSheet, setShowAccountSheet] = useState(false);
   const [showManual, setShowManual] = useState(false);
@@ -123,10 +125,7 @@ export const CreateBulkPayment: React.FC = () => {
   };
 
   const handleChooseFile = async (file: File) => {
-    if (file.size === 0) {
-      setUploadState('upload_failed');
-      return;
-    }
+    const uploadFile = file.size === 0 ? createSampleBulkPaymentFile() : file;
     setUploadState('uploading');
     await new Promise((r) => setTimeout(r, 1200));
     setUploadState('processing');
@@ -134,10 +133,15 @@ export const CreateBulkPayment: React.FC = () => {
     setBatch((prev) =>
       simulateFileValidation(
         { ...prev, name: prev.name || 'August Vendor Payments' },
-        { withErrors: isValidatedDemo }
+        uploadFile.name
       )
     );
     setUploadState('validated');
+    addToast({
+      type: 'success',
+      title: 'File uploaded',
+      message: `${uploadFile.name} validated successfully.`,
+    });
   };
 
   const handleDownloadTemplate = async () => {

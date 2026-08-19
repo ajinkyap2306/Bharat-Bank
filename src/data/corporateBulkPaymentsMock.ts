@@ -243,7 +243,7 @@ export function getBulkPaymentsHomeData(): BulkPaymentsHomeData {
         id: 'batch_aug_vendor_01',
         name: 'August Vendor Payments',
         amount: 1875000,
-        status: 'validation_errors',
+        status: 'pending_approval',
         date: '18 Aug 2026',
       },
       {
@@ -286,12 +286,8 @@ export function clearBulkBatchDraft(): void {
   sessionStorage.removeItem(STORAGE_KEY);
 }
 
-export function simulateFileValidation(
-  batch: BulkBatch,
-  options?: { withErrors?: boolean }
-): BulkBatch {
-  const withErrors = options?.withErrors ?? false;
-  const demo = withErrors ? createValidatedDemoBatch() : createCleanValidatedBatch();
+export function simulateFileValidation(batch: BulkBatch, fileName?: string): BulkBatch {
+  const demo = createCleanValidatedBatch();
   return {
     ...demo,
     id: batch.id,
@@ -300,7 +296,7 @@ export function simulateFileValidation(
     accountId: batch.accountId,
     paymentDate: batch.paymentDate,
     currency: batch.currency,
-    uploadFileName: 'August_Vendor_Payments.csv',
+    uploadFileName: fileName || demo.uploadFileName,
   };
 }
 
@@ -344,7 +340,13 @@ export function addManualPayment(batch: BulkBatch, payment: Omit<BulkPaymentReco
     totalAmount,
     fee,
     totalDebit: totalAmount + fee,
-    status: batch.status === 'draft' ? 'draft' : 'validation_errors',
+    status: resolveBatchStatus({
+      ...batch,
+      paymentCount: payments.length,
+      validCount,
+      errorCount: batch.errorCount,
+      duplicates: batch.duplicates,
+    }),
   };
 }
 
