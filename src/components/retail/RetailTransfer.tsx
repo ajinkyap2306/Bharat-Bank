@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import confetti from 'canvas-confetti';
 import { 
@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { Beneficiary, BankAccount, Transaction } from '../../types/banking';
+import { NumericPinInput } from '../common/NumericPinInput';
 
 export const RetailTransfer: React.FC = () => {
   const { 
@@ -34,14 +35,14 @@ export const RetailTransfer: React.FC = () => {
 
   const defaultDebit = getDefaultDebitAccount();
 
-  // Wizard state: 'select_payee' | 'enter_amount' | 'review' | 'mpin' | 'success' | 'add_beneficiary'
-  const [step, setStep] = useState<'select_payee' | 'enter_amount' | 'review' | 'mpin' | 'success' | 'add_beneficiary'>('select_payee');
+  // Wizard state: 'select_payee' | 'enter_amount' | 'mpin' | 'success' | 'add_beneficiary'
+  const [step, setStep] = useState<'select_payee' | 'enter_amount' | 'mpin' | 'success' | 'add_beneficiary'>('select_payee');
   const [transferMode, setTransferMode] = useState<'IMPS' | 'NEFT' | 'RTGS' | 'UPI' | 'Internal'>('IMPS');
   const [selectedDebitAccount, setSelectedDebitAccount] = useState<BankAccount>(defaultDebit);
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary | null>(null);
   const [amount, setAmount] = useState('');
   const [remarks, setRemarks] = useState('');
-  const [pin, setPin] = useState(['', '', '', '']);
+  const [pin, setPin] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [completedTxn, setCompletedTxn] = useState<Transaction | null>(null);
 
@@ -87,7 +88,7 @@ export const RetailTransfer: React.FC = () => {
     setStep('enter_amount');
   };
 
-  const handleProceedToReview = () => {
+  const handleProceedToMpin = () => {
     const numAmount = Number(amount);
     if (!numAmount || numAmount <= 0) {
       addToast({
@@ -105,40 +106,48 @@ export const RetailTransfer: React.FC = () => {
       });
       return;
     }
-    setStep('review');
+    setPin('');
+    setStep('mpin');
   };
 
-  const handlePinInput = (index: number, val: string) => {
-    if (!/^\d*$/.test(val)) return;
-    const newPin = [...pin];
-    newPin[index] = val ? val.slice(-1) : '';
-    setPin(newPin);
+  const submitTransfer = useCallback(() => {
+    if (isProcessing || !selectedDebitAccount) return;
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      const txn = executeTransfer({
+        fromAccountId: selectedDebitAccount.id,
+        beneficiaryName: selectedBeneficiary?.name || 'Payee',
+        beneficiaryAccount: selectedBeneficiary?.accountNumber || 'Acc',
+        bankName: selectedBeneficiary?.bankName || 'Bank',
+        amount: Number(amount),
+        mode: transferMode,
+        remarks: remarks || 'Fund Transfer via Bharat Corporate Banking',
+      });
+      setCompletedTxn(txn);
+      setStep('success');
 
-    if (index === 3 && val) {
-      setIsProcessing(true);
-      setTimeout(() => {
-        setIsProcessing(false);
-        const txn = executeTransfer({
-          fromAccountId: selectedDebitAccount.id,
-          beneficiaryName: selectedBeneficiary?.name || 'Payee',
-          beneficiaryAccount: selectedBeneficiary?.accountNumber || 'Acc',
-          bankName: selectedBeneficiary?.bankName || 'Bank',
-          amount: Number(amount),
-          mode: transferMode,
-          remarks: remarks || 'Fund Transfer via Bharat Corporate Banking'
-        });
-        setCompletedTxn(txn);
-        setStep('success');
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+    }, 1000);
+  }, [
+    isProcessing,
+    selectedDebitAccount,
+    selectedBeneficiary,
+    amount,
+    transferMode,
+    remarks,
+    executeTransfer,
+  ]);
 
-        // Confetti celebration
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      }, 1000);
+  useEffect(() => {
+    if (step === 'mpin' && pin.length === 4 && !isProcessing) {
+      submitTransfer();
     }
-  };
+  }, [step, pin, isProcessing, submitTransfer]);
 
   const handleCreateBeneficiary = (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,7 +186,7 @@ export const RetailTransfer: React.FC = () => {
     setSelectedBeneficiary(null);
     setAmount('');
     setRemarks('');
-    setPin(['', '', '', '']);
+    setPin('');
     setCompletedTxn(null);
   };
 
@@ -460,81 +469,31 @@ export const RetailTransfer: React.FC = () => {
           </div>
 
           <button
-            onClick={handleProceedToReview}
+            onClick={handleProceedToMpin}
             disabled={!amount || Number(amount) <= 0}
             className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold rounded-2xl shadow-lg transition-all"
-          >
-            Review Transfer
-          </button>
-        </motion.div>
-      )}
-
-      {/* 4. REVIEW TRANSFER */}
-      {step === 'review' && selectedBeneficiary && (
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setStep('enter_amount')}
-              className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Review & Confirm</h3>
-          </div>
-
-          <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
-            <div className="text-center pb-4 border-b border-slate-100 dark:border-slate-800">
-              <p className="text-xs text-slate-400 font-medium">You are transferring</p>
-              <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-                ₹{Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-              </h2>
-              <span className="inline-block mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
-                {transferMode} Instant Settlement
-              </span>
-            </div>
-
-            <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-400">
-              <div className="flex justify-between">
-                <span>From Account:</span>
-                <span className="font-bold text-slate-900 dark:text-white">{selectedDebitAccount.maskedNumber}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Beneficiary:</span>
-                <span className="font-bold text-slate-900 dark:text-white">{selectedBeneficiary.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>To Account / UPI:</span>
-                <span className="font-mono text-slate-900 dark:text-white">{selectedBeneficiary.accountNumber}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Bank & IFSC:</span>
-                <span className="font-mono text-slate-900 dark:text-white">{selectedBeneficiary.bankName}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Transfer Fee:</span>
-                <span className="text-emerald-500 font-bold">₹0.00 (Zero Charges)</span>
-              </div>
-              {remarks && (
-                <div className="flex justify-between">
-                  <span>Remarks:</span>
-                  <span className="italic text-slate-800 dark:text-slate-200">{remarks}</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <button
-            onClick={() => setStep('mpin')}
-            className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl shadow-lg transition-all"
           >
             Authorize with MPIN
           </button>
         </motion.div>
       )}
 
-      {/* 5. MPIN KEYPAD */}
+      {/* 4. MPIN */}
       {step === 'mpin' && (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4 text-center">
+          <div className="flex items-center gap-2 text-left">
+            <button
+              type="button"
+              onClick={() => {
+                setPin('');
+                setStep('enter_amount');
+              }}
+              className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Authorize Transfer</h3>
+          </div>
           <div className="w-12 h-12 bg-blue-50 dark:bg-blue-950/60 text-blue-600 rounded-2xl mx-auto flex items-center justify-center mb-2">
             <ShieldCheck className="w-6 h-6" />
           </div>
@@ -543,21 +502,25 @@ export const RetailTransfer: React.FC = () => {
             Authorizing transfer of ₹{Number(amount).toLocaleString('en-IN')} to {selectedBeneficiary?.name}
           </p>
 
-          <div className="flex justify-center gap-3 my-6">
-            {pin.map((digit, idx) => (
-              <input
-                key={idx}
-                type="password"
-                maxLength={1}
-                value={digit}
-                onChange={(e) => handlePinInput(idx, e.target.value)}
-                className="w-12 h-14 text-center text-2xl font-bold bg-white dark:bg-slate-900 rounded-xl outline-none border-2 border-slate-200 dark:border-slate-700 focus:border-blue-500 text-slate-900 dark:text-white shadow-xs"
-                autoFocus={idx === 0}
-              />
-            ))}
+          <div className="my-6 px-4">
+            <NumericPinInput
+              value={pin}
+              onChange={setPin}
+              length={4}
+              masked
+              autoFocus
+              autoComplete="off"
+              ariaLabel="4-digit MPIN"
+              gapClassName="gap-3"
+              digitClassName="h-14 text-2xl"
+            />
           </div>
 
-          <p className="text-[11px] text-slate-400">Demo PIN: 1 2 3 4</p>
+          {isProcessing && (
+            <p className="text-xs text-slate-500">Authorizing payment…</p>
+          )}
+
+          <p className="text-[11px] text-slate-400">Demo PIN: 1234</p>
         </motion.div>
       )}
 

@@ -19,6 +19,12 @@ export interface NumericPinInputProps {
 const toDigits = (raw: string, length: number): string =>
   raw.replace(/\D/g, '').slice(0, length);
 
+const GRID_COLS: Record<number, string> = {
+  4: 'grid-cols-4',
+  5: 'grid-cols-5',
+  6: 'grid-cols-6',
+};
+
 export const NumericPinInput: React.FC<NumericPinInputProps> = ({
   value,
   onChange,
@@ -47,6 +53,8 @@ export const NumericPinInput: React.FC<NumericPinInputProps> = ({
     onChange(toDigits(raw, length));
   };
 
+  const gridCols = GRID_COLS[length] ?? 'grid-cols-6';
+
   return (
     <div
       className={`relative ${className}`}
@@ -56,7 +64,7 @@ export const NumericPinInput: React.FC<NumericPinInputProps> = ({
     >
       <input
         ref={inputRef}
-        type={masked ? 'password' : 'tel'}
+        type="tel"
         inputMode="numeric"
         pattern="[0-9]*"
         autoComplete={autoComplete}
@@ -65,11 +73,16 @@ export const NumericPinInput: React.FC<NumericPinInputProps> = ({
         disabled={disabled}
         aria-label={ariaLabel}
         onChange={(e) => handleChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Backspace' || e.key === 'Delete') {
+            e.stopPropagation();
+          }
+        }}
         className="absolute inset-0 z-10 h-full w-full cursor-text opacity-[0.01] text-base caret-transparent"
         style={{ WebkitUserSelect: 'text', userSelect: 'text' }}
       />
 
-      <div className={`grid grid-cols-6 ${gapClassName}`} aria-hidden>
+      <div className={`grid ${gridCols} ${gapClassName}`} aria-hidden>
         {Array.from({ length }, (_, index) => {
           const digit = safeValue[index] ?? '';
           const isActive = !disabled && index === activeIndex;
