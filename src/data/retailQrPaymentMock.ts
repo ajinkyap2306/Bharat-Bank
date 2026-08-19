@@ -26,6 +26,7 @@ export const DEMO_QR_MERCHANTS: Record<string, QrMerchant> = {
 };
 
 export const QR_DEMO_FAIL_AMOUNT = 9999;
+export const QR_DEMO_PENDING_AMOUNT = 7777;
 export const QR_PAYMENT_FEE = 0;
 
 const PENDING_QR_KEY = 'retail_qr_pending_payment';

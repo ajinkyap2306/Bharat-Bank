@@ -1,5 +1,7 @@
 import React from 'react';
-import { ChevronLeft } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { NumericPinInput } from '../../../common/NumericPinInput';
 
 export const QrShell: React.FC<{
   title: string;
@@ -98,8 +100,80 @@ export const QrStickyCTA: React.FC<{
 
 export const VerifiedBadge: React.FC = () => (
   <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-    ✓ Verified Merchant
+    ✓ Verified
   </span>
+);
+
+export const UpiPinSheet: React.FC<{
+  open: boolean;
+  merchantName: string;
+  amount: number;
+  pin: string;
+  isPaying: boolean;
+  onPinChange: (value: string) => void;
+  onConfirm: () => void;
+  onClose: () => void;
+}> = ({ open, merchantName, amount, pin, isPaying, onPinChange, onConfirm, onClose }) => (
+  <AnimatePresence>
+    {open && (
+      <>
+        <motion.button
+          type="button"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-40 bg-black/50"
+          aria-label="Close UPI PIN"
+          onClick={isPaying ? undefined : onClose}
+        />
+        <motion.div
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+          className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-[430px] rounded-t-3xl bg-white dark:bg-slate-900 px-5 pt-5 pb-8 safe-bottom shadow-2xl"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enter UPI PIN"
+        >
+          {isPaying ? (
+            <div className="flex flex-col items-center text-center py-10">
+              <Loader2 className="w-8 h-8 text-congress-blue-600 animate-spin mb-4" />
+              <p className="text-lg font-bold">Paying ₹{amount.toLocaleString('en-IN')}…</p>
+              <p className="text-sm text-slate-500 mt-1">{merchantName}</p>
+            </div>
+          ) : (
+            <>
+              <div className="w-10 h-1 rounded-full bg-slate-200 dark:bg-slate-700 mx-auto mb-5" />
+              <p className="text-center text-sm text-slate-500">Pay {merchantName}</p>
+              <p className="text-center text-3xl font-extrabold tabular-nums mt-1">
+                ₹{amount.toLocaleString('en-IN')}
+              </p>
+              <p className="text-center text-xs font-bold text-slate-600 dark:text-slate-400 mt-6 mb-3">
+                Enter UPI PIN
+              </p>
+              <NumericPinInput
+                value={pin}
+                onChange={onPinChange}
+                masked
+                autoFocus
+                autoComplete="off"
+                ariaLabel="UPI PIN"
+              />
+              <button
+                type="button"
+                disabled={pin.length < 6}
+                onClick={onConfirm}
+                className="w-full mt-6 py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm disabled:opacity-50 min-h-11"
+              >
+                Confirm Payment
+              </button>
+            </>
+          )}
+        </motion.div>
+      </>
+    )}
+  </AnimatePresence>
 );
 
 export const AmountKeypad: React.FC<{

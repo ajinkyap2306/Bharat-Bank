@@ -1,14 +1,9 @@
 export type QrPaymentStep =
   | 'scanner'
-  | 'detected'
-  | 'merchant'
-  | 'amount'
-  | 'review'
-  | 'auth'
-  | 'processing'
+  | 'payment'
   | 'success'
   | 'failed'
-  | 'transaction-detail'
+  | 'pending'
   | 'my-qr';
 
 export type QrErrorType = 'invalid' | 'expired' | 'unsupported' | 'duplicate';
