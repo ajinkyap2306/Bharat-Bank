@@ -16,6 +16,8 @@ import { RetailRegistrationModule } from './components/auth/retail/RetailRegistr
 import { RegistrationEntry } from './components/auth/RegistrationEntry';
 import { CorporateRegistrationModule } from './components/auth/corporate/CorporateRegistrationModule';
 import { ForgotPasswordModule } from './components/auth/ForgotPasswordModule';
+import { ForgotMpinModule } from './components/auth/ForgotMpinModule';
+import { PreLoginModule } from './components/auth/prelogin/PreLoginModule';
 
 // Retail Components
 import { RetailHome } from './components/retail/RetailHome';
@@ -31,6 +33,7 @@ import RetailBeneficiaries from './components/retail/RetailBeneficiaries';
 import RetailStatements from './components/retail/RetailStatements';
 import { RetailServices } from './components/retail/RetailServices';
 import { RetailProfile } from './components/retail/RetailProfile';
+import { ChequeServicesModule } from './components/retail/cheque/ChequeServicesModule';
 
 // Corporate Components
 import { CorporateHome } from './components/corporate/CorporateHome';
@@ -69,7 +72,7 @@ const BankingAppContent: React.FC = () => {
   const showGlobalHeader = isRetailHome && !isScannerOpen;
 
   const isRetailNativeScreen =
-    bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance'].includes(retailTab);
+    bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance', 'cheque'].includes(retailTab);
 
   const isCorporateRootTab =
     bankingType === 'corporate' && isCorporateBottomNavRoute(location.pathname);
@@ -174,7 +177,9 @@ const BankingAppContent: React.FC = () => {
     location.pathname === '/retail/register' ||
     location.pathname.startsWith('/retail/register/') ||
     location.pathname === '/corporate/register' ||
-    location.pathname === '/forgot-password'
+    location.pathname === '/forgot-password' ||
+    location.pathname === '/forgot-mpin' ||
+    location.pathname.startsWith('/prelogin/')
   ) {
     return (
       <>
@@ -184,6 +189,8 @@ const BankingAppContent: React.FC = () => {
         )}
         {location.pathname === '/corporate/register' && <CorporateRegistrationModule />}
         {location.pathname === '/forgot-password' && <ForgotPasswordModule />}
+        {location.pathname === '/forgot-mpin' && <ForgotMpinModule />}
+        {location.pathname.startsWith('/prelogin/') && <PreLoginModule />}
         <ToastContainer />
       </>
     );
@@ -218,6 +225,7 @@ const BankingAppContent: React.FC = () => {
             {retailTab === 'beneficiaries' && <RetailBeneficiaries />}
             {retailTab === 'statements' && <RetailStatements />}
             {retailTab === 'services' && <RetailServices />}
+            {retailTab === 'cheque' && <ChequeServicesModule />}
             {retailTab === 'profile' && <RetailProfile />}
           </>
         ) : (
@@ -247,6 +255,8 @@ const UnauthenticatedRoutes: React.FC = () => {
         <Route path="/retail/register" element={<RetailRegistrationModule />} />
         <Route path="/corporate/register" element={<CorporateRegistrationModule />} />
         <Route path="/forgot-password" element={<ForgotPasswordModule />} />
+        <Route path="/forgot-mpin" element={<ForgotMpinModule />} />
+        <Route path="/prelogin/:screen" element={<PreLoginModule />} />
         <Route path="/corporate/login" element={<Navigate to="/" replace />} />
         <Route path="/corporate/otp" element={<CorporateOtpRoute />} />
         <Route

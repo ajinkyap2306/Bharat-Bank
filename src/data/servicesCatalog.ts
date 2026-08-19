@@ -3,6 +3,7 @@ import { ServiceCategory } from '../types/services';
 const tab = (t: import('../types/banking').RetailTab) => ({ kind: 'tab' as const, tab: t });
 const profile = (screen: string) => ({ kind: 'profile' as const, screen });
 const toast = (title: string, message: string) => ({ kind: 'toast' as const, title, message });
+const cheque = () => ({ kind: 'tab' as const, tab: 'cheque' as const });
 
 export const SERVICES_CATALOG: ServiceCategory[] = [
   {
@@ -152,10 +153,10 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
     id: 'cheque-cash',
     title: 'CHEQUE & CASH',
     services: [
-      { id: 'cheque-book', name: 'Request Cheque Book', description: 'Request a new cheque book delivered to your address.', icon: 'BookOpen', keywords: ['cheque', 'book', 'request'], route: toast('Cheque Book', 'Cheque book request submitted. Tracking ID: CHQ-88192.') },
-      { id: 'stop-cheque', name: 'Stop Cheque Payment', description: 'Revoke and hold specific cheque payments.', icon: 'Ban', keywords: ['stop', 'cheque'], route: toast('Stop Cheque', 'Stop cheque order registered.') },
-      { id: 'cheque-status', name: 'Cheque Status', description: 'Track status of issued cheques.', icon: 'Search', keywords: ['cheque', 'status', 'track'], route: toast('Cheque Status', 'Enter cheque number to track status.') },
-      { id: 'positive-pay', name: 'Positive Pay', description: 'Register high-value cheques for added security.', icon: 'ShieldCheck', keywords: ['positive pay', 'cheque'], badge: 'New', route: toast('Positive Pay', 'Positive Pay registration opened.') },
+      { id: 'cheque-book', name: 'Request Cheque Book', description: 'Request a new cheque book delivered to your address.', icon: 'BookOpen', keywords: ['cheque', 'book', 'request'], route: cheque() },
+      { id: 'stop-cheque', name: 'Stop Cheque Payment', description: 'Revoke and hold specific cheque payments.', icon: 'Ban', keywords: ['stop', 'cheque'], route: cheque() },
+      { id: 'cheque-status', name: 'Cheque Status', description: 'Track status of issued cheques.', icon: 'Search', keywords: ['cheque', 'status', 'track'], route: cheque() },
+      { id: 'positive-pay', name: 'Positive Pay', description: 'Register high-value cheques for added security.', icon: 'ShieldCheck', keywords: ['positive pay', 'cheque'], badge: 'New', route: cheque() },
       { id: 'cash-deposit', name: 'Cash Deposit', description: 'Find cash deposit options at branches and CDMs.', icon: 'ArrowDownToLine', keywords: ['cash', 'deposit'], route: toast('Cash Deposit', 'Nearest cash deposit points displayed.') },
       { id: 'cash-withdrawal', name: 'Cash Withdrawal', description: 'Locate ATMs and withdrawal services.', icon: 'Banknote', keywords: ['cash', 'withdrawal', 'atm'], route: toast('Cash Withdrawal', 'ATM locator opened.') },
       { id: 'atm-locator-cash', name: 'ATM Locator', description: 'Find nearby ATMs for cash withdrawal.', icon: 'MapPinned', keywords: ['atm', 'locator'], route: toast('ATM Locator', 'Showing nearby ATMs.') },

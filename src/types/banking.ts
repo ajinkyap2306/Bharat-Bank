@@ -24,7 +24,8 @@ export type RetailTab =
   | 'services'
   | 'beneficiaries'
   | 'statements'
-  | 'profile';
+  | 'profile'
+  | 'cheque';
 
 export type CorporateTab = 
   | 'home'

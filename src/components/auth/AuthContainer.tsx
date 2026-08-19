@@ -16,6 +16,9 @@ import { NumericPinInput } from '../common/NumericPinInput';
 import { CORPORATE_DEMO_HINT } from '../../data/corporateAuthMock';
 import { authenticateCorporate } from '../../services/corporateLoginService';
 import { isCorporateCustomerId } from '../../utils/customerId';
+import { PreLoginQuickLinks } from './prelogin/PreLoginModule';
+import { PreLoginTicker } from './prelogin/PreLoginTicker';
+import { LoginOfferSheet } from './prelogin/LoginOfferSheet';
 
 type LoginPersona = 'retail' | 'maker' | 'checker';
 
@@ -161,9 +164,11 @@ export const AuthContainer: React.FC = () => {
               <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Sign in to Mobile Banking
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-3">
                 Bharat Co-operative Bank (Mumbai) Ltd • Retail & Corporate Banking
               </p>
+
+              <PreLoginTicker />
 
               <form onSubmit={handleLoginSubmit} className="space-y-4">
                 <div>
@@ -189,13 +194,23 @@ export const AuthContainer: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Password</label>
-                    <button
-                      type="button"
-                      onClick={() => navigate('/forgot-password')}
-                      className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
-                    >
-                      Forgot password?
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => navigate('/forgot-mpin')}
+                        className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        Forgot MPIN?
+                      </button>
+                      <span className="text-slate-300">|</span>
+                      <button
+                        type="button"
+                        onClick={() => navigate('/forgot-password')}
+                        className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
                   </div>
                   <div className="relative">
                     <input
@@ -241,7 +256,9 @@ export const AuthContainer: React.FC = () => {
               </form>
             </div>
 
-            <div className="pt-6 border-t border-slate-200 dark:border-slate-900">
+            <PreLoginQuickLinks />
+
+            <div className="pt-4 border-t border-slate-200 dark:border-slate-900 mt-4">
               <p className="text-[11px] text-slate-500 text-center mb-2.5 font-medium">Demo credentials</p>
               <div className="grid grid-cols-3 gap-2">
                 <button
@@ -390,6 +407,8 @@ export const AuthContainer: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <LoginOfferSheet onExploreOffers={() => navigate('/prelogin/offers')} />
     </div>
   );
 };

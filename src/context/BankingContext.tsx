@@ -78,6 +78,16 @@ import {
   DEFAULT_RECENT_SERVICE_IDS,
 } from '../data/servicesCatalog';
 import {
+  ChequeBook,
+  ChequeRecord,
+  PositivePayRegistration,
+  INITIAL_CHEQUE_BOOKS,
+  INITIAL_DEPOSITED_CHEQUES,
+  INITIAL_ISSUED_CHEQUES,
+  INITIAL_POSITIVE_PAY,
+  generateChequeReference,
+} from '../data/chequeServicesMock';
+import {
   PersonalInfo,
   KycDetails,
   TrustedDevice,
@@ -172,6 +182,10 @@ interface BankingContextType {
   securityLogs: SecurityLog[];
   notifications: NotificationItem[];
   statements: Statement[];
+  chequeBooks: ChequeBook[];
+  issuedCheques: ChequeRecord[];
+  depositedCheques: ChequeRecord[];
+  positivePayRegs: PositivePayRegistration[];
 
   // Action methods
   executeTransfer: (params: {
@@ -219,6 +233,15 @@ interface BankingContextType {
   updateSavedBiller: (billerId: string, updates: Partial<Biller>) => void;
   deleteSavedBiller: (billerId: string) => void;
   toggleBillerAutoPay: (billerId: string, enabled: boolean, rule?: Biller['autoPayRule'], maxAmount?: number) => void;
+
+  requestChequeBook: (accountId: string, leaves: number) => string;
+  stopCheque: (accountId: string, chequeNumber: string, reason: string) => string;
+  registerPositivePay: (params: {
+    chequeNumber: string;
+    payeeName: string;
+    amount: number;
+    issueDate: string;
+  }) => string;
 
   // Services navigation
   profileDeepLink: string | null;
@@ -462,6 +485,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [securityLogs] = useState<SecurityLog[]>(INITIAL_SECURITY_LOGS);
   const [notifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
   const [statements, setStatements] = useState<Statement[]>(INITIAL_RETAIL_STATEMENTS);
+  const [chequeBooks, setChequeBooks] = useState<ChequeBook[]>(INITIAL_CHEQUE_BOOKS);
+  const [issuedCheques, setIssuedCheques] = useState<ChequeRecord[]>(INITIAL_ISSUED_CHEQUES);
+  const [depositedCheques, setDepositedCheques] = useState<ChequeRecord[]>(INITIAL_DEPOSITED_CHEQUES);
+  const [positivePayRegs, setPositivePayRegs] = useState<PositivePayRegistration[]>(INITIAL_POSITIVE_PAY);
 
   // Profile & Preferences
   const [primaryAccountId, setPrimaryAccountId] = useState('acc_ret_sav_01');
@@ -1368,6 +1395,84 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
+  const requestChequeBook = (accountId: string, leaves: number): string => {
+    const account = retailAccounts.find((a) => a.id === accountId);
+    const ref = generateChequeReference('CHQ-BK');
+    const newBook: ChequeBook = {
+      id: `cb_${Date.now()}`,
+      accountId,
+      accountLabel: `${account?.accountType ?? 'Account'} ${account?.maskedNumber ?? ''}`,
+      chequeBookNumber: ref,
+      leavesTotal: leaves,
+      leavesUsed: 0,
+      issuedDate: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+      status: 'active',
+    };
+    setChequeBooks((prev) => [newBook, ...prev]);
+    addToast({
+      type: 'success',
+      title: 'Cheque Book Requested',
+      message: `Your request ${ref} will be delivered in 5–7 working days.`,
+    });
+    return ref;
+  };
+
+  const stopCheque = (accountId: string, chequeNumber: string, reason: string): string => {
+    const account = retailAccounts.find((a) => a.id === accountId);
+    const ref = generateChequeReference('CHQ-STOP');
+    setIssuedCheques((prev) =>
+      prev.map((c) =>
+        c.chequeNumber === chequeNumber ? { ...c, status: 'stopped' as const } : c
+      )
+    );
+    if (!issuedCheques.some((c) => c.chequeNumber === chequeNumber)) {
+      setIssuedCheques((prev) => [
+        {
+          id: `chq_stop_${Date.now()}`,
+          chequeNumber,
+          date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+          payee: reason,
+          amount: 0,
+          status: 'stopped',
+          type: 'issued',
+          accountLabel: account?.maskedNumber ?? '',
+        },
+        ...prev,
+      ]);
+    }
+    addToast({
+      type: 'success',
+      title: 'Stop Cheque Registered',
+      message: `Cheque ${chequeNumber} has been stopped. Ref: ${ref}`,
+    });
+    return ref;
+  };
+
+  const registerPositivePay = (params: {
+    chequeNumber: string;
+    payeeName: string;
+    amount: number;
+    issueDate: string;
+  }): string => {
+    const ref = generateChequeReference('PP');
+    const entry: PositivePayRegistration = {
+      id: `pp_${Date.now()}`,
+      chequeNumber: params.chequeNumber,
+      payeeName: params.payeeName,
+      amount: params.amount,
+      issueDate: params.issueDate,
+      status: 'registered',
+      reference: ref,
+    };
+    setPositivePayRegs((prev) => [entry, ...prev]);
+    addToast({
+      type: 'success',
+      title: 'Positive Pay Registered',
+      message: `Cheque ${params.chequeNumber} registered for ₹${params.amount.toLocaleString('en-IN')}.`,
+    });
+    return ref;
+  };
+
   const navigateService = (serviceId: string, route: ServiceRoute) => {
     setRecentServiceIds((prev) => {
       const next = [serviceId, ...prev.filter((id) => id !== serviceId)].slice(0, 8);
@@ -1928,6 +2033,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setBillers(INITIAL_BILLERS);
     setBillPaymentHistory(INITIAL_BILL_PAYMENT_HISTORY);
     setUpcomingBills(INITIAL_UPCOMING_BILLS);
+    setChequeBooks(INITIAL_CHEQUE_BOOKS);
+    setIssuedCheques(INITIAL_ISSUED_CHEQUES);
+    setDepositedCheques(INITIAL_DEPOSITED_CHEQUES);
+    setPositivePayRegs(INITIAL_POSITIVE_PAY);
     setPrimaryAccountId('acc_ret_sav_01');
     setDefaultDebitAccountId('acc_ret_sav_01');
     setDefaultCardId(INITIAL_RETAIL_CARDS[0]?.id || '');
@@ -2005,6 +2114,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       securityLogs,
       notifications,
       statements,
+      chequeBooks,
+      issuedCheques,
+      depositedCheques,
+      positivePayRegs,
 
       executeTransfer,
       approveCorporatePayment,
@@ -2036,6 +2149,9 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       updateSavedBiller,
       deleteSavedBiller,
       toggleBillerAutoPay,
+      requestChequeBook,
+      stopCheque,
+      registerPositivePay,
       createFixedDeposit,
       createRecurringDeposit,
       closeDeposit,
