@@ -14,6 +14,7 @@ import {
 import { useBanking } from '../../context/BankingContext';
 import { BankingType } from '../../types/banking';
 import { BharatBankLogo } from '../common/BharatBankLogo';
+import { NumericPinInput } from '../common/NumericPinInput';
 import {
   CORPORATE_DEMO_ID,
   CORPORATE_DEMO_HINT,
@@ -44,7 +45,7 @@ export const AuthContainer: React.FC = () => {
   const [customerId, setCustomerId] = useState('RB-123456');
   const [password, setPassword] = useState('demo123');
   const [showPassword, setShowPassword] = useState(false);
-  const [otp, setOtp] = useState(['5', '8', '2', '9', '4', '1']);
+  const [otp, setOtp] = useState('');
   const [isBiometricScanning, setIsBiometricScanning] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -319,21 +320,13 @@ export const AuthContainer: React.FC = () => {
                 <span className="font-mono font-bold text-slate-800 dark:text-slate-200">+91 98••• •••10</span>
               </p>
 
-              <div className="flex justify-between gap-2 mb-6">
-                {otp.map((digit, idx) => (
-                  <input
-                    key={idx}
-                    type="text"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => {
-                      const newOtp = [...otp];
-                      newOtp[idx] = e.target.value.slice(-1);
-                      setOtp(newOtp);
-                    }}
-                    className="w-12 h-14 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 focus:border-blue-500 rounded-xl text-center text-xl font-mono font-bold text-slate-900 dark:text-white outline-none shadow-xs"
-                  />
-                ))}
+              <div className="mb-6 px-1">
+                <NumericPinInput
+                  value={otp}
+                  onChange={setOtp}
+                  autoFocus
+                  ariaLabel="6-digit one-time password"
+                />
               </div>
 
               <button

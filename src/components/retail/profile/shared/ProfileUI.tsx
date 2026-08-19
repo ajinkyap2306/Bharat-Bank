@@ -1,4 +1,5 @@
 import React from 'react';
+import { NumericPinInput } from '../../../common/NumericPinInput';
 import { ChevronRight, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ScreenHeader } from '../../../common/ScreenHeader';
@@ -204,36 +205,23 @@ export const OtpInput: React.FC<{
   length?: number;
   onComplete: (otp: string) => void;
 }> = ({ length = 6, onComplete }) => {
-  const [otp, setOtp] = React.useState<string[]>(Array(length).fill(''));
+  const [otp, setOtp] = React.useState('');
 
-  const handleChange = (index: number, val: string) => {
-    if (!/^\d*$/.test(val)) return;
-    const next = [...otp];
-    next[index] = val.slice(-1);
+  const handleChange = (next: string) => {
     setOtp(next);
-    if (val && index < length - 1) {
-      document.getElementById(`otp-${index + 1}`)?.focus();
-    }
-    if (next.every((d) => d) && next.join('').length === length) {
-      onComplete(next.join(''));
+    if (next.length === length) {
+      onComplete(next);
     }
   };
 
   return (
-    <div className="flex justify-center gap-2">
-      {otp.map((digit, i) => (
-        <input
-          key={i}
-          id={`otp-${i}`}
-          type="text"
-          inputMode="numeric"
-          maxLength={1}
-          value={digit}
-          onChange={(e) => handleChange(i, e.target.value)}
-          className="w-11 h-12 text-center text-lg font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-congress-blue-500 outline-none"
-        />
-      ))}
-    </div>
+    <NumericPinInput
+      value={otp}
+      onChange={handleChange}
+      length={length}
+      autoFocus
+      ariaLabel="Verification code"
+    />
   );
 };
 

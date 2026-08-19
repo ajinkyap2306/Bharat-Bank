@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronLeft, Loader2, ShieldCheck } from 'lucide-react';
+import { NumericPinInput } from '../../../common/NumericPinInput';
 
 export const RegShell: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="min-h-dvh bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white flex flex-col safe-top safe-bottom font-['Plus_Jakarta_Sans',sans-serif]">
@@ -175,38 +176,22 @@ interface MpinInputProps {
   error?: string;
 }
 
-export const MpinInput: React.FC<MpinInputProps> = ({ label, value, onChange, length = 6, error }) => {
-  const digits = value.padEnd(length, ' ').split('').slice(0, length);
-
-  return (
-    <div>
-      <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">{label}</label>
-      <div className="flex justify-center gap-2 mb-2">
-        {digits.map((d, i) => (
-          <span
-            key={i}
-            className={`w-10 h-12 rounded-xl border-2 flex items-center justify-center text-xl font-bold ${
-              error ? 'border-red-400' : 'border-slate-200 dark:border-slate-700'
-            } bg-white dark:bg-slate-900`}
-          >
-            {d.trim() ? '•' : ''}
-          </span>
-        ))}
-      </div>
-      <input
-        type="password"
-        inputMode="numeric"
-        maxLength={length}
-        value={value}
-        onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, length))}
-        className="sr-only"
-        aria-label={label}
-        autoComplete="off"
-      />
-      {error && <p className="text-[11px] text-red-600 text-center">{error}</p>}
-    </div>
-  );
-};
+export const MpinInput: React.FC<MpinInputProps> = ({ label, value, onChange, length = 6, error }) => (
+  <div>
+    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-2">{label}</label>
+    <NumericPinInput
+      value={value}
+      onChange={onChange}
+      length={length}
+      masked
+      hasError={Boolean(error)}
+      autoComplete="off"
+      ariaLabel={label}
+      className="mb-2"
+    />
+    {error && <p className="text-[11px] text-red-600 text-center">{error}</p>}
+  </div>
+);
 
 export const RegInfoLink: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick }) => (
   <button type="button" onClick={onClick} className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { NumericPinInput } from '../../../common/NumericPinInput';
 import { ShieldCheck, HelpCircle, Loader2 } from 'lucide-react';
 import { BharatBankLogo } from '../../../common/BharatBankLogo';
 
@@ -118,28 +119,14 @@ export const CorpOtpInput: React.FC<{
   value: string[];
   onChange: (digits: string[]) => void;
 }> = ({ value, onChange }) => (
-  <div className="flex justify-between gap-2 px-3">
-    {value.map((digit, idx) => (
-      <input
-        key={idx}
-        type="text"
-        inputMode="numeric"
-        maxLength={1}
-        value={digit}
-        onChange={(e) => {
-          const v = e.target.value.replace(/\D/g, '').slice(-1);
-          const next = [...value];
-          next[idx] = v;
-          onChange(next);
-          if (v && idx < 5) {
-            const el = document.getElementById(`corp-otp-${idx + 1}`);
-            el?.focus();
-          }
-        }}
-        id={`corp-otp-${idx}`}
-        className="w-11 h-12 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 focus:border-[#0B5CAB] rounded-xl text-center text-lg font-bold outline-none"
-      />
-    ))}
+  <div className="px-3">
+    <NumericPinInput
+      value={value.join('')}
+      onChange={(next) => onChange(Array.from({ length: 6 }, (_, i) => next[i] ?? ''))}
+      autoFocus
+      ariaLabel="Corporate verification code"
+      digitClassName="h-[50px] rounded-[13px] text-lg"
+    />
   </div>
 );
 

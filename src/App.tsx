@@ -211,7 +211,7 @@ const BankingAppContent: React.FC = () => {
 
       <BottomNav />
 
-      <ScannerModal isOpen={isScannerOpen} onClose={closeScanner} />
+      <ScannerModal />
       <SessionTimeoutSheet />
       <ToastContainer />
     </div>

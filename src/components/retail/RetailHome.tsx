@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import confetti from 'canvas-confetti';
 import { 
@@ -41,8 +41,7 @@ import {
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { BankAccount, Transaction } from '../../types/banking';
-import { ContextAlertsCarousel } from './shared/ContextAlertsCarousel';
-import { buildRetailContextAlerts } from './shared/buildRetailContextAlerts';
+import { AddMoneyModule } from './add-money/AddMoneyModule';
 
 const SERVICE_ICON_BOX =
   'w-11 h-11 rounded-2xl bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-congress-blue-700 group-hover:text-white transition-all shadow-2xs';
@@ -60,9 +59,6 @@ export const RetailHome: React.FC = () => {
     setBottomNavHidden,
     getPrimaryAccount,
     getVisibleAccounts,
-    upcomingBills,
-    fixedDeposits,
-    insurancePolicies,
   } = useBanking();
 
   const [hiddenAccounts, setHiddenAccounts] = useState<Record<string, boolean>>({});
@@ -78,7 +74,7 @@ export const RetailHome: React.FC = () => {
   };
 
   // Feature Modals
-  const [showAddMoneyModal, setShowAddMoneyModal] = useState(false);
+  const [showAddMoneyFlow, setShowAddMoneyFlow] = useState(false);
   const [showInsuranceModal, setShowInsuranceModal] = useState(false);
   const [showForexModal, setShowForexModal] = useState(false);
   const [showRechargeModal, setShowRechargeModal] = useState(false);
@@ -86,11 +82,6 @@ export const RetailHome: React.FC = () => {
   const [showStatementsModal, setShowStatementsModal] = useState(false);
   const [showOffersModal, setShowOffersModal] = useState(false);
   const [showRewardsModal, setShowRewardsModal] = useState(false);
-
-  // Add Money State
-  const [addAmount, setAddAmount] = useState('5000');
-  const [addSource, setAddSource] = useState('HDFC Bank UPI (hdfcbank@upi)');
-  const [isAddingMoney, setIsAddingMoney] = useState(false);
 
   // Recharge State
   const [rechargeMobile, setRechargeMobile] = useState('9876543210');
@@ -108,7 +99,7 @@ export const RetailHome: React.FC = () => {
   // Check if any modal is active to hide Bottom Navigation
   const hasActiveModal = !!(
     selectedTxn || 
-    showAddMoneyModal || 
+    showAddMoneyFlow ||
     showInsuranceModal || 
     showForexModal || 
     showRechargeModal || 
@@ -127,36 +118,6 @@ export const RetailHome: React.FC = () => {
   const primaryAccount = getPrimaryAccount() || { id: 'acc_01', balance: 0, accountType: 'Savings', availableBalance: 0, maskedNumber: '' };
   const visibleAccounts = getVisibleAccounts();
   const creditCard = cards.find(c => c.cardType === 'credit');
-
-  const alertItems = useMemo(
-    () =>
-      buildRetailContextAlerts({
-        upcomingBills,
-        fixedDeposits,
-        insurancePolicies,
-        onPayBill: () => setRetailTab('bills'),
-        onViewMaturity: () => setRetailTab('deposits'),
-        onRenewPolicy: () => setRetailTab('insurance'),
-      }),
-    [upcomingBills, fixedDeposits, insurancePolicies, setRetailTab]
-  );
-
-  const handleAddMoneySubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const num = parseFloat(addAmount);
-    if (isNaN(num) || num <= 0) {
-      addToast({ type: 'error', title: 'Invalid Amount', message: 'Please enter a valid amount to add.' });
-      return;
-    }
-
-    setIsAddingMoney(true);
-    setTimeout(() => {
-      addMoneyToAccount(primaryAccount.id, num, addSource);
-      confetti({ particleCount: 60, spread: 65, origin: { y: 0.6 } });
-      setIsAddingMoney(false);
-      setShowAddMoneyModal(false);
-    }, 900);
-  };
 
   const handleRechargeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -294,9 +255,6 @@ export const RetailHome: React.FC = () => {
         </div>
       </div>
 
-      {/* Actionable alerts carousel */}
-      <ContextAlertsCarousel items={alertItems} />
-
       {/* 2. Quick Actions */}
       <div>
         <div className="flex items-center justify-between mb-3.5">
@@ -365,7 +323,7 @@ export const RetailHome: React.FC = () => {
           {/* Add Money */}
           <motion.button
             whileTap={{ scale: 0.92 }}
-            onClick={() => setShowAddMoneyModal(true)}
+            onClick={() => setShowAddMoneyFlow(true)}
             className="flex flex-col items-center justify-center p-1.5 sm:p-2 text-center group cursor-pointer"
           >
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-linear-to-tr from-congress-blue-600 to-congress-blue-800 text-white flex items-center justify-center shadow-md shadow-congress-blue-500/25 group-hover:scale-105 transition-transform mb-2">
@@ -721,110 +679,9 @@ export const RetailHome: React.FC = () => {
 
       {/* ================= MODALS & DETAIL FLOWS ================= */}
 
-      {/* A. Add Money Modal */}
-      <AnimatePresence>
-        {showAddMoneyModal && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-4">
-            <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 50, opacity: 0 }}
-              className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-3xl p-5 shadow-2xl border border-slate-200 dark:border-slate-800"
-            >
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 flex items-center justify-center">
-                    <PlusCircle className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Add Money</h3>
-                    <p className="text-[10px] text-slate-400">To {primaryAccount.accountType} ({primaryAccount.maskedNumber})</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => setShowAddMoneyModal(false)}
-                  className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <form onSubmit={handleAddMoneySubmit} className="mt-4 space-y-4">
-                <div>
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
-                    Enter Amount (₹)
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-lg font-bold text-slate-400">₹</span>
-                    <input
-                      type="number"
-                      value={addAmount}
-                      onChange={(e) => setAddAmount(e.target.value)}
-                      placeholder="5,000"
-                      className="w-full pl-8 pr-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 text-lg font-extrabold text-slate-900 dark:text-white focus:outline-none focus:border-purple-500"
-                      required
-                    />
-                  </div>
-
-                  {/* Quick Chips */}
-                  <div className="flex gap-2 mt-2">
-                    {['1000', '2500', '5000', '10000'].map((chip) => (
-                      <button
-                        key={chip}
-                        type="button"
-                        onClick={() => setAddAmount(chip)}
-                        className={`flex-1 py-1.5 text-xs font-bold rounded-xl border transition-all ${
-                          addAmount === chip 
-                            ? 'bg-purple-600 text-white border-purple-600' 
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-transparent hover:border-slate-300'
-                        }`}
-                      >
-                        +₹{parseInt(chip).toLocaleString('en-IN')}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
-                    Fund Source / Payment Method
-                  </label>
-                  <select
-                    value={addSource}
-                    onChange={(e) => setAddSource(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none"
-                  >
-                    <option value="HDFC Bank UPI (hdfcbank@upi)">HDFC Bank UPI (hdfcbank@upi)</option>
-                    <option value="ICICI Bank NetBanking">ICICI Bank NetBanking</option>
-                    <option value="State Bank of India Debit Card (•••• 8920)">SBI Debit Card (•••• 8920)</option>
-                    <option value="Instant UPI Collect (Any UPI App)">Instant UPI Collect Request</option>
-                  </select>
-                </div>
-
-                <div className="p-3 bg-purple-50 dark:bg-purple-950/40 rounded-2xl text-[11px] text-purple-700 dark:text-purple-300 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 shrink-0" />
-                  <span>Zero convenience fee. Funds credited instantly via RBI IMPS/UPI rails.</span>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isAddingMoney}
-                  className="w-full py-3.5 bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-2xl shadow-lg shadow-purple-500/20 text-xs flex items-center justify-center gap-2 active:scale-95 transition-all"
-                >
-                  {isAddingMoney ? (
-                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <>
-                      <PlusCircle className="w-4 h-4" />
-                      <span>Add ₹{parseInt(addAmount || '0').toLocaleString('en-IN')} Instantly</span>
-                    </>
-                  )}
-                </button>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {showAddMoneyFlow && (
+        <AddMoneyModule onClose={() => setShowAddMoneyFlow(false)} />
+      )}
 
       {/* B. Insurance Modal */}
       <AnimatePresence>
