@@ -1,7 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { useBanking } from '../../../context/BankingContext';
 import { ATM_LOCATORS, BRANCH_LOCATORS } from '../../../data/preLoginMock';
+import { CDM_LOCATORS } from '../../../data/level6Mock';
 import { ScreenHeader } from '../../common/ScreenHeader';
+
+const LOCATOR_CONFIG = {
+  atm: { title: 'ATM Locator', subtitle: 'Cash withdrawal points near you', items: ATM_LOCATORS },
+  branch: { title: 'Branch Locator', subtitle: 'Near your current location (demo)', items: BRANCH_LOCATORS },
+  cdm: { title: 'CDM Locator', subtitle: 'Cash deposit machines near you', items: CDM_LOCATORS },
+} as const;
 
 export const LocatorModule: React.FC = () => {
   const { locatorType, setRetailTab, setBottomNavHidden } = useBanking();
@@ -12,22 +19,22 @@ export const LocatorModule: React.FC = () => {
     return () => setBottomNavHidden(false);
   }, [setBottomNavHidden]);
 
-  const items = locatorType === 'branch' ? BRANCH_LOCATORS : ATM_LOCATORS;
+  const config = LOCATOR_CONFIG[locatorType];
   const filtered = useMemo(
     () =>
-      items.filter(
+      config.items.filter(
         (item) =>
           item.name.toLowerCase().includes(query.toLowerCase()) ||
           item.address.toLowerCase().includes(query.toLowerCase())
       ),
-    [items, query]
+    [config.items, query]
   );
 
   return (
     <div className="flex flex-col h-full -mx-3 px-3 bg-slate-50 dark:bg-slate-950 min-h-full">
       <ScreenHeader
-        title={locatorType === 'branch' ? 'Branch Locator' : 'ATM Locator'}
-        subtitle="Near your current location (demo)"
+        title={config.title}
+        subtitle={config.subtitle}
         onBack={() => setRetailTab('services')}
       />
 

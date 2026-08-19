@@ -41,7 +41,11 @@ export type RetailTab =
   | 'forex-card'
   | 'branch-appointment'
   | 'rewards'
-  | 'locker';
+  | 'locker'
+  | 'loan-closure-cert'
+  | 'bonds'
+  | 'demat'
+  | 'feedback';
 
 export type CorporateTab = 
   | 'home'

@@ -1033,7 +1033,21 @@ export const INITIAL_LOANS: LoanAccount[] = [
     tenureRemainingMonths: 194,
     totalTenureMonths: 240,
     status: 'active',
-  }
+  },
+  {
+    id: 'loan_02',
+    loanNumber: 'PL-APEX-8810245',
+    type: 'Personal Loan',
+    sanctionedAmount: 500000,
+    outstandingAmount: 0,
+    interestRate: 11.5,
+    emiAmount: 0,
+    nextEmiDate: '—',
+    tenureRemainingMonths: 0,
+    totalTenureMonths: 36,
+    status: 'closed',
+    disbursementDate: '15 Jan 2024',
+  },
 ];
 
 export const INITIAL_INVESTMENTS: InvestmentItem[] = [

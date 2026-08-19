@@ -2,7 +2,6 @@ import { ServiceCategory } from '../types/services';
 
 const tab = (t: import('../types/banking').RetailTab) => ({ kind: 'tab' as const, tab: t });
 const profile = (screen: string) => ({ kind: 'profile' as const, screen });
-const toast = (title: string, message: string) => ({ kind: 'toast' as const, title, message });
 const cheque = () => ({ kind: 'tab' as const, tab: 'cheque' as const });
 const epassbook = () => ({ kind: 'tab' as const, tab: 'epassbook' as const });
 const estatement = () => ({ kind: 'tab' as const, tab: 'estatement' as const });
@@ -24,6 +23,11 @@ const forexCard = () => ({ kind: 'tab' as const, tab: 'forex-card' as const });
 const branchAppointment = () => ({ kind: 'tab' as const, tab: 'branch-appointment' as const });
 const rewards = () => ({ kind: 'tab' as const, tab: 'rewards' as const });
 const locker = () => ({ kind: 'tab' as const, tab: 'locker' as const });
+const cdmLocator = () => ({ kind: 'locator' as const, locatorType: 'cdm' as const });
+const loanClosureCert = () => ({ kind: 'tab' as const, tab: 'loan-closure-cert' as const });
+const bonds = () => ({ kind: 'tab' as const, tab: 'bonds' as const });
+const demat = () => ({ kind: 'tab' as const, tab: 'demat' as const });
+const feedback = () => ({ kind: 'tab' as const, tab: 'feedback' as const });
 
 export const SERVICES_CATALOG: ServiceCategory[] = [
   {
@@ -111,7 +115,7 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
       { id: 'emi-payment', name: 'EMI Payment', description: 'Pay your upcoming loan EMI.', icon: 'IndianRupee', keywords: ['emi', 'pay'], badge: 'Due Soon', route: tab('loans') },
       { id: 'emi-schedule', name: 'EMI Schedule', description: 'View your complete repayment schedule.', icon: 'Calendar', keywords: ['schedule', 'emi'], route: tab('loans') },
       { id: 'loan-statement', name: 'Loan Statement', description: 'Download loan account statements.', icon: 'FileText', keywords: ['statement', 'loan'], route: tab('statements') },
-      { id: 'loan-closure-cert', name: 'Loan Closure Certificate', description: 'Request closure certificate for closed loans.', icon: 'Award', keywords: ['closure', 'certificate'], route: toast('Loan Closure Certificate', 'Request submitted for processing.') },
+      { id: 'loan-closure-cert', name: 'Loan Closure Certificate', description: 'Request closure certificate for closed loans.', icon: 'Award', keywords: ['closure', 'certificate'], route: loanClosureCert() },
     ],
   },
   {
@@ -123,8 +127,8 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
       { id: 'start-sip', name: 'Start SIP', description: 'Begin a systematic investment plan.', icon: 'Repeat', keywords: ['sip', 'systematic'], route: tab('investments') },
       { id: 'inv-transactions', name: 'Investment Transactions', description: 'View buy, sell and SIP transaction history.', icon: 'ArrowLeftRight', keywords: ['transactions', 'investment'], route: tab('investments') },
       { id: 'redeem', name: 'Redeem Investment', description: 'Redeem mutual fund units where eligible.', icon: 'ArrowDownToLine', keywords: ['redeem', 'sell'], route: tab('investments') },
-      { id: 'bonds', name: 'Bonds', description: 'Explore government and corporate bond options.', icon: 'Landmark', keywords: ['bonds', 'gsec'], route: toast('Bonds', 'Bond investment catalogue opened.') },
-      { id: 'govt-securities', name: 'Government Securities', description: 'View sovereign debt investment options.', icon: 'Building', keywords: ['government', 'securities'], route: toast('Government Securities', 'G-Sec information loaded.') },
+      { id: 'bonds', name: 'Bonds', description: 'Explore government and corporate bond options.', icon: 'Landmark', keywords: ['bonds', 'gsec'], route: bonds() },
+      { id: 'govt-securities', name: 'Government Securities', description: 'View sovereign debt investment options.', icon: 'Building', keywords: ['government', 'securities'], route: bonds() },
       { id: 'tax-saving-inv', name: 'Tax-Saving Investments', description: 'Explore ELSS and other tax-saving options.', icon: 'BadgePercent', keywords: ['tax saving', 'elss', '80c'], route: tab('investments') },
     ],
   },
@@ -180,10 +184,10 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
       { id: 'stop-cheque', name: 'Stop Cheque Payment', description: 'Revoke and hold specific cheque payments.', icon: 'Ban', keywords: ['stop', 'cheque'], route: cheque() },
       { id: 'cheque-status', name: 'Cheque Status', description: 'Track status of issued cheques.', icon: 'Search', keywords: ['cheque', 'status', 'track'], route: cheque() },
       { id: 'positive-pay', name: 'Positive Pay', description: 'Register high-value cheques for added security.', icon: 'ShieldCheck', keywords: ['positive pay', 'cheque'], badge: 'New', route: cheque() },
-      { id: 'cash-deposit', name: 'Cash Deposit', description: 'Find cash deposit options at branches and CDMs.', icon: 'ArrowDownToLine', keywords: ['cash', 'deposit'], route: toast('Cash Deposit', 'Nearest cash deposit points displayed.') },
-      { id: 'cash-withdrawal', name: 'Cash Withdrawal', description: 'Locate ATMs and withdrawal services.', icon: 'Banknote', keywords: ['cash', 'withdrawal', 'atm'], route: toast('Cash Withdrawal', 'ATM locator opened.') },
+      { id: 'cash-deposit', name: 'Cash Deposit', description: 'Find cash deposit options at branches and CDMs.', icon: 'ArrowDownToLine', keywords: ['cash', 'deposit'], route: cdmLocator() },
+      { id: 'cash-withdrawal', name: 'Cash Withdrawal', description: 'Locate ATMs and withdrawal services.', icon: 'Banknote', keywords: ['cash', 'withdrawal', 'atm'], route: atmLocator() },
       { id: 'atm-locator-cash', name: 'ATM Locator', description: 'Find nearby ATMs for cash withdrawal.', icon: 'MapPinned', keywords: ['atm', 'locator'], route: atmLocator() },
-      { id: 'cdm-locator', name: 'Cash Deposit Machine Locator', description: 'Find cash deposit machines near you.', icon: 'MapPin', keywords: ['cdm', 'deposit machine'], route: toast('CDM Locator', 'Showing nearby cash deposit machines.') },
+      { id: 'cdm-locator', name: 'Cash Deposit Machine Locator', description: 'Find cash deposit machines near you.', icon: 'MapPin', keywords: ['cdm', 'deposit machine'], route: cdmLocator() },
       { id: 'branch-locator-cash', name: 'Branch Locator', description: 'Find branches for cash and cheque services.', icon: 'Building2', keywords: ['branch', 'locator'], route: branchLocator() },
     ],
   },
@@ -193,7 +197,7 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
     services: [
       { id: 'locker', name: 'Safe Deposit Locker', description: 'Check locker availability and apply.', icon: 'Lock', keywords: ['locker', 'safe deposit'], route: locker() },
       { id: 'locker-appointment', name: 'Locker Appointment', description: 'Book an appointment to access your locker.', icon: 'Calendar', keywords: ['locker', 'appointment'], route: locker() },
-      { id: 'demat', name: 'Demat Account', description: 'Open or link a demat account for securities.', icon: 'BarChart3', keywords: ['demat', 'securities'], route: toast('Demat Account', 'Demat account services opened.') },
+      { id: 'demat', name: 'Demat Account', description: 'Open or link a demat account for securities.', icon: 'BarChart3', keywords: ['demat', 'securities'], route: demat() },
       { id: 'rewards', name: 'Rewards', description: 'View and redeem your reward points.', icon: 'Gift', keywords: ['rewards', 'points'], badge: 'Available', route: rewards() },
       { id: 'offers', name: 'Offers', description: 'Explore exclusive banking offers and deals.', icon: 'Tag', keywords: ['offers', 'deals'], route: rewards() },
       { id: 'calculators', name: 'Financial Calculators', description: 'EMI, FD, and savings calculators.', icon: 'Calculator', keywords: ['calculator', 'emi', 'fd'], route: tab('loans') },
@@ -215,7 +219,7 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
       { id: 'track-request', name: 'Track Service Request', description: 'Check status of your service requests.', icon: 'ListChecks', keywords: ['track', 'request'], route: profile('service-requests') },
       { id: 'complaint', name: 'Complaint / Grievance', description: 'Register a complaint or grievance.', icon: 'AlertCircle', keywords: ['complaint', 'grievance'], route: profile('help-support') },
       { id: 'branch-appointment', name: 'Branch Appointment', description: 'Schedule a visit to your branch.', icon: 'CalendarCheck', keywords: ['appointment', 'branch'], route: branchAppointment() },
-      { id: 'feedback', name: 'Feedback', description: 'Share your feedback about our services.', icon: 'MessageSquare', keywords: ['feedback'], route: toast('Feedback', 'Feedback form opened.') },
+      { id: 'feedback', name: 'Feedback', description: 'Share your feedback about our services.', icon: 'MessageSquare', keywords: ['feedback'], route: feedback() },
       { id: 'emergency-block', name: 'Emergency Card Block', description: 'Instantly block your card in case of loss or fraud.', icon: 'AlertOctagon', keywords: ['emergency', 'block', 'card', 'fraud'], route: tab('cards') },
     ],
   },

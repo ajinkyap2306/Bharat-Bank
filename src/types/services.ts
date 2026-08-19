@@ -5,7 +5,7 @@ export type ServiceRoute =
   | { kind: 'profile'; screen: string }
   | { kind: 'bill'; screen: string }
   | { kind: 'scanner' }
-  | { kind: 'locator'; locatorType: 'atm' | 'branch' }
+  | { kind: 'locator'; locatorType: 'atm' | 'branch' | 'cdm' }
   | { kind: 'toast'; title: string; message: string };
 
 export type ServiceBadge = 'Active' | 'Pending' | 'Due Soon' | 'Action Required' | 'New' | 'Available';

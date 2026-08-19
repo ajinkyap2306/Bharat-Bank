@@ -50,6 +50,10 @@ import { ForexCardModule } from './components/retail/forex/ForexCardModule';
 import { BranchAppointmentModule } from './components/retail/appointments/BranchAppointmentModule';
 import { RewardsModule } from './components/retail/rewards/RewardsModule';
 import { LockerModule } from './components/retail/locker/LockerModule';
+import { LoanClosureCertModule } from './components/retail/loan-closure/LoanClosureCertModule';
+import { BondsModule } from './components/retail/bonds/BondsModule';
+import { DematModule } from './components/retail/demat/DematModule';
+import { FeedbackModule } from './components/retail/feedback/FeedbackModule';
 
 // Corporate Components
 import { CorporateHome } from './components/corporate/CorporateHome';
@@ -88,7 +92,7 @@ const BankingAppContent: React.FC = () => {
   const showGlobalHeader = isRetailHome && !isScannerOpen;
 
   const isRetailNativeScreen =
-    bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance', 'cheque', 'epassbook', 'estatement', 'locator', 'nach', 'nominee', 'scheduled', 'request-money', 'open-account', 'cardless', 'govt-savings', 'form-15g', 'remittance', 'forex-card', 'branch-appointment', 'rewards', 'locker'].includes(retailTab);
+    bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance', 'cheque', 'epassbook', 'estatement', 'locator', 'nach', 'nominee', 'scheduled', 'request-money', 'open-account', 'cardless', 'govt-savings', 'form-15g', 'remittance', 'forex-card', 'branch-appointment', 'rewards', 'locker', 'loan-closure-cert', 'bonds', 'demat', 'feedback'].includes(retailTab);
 
   const isCorporateRootTab =
     bankingType === 'corporate' && isCorporateBottomNavRoute(location.pathname);
@@ -258,6 +262,10 @@ const BankingAppContent: React.FC = () => {
             {retailTab === 'branch-appointment' && <BranchAppointmentModule />}
             {retailTab === 'rewards' && <RewardsModule />}
             {retailTab === 'locker' && <LockerModule />}
+            {retailTab === 'loan-closure-cert' && <LoanClosureCertModule />}
+            {retailTab === 'bonds' && <BondsModule />}
+            {retailTab === 'demat' && <DematModule />}
+            {retailTab === 'feedback' && <FeedbackModule />}
             {retailTab === 'profile' && <RetailProfile />}
           </>
         ) : (

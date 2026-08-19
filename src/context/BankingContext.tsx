@@ -127,6 +127,17 @@ import {
   INITIAL_LOCKERS,
 } from '../data/level5Mock';
 import {
+  LoanClosureCertificateRequest,
+  BondHolding,
+  DematAccount,
+  FeedbackSubmission,
+  INITIAL_LOAN_CLOSURE_REQUESTS,
+  INITIAL_BOND_HOLDINGS,
+  INITIAL_DEMAT_ACCOUNT,
+  INITIAL_FEEDBACK,
+  BOND_OFFERINGS,
+} from '../data/level6Mock';
+import {
   PersonalInfo,
   KycDetails,
   TrustedDevice,
@@ -226,7 +237,7 @@ interface BankingContextType {
   depositedCheques: ChequeRecord[];
   positivePayRegs: PositivePayRegistration[];
   eStatementSubscriptions: EStatementSubscription[];
-  locatorType: 'atm' | 'branch';
+  locatorType: 'atm' | 'branch' | 'cdm';
   transferRepeat: TransferRepeatPayload | null;
   nachMandates: NachMandate[];
   scheduledTransfers: ScheduledTransfer[];
@@ -242,6 +253,10 @@ interface BankingContextType {
   branchAppointments: BranchAppointment[];
   lockerApplications: LockerApplication[];
   rewardPoints: number;
+  loanClosureRequests: LoanClosureCertificateRequest[];
+  bondHoldings: BondHolding[];
+  dematAccount: DematAccount | null;
+  feedbackSubmissions: FeedbackSubmission[];
 
   // Action methods
   executeTransfer: (params: {
@@ -313,7 +328,7 @@ interface BankingContextType {
   unfreezeAccount: (accountId: string) => void;
   setTransferRepeat: (payload: TransferRepeatPayload) => void;
   clearTransferRepeat: () => void;
-  setLocatorType: (type: 'atm' | 'branch') => void;
+  setLocatorType: (type: 'atm' | 'branch' | 'cdm') => void;
   deleteNachMandate: (mandateId: string) => void;
   updateAccountNominees: (
     accountId: string,
@@ -354,6 +369,10 @@ interface BankingContextType {
   redeemReward: (rewardId: string, points: number, rewardName: string) => void;
   applyLocker: (params: { branchName: string; lockerSize: LockerApplication['lockerSize']; annualRent: number }) => void;
   bookLockerVisit: (lockerId: string, visitDate: string) => void;
+  requestLoanClosureCert: (loanId: string) => string;
+  investInBond: (bondId: string, amount: number, accountId: string) => void;
+  applyDematAccount: (linkedAccountId: string) => void;
+  submitFeedback: (params: { category: string; rating: number; message: string }) => string;
 
   // Services navigation
   profileDeepLink: string | null;
@@ -606,7 +625,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [eStatementSubscriptions, setEStatementSubscriptions] = useState<EStatementSubscription[]>(
     INITIAL_ESTATEMENT_SUBSCRIPTIONS
   );
-  const [locatorType, setLocatorType] = useState<'atm' | 'branch'>('atm');
+  const [locatorType, setLocatorType] = useState<'atm' | 'branch' | 'cdm'>('atm');
   const [transferRepeat, setTransferRepeatState] = useState<TransferRepeatPayload | null>(null);
   const [nachMandates, setNachMandates] = useState<NachMandate[]>(INITIAL_NACH_MANDATES);
   const [scheduledTransfers, setScheduledTransfers] = useState<ScheduledTransfer[]>(INITIAL_SCHEDULED_TRANSFERS);
@@ -622,6 +641,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [branchAppointments, setBranchAppointments] = useState<BranchAppointment[]>(INITIAL_BRANCH_APPOINTMENTS);
   const [lockerApplications, setLockerApplications] = useState<LockerApplication[]>(INITIAL_LOCKERS);
   const [rewardPoints, setRewardPoints] = useState(6840);
+  const [loanClosureRequests, setLoanClosureRequests] = useState<LoanClosureCertificateRequest[]>(INITIAL_LOAN_CLOSURE_REQUESTS);
+  const [bondHoldings, setBondHoldings] = useState<BondHolding[]>(INITIAL_BOND_HOLDINGS);
+  const [dematAccount, setDematAccount] = useState<DematAccount | null>(INITIAL_DEMAT_ACCOUNT);
+  const [feedbackSubmissions, setFeedbackSubmissions] = useState<FeedbackSubmission[]>(INITIAL_FEEDBACK);
 
   // Profile & Preferences
   const [primaryAccountId, setPrimaryAccountId] = useState('acc_ret_sav_01');
@@ -2141,6 +2164,109 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
+  const requestLoanClosureCert = (loanId: string): string => {
+    const loan = loans.find((l) => l.id === loanId);
+    const reference = `LCC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const entry: LoanClosureCertificateRequest = {
+      id: `lcc_${Date.now()}`,
+      loanId,
+      loanNumber: loan?.loanNumber || '—',
+      loanType: loan?.type || 'Loan',
+      requestedOn: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+      status: 'processing',
+      reference,
+    };
+    setLoanClosureRequests((prev) => [entry, ...prev]);
+    addActivityEvent({
+      category: 'profile',
+      title: 'Closure Certificate Requested',
+      description: loan?.loanNumber || reference,
+      timestamp: 'Just now',
+      status: 'info',
+    });
+    return reference;
+  };
+
+  const investInBond = (bondId: string, amount: number, accountId: string) => {
+    const bond = BOND_OFFERINGS.find((b) => b.id === bondId);
+    if (!bond) return;
+    const units = Math.floor(amount / bond.minInvestment);
+    const maturityYear = new Date().getFullYear() + bond.maturityYears;
+    const holding: BondHolding = {
+      id: `bh_${Date.now()}`,
+      bondId,
+      bondName: bond.name,
+      category: bond.category,
+      investedAmount: amount,
+      units,
+      couponRate: bond.couponRate,
+      maturityDate: `15 Dec ${maturityYear}`,
+      purchasedOn: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+    };
+    setBondHoldings((prev) => {
+      const existing = prev.find((h) => h.bondId === bondId);
+      if (existing) {
+        return prev.map((h) =>
+          h.bondId === bondId
+            ? { ...h, investedAmount: h.investedAmount + amount, units: h.units + units }
+            : h
+        );
+      }
+      return [holding, ...prev];
+    });
+    setRetailAccounts((prev) =>
+      prev.map((acc) => {
+        if (acc.id !== accountId) return acc;
+        const bal = Math.max(0, acc.balance - amount);
+        return { ...acc, balance: bal, availableBalance: bal - (acc.holdAmount || 0) };
+      })
+    );
+    addActivityEvent({
+      category: 'payment',
+      title: 'Bond Purchase',
+      description: `₹${amount.toLocaleString('en-IN')} — ${bond.name}`,
+      timestamp: 'Just now',
+      status: 'success',
+    });
+    addToast({ type: 'success', title: 'Bond Purchased', message: `${bond.name} — ₹${amount.toLocaleString('en-IN')}` });
+  };
+
+  const applyDematAccount = (linkedAccountId: string) => {
+    const account = retailAccounts.find((a) => a.id === linkedAccountId);
+    const dpId = `IN${Math.floor(100000 + Math.random() * 900000)}`;
+    const clientId = String(Math.floor(10000000 + Math.random() * 90000000));
+    const entry: DematAccount = {
+      id: `demat_${Date.now()}`,
+      dpId,
+      clientId,
+      status: 'pending',
+      linkedAccountLabel: account?.nickname || account?.type || 'Savings Account',
+    };
+    setDematAccount(entry);
+    addActivityEvent({
+      category: 'profile',
+      title: 'Demat Application',
+      description: `${dpId} / ${clientId}`,
+      timestamp: 'Just now',
+      status: 'info',
+    });
+    addToast({ type: 'success', title: 'Application Submitted', message: 'Demat account will be activated in 2–3 working days.' });
+  };
+
+  const submitFeedback = (params: { category: string; rating: number; message: string }): string => {
+    const reference = `FB-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const entry: FeedbackSubmission = {
+      id: `fb_${Date.now()}`,
+      ...params,
+      submittedOn: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+      reference,
+      status: 'submitted',
+    };
+    setFeedbackSubmissions((prev) => [entry, ...prev]);
+    addToast({ type: 'success', title: 'Thank you!', message: 'Your feedback has been recorded.' });
+    return reference;
+  };
+
   const navigateService = (serviceId: string, route: ServiceRoute) => {
     setRecentServiceIds((prev) => {
       const next = [serviceId, ...prev.filter((id) => id !== serviceId)].slice(0, 8);
@@ -2727,6 +2853,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setBranchAppointments(INITIAL_BRANCH_APPOINTMENTS);
     setLockerApplications(INITIAL_LOCKERS);
     setRewardPoints(6840);
+    setLoanClosureRequests(INITIAL_LOAN_CLOSURE_REQUESTS);
+    setBondHoldings(INITIAL_BOND_HOLDINGS);
+    setDematAccount(INITIAL_DEMAT_ACCOUNT);
+    setFeedbackSubmissions(INITIAL_FEEDBACK);
     setPrimaryAccountId('acc_ret_sav_01');
     setDefaultDebitAccountId('acc_ret_sav_01');
     setDefaultCardId(INITIAL_RETAIL_CARDS[0]?.id || '');
@@ -2825,6 +2955,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       branchAppointments,
       lockerApplications,
       rewardPoints,
+      loanClosureRequests,
+      bondHoldings,
+      dematAccount,
+      feedbackSubmissions,
 
       executeTransfer,
       approveCorporatePayment,
@@ -2891,6 +3025,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       redeemReward,
       applyLocker,
       bookLockerVisit,
+      requestLoanClosureCert,
+      investInBond,
+      applyDematAccount,
+      submitFeedback,
       createFixedDeposit,
       createRecurringDeposit,
       closeDeposit,

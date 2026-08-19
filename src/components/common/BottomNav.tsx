@@ -41,7 +41,7 @@ export const BottomNav: React.FC = () => {
   const pendingApprovalsCount = getApprovalsBadgeCount();
 
   const isRetailNativeScreen =
-    bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance', 'cheque', 'epassbook', 'estatement', 'locator', 'nach', 'nominee', 'scheduled', 'request-money', 'open-account', 'cardless', 'govt-savings', 'form-15g', 'remittance', 'forex-card', 'branch-appointment', 'rewards', 'locker'].includes(retailTab);
+    bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance', 'cheque', 'epassbook', 'estatement', 'locator', 'nach', 'nominee', 'scheduled', 'request-money', 'open-account', 'cardless', 'govt-savings', 'form-15g', 'remittance', 'forex-card', 'branch-appointment', 'rewards', 'locker', 'loan-closure-cert', 'bonds', 'demat', 'feedback'].includes(retailTab);
 
   const isVisible = useMemo(() => {
     if (!isAuthenticated || isScannerOpen || isRetailNativeScreen) {
