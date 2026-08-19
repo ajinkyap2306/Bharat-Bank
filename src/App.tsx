@@ -43,6 +43,13 @@ import { ScheduledTransfersModule } from './components/retail/scheduled/Schedule
 import { RequestMoneyModule } from './components/retail/request-money/RequestMoneyModule';
 import { OpenAccountModule } from './components/retail/open-account/OpenAccountModule';
 import { CardlessCashModule } from './components/retail/cardless/CardlessCashModule';
+import { GovtSavingsModule } from './components/retail/govt-savings/GovtSavingsModule';
+import { Form15GModule } from './components/retail/form15g/Form15GModule';
+import { RemittanceModule } from './components/retail/remittance/RemittanceModule';
+import { ForexCardModule } from './components/retail/forex/ForexCardModule';
+import { BranchAppointmentModule } from './components/retail/appointments/BranchAppointmentModule';
+import { RewardsModule } from './components/retail/rewards/RewardsModule';
+import { LockerModule } from './components/retail/locker/LockerModule';
 
 // Corporate Components
 import { CorporateHome } from './components/corporate/CorporateHome';
@@ -81,7 +88,7 @@ const BankingAppContent: React.FC = () => {
   const showGlobalHeader = isRetailHome && !isScannerOpen;
 
   const isRetailNativeScreen =
-    bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance', 'cheque', 'epassbook', 'estatement', 'locator', 'nach', 'nominee', 'scheduled', 'request-money', 'open-account', 'cardless'].includes(retailTab);
+    bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance', 'cheque', 'epassbook', 'estatement', 'locator', 'nach', 'nominee', 'scheduled', 'request-money', 'open-account', 'cardless', 'govt-savings', 'form-15g', 'remittance', 'forex-card', 'branch-appointment', 'rewards', 'locker'].includes(retailTab);
 
   const isCorporateRootTab =
     bankingType === 'corporate' && isCorporateBottomNavRoute(location.pathname);
@@ -244,6 +251,13 @@ const BankingAppContent: React.FC = () => {
             {retailTab === 'request-money' && <RequestMoneyModule />}
             {retailTab === 'open-account' && <OpenAccountModule />}
             {retailTab === 'cardless' && <CardlessCashModule />}
+            {retailTab === 'govt-savings' && <GovtSavingsModule />}
+            {retailTab === 'form-15g' && <Form15GModule />}
+            {retailTab === 'remittance' && <RemittanceModule />}
+            {retailTab === 'forex-card' && <ForexCardModule />}
+            {retailTab === 'branch-appointment' && <BranchAppointmentModule />}
+            {retailTab === 'rewards' && <RewardsModule />}
+            {retailTab === 'locker' && <LockerModule />}
             {retailTab === 'profile' && <RetailProfile />}
           </>
         ) : (

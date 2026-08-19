@@ -17,6 +17,13 @@ const myActivity = () => ({ kind: 'profile' as const, screen: 'my-activity' });
 const txnLimits = () => ({ kind: 'profile' as const, screen: 'transaction-limits' });
 const atmLocator = () => ({ kind: 'locator' as const, locatorType: 'atm' as const });
 const branchLocator = () => ({ kind: 'locator' as const, locatorType: 'branch' as const });
+const govtSavings = () => ({ kind: 'tab' as const, tab: 'govt-savings' as const });
+const form15g = () => ({ kind: 'tab' as const, tab: 'form-15g' as const });
+const remittance = () => ({ kind: 'tab' as const, tab: 'remittance' as const });
+const forexCard = () => ({ kind: 'tab' as const, tab: 'forex-card' as const });
+const branchAppointment = () => ({ kind: 'tab' as const, tab: 'branch-appointment' as const });
+const rewards = () => ({ kind: 'tab' as const, tab: 'rewards' as const });
+const locker = () => ({ kind: 'tab' as const, tab: 'locker' as const });
 
 export const SERVICES_CATALOG: ServiceCategory[] = [
   {
@@ -85,9 +92,9 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
       { id: 'maturity-instructions', name: 'Maturity Instructions', description: 'Set what happens when your deposit matures.', icon: 'CalendarCheck', keywords: ['maturity', 'renew'], route: tab('deposits') },
       { id: 'premature-closure', name: 'Premature Closure', description: 'Close a deposit before maturity where eligible.', icon: 'XCircle', keywords: ['premature', 'close'], route: tab('deposits') },
       { id: 'deposit-certificate', name: 'Deposit Certificate', description: 'Download certificates for your deposits.', icon: 'FileBadge', keywords: ['certificate', 'deposit'], route: profile('documents') },
-      { id: 'ppf-deposit', name: 'PPF', description: 'Contribute to your Public Provident Fund account.', icon: 'Shield', keywords: ['ppf', 'provident'], route: toast('PPF', 'PPF account services opened.') },
-      { id: 'ssa', name: 'Sukanya Samriddhi Account', description: 'Manage SSA for girl child savings.', icon: 'Heart', keywords: ['ssa', 'sukanya'], route: toast('SSA', 'Sukanya Samriddhi Account details loaded.') },
-      { id: 'nps-deposit', name: 'National Pension System', description: 'Contribute to your NPS Tier I or II account.', icon: 'Briefcase', keywords: ['nps', 'pension'], route: toast('NPS', 'NPS contribution portal opened.') },
+      { id: 'ppf-deposit', name: 'PPF', description: 'Contribute to your Public Provident Fund account.', icon: 'Shield', keywords: ['ppf', 'provident'], route: govtSavings() },
+      { id: 'ssa', name: 'Sukanya Samriddhi Account', description: 'Manage SSA for girl child savings.', icon: 'Heart', keywords: ['ssa', 'sukanya'], route: govtSavings() },
+      { id: 'nps-deposit', name: 'National Pension System', description: 'Contribute to your NPS Tier I or II account.', icon: 'Briefcase', keywords: ['nps', 'pension'], route: govtSavings() },
     ],
   },
   {
@@ -141,28 +148,28 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
     id: 'government-tax',
     title: 'GOVERNMENT & TAX',
     services: [
-      { id: 'ppf-govt', name: 'Public Provident Fund (PPF)', description: 'Manage your PPF account and contributions.', icon: 'Landmark', keywords: ['ppf', 'provident'], route: toast('PPF', 'PPF services opened.') },
-      { id: 'ssa-govt', name: 'Sukanya Samriddhi Account (SSA)', description: 'Government savings scheme for girl child.', icon: 'Heart', keywords: ['ssa', 'sukanya'], route: toast('SSA', 'SSA account services opened.') },
-      { id: 'nps-govt', name: 'National Pension System (NPS)', description: 'Pension planning with tax benefits.', icon: 'Briefcase', keywords: ['nps', 'pension'], route: toast('NPS', 'NPS portal opened.') },
-      { id: 'form-15g', name: 'Form 15G / 15H Submission', description: 'Submit eligible tax declaration forms.', icon: 'FileInput', keywords: ['15g', '15h', 'form', 'tds'], route: toast('Form 15G/15H', 'Tax declaration form submission initiated.') },
+      { id: 'ppf-govt', name: 'Public Provident Fund (PPF)', description: 'Manage your PPF account and contributions.', icon: 'Landmark', keywords: ['ppf', 'provident'], route: govtSavings() },
+      { id: 'ssa-govt', name: 'Sukanya Samriddhi Account (SSA)', description: 'Government savings scheme for girl child.', icon: 'Heart', keywords: ['ssa', 'sukanya'], route: govtSavings() },
+      { id: 'nps-govt', name: 'National Pension System (NPS)', description: 'Pension planning with tax benefits.', icon: 'Briefcase', keywords: ['nps', 'pension'], route: govtSavings() },
+      { id: 'form-15g', name: 'Form 15G / 15H Submission', description: 'Submit eligible tax declaration forms.', icon: 'FileInput', keywords: ['15g', '15h', 'form', 'tds'], route: form15g() },
       { id: 'tds-certificate', name: 'TDS Certificate', description: 'Download TDS certificates for tax filing.', icon: 'FileText', keywords: ['tds', 'certificate', 'tax'], route: profile('documents') },
       { id: 'interest-cert-govt', name: 'Interest Certificate', description: 'Download interest earned certificates.', icon: 'FileSpreadsheet', keywords: ['interest', 'certificate'], route: profile('documents') },
       { id: 'tax-services', name: 'Tax Payment Online', description: 'Pay income tax, GST and other government dues.', icon: 'Calculator', keywords: ['tax', 'itr', 'gst'], route: taxPayment() },
-      { id: 'govt-schemes', name: 'Government Scheme Information', description: 'Learn about supported government schemes.', icon: 'Info', keywords: ['government', 'scheme'], route: toast('Government Schemes', 'Scheme information catalogue opened.') },
+      { id: 'govt-schemes', name: 'Government Scheme Information', description: 'Learn about supported government schemes.', icon: 'Info', keywords: ['government', 'scheme'], route: govtSavings() },
     ],
   },
   {
     id: 'forex-international',
     title: 'FOREX, CARDS & INTERNATIONAL',
     services: [
-      { id: 'forex-card', name: 'Forex Card', description: 'Apply for a multi-currency travel forex card.', icon: 'Globe', keywords: ['forex', 'card', 'travel'], route: toast('Forex Card', 'Forex card application started.') },
-      { id: 'forex-mgmt', name: 'Forex Card Management', description: 'Manage balances and controls on your forex card.', icon: 'Settings', keywords: ['forex', 'manage'], route: toast('Forex Management', 'Forex card management opened.') },
-      { id: 'multi-forex', name: 'Multi-Currency Forex Card', description: 'Load and manage multiple foreign currencies.', icon: 'Coins', keywords: ['multi currency', 'forex'], badge: 'New', route: toast('Multi-Currency Card', 'Multi-currency forex card options displayed.') },
-      { id: 'intl-remittance', name: 'International Remittance', description: 'Send eligible international transfers through supported channels.', icon: 'Plane', keywords: ['remittance', 'international', 'wire'], route: toast('International Remittance', 'Outward remittance gateway opened.') },
-      { id: 'lrs', name: 'LRS Remittance', description: 'Liberalised Remittance Scheme transfers.', icon: 'ArrowUpRight', keywords: ['lrs', 'remittance'], route: toast('LRS Remittance', 'LRS transfer portal opened.') },
-      { id: 'fx-exchange', name: 'Foreign Currency Exchange', description: 'Buy or sell foreign currency at competitive rates.', icon: 'RefreshCw', keywords: ['exchange', 'currency', 'forex'], route: toast('Currency Exchange', 'FX rates and exchange options displayed.') },
+      { id: 'forex-card', name: 'Forex Card', description: 'Apply for a multi-currency travel forex card.', icon: 'Globe', keywords: ['forex', 'card', 'travel'], route: forexCard() },
+      { id: 'forex-mgmt', name: 'Forex Card Management', description: 'Manage balances and controls on your forex card.', icon: 'Settings', keywords: ['forex', 'manage'], route: forexCard() },
+      { id: 'multi-forex', name: 'Multi-Currency Forex Card', description: 'Load and manage multiple foreign currencies.', icon: 'Coins', keywords: ['multi currency', 'forex'], badge: 'New', route: forexCard() },
+      { id: 'intl-remittance', name: 'International Remittance', description: 'Send eligible international transfers through supported channels.', icon: 'Plane', keywords: ['remittance', 'international', 'wire'], route: remittance() },
+      { id: 'lrs', name: 'LRS Remittance', description: 'Liberalised Remittance Scheme transfers.', icon: 'ArrowUpRight', keywords: ['lrs', 'remittance'], route: remittance() },
+      { id: 'fx-exchange', name: 'Foreign Currency Exchange', description: 'Buy or sell foreign currency at competitive rates.', icon: 'RefreshCw', keywords: ['exchange', 'currency', 'forex'], route: forexCard() },
       { id: 'intl-payment-settings', name: 'International Payment Settings', description: 'Configure international transaction preferences.', icon: 'Globe2', keywords: ['international', 'settings'], route: tab('cards') },
-      { id: 'travel-card', name: 'Travel Card', description: 'Prepaid card for international travel expenses.', icon: 'Luggage', keywords: ['travel', 'card'], route: toast('Travel Card', 'Travel card options displayed.') },
+      { id: 'travel-card', name: 'Travel Card', description: 'Prepaid card for international travel expenses.', icon: 'Luggage', keywords: ['travel', 'card'], route: forexCard() },
     ],
   },
   {
@@ -184,11 +191,11 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
     id: 'value-added',
     title: 'VALUE-ADDED SERVICES',
     services: [
-      { id: 'locker', name: 'Safe Deposit Locker', description: 'Check locker availability and apply.', icon: 'Lock', keywords: ['locker', 'safe deposit'], route: toast('Safe Deposit Locker', 'Locker availability query submitted.') },
-      { id: 'locker-appointment', name: 'Locker Appointment', description: 'Book an appointment to access your locker.', icon: 'Calendar', keywords: ['locker', 'appointment'], route: toast('Locker Appointment', 'Appointment booking opened.') },
+      { id: 'locker', name: 'Safe Deposit Locker', description: 'Check locker availability and apply.', icon: 'Lock', keywords: ['locker', 'safe deposit'], route: locker() },
+      { id: 'locker-appointment', name: 'Locker Appointment', description: 'Book an appointment to access your locker.', icon: 'Calendar', keywords: ['locker', 'appointment'], route: locker() },
       { id: 'demat', name: 'Demat Account', description: 'Open or link a demat account for securities.', icon: 'BarChart3', keywords: ['demat', 'securities'], route: toast('Demat Account', 'Demat account services opened.') },
-      { id: 'rewards', name: 'Rewards', description: 'View and redeem your reward points.', icon: 'Gift', keywords: ['rewards', 'points'], badge: 'Available', route: toast('Rewards', 'Rewards catalogue opened.') },
-      { id: 'offers', name: 'Offers', description: 'Explore exclusive banking offers and deals.', icon: 'Tag', keywords: ['offers', 'deals'], route: toast('Offers', 'Current offers displayed.') },
+      { id: 'rewards', name: 'Rewards', description: 'View and redeem your reward points.', icon: 'Gift', keywords: ['rewards', 'points'], badge: 'Available', route: rewards() },
+      { id: 'offers', name: 'Offers', description: 'Explore exclusive banking offers and deals.', icon: 'Tag', keywords: ['offers', 'deals'], route: rewards() },
       { id: 'calculators', name: 'Financial Calculators', description: 'EMI, FD, and savings calculators.', icon: 'Calculator', keywords: ['calculator', 'emi', 'fd'], route: tab('loans') },
       { id: 'document-center', name: 'Document Center', description: 'Access statements, certificates and policies.', icon: 'FolderOpen', keywords: ['documents', 'statements'], route: profile('documents') },
       { id: 'travel-services', name: 'Travel Services', description: 'Forex, travel insurance and related services.', icon: 'Plane', keywords: ['travel'], route: tab('insurance') },
@@ -207,7 +214,7 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
       { id: 'service-request', name: 'Raise Service Request', description: 'Submit a new service request.', icon: 'FilePlus', keywords: ['service request', 'raise'], route: profile('service-requests') },
       { id: 'track-request', name: 'Track Service Request', description: 'Check status of your service requests.', icon: 'ListChecks', keywords: ['track', 'request'], route: profile('service-requests') },
       { id: 'complaint', name: 'Complaint / Grievance', description: 'Register a complaint or grievance.', icon: 'AlertCircle', keywords: ['complaint', 'grievance'], route: profile('help-support') },
-      { id: 'branch-appointment', name: 'Branch Appointment', description: 'Schedule a visit to your branch.', icon: 'CalendarCheck', keywords: ['appointment', 'branch'], route: toast('Branch Appointment', 'Appointment scheduling opened.') },
+      { id: 'branch-appointment', name: 'Branch Appointment', description: 'Schedule a visit to your branch.', icon: 'CalendarCheck', keywords: ['appointment', 'branch'], route: branchAppointment() },
       { id: 'feedback', name: 'Feedback', description: 'Share your feedback about our services.', icon: 'MessageSquare', keywords: ['feedback'], route: toast('Feedback', 'Feedback form opened.') },
       { id: 'emergency-block', name: 'Emergency Card Block', description: 'Instantly block your card in case of loss or fraud.', icon: 'AlertOctagon', keywords: ['emergency', 'block', 'card', 'fraud'], route: tab('cards') },
     ],

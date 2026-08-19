@@ -34,7 +34,14 @@ export type RetailTab =
   | 'scheduled'
   | 'request-money'
   | 'open-account'
-  | 'cardless';
+  | 'cardless'
+  | 'govt-savings'
+  | 'form-15g'
+  | 'remittance'
+  | 'forex-card'
+  | 'branch-appointment'
+  | 'rewards'
+  | 'locker';
 
 export type CorporateTab = 
   | 'home'

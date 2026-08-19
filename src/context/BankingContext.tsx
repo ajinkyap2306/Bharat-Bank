@@ -113,6 +113,20 @@ import {
   generateCardlessOtp,
 } from '../data/level4Mock';
 import {
+  GovtSavingsAccount,
+  Form15GSubmission,
+  RemittanceRequest,
+  ForexCardAccount,
+  BranchAppointment,
+  LockerApplication,
+  INITIAL_GOVT_SAVINGS,
+  INITIAL_FORM15G,
+  INITIAL_REMITTANCES,
+  INITIAL_FOREX_CARDS,
+  INITIAL_BRANCH_APPOINTMENTS,
+  INITIAL_LOCKERS,
+} from '../data/level5Mock';
+import {
   PersonalInfo,
   KycDetails,
   TrustedDevice,
@@ -220,6 +234,14 @@ interface BankingContextType {
   cardlessWithdrawals: CardlessWithdrawal[];
   activityEvents: ActivityEvent[];
   retailTransactionLimits: RetailTransactionLimits;
+  govtSavingsAccounts: GovtSavingsAccount[];
+  form15gSubmissions: Form15GSubmission[];
+  remittanceRequests: RemittanceRequest[];
+  lrsUsedYtd: number;
+  forexCards: ForexCardAccount[];
+  branchAppointments: BranchAppointment[];
+  lockerApplications: LockerApplication[];
+  rewardPoints: number;
 
   // Action methods
   executeTransfer: (params: {
@@ -314,6 +336,24 @@ interface BankingContextType {
   openRetailAccount: (type: 'savings' | 'current' | 'nre-savings', nickname?: string) => BankAccount;
   payRdInstallment: (rdId: string, accountId: string) => void;
   addActivityEvent: (event: Omit<ActivityEvent, 'id'>) => void;
+  contributeToGovtScheme: (accountId: string, amount: number, debitAccountId: string) => void;
+  submitForm15G: (params: { formType: '15G' | '15H'; financialYear: string; estimatedIncome: number }) => string;
+  submitRemittance: (params: {
+    beneficiaryName: string;
+    country: string;
+    currency: string;
+    amountInr: number;
+    amountForeign: number;
+    purpose: string;
+    accountId: string;
+    scheme: 'SWIFT' | 'LRS';
+  }) => void;
+  loadForexCard: (cardId: string, currency: string, foreignAmount: number, debitAccountId: string, inrAmount: number) => void;
+  applyForexCard: () => void;
+  bookBranchAppointment: (params: { branchName: string; purpose: string; date: string; timeSlot: string }) => void;
+  redeemReward: (rewardId: string, points: number, rewardName: string) => void;
+  applyLocker: (params: { branchName: string; lockerSize: LockerApplication['lockerSize']; annualRent: number }) => void;
+  bookLockerVisit: (lockerId: string, visitDate: string) => void;
 
   // Services navigation
   profileDeepLink: string | null;
@@ -574,6 +614,14 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [cardlessWithdrawals, setCardlessWithdrawals] = useState<CardlessWithdrawal[]>([]);
   const [activityEvents, setActivityEvents] = useState<ActivityEvent[]>(INITIAL_ACTIVITY_EVENTS);
   const [retailTransactionLimits, setRetailTransactionLimits] = useState<RetailTransactionLimits>(DEFAULT_RETAIL_LIMITS);
+  const [govtSavingsAccounts, setGovtSavingsAccounts] = useState<GovtSavingsAccount[]>(INITIAL_GOVT_SAVINGS);
+  const [form15gSubmissions, setForm15gSubmissions] = useState<Form15GSubmission[]>(INITIAL_FORM15G);
+  const [remittanceRequests, setRemittanceRequests] = useState<RemittanceRequest[]>(INITIAL_REMITTANCES);
+  const [lrsUsedYtd, setLrsUsedYtd] = useState(850000);
+  const [forexCards, setForexCards] = useState<ForexCardAccount[]>(INITIAL_FOREX_CARDS);
+  const [branchAppointments, setBranchAppointments] = useState<BranchAppointment[]>(INITIAL_BRANCH_APPOINTMENTS);
+  const [lockerApplications, setLockerApplications] = useState<LockerApplication[]>(INITIAL_LOCKERS);
+  const [rewardPoints, setRewardPoints] = useState(6840);
 
   // Profile & Preferences
   const [primaryAccountId, setPrimaryAccountId] = useState('acc_ret_sav_01');
@@ -1913,6 +1961,186 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     addToast({ type: 'success', title: 'Installment Paid', message: `₹${rd.monthlyAmount.toLocaleString('en-IN')} debited. Ref ${ref}.` });
   };
 
+  const contributeToGovtScheme = (accountId: string, amount: number, debitAccountId: string) => {
+    let schemeLabel = 'GOVT';
+    setGovtSavingsAccounts((prev) =>
+      prev.map((a) => {
+        if (a.id === accountId) {
+          schemeLabel = a.scheme.toUpperCase();
+          return { ...a, balance: a.balance + amount, contributedYtd: a.contributedYtd + amount };
+        }
+        return a;
+      })
+    );
+    setRetailAccounts((prev) =>
+      prev.map((acc) => {
+        if (acc.id !== debitAccountId) return acc;
+        const bal = Math.max(0, acc.balance - amount);
+        return { ...acc, balance: bal, availableBalance: bal - (acc.holdAmount || 0) };
+      })
+    );
+    addActivityEvent({
+      category: 'deposit',
+      title: 'Govt Scheme Contribution',
+      description: `₹${amount.toLocaleString('en-IN')} to ${schemeLabel}`,
+      timestamp: 'Just now',
+      status: 'success',
+    });
+    addToast({ type: 'success', title: 'Contribution Successful', message: `₹${amount.toLocaleString('en-IN')} credited to scheme.` });
+  };
+
+  const submitForm15G = (params: { formType: '15G' | '15H'; financialYear: string; estimatedIncome: number }): string => {
+    const reference = `F${params.formType}-${Date.now().toString().slice(-8)}`;
+    const entry: Form15GSubmission = {
+      id: `f15_${Date.now()}`,
+      formType: params.formType,
+      financialYear: params.financialYear,
+      estimatedIncome: params.estimatedIncome,
+      submittedOn: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+      status: 'submitted',
+      reference,
+    };
+    setForm15gSubmissions((prev) => [entry, ...prev]);
+    addActivityEvent({
+      category: 'profile',
+      title: `Form ${params.formType} Submitted`,
+      description: `FY ${params.financialYear} — ${reference}`,
+      timestamp: 'Just now',
+      status: 'success',
+    });
+    addToast({ type: 'success', title: 'Form Submitted', message: `Reference ${reference}` });
+    return reference;
+  };
+
+  const submitRemittance = (params: {
+    beneficiaryName: string;
+    country: string;
+    currency: string;
+    amountInr: number;
+    amountForeign: number;
+    purpose: string;
+    accountId: string;
+    scheme: 'SWIFT' | 'LRS';
+  }) => {
+    const reference = `${params.scheme === 'LRS' ? 'LRS' : 'SWF'}${Date.now().toString().slice(-8)}`;
+    const entry: RemittanceRequest = {
+      id: `rem_${Date.now()}`,
+      beneficiaryName: params.beneficiaryName,
+      country: params.country,
+      currency: params.currency,
+      amountInr: params.amountInr,
+      amountForeign: params.amountForeign,
+      purpose: params.purpose,
+      status: 'pending',
+      reference,
+      createdAt: 'Just now',
+      scheme: params.scheme,
+    };
+    setRemittanceRequests((prev) => [entry, ...prev]);
+    if (params.scheme === 'LRS') setLrsUsedYtd((v) => v + params.amountInr);
+    setRetailAccounts((prev) =>
+      prev.map((acc) => {
+        if (acc.id !== params.accountId) return acc;
+        const bal = Math.max(0, acc.balance - params.amountInr);
+        return { ...acc, balance: bal, availableBalance: bal - (acc.holdAmount || 0) };
+      })
+    );
+    addActivityEvent({
+      category: 'transfer',
+      title: `${params.scheme} Remittance`,
+      description: `₹${params.amountInr.toLocaleString('en-IN')} to ${params.beneficiaryName}`,
+      timestamp: 'Just now',
+      status: 'info',
+    });
+    addToast({ type: 'success', title: 'Remittance Initiated', message: `Reference ${reference}. Processing 1–2 business days.` });
+  };
+
+  const loadForexCard = (cardId: string, currency: string, foreignAmount: number, debitAccountId: string, inrAmount: number) => {
+    setForexCards((prev) =>
+      prev.map((c) => {
+        if (c.id !== cardId) return c;
+        const balances = c.balances.map((b) =>
+          b.currency === currency ? { ...b, amount: b.amount + foreignAmount } : b
+        );
+        if (!balances.find((b) => b.currency === currency)) {
+          const symbols: Record<string, string> = { USD: '$', EUR: '€', GBP: '£', AED: 'د.إ' };
+          balances.push({ currency, amount: foreignAmount, symbol: symbols[currency] || currency });
+        }
+        return { ...c, balances };
+      })
+    );
+    setRetailAccounts((prev) =>
+      prev.map((acc) => {
+        if (acc.id !== debitAccountId) return acc;
+        const bal = Math.max(0, acc.balance - inrAmount);
+        return { ...acc, balance: bal, availableBalance: bal - (acc.holdAmount || 0) };
+      })
+    );
+    addToast({ type: 'success', title: 'Card Loaded', message: `${currency} ${foreignAmount} added to forex card.` });
+  };
+
+  const applyForexCard = () => {
+    const card: ForexCardAccount = {
+      id: `fx_${Date.now()}`,
+      cardLabel: 'Multi-Currency Forex Card',
+      maskedNumber: `•••• ${Math.floor(1000 + Math.random() * 9000)}`,
+      status: 'active',
+      balances: [{ currency: 'USD', amount: 0, symbol: '$' }],
+    };
+    setForexCards((prev) => [...prev, card]);
+    addToast({ type: 'success', title: 'Card Applied', message: 'Forex card will be dispatched in 5–7 days.' });
+  };
+
+  const bookBranchAppointment = (params: { branchName: string; purpose: string; date: string; timeSlot: string }) => {
+    const reference = `APT-${Date.now().toString().slice(-6)}`;
+    const entry: BranchAppointment = {
+      id: `apt_${Date.now()}`,
+      ...params,
+      status: 'confirmed',
+      reference,
+    };
+    setBranchAppointments((prev) => [entry, ...prev]);
+    addToast({ type: 'success', title: 'Appointment Booked', message: `${params.date} • ${params.timeSlot} — ${reference}` });
+  };
+
+  const redeemReward = (rewardId: string, points: number, rewardName: string) => {
+    setRewardPoints((prev) => Math.max(0, prev - points));
+    addActivityEvent({
+      category: 'payment',
+      title: 'Reward Redeemed',
+      description: `${rewardName} (${points} pts)`,
+      timestamp: 'Just now',
+      status: 'success',
+    });
+    addToast({ type: 'success', title: 'Redeemed!', message: `${rewardName} voucher sent to your registered email.` });
+  };
+
+  const applyLocker = (params: { branchName: string; lockerSize: LockerApplication['lockerSize']; annualRent: number }) => {
+    const entry: LockerApplication = {
+      id: `lck_${Date.now()}`,
+      ...params,
+      status: 'active',
+      lockerNumber: `${String.fromCharCode(65 + Math.floor(Math.random() * 3))}-${Math.floor(100 + Math.random() * 900)}`,
+    };
+    setLockerApplications((prev) => [...prev, entry]);
+    addToast({ type: 'success', title: 'Locker Allotted', message: `Locker ${entry.lockerNumber} at ${params.branchName}.` });
+  };
+
+  const bookLockerVisit = (lockerId: string, visitDate: string) => {
+    addToast({
+      type: 'success',
+      title: 'Visit Booked',
+      message: `Locker access scheduled for ${visitDate}. Carry locker key & ID.`,
+    });
+    addActivityEvent({
+      category: 'profile',
+      title: 'Locker Visit Booked',
+      description: visitDate,
+      timestamp: 'Just now',
+      status: 'info',
+    });
+  };
+
   const navigateService = (serviceId: string, route: ServiceRoute) => {
     setRecentServiceIds((prev) => {
       const next = [serviceId, ...prev.filter((id) => id !== serviceId)].slice(0, 8);
@@ -2491,6 +2719,14 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setCardlessWithdrawals([]);
     setActivityEvents(INITIAL_ACTIVITY_EVENTS);
     setRetailTransactionLimits(DEFAULT_RETAIL_LIMITS);
+    setGovtSavingsAccounts(INITIAL_GOVT_SAVINGS);
+    setForm15gSubmissions(INITIAL_FORM15G);
+    setRemittanceRequests(INITIAL_REMITTANCES);
+    setLrsUsedYtd(850000);
+    setForexCards(INITIAL_FOREX_CARDS);
+    setBranchAppointments(INITIAL_BRANCH_APPOINTMENTS);
+    setLockerApplications(INITIAL_LOCKERS);
+    setRewardPoints(6840);
     setPrimaryAccountId('acc_ret_sav_01');
     setDefaultDebitAccountId('acc_ret_sav_01');
     setDefaultCardId(INITIAL_RETAIL_CARDS[0]?.id || '');
@@ -2581,6 +2817,14 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       cardlessWithdrawals,
       activityEvents,
       retailTransactionLimits,
+      govtSavingsAccounts,
+      form15gSubmissions,
+      remittanceRequests,
+      lrsUsedYtd,
+      forexCards,
+      branchAppointments,
+      lockerApplications,
+      rewardPoints,
 
       executeTransfer,
       approveCorporatePayment,
@@ -2638,6 +2882,15 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       openRetailAccount,
       payRdInstallment,
       addActivityEvent,
+      contributeToGovtScheme,
+      submitForm15G,
+      submitRemittance,
+      loadForexCard,
+      applyForexCard,
+      bookBranchAppointment,
+      redeemReward,
+      applyLocker,
+      bookLockerVisit,
       createFixedDeposit,
       createRecurringDeposit,
       closeDeposit,
