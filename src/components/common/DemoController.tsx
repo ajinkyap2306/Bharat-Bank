@@ -15,6 +15,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
+import { CORPORATE_DEMO_ID, CORPORATE_DEMO_PASSWORD } from '../../data/corporateAuthMock';
 
 export const DemoController: React.FC = () => {
   const { 
@@ -87,7 +88,7 @@ export const DemoController: React.FC = () => {
                   <Building2 className="w-4 h-4 text-teal-300" />
                   <div>
                     <p className="font-semibold text-xs leading-none">Corporate Banking</p>
-                    <p className="text-[10px] text-teal-200 mt-0.5">COP-13456 (Nexus Corp)</p>
+                    <p className="text-[10px] text-teal-200 mt-0.5">{CORPORATE_DEMO_ID} / {CORPORATE_DEMO_PASSWORD}</p>
                   </div>
                 </div>
                 {bankingType === 'corporate' && <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded">Active</span>}

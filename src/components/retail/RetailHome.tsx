@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import confetti from 'canvas-confetti';
 import { 
@@ -41,6 +41,8 @@ import {
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { BankAccount, Transaction } from '../../types/banking';
+import { ContextAlertsCarousel } from './shared/ContextAlertsCarousel';
+import { buildRetailContextAlerts } from './shared/buildRetailContextAlerts';
 
 const SERVICE_ICON_BOX =
   'w-11 h-11 rounded-2xl bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-congress-blue-700 group-hover:text-white transition-all shadow-2xs';
@@ -58,6 +60,9 @@ export const RetailHome: React.FC = () => {
     setBottomNavHidden,
     getPrimaryAccount,
     getVisibleAccounts,
+    upcomingBills,
+    fixedDeposits,
+    insurancePolicies,
   } = useBanking();
 
   const [hiddenAccounts, setHiddenAccounts] = useState<Record<string, boolean>>({});
@@ -122,6 +127,19 @@ export const RetailHome: React.FC = () => {
   const primaryAccount = getPrimaryAccount() || { id: 'acc_01', balance: 0, accountType: 'Savings', availableBalance: 0, maskedNumber: '' };
   const visibleAccounts = getVisibleAccounts();
   const creditCard = cards.find(c => c.cardType === 'credit');
+
+  const alertItems = useMemo(
+    () =>
+      buildRetailContextAlerts({
+        upcomingBills,
+        fixedDeposits,
+        insurancePolicies,
+        onPayBill: () => setRetailTab('bills'),
+        onViewMaturity: () => setRetailTab('deposits'),
+        onRenewPolicy: () => setRetailTab('insurance'),
+      }),
+    [upcomingBills, fixedDeposits, insurancePolicies, setRetailTab]
+  );
 
   const handleAddMoneySubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -276,6 +294,9 @@ export const RetailHome: React.FC = () => {
         </div>
       </div>
 
+      {/* Actionable alerts carousel */}
+      <ContextAlertsCarousel items={alertItems} />
+
       {/* 2. Quick Actions */}
       <div>
         <div className="flex items-center justify-between mb-3.5">
@@ -331,7 +352,7 @@ export const RetailHome: React.FC = () => {
             className="flex flex-col items-center justify-center p-1.5 sm:p-2 text-center group cursor-pointer"
           >
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-linear-to-tr from-congress-blue-600 to-congress-blue-800 text-white flex items-center justify-center shadow-md shadow-congress-blue-500/25 group-hover:scale-105 transition-transform mb-2">
-              <Scan className="w-6 h-6" />
+              <QrCode className="w-6 h-6" />
             </div>
             <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-congress-blue-700 dark:group-hover:text-congress-blue-400 transition-colors whitespace-nowrap">
               Scan & Pay

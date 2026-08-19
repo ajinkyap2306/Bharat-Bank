@@ -56,6 +56,14 @@ import {
   INITIAL_NOTIFICATIONS,
   INITIAL_RETAIL_STATEMENTS
 } from '../data/mockData';
+import {
+  CORPORATE_DEMO_COMPANY_ID,
+  corporateDemoUserToProfile,
+  getCorporateDemoUserByRole,
+} from '../data/corporateAuthMock';
+import type { CorporateDemoUser } from '../types/corporateDemoUser';
+import type { RetailRegistrationResult } from '../types/retailRegistration';
+import { RETAIL_REGISTRATION_STORAGE_KEY } from '../data/retailRegistrationMock';
 import { BillPaymentRecord, FetchedBill, BillProvider } from '../types/bills';
 import {
   BILL_PROVIDERS,
@@ -118,6 +126,23 @@ interface BankingContextType {
   login: (type: BankingType, customerId?: string) => void;
   logout: () => void;
   quickDemoLogin: (type: BankingType) => void;
+  isSessionExpired: boolean;
+  clearSessionExpired: () => void;
+  expireSession: () => void;
+  corporateLoginVerified: boolean;
+  corporateOtpVerified: boolean;
+  setCorporateLoginVerified: (verified: boolean) => void;
+  setCorporateOtpVerified: (verified: boolean) => void;
+  clearCorporateAuthFlow: () => void;
+  corporateDeviceTrusted: boolean;
+  completeCorporateAuthentication: (deviceTrusted?: boolean) => void;
+  corporateSession: CorporateDemoUser | null;
+  retailRegistration: RetailRegistrationResult | null;
+  completeRetailRegistration: (result: RetailRegistrationResult) => void;
+  setPendingCorporateUser: (user: CorporateDemoUser | null) => void;
+  canApproveCorporate: boolean;
+  canSubmitCorporatePayment: boolean;
+  canCreateCorporateBulk: boolean;
 
   // Navigation
   retailTab: RetailTab;
@@ -265,6 +290,16 @@ interface BankingContextType {
   getPrimaryAccount: () => BankAccount;
   getDefaultDebitAccount: () => BankAccount;
   getVisibleAccounts: () => BankAccount[];
+  primaryCorporateAccountId: string;
+  corporateHiddenAccountIds: string[];
+  corporateDefaultPaymentAccountId: string;
+  setPrimaryCorporateAccount: (accountId: string) => void;
+  setCorporateDefaultPaymentAccount: (accountId: string) => void;
+  updateCorporateAccountNickname: (accountId: string, nickname: string) => void;
+  toggleCorporateAccountVisibility: (accountId: string) => void;
+  isCorporateAccountHidden: (accountId: string) => boolean;
+  getPrimaryCorporateAccount: () => BankAccount;
+  getVisibleCorporateAccounts: () => BankAccount[];
   updatePersonalInfo: (updates: Partial<PersonalInfo>) => void;
   updateNotificationPrefs: (updates: Partial<NotificationPreferences>) => void;
   updateAppPrefs: (updates: Partial<AppPreferences>) => void;
@@ -301,7 +336,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Authentication & Mode
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true); // Default to logged-in home view for instant preview, can log out anytime
   const [bankingType, setBankingType] = useState<BankingType>('retail');
-  const [authScreen, setAuthScreen] = useState<AuthScreen>('welcome');
+  const [authScreen, setAuthScreen] = useState<AuthScreen>('login');
   
   // Tabs
   const [retailTab, setRetailTab] = useState<RetailTab>('home');
@@ -364,6 +399,41 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const [isSessionTimeoutModalOpen, setIsSessionTimeoutModalOpen] = useState(false);
+  const [isSessionExpired, setIsSessionExpired] = useState(false);
+  const [corporateLoginVerified, setCorporateLoginVerified] = useState(false);
+  const [corporateOtpVerified, setCorporateOtpVerified] = useState(false);
+  const [corporateDeviceTrusted, setCorporateDeviceTrusted] = useState(false);
+  const [pendingCorporateUser, setPendingCorporateUser] = useState<CorporateDemoUser | null>(null);
+  const [corporateSession, setCorporateSession] = useState<CorporateDemoUser | null>(null);
+  const [retailRegistration, setRetailRegistration] = useState<RetailRegistrationResult | null>(() => {
+    try {
+      const raw = localStorage.getItem(RETAIL_REGISTRATION_STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as RetailRegistrationResult) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const clearCorporateAuthFlow = () => {
+    setCorporateLoginVerified(false);
+    setCorporateOtpVerified(false);
+    setCorporateDeviceTrusted(false);
+    setPendingCorporateUser(null);
+  };
+
+  const completeCorporateAuthentication = (deviceTrusted = false) => {
+    const sessionUser = pendingCorporateUser;
+    if (sessionUser) {
+      setCorporateSession(sessionUser);
+    }
+    setCorporateLoginVerified(false);
+    setCorporateOtpVerified(false);
+    setPendingCorporateUser(null);
+    if (deviceTrusted) {
+      setCorporateDeviceTrusted(true);
+    }
+    login('corporate', sessionUser?.name);
+  };
 
   // Data Store
   const [retailAccounts, setRetailAccounts] = useState<BankAccount[]>(INITIAL_RETAIL_ACCOUNTS);
@@ -397,6 +467,9 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [defaultDebitAccountId, setDefaultDebitAccountId] = useState('acc_ret_sav_01');
   const [defaultCardId, setDefaultCardId] = useState(INITIAL_RETAIL_CARDS[0]?.id || '');
   const [hiddenAccountIds, setHiddenAccountIds] = useState<string[]>([]);
+  const [primaryCorporateAccountId, setPrimaryCorporateAccountId] = useState('acc_corp_op_01');
+  const [corporateHiddenAccountIds, setCorporateHiddenAccountIds] = useState<string[]>([]);
+  const [corporateDefaultPaymentAccountId, setCorporateDefaultPaymentAccountId] = useState('acc_corp_op_01');
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>(INITIAL_PERSONAL_INFO);
   const [kycDetails] = useState<KycDetails>(INITIAL_KYC_DETAILS);
   const [trustedDevices, setTrustedDevices] = useState<TrustedDevice[]>(INITIAL_TRUSTED_DEVICES);
@@ -428,14 +501,29 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   });
 
   // Active user depending on bankingType
-  const user = bankingType === 'retail' ? INITIAL_RETAIL_USER : INITIAL_CORPORATE_USER;
+  const user =
+    bankingType === 'retail'
+      ? retailRegistration
+        ? {
+            ...INITIAL_RETAIL_USER,
+            customerNumber: retailRegistration.userId,
+            name: INITIAL_RETAIL_USER.name,
+          }
+        : INITIAL_RETAIL_USER
+      : corporateSession
+        ? corporateDemoUserToProfile(corporateSession)
+        : INITIAL_CORPORATE_USER;
+
+  const canApproveCorporate = corporateSession?.canApprove ?? false;
+  const canSubmitCorporatePayment = corporateSession?.canSubmitPayment ?? true;
+  const canCreateCorporateBulk = corporateSession?.canCreateBulk ?? true;
   const accounts = bankingType === 'retail' ? retailAccounts : corporateAccounts;
   const transactions = bankingType === 'retail' ? retailTransactions : corporateTransactions;
   const beneficiaries = bankingType === 'retail' ? retailBeneficiaries : corporateBeneficiaries;
   const cards = bankingType === 'retail' ? retailCards : corporateCards;
 
   // Login handler
-  const login = (type: BankingType) => {
+  const login = (type: BankingType, welcomeName?: string) => {
     setBankingType(type);
     setIsAuthenticated(true);
     if (type === 'retail') {
@@ -443,16 +531,26 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } else {
       setCorporateTab('home');
     }
+    const displayName =
+      welcomeName ?? (type === 'retail' ? 'Arjun' : corporateSession?.name ?? 'User');
     addToast({
       type: 'success',
-      title: `Welcome, ${type === 'retail' ? 'Arjun' : 'Devansh'}`,
+      title: `Welcome, ${displayName}`,
       message: `Successfully authenticated into ${type === 'retail' ? 'Retail' : 'Corporate'} Banking.`,
     });
   };
 
   const logout = () => {
     setIsAuthenticated(false);
-    setAuthScreen('welcome');
+    setIsSessionTimeoutModalOpen(false);
+    clearCorporateAuthFlow();
+    setCorporateSession(null);
+    if (bankingType === 'corporate') {
+      setBankingType('corporate');
+      setAuthScreen('login');
+    } else {
+      setAuthScreen('login');
+    }
     addToast({
       type: 'info',
       title: 'Signed Out',
@@ -460,7 +558,27 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
+  const clearSessionExpired = () => setIsSessionExpired(false);
+
+  const expireSession = () => {
+    setIsAuthenticated(false);
+    setIsSessionTimeoutModalOpen(false);
+    setIsSessionExpired(true);
+    clearCorporateAuthFlow();
+    setCorporateSession(null);
+    if (bankingType === 'corporate') {
+      setBankingType('corporate');
+      setAuthScreen('login');
+    } else {
+      setAuthScreen('login');
+    }
+  };
+
   const quickDemoLogin = (type: BankingType) => {
+    if (type === 'corporate') {
+      const maker = getCorporateDemoUserByRole('maker');
+      if (maker) setCorporateSession(maker);
+    }
     setBankingType(type);
     setIsAuthenticated(true);
     if (type === 'retail') {
@@ -470,8 +588,23 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     addToast({
       type: 'success',
-      title: `${type === 'retail' ? 'Retail Profile (RB-123456)' : 'Corporate Profile (COP-13456)'} Loaded`,
+      title: `${type === 'retail' ? 'Retail Profile (RB-123456)' : `Corporate Profile (${CORPORATE_DEMO_COMPANY_ID})`} Loaded`,
       message: 'Demo credentials authenticated.',
+    });
+  };
+
+  const completeRetailRegistration = (result: RetailRegistrationResult) => {
+    setRetailRegistration(result);
+    localStorage.setItem(RETAIL_REGISTRATION_STORAGE_KEY, JSON.stringify(result));
+    setSecuritySettings((prev) => ({
+      ...prev,
+      mpinActive: result.mpinSet,
+      biometricEnabled: result.biometricEnabled || prev.biometricEnabled,
+    }));
+    addToast({
+      type: 'success',
+      title: 'Registration complete',
+      message: `User ID ${result.userId} (Profile ${result.profileCode}) is ready.`,
     });
   };
 
@@ -1686,6 +1819,47 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const getVisibleAccounts = (): BankAccount[] =>
     retailAccounts.filter((a) => !hiddenAccountIds.includes(a.id));
 
+  const setPrimaryCorporateAccount = (accountId: string) => {
+    setPrimaryCorporateAccountId(accountId);
+    setCorporateDefaultPaymentAccountId(accountId);
+    addToast({
+      type: 'success',
+      title: 'Primary Operating Account Updated',
+      message: 'This account is now your default debit account for eligible payments.',
+    });
+  };
+
+  const setCorporateDefaultPaymentAccount = (accountId: string) => {
+    setCorporateDefaultPaymentAccountId(accountId);
+    addToast({
+      type: 'success',
+      title: 'Default Payment Account Updated',
+      message: 'Corporate payment flows will use this account by default.',
+    });
+  };
+
+  const updateCorporateAccountNickname = (accountId: string, nickname: string) => {
+    setCorporateAccounts((prev) =>
+      prev.map((a) => (a.id === accountId ? { ...a, nickname } : a))
+    );
+    addToast({ type: 'success', title: 'Nickname Updated', message: 'Account nickname saved.' });
+  };
+
+  const toggleCorporateAccountVisibility = (accountId: string) => {
+    setCorporateHiddenAccountIds((prev) =>
+      prev.includes(accountId) ? prev.filter((id) => id !== accountId) : [...prev, accountId]
+    );
+  };
+
+  const isCorporateAccountHidden = (accountId: string) =>
+    corporateHiddenAccountIds.includes(accountId);
+
+  const getPrimaryCorporateAccount = (): BankAccount =>
+    corporateAccounts.find((a) => a.id === primaryCorporateAccountId) || corporateAccounts[0];
+
+  const getVisibleCorporateAccounts = (): BankAccount[] =>
+    corporateAccounts.filter((a) => !corporateHiddenAccountIds.includes(a.id));
+
   const updatePersonalInfo = (updates: Partial<PersonalInfo>) => {
     setPersonalInfo((prev) => ({ ...prev, ...updates }));
   };
@@ -1757,6 +1931,9 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setDefaultDebitAccountId('acc_ret_sav_01');
     setDefaultCardId(INITIAL_RETAIL_CARDS[0]?.id || '');
     setHiddenAccountIds([]);
+    setPrimaryCorporateAccountId('acc_corp_op_01');
+    setCorporateHiddenAccountIds([]);
+    setCorporateDefaultPaymentAccountId('acc_corp_op_01');
     setPersonalInfo(INITIAL_PERSONAL_INFO);
     setTrustedDevices(INITIAL_TRUSTED_DEVICES);
     setActiveSessions(INITIAL_ACTIVE_SESSIONS);
@@ -1785,6 +1962,23 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       login,
       logout,
       quickDemoLogin,
+      isSessionExpired,
+      clearSessionExpired,
+      expireSession,
+      corporateLoginVerified,
+      corporateOtpVerified,
+      setCorporateLoginVerified,
+      setCorporateOtpVerified,
+      clearCorporateAuthFlow,
+      corporateDeviceTrusted,
+      completeCorporateAuthentication,
+      corporateSession,
+      setPendingCorporateUser,
+      retailRegistration,
+      completeRetailRegistration,
+      canApproveCorporate,
+      canSubmitCorporatePayment,
+      canCreateCorporateBulk,
       retailTab,
       setRetailTab: handleSetRetailTab,
       corporateTab,
@@ -1893,6 +2087,16 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       getPrimaryAccount,
       getDefaultDebitAccount,
       getVisibleAccounts,
+      primaryCorporateAccountId,
+      corporateHiddenAccountIds,
+      corporateDefaultPaymentAccountId,
+      setPrimaryCorporateAccount,
+      setCorporateDefaultPaymentAccount,
+      updateCorporateAccountNickname,
+      toggleCorporateAccountVisibility,
+      isCorporateAccountHidden,
+      getPrimaryCorporateAccount,
+      getVisibleCorporateAccounts,
       updatePersonalInfo,
       updateNotificationPrefs,
       updateAppPrefs,

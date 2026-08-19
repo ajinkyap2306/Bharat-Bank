@@ -146,7 +146,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ accountId, onSe
                         {txn.type === 'credit' ? <ArrowDownLeft className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate max-w-[180px]">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate max-w-45">
                           {txn.counterpartyName}
                         </h4>
                         <div className="flex items-center space-x-2">

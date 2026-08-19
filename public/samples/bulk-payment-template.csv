@@ -1,0 +1,6 @@
+Beneficiary Name,Account Number,IFSC Code,Bank Name,Amount,Reference,Payment Method,Payment Type,Remarks
+ABC Suppliers Ltd.,98765432107821,HDFC0001234,HDFC Bank,250000,INV-4582,NEFT,Vendor Payment,August invoice
+XYZ Logistics,12345678904412,ICIC0005678,ICICI Bank,125000,LOG-AUG-01,NEFT,Vendor Payment,
+Office Supplies Co.,55556666909033,UTIB0009876,Axis Bank,75000,SUP-0826,NEFT,Vendor Payment,
+TechServe India,44445555665521,HDFC0001234,HDFC Bank,320000,TECH-Q3,RTGS,Vendor Payment,
+CleanPro Facilities,11112222111888,SBIN0001111,SBI,45000,FAC-AUG,NEFT,Vendor Payment,

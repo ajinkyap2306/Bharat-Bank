@@ -52,7 +52,7 @@ export const CorporateCards: React.FC = () => {
           <button
             key={card.id}
             onClick={() => setSelectedCardId(card.id)}
-            className={`shrink-0 p-3 rounded-2xl border text-left transition-all min-w-[160px] ${
+            className={`shrink-0 p-3 rounded-2xl border text-left transition-all min-w-40 ${
               card.id === selectedCardId
                 ? 'border-teal-600 bg-teal-50 dark:bg-teal-950/60 ring-2 ring-teal-500/20'
                 : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'

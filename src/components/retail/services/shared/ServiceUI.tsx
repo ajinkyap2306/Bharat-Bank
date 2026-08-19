@@ -171,23 +171,41 @@ export const SectionLabel: React.FC<{ title: string }> = ({ title }) => (
   </h2>
 );
 
-export const ContextAlertCard: React.FC<{
-  tone: 'warning' | 'action' | 'info';
+export type ContextAlertTone = 'warning' | 'action' | 'info';
+
+export interface ContextAlertItem {
+  id: string;
+  tone: ContextAlertTone;
   title: string;
   message: string;
   cta: string;
   onClick: () => void;
-}> = ({ tone, title, message, cta, onClick }) => {
-  const styles = {
-    warning: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/40',
-    action: 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/40',
-    info: 'bg-congress-blue-50 dark:bg-congress-blue-950/30 border-congress-blue-200 dark:border-congress-blue-900/40',
-  };
-  return (
-    <button type="button" onClick={onClick} className={`w-full p-3.5 rounded-2xl border text-left ${styles[tone]}`}>
-      <p className="text-[10px] font-bold uppercase tracking-wide text-[#667085]">{title}</p>
-      <p className="text-sm font-semibold text-[#111827] dark:text-white mt-0.5">{message}</p>
-      <p className="text-xs font-bold text-congress-blue-700 dark:text-congress-blue-400 mt-1.5">{cta} →</p>
-    </button>
-  );
+}
+
+const ALERT_TONE_STYLES: Record<ContextAlertTone, string> = {
+  warning: 'bg-amber-50 dark:bg-amber-950/30 border-amber-100 dark:border-amber-900/40',
+  action: 'bg-rose-50 dark:bg-rose-950/30 border-rose-100 dark:border-rose-900/40',
+  info: 'bg-congress-blue-50 dark:bg-congress-blue-950/30 border-congress-blue-100 dark:border-congress-blue-900/40',
 };
+
+export const ContextAlertCard: React.FC<{
+  tone: ContextAlertTone;
+  title: string;
+  message: string;
+  cta: string;
+  onClick: () => void;
+}> = ({ tone, title, message, cta, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`w-full p-4 rounded-3xl border text-left active:scale-[0.99] transition-transform ${ALERT_TONE_STYLES[tone]}`}
+  >
+    <p className="text-[10px] font-semibold uppercase tracking-wider text-[#667085] dark:text-slate-400">
+      {title}
+    </p>
+    <p className="text-sm font-bold text-[#111827] dark:text-white mt-1 leading-snug">{message}</p>
+    <p className="text-xs font-semibold text-congress-blue-700 dark:text-congress-blue-400 mt-2 flex items-center gap-1">
+      {cta} <span aria-hidden="true">→</span>
+    </p>
+  </button>
+);

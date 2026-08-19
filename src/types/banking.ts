@@ -31,6 +31,7 @@ export type CorporateTab =
   | 'accounts'
   | 'payments'
   | 'approvals'
+  | 'more'
   | 'beneficiaries'
   | 'bulk_payments'
   | 'payroll'

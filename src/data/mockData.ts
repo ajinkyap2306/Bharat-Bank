@@ -35,19 +35,19 @@ export const INITIAL_RETAIL_USER: UserProfile = {
 };
 
 export const INITIAL_CORPORATE_USER: UserProfile = {
-  id: 'usr_corp_001',
-  name: 'Devansh Singhania',
-  email: 'devansh.s@nexusinnovations.io',
-  phone: '+91 98200 11223',
-  avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+  id: 'MAK-1001',
+  name: 'Rahul Sharma',
+  email: 'rahul.sharma@acmetech.in',
+  phone: '+91 98200 45821',
+  avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
   type: 'corporate',
-  customerNumber: 'COP-13456',
-  companyName: 'Nexus Innovations Pvt. Ltd.',
-  role: 'Chief Financial Officer (Admin/Checker)',
+  customerNumber: 'CORP-13456',
+  companyName: 'Acme Technologies Pvt. Ltd.',
+  role: 'Finance Maker',
   cin: 'U72200MH2018PTC309812',
-  gstin: '27AABCN8941K1ZP',
+  gstin: '27AABCA1234F1Z5',
   kycStatus: 'verified',
-  lastLogin: 'Today, 11:15 AM from macOS Workstation (VPN)',
+  lastLogin: 'Today, from this device',
 };
 
 export const INITIAL_RETAIL_ACCOUNTS: BankAccount[] = [

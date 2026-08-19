@@ -4,7 +4,15 @@ import { Clock, LogOut } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 
 export const SessionTimeoutSheet: React.FC = () => {
-  const { isSessionTimeoutModalOpen, extendSession, logout } = useBanking();
+  const { isSessionTimeoutModalOpen, extendSession, logout, expireSession, bankingType } = useBanking();
+
+  const handleLogout = () => {
+    if (bankingType === 'corporate') {
+      expireSession();
+    } else {
+      logout();
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -42,7 +50,7 @@ export const SessionTimeoutSheet: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={logout}
+                onClick={handleLogout}
                 className="w-full py-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 font-bold text-sm flex items-center justify-center gap-2 text-slate-700 dark:text-slate-300"
               >
                 <LogOut className="w-4 h-4" /> Logout

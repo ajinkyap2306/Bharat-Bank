@@ -6,8 +6,10 @@ import {
   getServiceById,
   DEFAULT_RECENT_SERVICE_IDS,
 } from '../../../data/servicesCatalog';
-import { ServiceGridItem, ServiceSectionCard, ContextAlertCard } from './shared/ServiceUI';
+import { ServiceGridItem, ServiceSectionCard } from './shared/ServiceUI';
 import { ServiceItem } from '../../../types/services';
+import { ContextAlertsCarousel } from '../shared/ContextAlertsCarousel';
+import { buildRetailContextAlerts } from '../shared/buildRetailContextAlerts';
 
 interface AllServicesScreenProps {
   onOpenSearch: () => void;
@@ -40,9 +42,27 @@ export const AllServicesScreen: React.FC<AllServicesScreenProps> = ({
     [favoriteServiceIds]
   );
 
-  const upcomingBill = upcomingBills[0];
-  const maturingFd = fixedDeposits[0];
-  const renewingPolicy = insurancePolicies.find((p) => p.status === 'active');
+  const alertItems = useMemo(
+    () =>
+      buildRetailContextAlerts({
+        upcomingBills,
+        fixedDeposits,
+        insurancePolicies,
+        onPayBill: () => {
+          const s = getServiceById('bill-payments');
+          if (s) onSelectService(s);
+        },
+        onViewMaturity: () => {
+          const s = getServiceById('maturity-instructions');
+          if (s) onSelectService(s);
+        },
+        onRenewPolicy: () => {
+          const s = getServiceById('renew-policy');
+          if (s) onSelectService(s);
+        },
+      }),
+    [upcomingBills, fixedDeposits, insurancePolicies, onSelectService]
+  );
 
   return (
     <div className="pt-1 pb-24 min-h-full -mx-3 px-3 bg-[#F7F9FC] dark:bg-slate-950">
@@ -73,44 +93,7 @@ export const AllServicesScreen: React.FC<AllServicesScreenProps> = ({
       </div>
 
       {/* Contextual alerts */}
-      <div className="space-y-2 mb-4">
-        {upcomingBill && (
-          <ContextAlertCard
-            tone="warning"
-            title="Upcoming Payment"
-            message={`${upcomingBill.billerName} — ${upcomingBill.dueLabel}`}
-            cta="Pay Now"
-            onClick={() => {
-              const s = getServiceById('bill-payments');
-              if (s) onSelectService(s);
-            }}
-          />
-        )}
-        {maturingFd && (
-          <ContextAlertCard
-            tone="action"
-            title="Action Required"
-            message={`Your Fixed Deposit ${maturingFd.fdNumber.slice(-4)} matures soon`}
-            cta="View Maturity Instructions"
-            onClick={() => {
-              const s = getServiceById('maturity-instructions');
-              if (s) onSelectService(s);
-            }}
-          />
-        )}
-        {renewingPolicy && (
-          <ContextAlertCard
-            tone="info"
-            title="Renewal Due"
-            message={`${renewingPolicy.planName} policy renewal due`}
-            cta="Renew Policy"
-            onClick={() => {
-              const s = getServiceById('renew-policy');
-              if (s) onSelectService(s);
-            }}
-          />
-        )}
-      </div>
+      <ContextAlertsCarousel items={alertItems} className="mb-4" />
 
       {/* Recently Used */}
       {recentServices.length > 0 && (
