@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layers, Upload } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
-import { fetchBulkPaymentsHome } from '../../../data/corporateBulkPaymentsMock';
+import { fetchBulkPaymentsHome, clearBulkBatchDraft } from '../../../data/corporateBulkPaymentsMock';
 import type { BulkPaymentsHomeData } from '../../../types/corporateBulkPayments';
 import { formatPaymentCurrency } from '../payments/shared/CorporatePaymentsUI';
 import { PayHomeCard } from '../payments/home/PaymentsHomeUI';
@@ -37,6 +37,7 @@ export const BulkPaymentsHome: React.FC = () => {
 
   const handleUpload = () => {
     if (blockBulkIfChecker()) return;
+    clearBulkBatchDraft();
     navigate('/corporate/bulk-payments/create?action=upload');
   };
 

@@ -137,9 +137,10 @@ interface BankingContextType {
   corporateDeviceTrusted: boolean;
   completeCorporateAuthentication: (deviceTrusted?: boolean) => void;
   corporateSession: CorporateDemoUser | null;
+  pendingCorporateUser: CorporateDemoUser | null;
+  setPendingCorporateUser: (user: CorporateDemoUser | null) => void;
   retailRegistration: RetailRegistrationResult | null;
   completeRetailRegistration: (result: RetailRegistrationResult) => void;
-  setPendingCorporateUser: (user: CorporateDemoUser | null) => void;
   canApproveCorporate: boolean;
   canSubmitCorporatePayment: boolean;
   canCreateCorporateBulk: boolean;
@@ -1973,6 +1974,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       corporateDeviceTrusted,
       completeCorporateAuthentication,
       corporateSession,
+      pendingCorporateUser,
       setPendingCorporateUser,
       retailRegistration,
       completeRetailRegistration,

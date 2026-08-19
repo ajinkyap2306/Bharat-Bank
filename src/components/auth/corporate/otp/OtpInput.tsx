@@ -37,12 +37,12 @@ export const OtpInput: React.FC<OtpInputProps> = ({
 
   return (
     <NumericPinInput
-      key={resetKey}
       value={value}
       onChange={handleChange}
       disabled={disabled}
       hasError={hasError}
       autoFocus
+      resetKey={resetKey}
       ariaLabel="6-digit verification code"
       digitClassName="h-[50px] rounded-[13px] text-2xl"
     />

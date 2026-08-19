@@ -6,12 +6,15 @@ import { useCorporateMakerGate } from '../../../hooks/useCorporateMakerGate';
 import { clonePreferences } from '../../../data/corporateAccountPreferencesMock';
 import {
   addManualPayment,
+  clearBulkBatchDraft,
+  clearValidationErrors,
   createEmptyBatch,
   createValidatedDemoBatch,
   getAccountById,
   getEligibleAccounts,
   loadBulkBatchDraft,
   removePayment,
+  removeValidationError,
   resolveDuplicate,
   saveBulkBatchDraft,
   simulateFileValidation,
@@ -53,17 +56,24 @@ export const CreateBulkPayment: React.FC = () => {
     }
   }, [blockBulkIfChecker, navigate]);
 
+  const isUploadAction = searchParams.get('action') === 'upload';
+  const isValidatedDemo = searchParams.get('demo') === 'validated';
+
   const [batch, setBatch] = useState<BulkBatch>(() => {
-    if (searchParams.get('demo') === 'validated') return createValidatedDemoBatch();
+    if (isValidatedDemo) return createValidatedDemoBatch();
+    if (isUploadAction) {
+      clearBulkBatchDraft();
+      return createEmptyBatch();
+    }
     return loadBulkBatchDraft() ?? createEmptyBatch();
   });
   const [uploadState, setUploadState] = useState<BulkUploadState>(() =>
-    searchParams.get('demo') === 'validated' ? 'validated' : 'idle'
+    isValidatedDemo ? 'validated' : 'idle'
   );
   const [showAccountSheet, setShowAccountSheet] = useState(false);
   const [showManual, setShowManual] = useState(false);
   const [removeId, setRemoveId] = useState<string | null>(null);
-  const [autoUpload, setAutoUpload] = useState(searchParams.get('action') === 'upload');
+  const [autoUpload, setAutoUpload] = useState(isUploadAction);
 
   const hideBalance = clonePreferences(batch.accountId)?.hideBalance ?? false;
   const account = getAccountById(batch.accountId)!;
@@ -121,8 +131,12 @@ export const CreateBulkPayment: React.FC = () => {
     await new Promise((r) => setTimeout(r, 1200));
     setUploadState('processing');
     await new Promise((r) => setTimeout(r, 1500));
-    const validated = simulateFileValidation({ ...batch, name: batch.name || 'August Vendor Payments' });
-    setBatch(validated);
+    setBatch((prev) =>
+      simulateFileValidation(
+        { ...prev, name: prev.name || 'August Vendor Payments' },
+        { withErrors: isValidatedDemo }
+      )
+    );
     setUploadState('validated');
   };
 
@@ -262,7 +276,11 @@ export const CreateBulkPayment: React.FC = () => {
               onDownloadTemplate={handleDownloadTemplate}
             />
             <BatchValidationSummary batch={batch} />
-            <ValidationErrors errors={batch.errors} />
+            <ValidationErrors
+              errors={batch.errors}
+              onRemoveError={(row) => updateBatch((b) => removeValidationError(b, row))}
+              onClearAll={() => updateBatch((b) => clearValidationErrors(b))}
+            />
             <DuplicatePayments
               duplicates={batch.duplicates}
               onReview={handleDuplicateReview}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 export interface NumericPinInputProps {
   value: string;
@@ -14,6 +14,8 @@ export interface NumericPinInputProps {
   className?: string;
   digitClassName?: string;
   gapClassName?: string;
+  /** Bump to clear and refocus (e.g. after OTP resend) */
+  resetKey?: number;
 }
 
 const toDigits = (raw: string, length: number): string =>
@@ -38,51 +40,45 @@ export const NumericPinInput: React.FC<NumericPinInputProps> = ({
   className = '',
   digitClassName = '',
   gapClassName = 'gap-2',
+  resetKey = 0,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const safeValue = toDigits(value, length);
   const activeIndex = Math.min(safeValue.length, length - 1);
 
+  const focusInput = useCallback(() => {
+    if (disabled) return;
+    const el = inputRef.current;
+    if (!el) return;
+    el.focus({ preventScroll: true });
+    const pos = el.value.length;
+    el.setSelectionRange(pos, pos);
+  }, [disabled]);
+
   useEffect(() => {
     if (autoFocus && !disabled) {
-      inputRef.current?.focus();
+      const t = window.setTimeout(focusInput, 0);
+      return () => window.clearTimeout(t);
     }
-  }, [autoFocus, disabled]);
+  }, [autoFocus, disabled, focusInput, resetKey]);
 
-  const handleChange = (raw: string) => {
-    onChange(toDigits(raw, length));
-  };
+  const applyValue = useCallback(
+    (raw: string) => {
+      onChange(toDigits(raw, length));
+    },
+    [length, onChange]
+  );
 
   const gridCols = GRID_COLS[length] ?? 'grid-cols-6';
 
   return (
     <div
-      className={`relative ${className}`}
+      className={`relative min-h-[50px] ${className}`}
       role="group"
       aria-label={ariaLabel}
-      onClick={() => !disabled && inputRef.current?.focus()}
     >
-      <input
-        ref={inputRef}
-        type="tel"
-        inputMode="numeric"
-        pattern="[0-9]*"
-        autoComplete={autoComplete}
-        maxLength={length}
-        value={safeValue}
-        disabled={disabled}
-        aria-label={ariaLabel}
-        onChange={(e) => handleChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Backspace' || e.key === 'Delete') {
-            e.stopPropagation();
-          }
-        }}
-        className="absolute inset-0 z-10 h-full w-full cursor-text opacity-[0.01] text-base caret-transparent"
-        style={{ WebkitUserSelect: 'text', userSelect: 'text' }}
-      />
-
-      <div className={`grid ${gridCols} ${gapClassName}`} aria-hidden>
+      {/* Visual digit boxes — no pointer events; input above receives all interaction */}
+      <div className={`grid ${gridCols} ${gapClassName} pointer-events-none`} aria-hidden>
         {Array.from({ length }, (_, index) => {
           const digit = safeValue[index] ?? '';
           const isActive = !disabled && index === activeIndex;
@@ -105,6 +101,37 @@ export const NumericPinInput: React.FC<NumericPinInputProps> = ({
           );
         })}
       </div>
+
+      {/* Single native input — reliable on desktop web + mobile keyboards */}
+      <input
+        ref={inputRef}
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        autoComplete={autoComplete}
+        enterKeyHint="done"
+        maxLength={length}
+        value={safeValue}
+        disabled={disabled}
+        aria-label={ariaLabel}
+        onChange={(e) => applyValue(e.target.value)}
+        onInput={(e) => applyValue(e.currentTarget.value)}
+        onPaste={(e) => {
+          e.preventDefault();
+          applyValue(e.clipboardData.getData('text'));
+        }}
+        onFocus={() => {
+          const el = inputRef.current;
+          if (!el) return;
+          const pos = el.value.length;
+          el.setSelectionRange(pos, pos);
+        }}
+        onClick={() => {
+          if (!disabled) focusInput();
+        }}
+        className="absolute inset-0 z-20 h-full w-full cursor-text border-0 bg-transparent p-0 text-base text-transparent caret-blue-600 outline-none ring-0 shadow-none"
+        style={{ WebkitUserSelect: 'text', userSelect: 'text', WebkitTextFillColor: 'transparent' }}
+      />
     </div>
   );
 };

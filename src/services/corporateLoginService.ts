@@ -1,4 +1,4 @@
-import { findCorporateDemoUser } from '../data/corporateAuthMock';
+import { findCorporateDemoUser, findCorporateDemoUserByCustomerId } from '../data/corporateAuthMock';
 import type { CorporateLoginCredentials } from '../data/corporateAuthMock';
 import type { CorporateDemoUser } from '../types/corporateDemoUser';
 import type { CorporateLoginFieldError } from '../types/corporateAuth';
@@ -15,19 +15,11 @@ const SUCCESS_TRANSITION_MS = 600;
 export function validateLoginFields(
   credentials: CorporateLoginCredentials
 ): LoginValidationResult {
-  if (!credentials.corporateId.trim()) {
-    return {
-      valid: false,
-      field: 'corporate_id',
-      message: 'Enter your Corporate ID.',
-    };
-  }
-
   if (!credentials.userId.trim()) {
     return {
       valid: false,
       field: 'user_id',
-      message: 'Enter your User ID.',
+      message: 'Enter your Customer ID.',
     };
   }
 
@@ -47,13 +39,15 @@ export function authenticateCorporate(
 ): Promise<CorporateDemoUser | null> {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(
-        findCorporateDemoUser(
-          credentials.corporateId,
-          credentials.userId,
-          credentials.password
-        )
-      );
+      const user =
+        credentials.corporateId.trim().length > 0
+          ? findCorporateDemoUser(
+              credentials.corporateId,
+              credentials.userId,
+              credentials.password
+            )
+          : findCorporateDemoUserByCustomerId(credentials.userId, credentials.password);
+      resolve(user);
     }, LOGIN_DELAY_MS);
   });
 }

@@ -64,7 +64,7 @@ export const SECURITY_QUESTIONS: SecurityQuestionOption[] = [
 
 export function generateRetailUserId(): string {
   const suffix = Math.floor(100000 + Math.random() * 900000);
-  return `U1${suffix}`;
+  return `RB-${suffix}`;
 }
 
 export function normalizeCardNumber(value: string): string {

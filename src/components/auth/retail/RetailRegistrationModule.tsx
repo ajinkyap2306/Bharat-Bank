@@ -132,7 +132,7 @@ export const RetailRegistrationModule: React.FC = () => {
     setError('');
     switch (step) {
       case 'method':
-        navigate('/');
+        navigate('/register');
         break;
       case 'debit_auth':
       case 'pan_auth':
@@ -314,7 +314,7 @@ export const RetailRegistrationModule: React.FC = () => {
 
   const handleGoToLogin = () => {
     setAuthScreen('login');
-    navigate('/', { state: { retailUserId: draft.assignedUserId } });
+    navigate('/', { state: { customerId: draft.assignedUserId } });
   };
 
   const renderStep = () => {

@@ -21,6 +21,7 @@ import { BiometricPrompt } from './BiometricPrompt';
 import { VerificationStatus } from './VerificationStatus';
 import { SkipBiometricSheet } from './SkipBiometricSheet';
 import { LoginButton } from '../login/LoginButton';
+import { getCorporateLandingPath } from '../../../../utils/corporateLanding';
 
 type DeviceAction =
   | { type: 'SET_STATUS'; status: DeviceVerificationStatus }
@@ -66,6 +67,7 @@ export const CorporateDeviceVerification: React.FC = () => {
     completeCorporateAuthentication,
     setCorporateLoginVerified,
     setCorporateOtpVerified,
+    pendingCorporateUser,
   } = useBanking();
 
   const [state, dispatch] = useReducer(deviceReducer, {
@@ -91,11 +93,12 @@ export const CorporateDeviceVerification: React.FC = () => {
       await completeDeviceTrustMock();
       completeCorporateAuthentication(markTrusted);
 
+      const landing = getCorporateLandingPath(pendingCorporateUser?.role);
       setTimeout(() => {
-        navigate('/corporate/home', { replace: true });
+        navigate(landing, { replace: true });
       }, DEVICE_VERIFICATION_SUCCESS_DELAY_MS);
     },
-    [completeCorporateAuthentication, navigate]
+    [completeCorporateAuthentication, navigate, pendingCorporateUser?.role]
   );
 
   const handleVerifyBiometric = useCallback(async () => {

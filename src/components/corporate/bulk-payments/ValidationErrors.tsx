@@ -6,9 +6,15 @@ import { BottomSheet } from '../../common/BottomSheet';
 
 interface ValidationErrorsProps {
   errors: BulkPaymentValidationError[];
+  onRemoveError?: (row: number) => void;
+  onClearAll?: () => void;
 }
 
-export const ValidationErrors: React.FC<ValidationErrorsProps> = ({ errors }) => {
+export const ValidationErrors: React.FC<ValidationErrorsProps> = ({
+  errors,
+  onRemoveError,
+  onClearAll,
+}) => {
   const [showAll, setShowAll] = useState(false);
   if (errors.length === 0) return null;
 
@@ -27,6 +33,15 @@ export const ValidationErrors: React.FC<ValidationErrorsProps> = ({ errors }) =>
               <p className="text-[12px] text-[#667085]">Row {err.row}</p>
               <p className="text-[14px] font-semibold text-[#111827] dark:text-white">{err.beneficiary}</p>
               <p className="text-[13px] text-[#DC2626] mt-0.5">{err.reason}</p>
+              {onRemoveError && (
+                <button
+                  type="button"
+                  onClick={() => onRemoveError(err.row)}
+                  className="mt-2 w-full py-2 rounded-xl border border-[#E4E7EC] text-[12px] font-semibold text-[#667085] min-h-10"
+                >
+                  Remove from batch
+                </button>
+              )}
             </li>
           ))}
         </ul>
@@ -39,6 +54,15 @@ export const ValidationErrors: React.FC<ValidationErrorsProps> = ({ errors }) =>
             View Errors ({errors.length})
           </button>
         )}
+        {onClearAll && errors.length > 1 && (
+          <button
+            type="button"
+            onClick={onClearAll}
+            className="mt-2 w-full py-2.5 rounded-xl bg-[#0B5CAB] text-white text-[13px] font-semibold min-h-11"
+          >
+            Fix all errors
+          </button>
+        )}
       </PayCard>
 
       <BottomSheet isOpen={showAll} onClose={() => setShowAll(false)} title="Validation Errors">
@@ -48,9 +72,35 @@ export const ValidationErrors: React.FC<ValidationErrorsProps> = ({ errors }) =>
               <p className="text-[12px] text-[#667085]">Row {err.row}</p>
               <p className="text-[14px] font-semibold">{err.beneficiary}</p>
               <p className="text-[13px] text-[#DC2626] mt-0.5">{err.reason}</p>
+              {onRemoveError && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onRemoveError(err.row);
+                    if (errors.length <= 1) setShowAll(false);
+                  }}
+                  className="mt-2 w-full py-2 rounded-xl border border-[#E4E7EC] text-[12px] font-semibold min-h-10"
+                >
+                  Remove from batch
+                </button>
+              )}
             </li>
           ))}
         </ul>
+        {onClearAll && (
+          <div className="px-4 pb-6">
+            <button
+              type="button"
+              onClick={() => {
+                onClearAll();
+                setShowAll(false);
+              }}
+              className="w-full py-3 rounded-xl bg-[#0B5CAB] text-white text-[13px] font-semibold min-h-11"
+            >
+              Fix all errors
+            </button>
+          </div>
+        )}
       </BottomSheet>
     </>
   );

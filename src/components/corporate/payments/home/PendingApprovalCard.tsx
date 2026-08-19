@@ -7,6 +7,8 @@ interface PendingApprovalCardProps {
   count: number;
   amount: number;
   currency?: string;
+  title?: string;
+  subtitle?: string;
   onViewPayments: () => void;
 }
 
@@ -14,6 +16,8 @@ export const PendingApprovalCard: React.FC<PendingApprovalCardProps> = ({
   count,
   amount,
   currency = '₹',
+  title = 'Pending Approval',
+  subtitle,
   onViewPayments,
 }) => {
   if (count <= 0) return null;
@@ -30,13 +34,17 @@ export const PendingApprovalCard: React.FC<PendingApprovalCardProps> = ({
           <AlertCircle className="w-4 h-4 text-[#0B5CAB]" aria-hidden />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-bold text-[#111827] dark:text-white">Pending Approval</p>
+          <p className="text-[13px] font-bold text-[#111827] dark:text-white">{title}</p>
           <p className="text-[11px] text-[#667085] mt-0.5">
-            <span className="font-semibold text-[#0B5CAB] tabular-nums">{count} payments</span>
-            {' · '}
-            <span className="font-semibold text-[#0B5CAB] tabular-nums">
-              {formatPaymentCurrency(amount, currency)}
-            </span>
+            {subtitle ?? (
+              <>
+                <span className="font-semibold text-[#0B5CAB] tabular-nums">{count} payments</span>
+                {' · '}
+                <span className="font-semibold text-[#0B5CAB] tabular-nums">
+                  {formatPaymentCurrency(amount, currency)}
+                </span>
+              </>
+            )}
           </p>
         </div>
         <ChevronRight className="w-4 h-4 text-[#667085] shrink-0" aria-hidden />

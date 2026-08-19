@@ -13,10 +13,12 @@ import { ServicesGrid } from './home/ServicesGrid';
 import { UpcomingPayments } from './home/UpcomingPayments';
 import { RecentTransactions } from './home/RecentTransactions';
 import { CorporateNotificationsScreen } from './home/CorporateNotificationsScreen';
+import { useCorporateMakerGate } from '../../hooks/useCorporateMakerGate';
 
 export const CorporateHome: React.FC = () => {
   const navigate = useNavigate();
   const { user, setCorporateTab, addToast, setBottomNavHidden, canApproveCorporate, canSubmitCorporatePayment } = useBanking();
+  const { blockIfChecker, blockBulkIfChecker } = useCorporateMakerGate();
 
   const openAccounts = () => {
     setCorporateTab('accounts');
@@ -89,6 +91,7 @@ export const CorporateHome: React.FC = () => {
         goToPayments();
         break;
       case 'transfers':
+        if (blockIfChecker('create transfers')) return;
         setCorporateTab('payments');
         navigate('/corporate/payments/create/internal-transfer');
         break;
@@ -100,6 +103,7 @@ export const CorporateHome: React.FC = () => {
         navigate('/corporate/payments/scheduled');
         break;
       case 'bulk':
+        if (blockBulkIfChecker()) return;
         setCorporateTab('payments');
         navigate('/corporate/bulk-payments');
         break;
@@ -181,6 +185,7 @@ export const CorporateHome: React.FC = () => {
           onMakePayment={goToPayments}
           onApprove={goToApprovals}
           onTransfer={() => {
+            if (blockIfChecker('create transfers')) return;
             setCorporateTab('payments');
             navigate('/corporate/payments/create/internal-transfer');
           }}

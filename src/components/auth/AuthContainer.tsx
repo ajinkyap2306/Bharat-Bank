@@ -2,29 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  User,
-  Building2,
   ArrowRight,
   Fingerprint,
   Smartphone,
   ChevronLeft,
   Eye,
   EyeOff,
+  User,
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
-import { BankingType } from '../../types/banking';
 import { BharatBankLogo } from '../common/BharatBankLogo';
 import { NumericPinInput } from '../common/NumericPinInput';
-import {
-  CORPORATE_DEMO_ID,
-  CORPORATE_DEMO_HINT,
-} from '../../data/corporateAuthMock';
+import { CORPORATE_DEMO_HINT } from '../../data/corporateAuthMock';
 import { authenticateCorporate } from '../../services/corporateLoginService';
+import { isCorporateCustomerId } from '../../utils/customerId';
 
-function isCorporateUserId(userId: string): boolean {
-  const uid = userId.trim().toUpperCase();
-  return uid.startsWith('MAK-') || uid.startsWith('CHK-') || uid.startsWith('ADM-');
-}
+type LoginPersona = 'retail' | 'maker' | 'checker';
+
+const RETAIL_DEMO_USER_ID = 'RB-123456';
+const MAKER_DEMO_USER_ID = 'MAK-1001';
+const CHECKER_DEMO_USER_ID = 'CHK-1001';
+
+const PERSONA_CUSTOMER_IDS: Record<LoginPersona, string> = {
+  retail: RETAIL_DEMO_USER_ID,
+  maker: MAKER_DEMO_USER_ID,
+  checker: CHECKER_DEMO_USER_ID,
+};
 
 export const AuthContainer: React.FC = () => {
   const navigate = useNavigate();
@@ -40,9 +43,8 @@ export const AuthContainer: React.FC = () => {
     clearSessionExpired,
   } = useBanking();
 
-  const [selectedType, setSelectedType] = useState<BankingType>('retail');
-  const [corporateId, setCorporateId] = useState('');
-  const [customerId, setCustomerId] = useState('RB-123456');
+  const [loginPersona, setLoginPersona] = useState<LoginPersona>('retail');
+  const [customerId, setCustomerId] = useState(RETAIL_DEMO_USER_ID);
   const [password, setPassword] = useState('demo123');
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState('');
@@ -50,12 +52,12 @@ export const AuthContainer: React.FC = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   useEffect(() => {
-    const state = location.state as { retailUserId?: string } | null;
-    if (state?.retailUserId) {
-      setCorporateId('');
-      setCustomerId(state.retailUserId);
-      setSelectedType('retail');
-      setBankingType('retail');
+    const state = location.state as { retailUserId?: string; customerId?: string } | null;
+    const incomingId = state?.customerId ?? state?.retailUserId;
+    if (incomingId) {
+      setCustomerId(incomingId);
+      setLoginPersona(isCorporateCustomerId(incomingId) ? 'maker' : 'retail');
+      setBankingType(isCorporateCustomerId(incomingId) ? 'corporate' : 'retail');
       setAuthScreen('login');
       window.history.replaceState({}, document.title);
     }
@@ -63,23 +65,29 @@ export const AuthContainer: React.FC = () => {
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerId.trim() || !password) {
+    const id = customerId.trim();
+    if (!id) {
       addToast({
         type: 'error',
         title: 'Input Missing',
-        message: 'Please provide User ID and password.',
+        message: 'Please enter your Customer ID.',
+      });
+      return;
+    }
+    if (!password) {
+      addToast({
+        type: 'error',
+        title: 'Input Missing',
+        message: 'Please enter your password.',
       });
       return;
     }
 
-    const isCorporate = corporateId.trim().length > 0 || isCorporateUserId(customerId);
-
-    if (isCorporate) {
-      const corpId = corporateId.trim() || CORPORATE_DEMO_ID;
+    if (isCorporateCustomerId(id)) {
       setIsLoggingIn(true);
       const authenticated = await authenticateCorporate({
-        corporateId: corpId,
-        userId: customerId,
+        corporateId: '',
+        userId: id,
         password,
       });
       setIsLoggingIn(false);
@@ -88,14 +96,13 @@ export const AuthContainer: React.FC = () => {
         addToast({
           type: 'error',
           title: 'Unable to sign in',
-          message: 'Please check your Corporate ID, User ID and password.',
+          message: 'Please check your Customer ID and password.',
         });
         return;
       }
 
       setPendingCorporateUser(authenticated);
       setBankingType('corporate');
-      setSelectedType('corporate');
       clearSessionExpired();
       setCorporateLoginVerified(true);
       navigate('/corporate/otp');
@@ -103,7 +110,6 @@ export const AuthContainer: React.FC = () => {
     }
 
     setBankingType('retail');
-    setSelectedType('retail');
     setAuthScreen('otp');
   };
 
@@ -115,27 +121,15 @@ export const AuthContainer: React.FC = () => {
     setIsBiometricScanning(true);
     setTimeout(() => {
       setIsBiometricScanning(false);
-      login('retail', customerId);
+      login('retail', customerId.trim());
     }, 1200);
   };
 
-  const fillDemo = (type: 'retail' | 'maker' | 'checker') => {
-    if (type === 'retail') {
-      setCorporateId('');
-      setCustomerId('RB-123456');
-      setPassword('demo123');
-      setSelectedType('retail');
-    } else if (type === 'maker') {
-      setCorporateId(CORPORATE_DEMO_ID);
-      setCustomerId('MAK-1001');
-      setPassword('demo123');
-      setSelectedType('corporate');
-    } else {
-      setCorporateId(CORPORATE_DEMO_ID);
-      setCustomerId('CHK-1001');
-      setPassword('demo123');
-      setSelectedType('corporate');
-    }
+  const fillDemo = (type: LoginPersona) => {
+    setLoginPersona(type);
+    setCustomerId(PERSONA_CUSTOMER_IDS[type]);
+    setPassword('demo123');
+    setBankingType(type === 'retail' ? 'retail' : 'corporate');
     addToast({
       type: 'info',
       title: 'Demo credentials loaded',
@@ -174,33 +168,16 @@ export const AuthContainer: React.FC = () => {
               <form onSubmit={handleLoginSubmit} className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
-                    Corporate ID <span className="font-normal text-slate-400">(for business users)</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={corporateId}
-                      onChange={(e) => setCorporateId(e.target.value)}
-                      placeholder={CORPORATE_DEMO_ID}
-                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500 rounded-2xl py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-white outline-none shadow-xs"
-                    />
-                    <span className="absolute right-3.5 top-3.5 text-slate-400">
-                      <Building2 className="w-4 h-4" />
-                    </span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
-                    User ID / Customer ID
+                    Customer ID
                   </label>
                   <div className="relative">
                     <input
                       type="text"
                       value={customerId}
-                      onChange={(e) => setCustomerId(e.target.value)}
-                      placeholder="RB-123456 or MAK-1001"
-                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500 rounded-2xl py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-white outline-none shadow-xs"
+                      onChange={(e) => setCustomerId(e.target.value.toUpperCase())}
+                      placeholder="RB-123456"
+                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500 rounded-2xl py-3.5 px-4 pr-11 text-sm font-mono font-medium text-slate-900 dark:text-white outline-none shadow-xs"
+                      autoComplete="username"
                       required
                     />
                     <span className="absolute right-3.5 top-3.5 text-slate-400">
@@ -212,8 +189,12 @@ export const AuthContainer: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Password</label>
-                    <button type="button" className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline">
-                      Forgot?
+                    <button
+                      type="button"
+                      onClick={() => navigate('/forgot-password')}
+                      className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      Forgot password?
                     </button>
                   </div>
                   <div className="relative">
@@ -223,6 +204,7 @@ export const AuthContainer: React.FC = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="demo123"
                       className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500 rounded-2xl py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-white outline-none shadow-xs"
+                      autoComplete="current-password"
                       required
                     />
                     <button
@@ -250,7 +232,7 @@ export const AuthContainer: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => navigate('/retail/register')}
+                    onClick={() => navigate('/register')}
                     className="w-full py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-bold text-blue-600 dark:text-blue-400"
                   >
                     Register for Mobile Banking
@@ -265,30 +247,51 @@ export const AuthContainer: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => fillDemo('retail')}
-                  className="py-2 px-2 rounded-xl text-[10px] font-bold border bg-blue-50 dark:bg-blue-950/60 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300"
+                  className={`py-2.5 px-2 rounded-xl text-[10px] font-bold border transition-all ${
+                    loginPersona === 'retail'
+                      ? 'bg-blue-600 border-blue-600 text-white shadow-md ring-2 ring-blue-300/50'
+                      : 'bg-blue-50 dark:bg-blue-950/60 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300'
+                  }`}
                 >
-                  Retail
+                  <span className="block">Retail</span>
+                  <span className={`block font-mono text-[9px] mt-0.5 ${loginPersona === 'retail' ? 'text-blue-100' : 'opacity-80'}`}>
+                    RB-123456
+                  </span>
                 </button>
                 <button
                   type="button"
                   onClick={() => fillDemo('maker')}
-                  className="py-2 px-2 rounded-xl text-[10px] font-bold border bg-teal-50 dark:bg-teal-950/60 border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300"
+                  className={`py-2.5 px-2 rounded-xl text-[10px] font-bold border transition-all ${
+                    loginPersona === 'maker'
+                      ? 'bg-teal-600 border-teal-600 text-white shadow-md ring-2 ring-teal-300/50'
+                      : 'bg-teal-50 dark:bg-teal-950/60 border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300'
+                  }`}
                 >
-                  Maker
+                  <span className="block">Maker</span>
+                  <span className={`block font-mono text-[9px] mt-0.5 ${loginPersona === 'maker' ? 'text-teal-100' : 'opacity-80'}`}>
+                    MAK-1001
+                  </span>
                 </button>
                 <button
                   type="button"
                   onClick={() => fillDemo('checker')}
-                  className="py-2 px-2 rounded-xl text-[10px] font-bold border bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300"
+                  className={`py-2.5 px-2 rounded-xl text-[10px] font-bold border transition-all ${
+                    loginPersona === 'checker'
+                      ? 'bg-amber-600 border-amber-600 text-white shadow-md ring-2 ring-amber-300/50'
+                      : 'bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300'
+                  }`}
                 >
-                  Checker
+                  <span className="block">Checker</span>
+                  <span className={`block font-mono text-[9px] mt-0.5 ${loginPersona === 'checker' ? 'text-amber-100' : 'opacity-80'}`}>
+                    CHK-1001
+                  </span>
                 </button>
               </div>
             </div>
           </motion.div>
         )}
 
-        {authScreen === 'otp' && selectedType === 'retail' && (
+        {authScreen === 'otp' && !isCorporateCustomerId(customerId) && (
           <motion.div
             key="otp"
             initial={{ opacity: 0, x: 20 }}
@@ -341,7 +344,7 @@ export const AuthContainer: React.FC = () => {
           </motion.div>
         )}
 
-        {authScreen === 'biometric' && selectedType === 'retail' && (
+        {authScreen === 'biometric' && !isCorporateCustomerId(customerId) && (
           <motion.div
             key="biometric"
             initial={{ opacity: 0, scale: 0.95 }}
@@ -379,7 +382,7 @@ export const AuthContainer: React.FC = () => {
 
             <button
               type="button"
-              onClick={() => login('retail', customerId)}
+              onClick={() => login('retail', customerId.trim())}
               className="w-full py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-2xl"
             >
               Skip to Dashboard

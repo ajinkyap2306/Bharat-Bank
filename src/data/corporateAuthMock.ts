@@ -52,7 +52,7 @@ export const CORPORATE_DEMO_PASSWORD = 'demo123';
 export const CORPORATE_DEMO_ROLE = 'Finance Maker';
 
 export const CORPORATE_DEMO_HINT =
-  'Demo: CORP-13456 · Maker MAK-1001 / Checker CHK-1001 · Password: demo123 · OTP: 123456';
+  'Customer ID: RB-123456 · MAK-1001 · CHK-1001 · Password: demo123 · OTP: 123456';
 
 export interface CorporateLoginCredentials {
   corporateId: string;
@@ -77,6 +77,11 @@ export function findCorporateDemoUser(
     return CORPORATE_DEMO_USERS.find((u) => u.role === 'maker') ?? null;
   }
 
+  const byUserId = CORPORATE_DEMO_USERS.find(
+    (u) => u.userId.toUpperCase() === uid && u.password === pwd
+  );
+  if (byUserId) return byUserId;
+
   return (
     CORPORATE_DEMO_USERS.find(
       (u) =>
@@ -85,6 +90,14 @@ export function findCorporateDemoUser(
         u.password === pwd
     ) ?? null
   );
+}
+
+/** Login with Customer ID + password only (Corporate ID inferred for demo users). */
+export function findCorporateDemoUserByCustomerId(
+  customerId: string,
+  password: string
+): CorporateDemoUser | null {
+  return findCorporateDemoUser(CORPORATE_DEMO_COMPANY_ID, customerId, password);
 }
 
 export const validateCorporateCredentials = (

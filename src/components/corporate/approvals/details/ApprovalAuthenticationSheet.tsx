@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Fingerprint, Loader2 } from 'lucide-react';
 import { BottomSheet } from '../../../common/BottomSheet';
+import { NumericPinInput } from '../../../common/NumericPinInput';
 
 interface ApprovalAuthenticationSheetProps {
   isOpen: boolean;
@@ -21,10 +22,15 @@ export const ApprovalAuthenticationSheet: React.FC<ApprovalAuthenticationSheetPr
   const canConfirm =
     !processing && (method === 'biometric' || mpin.length >= 4);
 
+  const handleClose = () => {
+    setMpin('');
+    onClose();
+  };
+
   return (
     <BottomSheet
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title="Authentication Required"
       subtitle="Verify your identity to complete this approval."
     >
@@ -63,16 +69,18 @@ export const ApprovalAuthenticationSheet: React.FC<ApprovalAuthenticationSheetPr
             </span>
           </button>
         ) : (
-          <input
-            type="password"
-            inputMode="numeric"
-            maxLength={6}
-            value={mpin}
-            onChange={(e) => setMpin(e.target.value.replace(/\D/g, ''))}
-            placeholder="Enter MPIN"
-            className="w-full p-3 rounded-xl border border-[#E4E7EC] text-center text-lg tracking-widest font-mono min-h-12"
-            aria-label="Enter MPIN"
-          />
+          <>
+            <NumericPinInput
+              value={mpin}
+              onChange={setMpin}
+              length={4}
+              masked
+              autoFocus
+              autoComplete="off"
+              ariaLabel="Corporate MPIN"
+            />
+            <p className="text-[11px] text-center text-[#667085]">Demo MPIN: 1234</p>
+          </>
         )}
 
         {method === 'mpin' && (

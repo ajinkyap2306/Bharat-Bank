@@ -157,6 +157,15 @@ export function createEmptyBatch(accountId = 'acc_corp_op_01'): BulkBatch {
   };
 }
 
+function resolveBatchStatus(
+  batch: Pick<BulkBatch, 'errorCount' | 'duplicates' | 'paymentCount'>
+): BulkBatch['status'] {
+  const pendingDuplicates = batch.duplicates.filter((d) => d.resolution === 'pending').length;
+  if (batch.errorCount > 0 || pendingDuplicates > 0) return 'validation_errors';
+  if (batch.paymentCount > 0) return 'ready_for_review';
+  return 'draft';
+}
+
 export function createValidatedDemoBatch(): BulkBatch {
   const account = BULK_ACCOUNTS[0];
   const totalAmount = 1875000;
@@ -183,6 +192,43 @@ export function createValidatedDemoBatch(): BulkBatch {
     createdBy: 'Rahul Sharma',
     createdAt: '18 Aug 2026 • 10:15 AM',
     uploadFileName: 'August_Vendor_Payments.csv',
+  };
+}
+
+/** Clean upload result — no blocking errors (used for direct Upload Payment File demo). */
+export function createCleanValidatedBatch(overrides: Partial<BulkBatch> = {}): BulkBatch {
+  const account = BULK_ACCOUNTS[0];
+  const totalAmount = 1875000;
+  const fee = 1200;
+  return {
+    id: `batch_${Date.now()}`,
+    name: 'August Vendor Payments',
+    reference: 'BULK-AUG-2026-01',
+    accountId: account.id,
+    paymentDate: '18 Aug 2026',
+    currency: 'INR',
+    paymentCount: 125,
+    validCount: 125,
+    errorCount: 0,
+    duplicateCount: 0,
+    totalAmount,
+    fee,
+    totalDebit: totalAmount + fee,
+    status: 'ready_for_review',
+    payments: SAMPLE_VALID,
+    errors: [],
+    duplicates: [],
+    limits: { dailyLimit: 5000000, usedToday: 1200000, maxBatchSize: 500 },
+    createdBy: 'Rahul Sharma',
+    createdAt: new Date().toLocaleString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }),
+    uploadFileName: 'August_Vendor_Payments.csv',
+    ...overrides,
   };
 }
 
@@ -240,8 +286,12 @@ export function clearBulkBatchDraft(): void {
   sessionStorage.removeItem(STORAGE_KEY);
 }
 
-export function simulateFileValidation(batch: BulkBatch): BulkBatch {
-  const demo = createValidatedDemoBatch();
+export function simulateFileValidation(
+  batch: BulkBatch,
+  options?: { withErrors?: boolean }
+): BulkBatch {
+  const withErrors = options?.withErrors ?? false;
+  const demo = withErrors ? createValidatedDemoBatch() : createCleanValidatedBatch();
   return {
     ...demo,
     id: batch.id,
@@ -252,6 +302,28 @@ export function simulateFileValidation(batch: BulkBatch): BulkBatch {
     currency: batch.currency,
     uploadFileName: 'August_Vendor_Payments.csv',
   };
+}
+
+export function removeValidationError(batch: BulkBatch, row: number): BulkBatch {
+  const errors = batch.errors.filter((e) => e.row !== row);
+  const errorCount = errors.length;
+  const next = {
+    ...batch,
+    errors,
+    errorCount,
+    validCount: batch.validCount + 1,
+  };
+  return { ...next, status: resolveBatchStatus(next) };
+}
+
+export function clearValidationErrors(batch: BulkBatch): BulkBatch {
+  const next = {
+    ...batch,
+    errors: [],
+    errorCount: 0,
+    validCount: batch.paymentCount,
+  };
+  return { ...next, status: resolveBatchStatus(next) };
 }
 
 export function addManualPayment(batch: BulkBatch, payment: Omit<BulkPaymentRecord, 'id' | 'status'>): BulkBatch {
@@ -301,7 +373,8 @@ export function resolveDuplicate(
     d.id === duplicateId ? { ...d, resolution } : d
   );
   const duplicateCount = duplicates.filter((d) => d.resolution === 'pending').length;
-  return { ...batch, duplicates, duplicateCount };
+  const next = { ...batch, duplicates, duplicateCount };
+  return { ...next, status: resolveBatchStatus(next) };
 }
 export function getAccountById(id: string): BulkPaymentAccount | undefined {
   return BULK_ACCOUNTS.find((a) => a.id === id);

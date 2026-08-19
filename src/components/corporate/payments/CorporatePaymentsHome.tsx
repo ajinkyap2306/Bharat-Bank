@@ -199,6 +199,7 @@ export const CorporatePaymentsHome: React.FC = () => {
         <PendingApprovalCard
           count={pendingCount}
           amount={pendingAmount}
+          title={canCreatePayment ? 'Pending Approval' : 'Review Approvals'}
           onViewPayments={() => goToRoute('/corporate/approvals')}
         />
 
@@ -216,12 +217,14 @@ export const CorporatePaymentsHome: React.FC = () => {
           onSelect={(id) => goToRoute(`/corporate/payments/${id}`)}
         />
 
-        <PaymentTemplates
-          items={data.templates.slice(0, 2)}
-          showBalances
-          onViewAll={() => goToRoute('/corporate/payments/templates')}
-          onSelect={() => goToRoute('/corporate/payments/templates')}
-        />
+        {canCreatePayment && (
+          <PaymentTemplates
+            items={data.templates.slice(0, 2)}
+            showBalances
+            onViewAll={() => goToRoute('/corporate/payments/templates')}
+            onSelect={() => goToRoute('/corporate/payments/templates')}
+          />
+        )}
       </div>
 
       <PaymentSearch

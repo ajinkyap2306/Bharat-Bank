@@ -13,6 +13,9 @@ import { CorporateOtpRoute } from './components/auth/corporate/CorporateOtpRoute
 import { CorporateDeviceVerificationRoute } from './components/auth/corporate/CorporateDeviceVerificationRoute';
 import { CorporateForgotPasswordPlaceholder } from './components/auth/corporate/CorporateForgotPasswordPlaceholder';
 import { RetailRegistrationModule } from './components/auth/retail/RetailRegistrationModule';
+import { RegistrationEntry } from './components/auth/RegistrationEntry';
+import { CorporateRegistrationModule } from './components/auth/corporate/CorporateRegistrationModule';
+import { ForgotPasswordModule } from './components/auth/ForgotPasswordModule';
 
 // Retail Components
 import { RetailHome } from './components/retail/RetailHome';
@@ -44,6 +47,7 @@ import { CorporateBulkPaymentsModule } from './components/corporate/bulk-payment
 import { CorporateMoreModule } from './components/corporate/more/CorporateMoreModule';
 import { CorporateProfileModule } from './components/corporate/profile/CorporateProfileModule';
 import { isCorporateBottomNavRoute } from './utils/corporateBottomNav';
+import { getCorporateLandingPath } from './utils/corporateLanding';
 
 const BankingAppContent: React.FC = () => {
   const location = useLocation();
@@ -54,6 +58,7 @@ const BankingAppContent: React.FC = () => {
     retailTab, 
     corporateTab, 
     setCorporateTab,
+    corporateSession,
     isScannerOpen, 
     closeScanner,
     isBottomNavHidden,
@@ -93,9 +98,9 @@ const BankingAppContent: React.FC = () => {
     ];
     const isAllowed = allowedPrefixes.some((p) => path === p || path.startsWith(`${p}/`));
 
-    // After login / demo switch the URL may still be "/" — send to corporate home
+    // After login the URL may still be "/" — send to role-appropriate corporate landing
     if (!path.startsWith('/corporate/')) {
-      navigate('/corporate/home', { replace: true });
+      navigate(getCorporateLandingPath(corporateSession?.role), { replace: true });
       return;
     }
 
@@ -125,7 +130,7 @@ const BankingAppContent: React.FC = () => {
     ) {
       setCorporateTab('home');
     }
-  }, [isAuthenticated, bankingType, location.pathname, navigate, corporateTab, setCorporateTab]);
+  }, [isAuthenticated, bankingType, location.pathname, navigate, corporateTab, setCorporateTab, corporateSession?.role]);
 
   const renderCorporateScreen = () => {
     const path = location.pathname;
@@ -164,10 +169,21 @@ const BankingAppContent: React.FC = () => {
     return <CorporateHome />;
   };
 
-  if (location.pathname === '/retail/register' || location.pathname.startsWith('/retail/register/')) {
+  if (
+    location.pathname === '/register' ||
+    location.pathname === '/retail/register' ||
+    location.pathname.startsWith('/retail/register/') ||
+    location.pathname === '/corporate/register' ||
+    location.pathname === '/forgot-password'
+  ) {
     return (
       <>
-        <RetailRegistrationModule />
+        {location.pathname === '/register' && <RegistrationEntry />}
+        {(location.pathname === '/retail/register' || location.pathname.startsWith('/retail/register/')) && (
+          <RetailRegistrationModule />
+        )}
+        {location.pathname === '/corporate/register' && <CorporateRegistrationModule />}
+        {location.pathname === '/forgot-password' && <ForgotPasswordModule />}
         <ToastContainer />
       </>
     );
@@ -227,7 +243,10 @@ const UnauthenticatedRoutes: React.FC = () => {
       <OfflineBanner />
       <PwaLifecycle />
       <Routes>
+        <Route path="/register" element={<RegistrationEntry />} />
         <Route path="/retail/register" element={<RetailRegistrationModule />} />
+        <Route path="/corporate/register" element={<CorporateRegistrationModule />} />
+        <Route path="/forgot-password" element={<ForgotPasswordModule />} />
         <Route path="/corporate/login" element={<Navigate to="/" replace />} />
         <Route path="/corporate/otp" element={<CorporateOtpRoute />} />
         <Route
