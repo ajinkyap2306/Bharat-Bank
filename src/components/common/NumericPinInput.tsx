@@ -105,9 +105,8 @@ export const NumericPinInput: React.FC<NumericPinInputProps> = ({
       {/* Single native input — reliable on desktop web + mobile keyboards */}
       <input
         ref={inputRef}
-        type="text"
+        type="tel"
         inputMode="numeric"
-        pattern="[0-9]*"
         autoComplete={autoComplete}
         enterKeyHint="done"
         maxLength={length}
@@ -129,8 +128,8 @@ export const NumericPinInput: React.FC<NumericPinInputProps> = ({
         onClick={() => {
           if (!disabled) focusInput();
         }}
-        className="absolute inset-0 z-20 h-full w-full cursor-text border-0 bg-transparent p-0 text-base text-transparent caret-blue-600 outline-none ring-0 shadow-none"
-        style={{ WebkitUserSelect: 'text', userSelect: 'text', WebkitTextFillColor: 'transparent' }}
+        className="absolute inset-0 z-20 h-full w-full cursor-text border-0 bg-transparent p-0 text-base caret-blue-600 outline-none ring-0 shadow-none opacity-[0.01]"
+        style={{ fontSize: '16px', WebkitUserSelect: 'text', userSelect: 'text' }}
       />
     </div>
   );

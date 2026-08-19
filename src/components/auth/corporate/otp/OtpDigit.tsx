@@ -29,15 +29,17 @@ export const OtpDigit = forwardRef<HTMLInputElement, OtpDigitProps>(
   ) => (
     <input
       ref={ref}
-      type="text"
+      type="tel"
       inputMode="numeric"
-      pattern="[0-9]*"
       autoComplete={index === 0 ? 'one-time-code' : 'off'}
       maxLength={1}
       value={value}
       disabled={disabled}
       aria-label={`Verification digit ${index + 1} of 6`}
-      onChange={(e) => onChange(index, e.target.value)}
+      onChange={(e) => {
+        const next = e.target.value.replace(/\D/g, '');
+        onChange(index, next);
+      }}
       onKeyDown={(e) => onKeyDown(index, e)}
       onFocus={() => onFocus(index)}
       onPaste={onPaste}

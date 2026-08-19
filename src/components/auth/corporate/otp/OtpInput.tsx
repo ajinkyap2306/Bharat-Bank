@@ -1,5 +1,5 @@
-import React from 'react';
-import { NumericPinInput } from '../../../common/NumericPinInput';
+import React, { useEffect, useRef } from 'react';
+import { OtpDigit } from './OtpDigit';
 
 interface OtpInputProps {
   digits: string[];
@@ -12,11 +12,9 @@ interface OtpInputProps {
   onComplete?: () => void;
 }
 
-const toDigitArray = (value: string): string[] =>
-  Array.from({ length: 6 }, (_, i) => value[i] ?? '');
-
 export const OtpInput: React.FC<OtpInputProps> = ({
   digits,
+  activeIndex,
   hasError,
   disabled,
   resetKey = 0,
@@ -24,27 +22,88 @@ export const OtpInput: React.FC<OtpInputProps> = ({
   onActiveIndexChange,
   onComplete,
 }) => {
-  const value = digits.join('');
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const handleChange = (next: string) => {
-    const nextDigits = toDigitArray(next);
-    onDigitsChange(nextDigits);
-    onActiveIndexChange(Math.min(next.length, 5));
-    if (next.length === 6) {
+  useEffect(() => {
+    if (disabled) return;
+    const t = window.setTimeout(() => {
+      inputRefs.current[activeIndex]?.focus();
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [resetKey, disabled, activeIndex]);
+
+  const handleChange = (index: number, raw: string) => {
+    const char = raw.replace(/\D/g, '').slice(-1);
+    const next = [...digits];
+    next[index] = char;
+    onDigitsChange(next);
+
+    if (char && index < 5) {
+      onActiveIndexChange(index + 1);
+      inputRefs.current[index + 1]?.focus();
+    }
+
+    if (char && index === 5 && next.every((d) => d.length === 1)) {
+      onComplete?.();
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace') {
+      if (digits[index]) {
+        const next = [...digits];
+        next[index] = '';
+        onDigitsChange(next);
+        return;
+      }
+      if (index > 0) {
+        onActiveIndexChange(index - 1);
+        inputRefs.current[index - 1]?.focus();
+      }
+    }
+    if (e.key === 'ArrowLeft' && index > 0) {
+      onActiveIndexChange(index - 1);
+      inputRefs.current[index - 1]?.focus();
+    }
+    if (e.key === 'ArrowRight' && index < 5) {
+      onActiveIndexChange(index + 1);
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (!pasted) return;
+    const next = Array.from({ length: 6 }, (_, i) => pasted[i] ?? '');
+    onDigitsChange(next);
+    const focusIndex = Math.min(pasted.length, 5);
+    onActiveIndexChange(focusIndex);
+    inputRefs.current[focusIndex]?.focus();
+    if (pasted.length === 6) {
       onComplete?.();
     }
   };
 
   return (
-    <NumericPinInput
-      value={value}
-      onChange={handleChange}
-      disabled={disabled}
-      hasError={hasError}
-      autoFocus
-      resetKey={resetKey}
-      ariaLabel="6-digit verification code"
-      digitClassName="h-[50px] rounded-[13px] text-2xl"
-    />
+    <div className="grid grid-cols-6 gap-2" role="group" aria-label="6-digit verification code">
+      {digits.map((digit, index) => (
+        <OtpDigit
+          key={`${resetKey}-${index}`}
+          ref={(el) => {
+            inputRefs.current[index] = el;
+          }}
+          value={digit}
+          index={index}
+          isActive={!disabled && index === activeIndex}
+          hasError={hasError}
+          disabled={disabled}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          onFocus={onActiveIndexChange}
+          onPaste={handlePaste}
+        />
+      ))}
+    </div>
   );
 };
