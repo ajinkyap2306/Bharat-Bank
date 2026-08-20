@@ -12,7 +12,6 @@ import { AuthContainer } from './components/auth/AuthContainer';
 import { CorporateOtpRoute } from './components/auth/corporate/CorporateOtpRoute';
 import { CorporateDeviceVerificationRoute } from './components/auth/corporate/CorporateDeviceVerificationRoute';
 import { RetailRegistrationModule } from './components/auth/retail/RetailRegistrationModule';
-import { RegistrationEntry } from './components/auth/RegistrationEntry';
 import { CorporateRegistrationModule } from './components/auth/corporate/CorporateRegistrationModule';
 import { ForgotPasswordModule } from './components/auth/ForgotPasswordModule';
 import { ForgotMpinModule } from './components/auth/ForgotMpinModule';
@@ -246,8 +245,9 @@ const BankingAppContent: React.FC = () => {
   ) {
     return (
       <>
-        {location.pathname === '/register' && <RegistrationEntry />}
-        {(location.pathname === '/retail/register' || location.pathname.startsWith('/retail/register/')) && (
+        {(location.pathname === '/register' ||
+          location.pathname === '/retail/register' ||
+          location.pathname.startsWith('/retail/register/')) && (
           <RetailRegistrationModule />
         )}
         {location.pathname === '/corporate/register' && <CorporateRegistrationModule />}
@@ -335,7 +335,7 @@ const UnauthenticatedRoutes: React.FC = () => {
       <OfflineBanner />
       <PwaLifecycle />
       <Routes>
-        <Route path="/register" element={<RegistrationEntry />} />
+        <Route path="/register" element={<Navigate to="/retail/register" replace />} />
         <Route path="/retail/register" element={<RetailRegistrationModule />} />
         <Route path="/corporate/register" element={<CorporateRegistrationModule />} />
         <Route path="/forgot-password" element={<ForgotPasswordModule />} />

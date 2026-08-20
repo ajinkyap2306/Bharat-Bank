@@ -43,7 +43,7 @@ export const CorporateRegistrationModule: React.FC = () => {
     setError('');
     switch (step) {
       case 'company':
-        navigate('/register');
+        navigate('/');
         break;
       case 'otp':
         setStep('company');

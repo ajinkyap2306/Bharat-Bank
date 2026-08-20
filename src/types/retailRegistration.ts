@@ -1,16 +1,15 @@
-export type RetailRegistrationMethod = 'debit_card' | 'pan_card_code';
+export type RetailRegistrationMethod = 'sim_verify';
 
 export type RetailRegistrationStep =
-  | 'method'
-  | 'debit_auth'
-  | 'pan_auth'
-  | 'cooling_period'
-  | 'terms'
-  | 'device'
-  | 'user_id'
+  | 'activate'
+  | 'sim_verify'
+  | 'sim_processing'
+  | 'sim_success'
+  | 'sim_failed'
+  | 'customer_verify'
+  | 'credentials'
   | 'mpin'
   | 'biometric'
-  | 'security'
   | 'complete';
 
 export interface RetailSecurityAnswer {
@@ -19,21 +18,16 @@ export interface RetailSecurityAnswer {
 }
 
 export interface RetailRegistrationDraft {
-  method: RetailRegistrationMethod | null;
-  cardNumber: string;
-  atmPin: string;
-  pan: string;
-  codeA: string;
-  codeJ: string;
-  codeL: string;
-  termsAccepted: boolean;
-  assignedUserId: string;
+  registeredMobile: string;
+  simVerified: boolean;
+  customerId: string;
+  dateOfBirth: string;
+  userId: string;
+  password: string;
+  confirmPassword: string;
   profileCode: string;
   mpin: string;
   biometricEnabled: boolean;
-  securityAnswers: RetailSecurityAnswer[];
-  securitySkipCount: number;
-  deviceSeedStored: boolean;
 }
 
 export interface RetailRegistrationResult {
@@ -42,10 +36,17 @@ export interface RetailRegistrationResult {
   mpinSet: boolean;
   biometricEnabled: boolean;
   method: RetailRegistrationMethod;
-  securityAnswers: RetailSecurityAnswer[];
+  securityAnswers?: RetailSecurityAnswer[];
 }
 
 export interface SecurityQuestionOption {
   id: string;
   text: string;
+}
+
+export interface PasswordRuleStatus {
+  length: boolean;
+  upperLower: boolean;
+  number: boolean;
+  special: boolean;
 }

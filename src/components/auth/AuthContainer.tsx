@@ -223,7 +223,7 @@ export const AuthContainer: React.FC = () => {
             exit={{ opacity: 0, y: -12 }}
             className="flex flex-col max-w-md mx-auto w-full min-h-dvh z-10"
           >
-            <div className="flex-1 pb-36 pt-2">
+            <div className="flex-1 pt-2 pb-4">
               <div className="flex items-center mb-3">
                 <BharatBankLogo variant="full" size="sm" />
               </div>
@@ -412,18 +412,11 @@ export const AuthContainer: React.FC = () => {
                     </div>
                   )}
                 </div>
-              </form>
 
-              <PreLoginQuickLinks />
-            </div>
-
-            <div className="fixed bottom-0 left-0 right-0 z-20 p-4 pb-safe bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
-              <div className="max-w-md mx-auto space-y-2">
                 <button
                   type="submit"
-                  form="login-form"
                   disabled={isLoggingIn || isBiometricScanning}
-                  className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white font-bold rounded-2xl shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 transition-all active:scale-98"
+                  className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white font-bold rounded-2xl shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98] mt-1"
                 >
                   <span>
                     {isLoggingIn || isBiometricScanning
@@ -436,17 +429,22 @@ export const AuthContainer: React.FC = () => {
                   </span>
                   {!isLoggingIn && !isBiometricScanning && <ArrowRight className="w-4 h-4" />}
                 </button>
-                <p className="text-center text-[12px] text-slate-500">
-                  New user?{' '}
-                  <button
-                    type="button"
-                    onClick={() => navigate('/register')}
-                    className="font-bold text-blue-600 dark:text-blue-400"
-                  >
-                    Register for Mobile Banking
-                  </button>
-                </p>
-              </div>
+              </form>
+
+              <p className="text-center text-[12px] text-slate-500 mt-3">
+                New user?{' '}
+                <button
+                  type="button"
+                  onClick={() => navigate('/retail/register')}
+                  className="font-bold text-blue-600 dark:text-blue-400"
+                >
+                  Register for Mobile Banking
+                </button>
+              </p>
+            </div>
+
+            <div className="pb-6 safe-bottom">
+              <PreLoginQuickLinks />
             </div>
           </motion.div>
         )}

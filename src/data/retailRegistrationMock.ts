@@ -1,4 +1,9 @@
-import type { SecurityQuestionOption } from '../types/retailRegistration';
+import type { PasswordRuleStatus, SecurityQuestionOption } from '../types/retailRegistration';
+
+/** Registered mobile linked to the bank account (demo). */
+export const RETAIL_DEMO_REGISTERED_MOBILE = '9898765421';
+export const RETAIL_DEMO_CUSTOMER_ID = '2847193';
+export const RETAIL_DEMO_DOB = '15/08/1990';
 
 export const RETAIL_DEMO_DEBIT_CARD = '4532123456789010';
 export const RETAIL_DEMO_ATM_PIN = '1234';
@@ -61,6 +66,72 @@ export const SECURITY_QUESTIONS: SecurityQuestionOption[] = [
   { id: 'sq_05', text: 'What was your childhood nickname?' },
   { id: 'sq_06', text: 'What is the name of your first pet?' },
 ];
+
+export function maskRegisteredMobile(digits: string): string {
+  const d = digits.replace(/\D/g, '');
+  if (d.length < 10) return d;
+  const local = d.length > 10 ? d.slice(-10) : d;
+  return `+91 ${local.slice(0, 2)}••••••${local.slice(-2)}`;
+}
+
+export function formatDobInput(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
+
+export function validateCustomerVerification(customerId: string, dateOfBirth: string): string | null {
+  const id = customerId.trim();
+  if (!/^\d{6,12}$/.test(id)) {
+    return 'Enter a valid Customer ID (6–12 digits).';
+  }
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dateOfBirth.trim())) {
+    return 'Enter date of birth as DD/MM/YYYY.';
+  }
+  if (id !== RETAIL_DEMO_CUSTOMER_ID || dateOfBirth.trim() !== RETAIL_DEMO_DOB) {
+    return `Customer ID or date of birth is incorrect. Demo: ${RETAIL_DEMO_CUSTOMER_ID} / ${RETAIL_DEMO_DOB}`;
+  }
+  return null;
+}
+
+export function getPasswordRuleStatus(password: string): PasswordRuleStatus {
+  return {
+    length: password.length >= 8 && password.length <= 20,
+    upperLower: /[a-z]/.test(password) && /[A-Z]/.test(password),
+    number: /\d/.test(password),
+    special: /[^A-Za-z0-9]/.test(password),
+  };
+}
+
+export function validateLoginCredentials(
+  userId: string,
+  password: string,
+  confirmPassword: string
+): string | null {
+  const uid = userId.trim();
+  if (uid.length < 4 || uid.length > 20) {
+    return 'User ID must be 4–20 characters.';
+  }
+  if (!/^[a-zA-Z0-9._-]+$/.test(uid)) {
+    return 'User ID may only contain letters, numbers, dots, hyphens, and underscores.';
+  }
+  const rules = getPasswordRuleStatus(password);
+  if (!rules.length || !rules.upperLower || !rules.number || !rules.special) {
+    return 'Password does not meet all requirements.';
+  }
+  if (password !== confirmPassword) {
+    return 'Password and confirmation do not match.';
+  }
+  return null;
+}
+
+/** Demo: SIM on device matches registered mobile after short delay. */
+export function simulateSimVerification(simMismatch = false): Promise<{ success: boolean }> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve({ success: !simMismatch }), 1500);
+  });
+}
 
 export function generateRetailUserId(): string {
   const suffix = Math.floor(100000 + Math.random() * 900000);
