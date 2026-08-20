@@ -85,6 +85,24 @@ export const MOBILE_PAY_CONTACTS: MobilePayContact[] = [
   },
 ];
 
+export function lookupMobilePayContact(mobile: string): MobilePayContact | null {
+  const digits = mobile.replace(/\D/g, '').slice(-10);
+  if (digits.length !== 10) return null;
+
+  const found = MOBILE_PAY_CONTACTS.find((c) => c.mobile === digits);
+  if (found) return found;
+
+  return {
+    id: `mc_dyn_${digits}`,
+    name: `Mobile User ${digits.slice(-4)}`,
+    mobile: digits,
+    bankName: 'Bharat Co-operative Bank',
+    accountNumber: `4092${digits}`,
+    ifsc: 'APEX0001048',
+    upiId: `${digits}@bharat`,
+  };
+}
+
 export const TAX_PAYMENT_TYPES = [
   { id: 'advance', label: 'Advance Tax', authority: 'Income Tax Department' },
   { id: 'self', label: 'Self Assessment Tax', authority: 'Income Tax Department' },

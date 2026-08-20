@@ -87,7 +87,7 @@ export const ForgotPasswordModule: React.FC = () => {
                 label="Customer ID"
                 value={customerId}
                 onChange={setCustomerId}
-                placeholder="RB-123456 or MAK-1001"
+                placeholder="RB-123456 or C001"
               />
               {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
               <RegPrimaryButton label="Continue" onClick={handleCustomerIdContinue} />

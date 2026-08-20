@@ -23,8 +23,8 @@ import { LoginOfferSheet } from './prelogin/LoginOfferSheet';
 type LoginPersona = 'retail' | 'maker' | 'checker';
 
 const RETAIL_DEMO_USER_ID = 'RB-123456';
-const MAKER_DEMO_USER_ID = 'MAK-1001';
-const CHECKER_DEMO_USER_ID = 'CHK-1001';
+const MAKER_DEMO_USER_ID = 'C001';
+const CHECKER_DEMO_USER_ID = 'C002';
 
 const PERSONA_CUSTOMER_IDS: Record<LoginPersona, string> = {
   retail: RETAIL_DEMO_USER_ID,
@@ -286,7 +286,7 @@ export const AuthContainer: React.FC = () => {
                 >
                   <span className="block">Maker</span>
                   <span className={`block font-mono text-[9px] mt-0.5 ${loginPersona === 'maker' ? 'text-teal-100' : 'opacity-80'}`}>
-                    MAK-1001
+                    C001
                   </span>
                 </button>
                 <button
@@ -300,7 +300,7 @@ export const AuthContainer: React.FC = () => {
                 >
                   <span className="block">Checker</span>
                   <span className={`block font-mono text-[9px] mt-0.5 ${loginPersona === 'checker' ? 'text-amber-100' : 'opacity-80'}`}>
-                    CHK-1001
+                    C002
                   </span>
                 </button>
               </div>

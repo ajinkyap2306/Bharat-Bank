@@ -35,7 +35,7 @@ export const INITIAL_RETAIL_USER: UserProfile = {
 };
 
 export const INITIAL_CORPORATE_USER: UserProfile = {
-  id: 'MAK-1001',
+  id: 'C001',
   name: 'Rahul Sharma',
   email: 'rahul.sharma@acmetech.in',
   phone: '+91 98200 45821',

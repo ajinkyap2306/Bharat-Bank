@@ -120,7 +120,7 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
 
     setTimeout(() => {
       setIsSubmitting(false);
-      if (!validateCorporateCredentials(corporateId, 'MAK-1001', password)) {
+      if (!validateCorporateCredentials(corporateId, 'C001', password)) {
         setLoginFailed(true);
         setStep('login');
         return;

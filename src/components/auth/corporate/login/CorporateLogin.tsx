@@ -298,7 +298,7 @@ export const CorporateLogin: React.FC = () => {
                     dispatch({ type: 'SET_USER_ID', value });
                     handleFieldChange();
                   }}
-                  placeholder="MAK-1001"
+                  placeholder="C001"
                   error={
                     state.fieldError === 'user_id'
                       ? state.fieldErrorMessage

@@ -16,7 +16,7 @@ const AVATAR_CHECKER =
 export const CORPORATE_DEMO_USERS: CorporateDemoUser[] = [
   {
     corporateId: CORPORATE_DEMO_COMPANY_ID,
-    userId: 'MAK-1001',
+    userId: 'C001',
     password: 'demo123',
     role: 'maker',
     name: 'Rahul Sharma',
@@ -31,7 +31,7 @@ export const CORPORATE_DEMO_USERS: CorporateDemoUser[] = [
   },
   {
     corporateId: CORPORATE_DEMO_COMPANY_ID,
-    userId: 'CHK-1001',
+    userId: 'C002',
     password: 'demo123',
     role: 'checker',
     name: 'Amit Verma',
@@ -52,7 +52,7 @@ export const CORPORATE_DEMO_PASSWORD = 'demo123';
 export const CORPORATE_DEMO_ROLE = 'Finance Maker';
 
 export const CORPORATE_DEMO_HINT =
-  'Customer ID: RB-123456 · MAK-1001 · CHK-1001 · Password: demo123 · OTP: 123456';
+  'Customer ID: RB-123456 · C001 (Maker) · C002 (Checker) · Password: demo123 · OTP: 123456';
 
 export interface CorporateLoginCredentials {
   corporateId: string;
@@ -72,7 +72,7 @@ export function findCorporateDemoUser(
   if (
     corporateId.trim().toLowerCase() === 'corp' &&
     password === '1234' &&
-    (!userId.trim() || userId.trim().toUpperCase() === 'MAK-1001')
+    (!userId.trim() || userId.trim().toUpperCase() === 'C001')
   ) {
     return CORPORATE_DEMO_USERS.find((u) => u.role === 'maker') ?? null;
   }

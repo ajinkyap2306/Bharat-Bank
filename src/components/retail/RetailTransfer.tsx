@@ -20,7 +20,7 @@ import {
 import { useBanking } from '../../context/BankingContext';
 import { Beneficiary, BankAccount, Transaction } from '../../types/banking';
 import { NumericPinInput } from '../common/NumericPinInput';
-import { MOBILE_PAY_CONTACTS } from '../../data/level3Mock';
+import { MOBILE_PAY_CONTACTS, lookupMobilePayContact } from '../../data/level3Mock';
 
 export const RetailTransfer: React.FC = () => {
   const { 
@@ -120,7 +120,10 @@ export const RetailTransfer: React.FC = () => {
   const handleMobileContactPay = (contactId: string) => {
     const contact = MOBILE_PAY_CONTACTS.find((c) => c.id === contactId);
     if (!contact) return;
+    payMobileContact(contact);
+  };
 
+  const payMobileContact = (contact: (typeof MOBILE_PAY_CONTACTS)[number]) => {
     const existing = beneficiaries.find(
       (b) => b.accountNumber === contact.accountNumber || b.phone === contact.mobile
     );
@@ -150,6 +153,22 @@ export const RetailTransfer: React.FC = () => {
     });
     setStep('enter_amount');
   };
+
+  const handlePayByMobileNumber = () => {
+    const contact = lookupMobilePayContact(searchBeneficiary);
+    if (!contact) {
+      addToast({
+        type: 'error',
+        title: 'Invalid Mobile Number',
+        message: 'Enter a valid 10-digit mobile number to send money.',
+      });
+      return;
+    }
+    payMobileContact(contact);
+  };
+
+  const mobileSearchDigits = searchBeneficiary.replace(/\D/g, '').slice(-10);
+  const canPayByMobile = mobileSearchDigits.length === 10;
 
   const filteredMobileContacts = MOBILE_PAY_CONTACTS.filter(
     (c) =>
@@ -202,9 +221,14 @@ export const RetailTransfer: React.FC = () => {
           spread: 70,
           origin: { y: 0.6 },
         });
-      } catch {
+      } catch (err) {
         setPin('');
         setStep('enter_amount');
+        addToast({
+          type: 'error',
+          title: 'Transfer Failed',
+          message: err instanceof Error ? err.message : 'Could not complete the transfer. Please try again.',
+        });
       }
     }, 1000);
   }, [
@@ -313,10 +337,31 @@ export const RetailTransfer: React.FC = () => {
               type="text"
               value={searchBeneficiary}
               onChange={(e) => setSearchBeneficiary(e.target.value)}
-              placeholder="Search saved beneficiaries or UPI IDs..."
+              placeholder="Search beneficiaries, UPI ID, or mobile number..."
               className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:border-blue-500 shadow-xs"
             />
           </div>
+
+          {canPayByMobile && (
+            <button
+              type="button"
+              onClick={handlePayByMobileNumber}
+              className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-left active:scale-[0.99] transition-transform"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
+                  <Smartphone className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white">
+                    Send to {mobileSearchDigits}
+                  </p>
+                  <p className="text-[11px] text-slate-500">Pay using mobile number</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-emerald-600" />
+            </button>
+          )}
 
           {/* Beneficiaries List */}
           <div className="space-y-2">

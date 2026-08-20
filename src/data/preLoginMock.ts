@@ -238,7 +238,7 @@ export const MOBILE_BANKING_DEMO_STEPS = [
   { step: 1, title: 'Login', desc: 'Use demo Customer ID RB-123456 / password demo123' },
   { step: 2, title: 'OTP & Biometric', desc: 'Complete 2FA and biometric simulation' },
   { step: 3, title: 'Explore Dashboard', desc: 'View balances, pay bills, transfer funds' },
-  { step: 4, title: 'Corporate Demo', desc: 'Try MAK-1001 (Maker) or CHK-1001 (Checker) for approvals' },
+  { step: 4, title: 'Corporate Demo', desc: 'Try C001 (Maker) or C002 (Checker) for approvals' },
 ];
 
 export const PRIVACY_POLICY_EXCERPT = `Bharat Co-operative Bank (Mumbai) Ltd — Privacy Policy (Excerpt)

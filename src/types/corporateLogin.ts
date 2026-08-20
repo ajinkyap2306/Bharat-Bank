@@ -26,7 +26,7 @@ export interface CorporateLoginFormState {
 
 export const INITIAL_CORPORATE_LOGIN_STATE: CorporateLoginFormState = {
   corporateId: CORPORATE_DEMO_COMPANY_ID,
-  userId: 'MAK-1001',
+  userId: 'C001',
   password: CORPORATE_DEMO_PASSWORD,
   showPassword: false,
   focusedField: null,

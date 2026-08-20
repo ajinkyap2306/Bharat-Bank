@@ -12,6 +12,7 @@ import {
   HelpCircle,
   Download,
   Share2,
+  Snowflake,
 } from 'lucide-react';
 import { useBanking } from '../../../../context/BankingContext';
 import { ProfileScreen } from '../profileTypes';
@@ -331,6 +332,7 @@ export const AccountManagementScreen: React.FC<ScreenProps> = ({ onNavigate, onB
       <MenuItem icon={<FileText className="w-4 h-4" />} label="Dormant Account Information" onClick={() => {}} />
       <MenuItem icon={<Phone className="w-4 h-4" />} label="Contact Information" onClick={() => onNavigate('contact-details')} />
       <MenuItem icon={<Settings className="w-4 h-4" />} label="Account Preferences" onClick={() => onNavigate('accounts-preferences')} />
+      <MenuItem icon={<Snowflake className="w-4 h-4" />} label="Freeze Account" description="Block outgoing debits temporarily" onClick={() => onNavigate('freeze-account')} />
       <MenuItem icon={<AlertOctagon className="w-4 h-4" />} label="Account Closure Request" danger onClick={() => onNavigate('account-closure')} />
     </MenuGroup>
   </ProfileLayout>
