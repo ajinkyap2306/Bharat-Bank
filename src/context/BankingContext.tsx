@@ -269,6 +269,13 @@ interface BankingContextType {
     mode: 'UPI' | 'NEFT' | 'RTGS' | 'IMPS' | 'Internal';
     remarks?: string;
   }) => Transaction;
+
+  executeSelfTransfer: (params: {
+    fromAccountId: string;
+    toAccountId: string;
+    amount: number;
+    remarks?: string;
+  }) => Transaction;
   
   approveCorporatePayment: (approvalId: string, notes?: string) => void;
   rejectCorporatePayment: (approvalId: string, reason: string) => void;
@@ -906,6 +913,105 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       type: 'success',
       title: 'Payment Successful',
       message: `₹${amount.toLocaleString('en-IN')} sent to ${beneficiaryName} (${refNum}).`,
+    });
+
+    return newTxn;
+  };
+
+  const executeSelfTransfer = ({
+    fromAccountId,
+    toAccountId,
+    amount,
+    remarks,
+  }: {
+    fromAccountId: string;
+    toAccountId: string;
+    amount: number;
+    remarks?: string;
+  }): Transaction => {
+    if (bankingType !== 'retail') {
+      throw new Error('Self transfer is only available for retail accounts.');
+    }
+    if (fromAccountId === toAccountId) {
+      addToast({ type: 'error', title: 'Invalid Accounts', message: 'Select two different accounts.' });
+      throw new Error('Same account');
+    }
+
+    const fromAccount = retailAccounts.find((a) => a.id === fromAccountId);
+    const toAccount = retailAccounts.find((a) => a.id === toAccountId);
+
+    if (!fromAccount || !toAccount) {
+      throw new Error('Account not found');
+    }
+    if (fromAccount.status === 'frozen' || toAccount.status === 'frozen') {
+      addToast({
+        type: 'error',
+        title: 'Account Frozen',
+        message: 'Transfers are blocked on frozen accounts.',
+      });
+      throw new Error('Account frozen');
+    }
+    if (amount > fromAccount.availableBalance) {
+      addToast({
+        type: 'error',
+        title: 'Insufficient Balance',
+        message: `Available balance is ₹${fromAccount.availableBalance.toLocaleString('en-IN')}.`,
+      });
+      throw new Error('Insufficient balance');
+    }
+
+    const refNum = `INT${Math.floor(1000000000 + Math.random() * 9000000000)}`;
+    const now = new Date();
+    const formattedDate = `Today, ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+    let fromBalanceAfter = 0;
+
+    setRetailAccounts((prev) =>
+      prev.map((acc) => {
+        if (acc.id === fromAccountId) {
+          const newBalance = Math.max(0, acc.balance - amount);
+          fromBalanceAfter = newBalance - (acc.holdAmount || 0);
+          return {
+            ...acc,
+            balance: newBalance,
+            availableBalance: fromBalanceAfter,
+          };
+        }
+        if (acc.id === toAccountId) {
+          const newBalance = acc.balance + amount;
+          return {
+            ...acc,
+            balance: newBalance,
+            availableBalance: newBalance - (acc.holdAmount || 0),
+          };
+        }
+        return acc;
+      })
+    );
+
+    const toLabel = `${toAccount.accountType} ${toAccount.maskedNumber}`;
+    const newTxn: Transaction = {
+      id: 'txn_' + Math.random().toString(36).substring(2, 9),
+      referenceNumber: refNum,
+      date: formattedDate,
+      amount,
+      type: 'debit',
+      category: 'transfer',
+      description: `Self transfer to ${toLabel}`,
+      counterpartyName: toLabel,
+      counterpartyAccount: toAccount.maskedNumber,
+      status: 'completed',
+      paymentMode: 'Internal',
+      remarks,
+      balanceAfter: fromBalanceAfter,
+    };
+
+    setRetailTransactions((prev) => [newTxn, ...prev]);
+
+    addToast({
+      type: 'success',
+      title: 'Transfer Successful',
+      message: `₹${amount.toLocaleString('en-IN')} moved to ${toLabel}.`,
     });
 
     return newTxn;
@@ -2984,6 +3090,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       feedbackSubmissions,
 
       executeTransfer,
+      executeSelfTransfer,
       approveCorporatePayment,
       rejectCorporatePayment,
       addBeneficiary,

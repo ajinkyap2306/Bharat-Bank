@@ -1,0 +1,761 @@
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import confetti from 'canvas-confetti';
+import { motion } from 'motion/react';
+import {
+  ArrowDown,
+  ArrowLeftRight,
+  Building2,
+  CheckCircle2,
+  Plus,
+  XCircle,
+} from 'lucide-react';
+import { useBanking } from '../../../context/BankingContext';
+import type { Beneficiary, BankAccount } from '../../../types/banking';
+import type {
+  BankTransferDraft,
+  BankTransferResult,
+  BankTransferStep,
+} from '../../../types/retailBankTransfer';
+import {
+  DEMO_FAIL_TRANSFER_AMOUNT,
+  TRANSFER_FEE,
+  buildTransferTransactionId,
+  defaultTransferMode,
+  formatTransferTimestamp,
+  getAvailableTransferModes,
+  maskAccountNumber,
+  playTransferSuccessChime,
+} from '../../../data/retailBankTransferMock';
+import {
+  AddMoneyLayout,
+  AmountField,
+  ProcessingState,
+  RadioSelectCard,
+  ReviewRow,
+  SourceOptionCard,
+  StickyAddMoneyCTA,
+} from '../add-money/shared/AddMoneyUI';
+
+interface BankTransferFlowProps {
+  onClose: () => void;
+}
+
+const SELF_ACCOUNT_TYPES = new Set(['Savings', 'Current']);
+
+function eligibleSelfAccounts(accounts: BankAccount[]): BankAccount[] {
+  return accounts.filter(
+    (a) => SELF_ACCOUNT_TYPES.has(a.accountType) && a.status !== 'frozen'
+  );
+}
+
+function bankBeneficiaries(beneficiaries: Beneficiary[]): Beneficiary[] {
+  return beneficiaries.filter((b) => b.type !== 'upi' && b.status === 'active');
+}
+
+export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) => {
+  const {
+    accounts,
+    beneficiaries,
+    executeTransfer,
+    executeSelfTransfer,
+    addToast,
+    setBottomNavHidden,
+    getDefaultDebitAccount,
+    defaultDebitAccountId,
+    lookupBanlName,
+    transferRepeat,
+    clearTransferRepeat,
+  } = useBanking();
+
+  const defaultDebit = getDefaultDebitAccount();
+  const selfAccounts = eligibleSelfAccounts(accounts);
+  const payees = bankBeneficiaries(beneficiaries);
+
+  const [step, setStep] = useState<BankTransferStep>('home');
+  const [draft, setDraft] = useState<BankTransferDraft>(() => ({
+    path: null,
+    fromAccountId: defaultDebit.id,
+    toAccountId: selfAccounts.find((a) => a.id !== defaultDebit.id)?.id ?? '',
+    beneficiaryId: null,
+    manualReceiver: null,
+    accountNumber: '',
+    confirmAccountNumber: '',
+    ifsc: '',
+    amount: '',
+    note: '',
+    transferMode: 'IMPS',
+  }));
+  const [amountError, setAmountError] = useState('');
+  const [authPin, setAuthPin] = useState('');
+  const [result, setResult] = useState<BankTransferResult | null>(null);
+  const [failReason, setFailReason] = useState('We couldn\'t complete this transaction.');
+  const [banlLoading, setBanlLoading] = useState(false);
+  const chimePlayed = useRef(false);
+
+  const fromAccount = accounts.find((a) => a.id === draft.fromAccountId);
+  const toAccount = accounts.find((a) => a.id === draft.toAccountId);
+  const selectedBeneficiary = payees.find((b) => b.id === draft.beneficiaryId);
+
+  const receiver = useMemo(() => {
+    if (draft.path === 'self' && toAccount) {
+      return {
+        name: `${toAccount.accountType} Account`,
+        bank: 'My Account',
+        account: toAccount.maskedNumber,
+        ifsc: toAccount.ifsc,
+      };
+    }
+    if (selectedBeneficiary) {
+      return {
+        name: selectedBeneficiary.name,
+        bank: selectedBeneficiary.bankName,
+        account: selectedBeneficiary.maskedAccount,
+        ifsc: selectedBeneficiary.ifsc,
+      };
+    }
+    if (draft.manualReceiver) {
+      return {
+        name: draft.manualReceiver.name,
+        bank: draft.manualReceiver.bankName,
+        account: draft.manualReceiver.maskedAccount,
+        ifsc: draft.manualReceiver.ifsc,
+      };
+    }
+    return null;
+  }, [draft, toAccount, selectedBeneficiary]);
+
+  const amountNum = Number(draft.amount) || 0;
+  const availableModes = getAvailableTransferModes(amountNum);
+
+  useEffect(() => {
+    setSelectedDebitFromDefault();
+  }, [defaultDebitAccountId]);
+
+  useEffect(() => {
+    setBottomNavHidden(step !== 'home');
+    return () => setBottomNavHidden(false);
+  }, [step, setBottomNavHidden]);
+
+  useEffect(() => {
+    if (!transferRepeat) return;
+    const match = payees.find(
+      (b) =>
+        b.name === transferRepeat.beneficiaryName ||
+        b.accountNumber === transferRepeat.beneficiaryAccount
+    );
+    const mode =
+      transferRepeat.mode === 'IMPS' || transferRepeat.mode === 'NEFT' || transferRepeat.mode === 'RTGS'
+        ? transferRepeat.mode
+        : 'IMPS';
+    setDraft((d) => ({
+      ...d,
+      path: 'bank',
+      beneficiaryId: match?.id ?? null,
+      amount: String(transferRepeat.amount),
+      note: transferRepeat.remarks || '',
+      transferMode: mode,
+      fromAccountId: defaultDebit.id,
+    }));
+    setStep(match ? 'amount' : 'bank-beneficiary');
+    clearTransferRepeat();
+  }, [transferRepeat, payees, clearTransferRepeat, defaultDebit.id]);
+
+  useEffect(() => {
+    if (!availableModes.includes(draft.transferMode)) {
+      setDraft((d) => ({ ...d, transferMode: defaultTransferMode(amountNum) }));
+    }
+  }, [amountNum, availableModes, draft.transferMode]);
+
+  function setSelectedDebitFromDefault() {
+    const debit = getDefaultDebitAccount();
+    const others = eligibleSelfAccounts(accounts).filter((a) => a.id !== debit.id);
+    setDraft((d) => ({
+      ...d,
+      fromAccountId: debit.id,
+      toAccountId: d.toAccountId && d.toAccountId !== debit.id ? d.toAccountId : others[0]?.id ?? '',
+    }));
+  }
+
+  const goBack = useCallback(() => {
+    if (['processing', 'success', 'failed'].includes(step)) {
+      onClose();
+      return;
+    }
+    if (step === 'home') onClose();
+    else if (step === 'self' || step === 'bank-beneficiary') setStep('home');
+    else if (step === 'bank-enter') setStep('bank-beneficiary');
+    else if (step === 'amount') {
+      if (draft.manualReceiver) setStep('bank-enter');
+      else setStep('bank-beneficiary');
+    } else if (step === 'review') {
+      if (draft.path === 'self') setStep('self');
+      else setStep('amount');
+    } else if (step === 'auth') setStep('review');
+  }, [step, onClose, draft.path, draft.manualReceiver]);
+
+  const validateAmount = (balance?: number) => {
+    if (!draft.amount.trim() || amountNum <= 0) {
+      setAmountError('Enter a valid amount.');
+      return false;
+    }
+    const bal = balance ?? fromAccount?.availableBalance ?? 0;
+    if (amountNum > bal) {
+      setAmountError(`Insufficient balance. Available ₹${bal.toLocaleString('en-IN')}.`);
+      return false;
+    }
+    setAmountError('');
+    return true;
+  };
+
+  const runProcessing = () => {
+    setStep('processing');
+    const shouldFail = amountNum === DEMO_FAIL_TRANSFER_AMOUNT;
+
+    setTimeout(() => {
+      if (shouldFail) {
+        setFailReason('We couldn\'t complete this transaction.');
+        setStep('failed');
+        return;
+      }
+
+      try {
+        let txn;
+        if (draft.path === 'self') {
+          txn = executeSelfTransfer({
+            fromAccountId: draft.fromAccountId,
+            toAccountId: draft.toAccountId,
+            amount: amountNum,
+            remarks: draft.note || undefined,
+          });
+        } else if (receiver) {
+          const benAccount =
+            selectedBeneficiary?.accountNumber ?? draft.manualReceiver?.accountNumber ?? '';
+          txn = executeTransfer({
+            fromAccountId: draft.fromAccountId,
+            beneficiaryName: receiver.name,
+            beneficiaryAccount: benAccount,
+            bankName: receiver.bank,
+            amount: amountNum,
+            mode: draft.transferMode,
+            remarks: draft.note || undefined,
+          });
+        } else {
+          throw new Error('Receiver missing');
+        }
+
+        const successResult: BankTransferResult = {
+          transactionId: buildTransferTransactionId(),
+          referenceNumber: txn.referenceNumber,
+          amount: amountNum,
+          mode: draft.path === 'self' ? 'Internal' : draft.transferMode,
+          receiverLabel: receiver?.name ?? 'Recipient',
+          receiverBank: receiver?.bank ?? '',
+          receiverAccount: receiver?.account ?? '',
+          receiverIfsc: receiver?.ifsc,
+          timestamp: formatTransferTimestamp(),
+          isSelf: draft.path === 'self',
+        };
+        setResult(successResult);
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.55 } });
+        if (!chimePlayed.current) {
+          playTransferSuccessChime();
+          chimePlayed.current = true;
+        }
+        setStep('success');
+      } catch {
+        setFailReason('We couldn\'t complete this transaction.');
+        setStep('failed');
+      }
+    }, 1800);
+  };
+
+  const handleAuthConfirm = () => {
+    if (authPin.length < 6) {
+      addToast({ type: 'error', title: 'Invalid UPI PIN', message: 'Enter your 6-digit UPI PIN.' });
+      return;
+    }
+    runProcessing();
+  };
+
+  const handleBankEnterContinue = () => {
+    if (!draft.accountNumber.trim() || draft.accountNumber !== draft.confirmAccountNumber) {
+      addToast({
+        type: 'error',
+        title: 'Account Mismatch',
+        message: 'Account numbers do not match.',
+      });
+      return;
+    }
+    if (draft.ifsc.trim().length < 11) {
+      addToast({ type: 'error', title: 'Invalid IFSC', message: 'Enter a valid 11-character IFSC.' });
+      return;
+    }
+    setBanlLoading(true);
+    setTimeout(() => {
+      const banl = lookupBanlName(draft.accountNumber, draft.ifsc);
+      setBanlLoading(false);
+      if (banl.matchStatus !== 'matched' && banl.matchStatus !== 'partial') {
+        addToast({ type: 'error', title: 'Verification Failed', message: 'Could not verify bank details.' });
+        return;
+      }
+      setDraft((d) => ({
+        ...d,
+        beneficiaryId: null,
+        manualReceiver: {
+          name: banl.accountHolderName,
+          accountNumber: d.accountNumber,
+          maskedAccount: maskAccountNumber(d.accountNumber),
+          bankName: banl.bankName || 'Bank',
+          ifsc: d.ifsc,
+        },
+        transferMode: defaultTransferMode(Number(d.amount) || 0),
+      }));
+      setStep('amount');
+    }, 700);
+  };
+
+  const accountCard = (account: BankAccount, selected: boolean, onSelect: () => void) => (
+    <RadioSelectCard
+      key={account.id}
+      selected={selected}
+      title={`${account.accountType} ${account.maskedNumber}`}
+      subtitle={`Available ₹${account.availableBalance.toLocaleString('en-IN')}`}
+      onSelect={onSelect}
+    />
+  );
+
+  if (step === 'processing') {
+    return (
+      <AddMoneyLayout title="Bank Transfer" onBack={() => {}}>
+        <ProcessingState title={`Transferring ₹${amountNum.toLocaleString('en-IN')}…`} amount={amountNum} />
+      </AddMoneyLayout>
+    );
+  }
+
+  if (step === 'success' && result) {
+    return (
+      <AddMoneyLayout title="Bank Transfer" onBack={onClose}>
+        <div className="flex flex-col items-center text-center px-2 pt-6">
+          <motion.span
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+            className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mb-4"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 14 }}
+            >
+              <CheckCircle2 className="w-9 h-9" />
+            </motion.div>
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-lg font-bold text-slate-900 dark:text-white"
+          >
+            Transfer Successful
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.28 }}
+            className="text-3xl font-extrabold text-slate-900 dark:text-white mt-3 tabular-nums"
+          >
+            ₹{result.amount.toLocaleString('en-IN')}
+          </motion.p>
+          <p className="text-sm text-slate-500 mt-2">
+            Sent to {result.receiverLabel}
+            <br />
+            {result.receiverBank} · {result.receiverAccount}
+          </p>
+          <p className="text-xs font-semibold text-congress-blue-700 mt-1">{result.mode}</p>
+          <div className="w-full mt-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 text-left space-y-2">
+            <ReviewRow label="Transaction ID" value={result.transactionId} />
+            <ReviewRow label="Date & Time" value={result.timestamp} />
+          </div>
+        </div>
+        <StickyAddMoneyCTA
+          label="Done"
+          onClick={onClose}
+          secondaryLabel="Share Receipt"
+          onSecondary={() =>
+            addToast({ type: 'info', title: 'Receipt Shared', message: 'Transfer receipt shared (demo).' })
+          }
+        />
+      </AddMoneyLayout>
+    );
+  }
+
+  if (step === 'failed') {
+    return (
+      <AddMoneyLayout title="Bank Transfer" onBack={onClose}>
+        <div className="flex flex-col items-center text-center px-2 pt-6">
+          <span className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/40 text-red-600 flex items-center justify-center mb-4">
+            <XCircle className="w-9 h-9" />
+          </span>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Transfer Failed</h2>
+          <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-3 tabular-nums">
+            ₹{amountNum.toLocaleString('en-IN')}
+          </p>
+          <p className="text-sm text-slate-500 mt-2">{failReason}</p>
+        </div>
+        <StickyAddMoneyCTA
+          label="Try Again"
+          onClick={() => setStep(draft.path === 'self' ? 'self' : 'amount')}
+          secondaryLabel="Done"
+          onSecondary={onClose}
+        />
+      </AddMoneyLayout>
+    );
+  }
+
+  if (step === 'auth') {
+    return (
+      <AddMoneyLayout title="Confirm Transfer" onBack={goBack}>
+        <div className="text-center pt-2">
+          <p className="text-3xl font-extrabold text-slate-900 dark:text-white tabular-nums">
+            ₹{amountNum.toLocaleString('en-IN')}
+          </p>
+          <p className="text-sm text-slate-500 mt-1">{receiver?.name}</p>
+        </div>
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 mt-4">
+          <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-3">
+            Enter UPI PIN
+          </label>
+          <input
+            type="password"
+            inputMode="numeric"
+            maxLength={6}
+            value={authPin}
+            onChange={(e) => setAuthPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+            placeholder="• • • • • •"
+            className="w-full text-center text-xl tracking-[0.5em] font-bold py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-congress-blue-500"
+          />
+        </div>
+        <StickyAddMoneyCTA label="Confirm" onClick={handleAuthConfirm} />
+      </AddMoneyLayout>
+    );
+  }
+
+  if (step === 'review') {
+    return (
+      <AddMoneyLayout title="Review Transfer" onBack={goBack}>
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+          {draft.path === 'self' && fromAccount && toAccount && (
+            <>
+              <ReviewRow
+                label="From"
+                value={`${fromAccount.accountType} ${fromAccount.maskedNumber}`}
+              />
+              <ReviewRow label="To" value={`${toAccount.accountType} ${toAccount.maskedNumber}`} />
+            </>
+          )}
+          {draft.path === 'bank' && receiver && (
+            <>
+              <ReviewRow label="To" value={receiver.name} />
+              <ReviewRow label="Bank" value={receiver.bank} />
+              <ReviewRow label="A/C" value={receiver.account} />
+              {receiver.ifsc && <ReviewRow label="IFSC" value={receiver.ifsc} />}
+            </>
+          )}
+          <ReviewRow label="Amount" value={`₹${amountNum.toLocaleString('en-IN')}`} bold />
+          {draft.path === 'bank' && (
+            <ReviewRow label="Transfer Type" value={draft.transferMode} />
+          )}
+          <ReviewRow label="Fee" value={`₹${TRANSFER_FEE}`} />
+          <ReviewRow
+            label="Total"
+            value={`₹${(amountNum + TRANSFER_FEE).toLocaleString('en-IN')}`}
+            bold
+          />
+        </div>
+        <StickyAddMoneyCTA
+          label={`Transfer ₹${amountNum.toLocaleString('en-IN')}`}
+          onClick={() => {
+            setAuthPin('');
+            setStep('auth');
+          }}
+        />
+      </AddMoneyLayout>
+    );
+  }
+
+  if (step === 'amount' && draft.path === 'bank') {
+    return (
+      <AddMoneyLayout title="Transfer Amount" onBack={goBack}>
+        {receiver && (
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Receiver</p>
+            <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">{receiver.name}</p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {receiver.bank} · {receiver.account}
+            </p>
+          </div>
+        )}
+        <AmountField
+          value={draft.amount}
+          onChange={(v) => {
+            setDraft((d) => ({ ...d, amount: v }));
+            setAmountError('');
+          }}
+          error={amountError}
+        />
+        <p className="text-xs text-slate-500 px-1">
+          Available Balance ₹{(fromAccount?.availableBalance ?? 0).toLocaleString('en-IN')}
+        </p>
+        {availableModes.length > 0 && (
+          <div>
+            <p className="text-xs font-bold text-slate-500 mb-2">Transfer Type</p>
+            <div className="flex flex-wrap gap-2">
+              {availableModes.map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setDraft((d) => ({ ...d, transferMode: mode }))}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold border ${
+                    draft.transferMode === mode
+                      ? 'bg-congress-blue-700 text-white border-congress-blue-700'
+                      : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-800'
+                  }`}
+                >
+                  {mode}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <div>
+          <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-2">
+            Note (Optional)
+          </label>
+          <input
+            type="text"
+            value={draft.note}
+            onChange={(e) => setDraft((d) => ({ ...d, note: e.target.value }))}
+            placeholder="Payment note"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm outline-none focus:border-congress-blue-500"
+          />
+        </div>
+        <div className="space-y-2">
+          <p className="text-xs font-bold text-slate-500 px-1">Debit from</p>
+          {selfAccounts.map((acc) =>
+            accountCard(acc, draft.fromAccountId === acc.id, () =>
+              setDraft((d) => ({ ...d, fromAccountId: acc.id }))
+            )
+          )}
+        </div>
+        <StickyAddMoneyCTA
+          label="Continue"
+          onClick={() => {
+            if (validateAmount()) setStep('review');
+          }}
+        />
+      </AddMoneyLayout>
+    );
+  }
+
+  if (step === 'bank-enter') {
+    return (
+      <AddMoneyLayout title="Bank Account Transfer" subtitle="Receiver's Bank Details" onBack={goBack}>
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-2">
+              Account Number
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={draft.accountNumber}
+              onChange={(e) =>
+                setDraft((d) => ({ ...d, accountNumber: e.target.value.replace(/\D/g, '') }))
+              }
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm outline-none focus:border-congress-blue-500"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-2">
+              Confirm Account Number
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={draft.confirmAccountNumber}
+              onChange={(e) =>
+                setDraft((d) => ({ ...d, confirmAccountNumber: e.target.value.replace(/\D/g, '') }))
+              }
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm outline-none focus:border-congress-blue-500"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-2">
+              IFSC Code
+            </label>
+            <input
+              type="text"
+              value={draft.ifsc}
+              onChange={(e) =>
+                setDraft((d) => ({ ...d, ifsc: e.target.value.toUpperCase().slice(0, 11) }))
+              }
+              placeholder="HDFC0001234"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm outline-none focus:border-congress-blue-500 uppercase"
+            />
+          </div>
+        </div>
+        <StickyAddMoneyCTA
+          label={banlLoading ? 'Verifying…' : 'Continue'}
+          disabled={banlLoading}
+          onClick={handleBankEnterContinue}
+        />
+      </AddMoneyLayout>
+    );
+  }
+
+  if (step === 'bank-beneficiary') {
+    return (
+      <AddMoneyLayout title="Select Beneficiary" onBack={goBack}>
+        <div className="space-y-2">
+          {payees.map((ben) => (
+            <RadioSelectCard
+              key={ben.id}
+              selected={draft.beneficiaryId === ben.id}
+              title={ben.name}
+              subtitle={`${ben.bankName} · ${ben.maskedAccount}`}
+              onSelect={() =>
+                setDraft((d) => ({
+                  ...d,
+                  beneficiaryId: ben.id,
+                  manualReceiver: null,
+                  transferMode: defaultTransferMode(Number(d.amount) || 0),
+                }))
+              }
+            />
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              setDraft((d) => ({
+                ...d,
+                beneficiaryId: null,
+                manualReceiver: null,
+                accountNumber: '',
+                confirmAccountNumber: '',
+                ifsc: '',
+              }));
+              setStep('bank-enter');
+            }}
+            className="w-full p-4 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 text-sm font-semibold text-congress-blue-700 flex items-center justify-center gap-2"
+          >
+            <Plus className="w-4 h-4" /> Add New Beneficiary
+          </button>
+        </div>
+        <StickyAddMoneyCTA
+          label="Continue"
+          disabled={!draft.beneficiaryId}
+          onClick={() => setStep('amount')}
+        />
+      </AddMoneyLayout>
+    );
+  }
+
+  if (step === 'self') {
+    const otherAccounts = selfAccounts.filter((a) => a.id !== draft.fromAccountId);
+    return (
+      <AddMoneyLayout title="Self Transfer" onBack={goBack}>
+        <div>
+          <p className="text-xs font-bold text-slate-500 mb-2 px-1">From</p>
+          <div className="space-y-2">
+            {selfAccounts.map((acc) =>
+              accountCard(acc, draft.fromAccountId === acc.id, () => {
+                const nextTo =
+                  acc.id === draft.toAccountId
+                    ? selfAccounts.find((a) => a.id !== acc.id)?.id ?? ''
+                    : draft.toAccountId;
+                setDraft((d) => ({ ...d, fromAccountId: acc.id, toAccountId: nextTo }));
+              })
+            )}
+          </div>
+        </div>
+        <div className="flex justify-center py-1">
+          <ArrowDown className="w-5 h-5 text-slate-400" />
+        </div>
+        <div>
+          <p className="text-xs font-bold text-slate-500 mb-2 px-1">To</p>
+          <div className="space-y-2">
+            {otherAccounts.map((acc) =>
+              accountCard(acc, draft.toAccountId === acc.id, () =>
+                setDraft((d) => ({ ...d, toAccountId: acc.id }))
+              )
+            )}
+          </div>
+        </div>
+        <AmountField
+          value={draft.amount}
+          onChange={(v) => {
+            setDraft((d) => ({ ...d, amount: v }));
+            setAmountError('');
+          }}
+          error={amountError}
+        />
+        <div>
+          <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-2">
+            Note (Optional)
+          </label>
+          <input
+            type="text"
+            value={draft.note}
+            onChange={(e) => setDraft((d) => ({ ...d, note: e.target.value }))}
+            placeholder="Salary transfer"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm outline-none focus:border-congress-blue-500"
+          />
+        </div>
+        <StickyAddMoneyCTA
+          label="Continue"
+          onClick={() => {
+            if (!draft.toAccountId) {
+              addToast({ type: 'error', title: 'Select Account', message: 'Choose a destination account.' });
+              return;
+            }
+            if (validateAmount(fromAccount?.availableBalance)) setStep('review');
+          }}
+        />
+      </AddMoneyLayout>
+    );
+  }
+
+  return (
+    <AddMoneyLayout title="Bank Transfer" subtitle="Transfer Money" onBack={onClose}>
+      <div className="space-y-2">
+        <SourceOptionCard
+          icon={<ArrowLeftRight className="w-5 h-5" />}
+          title="Self Transfer"
+          subtitle="Transfer between your own bank accounts"
+          onClick={() => {
+            setDraft((d) => ({ ...d, path: 'self', amount: '', note: '' }));
+            setAmountError('');
+            setStep('self');
+          }}
+        />
+        <SourceOptionCard
+          icon={<Building2 className="w-5 h-5" />}
+          title="Bank Account"
+          subtitle="Transfer to another account"
+          onClick={() => {
+            setDraft((d) => ({
+              ...d,
+              path: 'bank',
+              beneficiaryId: null,
+              manualReceiver: null,
+              amount: '',
+              note: '',
+            }));
+            setAmountError('');
+            setStep('bank-beneficiary');
+          }}
+        />
+      </div>
+    </AddMoneyLayout>
+  );
+};

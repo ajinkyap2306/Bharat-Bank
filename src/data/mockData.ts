@@ -616,6 +616,36 @@ export const INITIAL_RETAIL_BENEFICIARIES: Beneficiary[] = [
     phone: '+91 99999 99999',
     isFavourite: true,
     addedDate: '15 Apr 2026'
+  },
+  {
+    id: 'ben_ret_05',
+    name: 'ABC Suppliers Ltd.',
+    accountNumber: '50211458024582',
+    maskedAccount: '•••• 4582',
+    bankName: 'HDFC Bank',
+    ifsc: 'HDFC0001234',
+    type: 'retail_other',
+    transferLimit: 500000,
+    status: 'active',
+    nickname: 'ABC Suppliers',
+    phone: '+91 98210 33445',
+    isFavourite: true,
+    addedDate: '08 Mar 2026'
+  },
+  {
+    id: 'ben_ret_06',
+    name: 'Amazon Web Services',
+    accountNumber: '00021020008182',
+    maskedAccount: '•••• 8182',
+    bankName: 'Citibank',
+    ifsc: 'CITI0000001',
+    type: 'retail_other',
+    transferLimit: 2500000,
+    status: 'active',
+    nickname: 'AWS Cloud',
+    phone: '+91 99880 11223',
+    isFavourite: false,
+    addedDate: '22 Jan 2026'
   }
 ];
 
