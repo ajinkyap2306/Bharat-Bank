@@ -127,16 +127,15 @@ export const StickyAddMoneyCTA: React.FC<{
 export const ProcessingState: React.FC<{ title: string; amount: number; message?: string }> = ({
   title,
   amount,
-  message = "Please don't close the app.",
+  message = 'Please wait',
 }) => (
-  <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
+  <div className="flex flex-col items-center justify-center min-h-[50vh] px-6 text-center">
     <Loader2 className="w-10 h-10 text-congress-blue-600 animate-spin mb-5" />
     <h2 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h2>
     <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-2 tabular-nums">
       ₹{amount.toLocaleString('en-IN')}
     </p>
     <p className="text-sm text-slate-500 mt-3">{message}</p>
-    <p className="text-xs text-congress-blue-600 font-semibold mt-4">Processing…</p>
   </div>
 );
 

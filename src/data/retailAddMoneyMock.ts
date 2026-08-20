@@ -7,7 +7,7 @@ import type {
 
 export const ADD_MONEY_LIMITS: AddMoneyLimits = {
   minAmount: 100,
-  maxAmount: 500000,
+  maxAmount: 100000,
   dailyLimit: 200000,
   usedToday: 25000,
   fee: 0,
@@ -18,15 +18,15 @@ export const LINKED_BANK_ACCOUNTS: LinkedBankAccount[] = [
     id: 'ext_icici_01',
     bankName: 'ICICI Bank',
     accountType: 'Savings',
-    maskedNumber: '•••• 4582',
-    availableBalance: 45000,
+    maskedNumber: '•••• 0012',
+    availableBalance: 482450,
   },
   {
     id: 'ext_hdfc_01',
     bankName: 'HDFC Bank',
     accountType: 'Savings',
     maskedNumber: '•••• 7821',
-    availableBalance: 28500,
+    availableBalance: 125000,
   },
 ];
 
@@ -91,8 +91,37 @@ export function validateAddMoneyAmount(
 }
 
 export function buildTransactionId(): string {
-  const suffix = String(Math.floor(100000 + Math.random() * 900000));
-  return `TXN-20260819-${suffix}`;
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const suffix = String(Math.floor(1000 + Math.random() * 9000));
+  return `TXN${y}${m}${day}${suffix}`;
+}
+
+export function playAddMoneySuccessChime(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    const tone = (freq: number, start: number, duration: number) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.1, start);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + duration);
+    };
+    tone(523.25, ctx.currentTime, 0.12);
+    tone(659.25, ctx.currentTime + 0.1, 0.18);
+  } catch {
+    // Audio not available
+  }
 }
 
 export function formatAddMoneyTimestamp(): string {

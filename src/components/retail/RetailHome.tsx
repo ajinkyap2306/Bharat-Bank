@@ -11,7 +11,6 @@ import {
   TrendingUp, 
   Landmark, 
   Plus, 
-  PlusCircle,
   ArrowUpRight, 
   ArrowDownLeft, 
   ArrowLeftRight,
@@ -36,6 +35,7 @@ import {
   Tag,
   Gift,
   Check,
+  PlusCircle,
   Building2,
   IndianRupee
 } from 'lucide-react';
@@ -76,7 +76,6 @@ export const RetailHome: React.FC = () => {
   };
 
   // Feature Modals
-  const [showAddMoneyFlow, setShowAddMoneyFlow] = useState(false);
   const [showInsuranceModal, setShowInsuranceModal] = useState(false);
   const [showForexModal, setShowForexModal] = useState(false);
   const [showRechargeModal, setShowRechargeModal] = useState(false);
@@ -84,6 +83,7 @@ export const RetailHome: React.FC = () => {
   const [showStatementsModal, setShowStatementsModal] = useState(false);
   const [showOffersModal, setShowOffersModal] = useState(false);
   const [showRewardsModal, setShowRewardsModal] = useState(false);
+  const [showAddMoneyFlow, setShowAddMoneyFlow] = useState(false);
 
   // Recharge State
   const [rechargeMobile, setRechargeMobile] = useState('9876543210');
@@ -101,14 +101,14 @@ export const RetailHome: React.FC = () => {
   // Check if any modal is active to hide Bottom Navigation
   const hasActiveModal = !!(
     selectedTxn || 
-    showAddMoneyFlow ||
     showInsuranceModal || 
     showForexModal || 
     showRechargeModal || 
     showUpiModal || 
     showStatementsModal || 
     showOffersModal || 
-    showRewardsModal
+    showRewardsModal ||
+    showAddMoneyFlow
   );
 
   useEffect(() => {
@@ -341,7 +341,7 @@ export const RetailHome: React.FC = () => {
               Add Money
             </span>
             <span className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 hidden sm:block whitespace-nowrap mt-0.5">
-              Top-up Balance
+              Bank, Card or UPI
             </span>
           </motion.button>
         </div>
@@ -371,12 +371,13 @@ export const RetailHome: React.FC = () => {
           {/* Row 1 — Core Banking */}
           {/* 1. Accounts */}
           <motion.button
+            type="button"
             whileTap={{ scale: 0.92 }}
             onClick={() => {
-              setRetailTab('accounts');
               navigate('/retail/accounts');
+              setRetailTab('accounts');
             }}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <Wallet className="w-5 h-5" />
@@ -386,9 +387,10 @@ export const RetailHome: React.FC = () => {
 
           {/* 2. Cards */}
           <motion.button
+            type="button"
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('cards')}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <CreditCard className="w-5 h-5" />
@@ -400,7 +402,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('transfers')}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <ArrowLeftRight className="w-5 h-5" />
@@ -412,7 +414,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('deposits')}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <PiggyBank className="w-5 h-5" />
@@ -425,7 +427,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('loans')}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <Landmark className="w-5 h-5" />
@@ -437,7 +439,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('investments')}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <TrendingUp className="w-5 h-5" />
@@ -449,7 +451,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setShowInsuranceModal(true)}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <ShieldCheck className="w-5 h-5" />
@@ -461,7 +463,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setShowForexModal(true)}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <Globe className="w-5 h-5" />
@@ -474,7 +476,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('bills')}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <IndianRupee className="w-5 h-5" />
@@ -486,7 +488,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setShowRechargeModal(true)}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <Smartphone className="w-5 h-5" />
@@ -498,7 +500,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setShowUpiModal(true)}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <QrCode className="w-5 h-5" />
@@ -510,7 +512,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('beneficiaries')}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <Users className="w-5 h-5" />
@@ -523,7 +525,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('statements')}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <FileText className="w-5 h-5" />
@@ -535,7 +537,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setShowOffersModal(true)}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <Tag className="w-5 h-5" />
@@ -547,7 +549,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setShowRewardsModal(true)}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <Award className="w-5 h-5" />
@@ -559,7 +561,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('services')}
-            className="flex flex-col items-center group"
+            className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
               <Layers className="w-5 h-5" />
@@ -689,10 +691,6 @@ export const RetailHome: React.FC = () => {
       </div>
 
       {/* ================= MODALS & DETAIL FLOWS ================= */}
-
-      {showAddMoneyFlow && (
-        <AddMoneyModule onClose={() => setShowAddMoneyFlow(false)} />
-      )}
 
       {/* B. Insurance Modal */}
       <AnimatePresence>
@@ -1330,6 +1328,10 @@ export const RetailHome: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      {showAddMoneyFlow && (
+        <AddMoneyModule onClose={() => setShowAddMoneyFlow(false)} />
+      )}
     </div>
   );
 };

@@ -91,12 +91,10 @@ const BankingAppContent: React.FC = () => {
 
   const isRetailAccountsRoute =
     bankingType === 'retail' && location.pathname.startsWith('/retail/accounts');
-  const isRetailRootPath =
-    location.pathname === '/' || location.pathname === '';
   const isRetailHome =
     bankingType === 'retail' &&
     !isRetailAccountsRoute &&
-    (retailTab === 'home' || isRetailRootPath);
+    retailTab === 'home';
   const showGlobalHeader = isRetailHome && !isScannerOpen;
 
   const isRetailNativeScreen =
@@ -178,11 +176,8 @@ const BankingAppContent: React.FC = () => {
 
   React.useEffect(() => {
     if (!isAuthenticated || bankingType !== 'retail') return;
-    const path = location.pathname;
-    if (path.startsWith('/retail/accounts')) {
+    if (location.pathname.startsWith('/retail/accounts')) {
       setRetailTab('accounts');
-    } else if (path === '/' || path === '') {
-      setRetailTab('home');
     }
   }, [isAuthenticated, bankingType, location.pathname, setRetailTab]);
 

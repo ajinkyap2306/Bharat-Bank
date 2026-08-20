@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
+import { motion } from 'motion/react';
 import {
   Building2,
   CheckCircle2,
@@ -25,6 +26,7 @@ import {
   UPI_APPS,
   buildTransactionId,
   formatAddMoneyTimestamp,
+  playAddMoneySuccessChime,
   validateAddMoneyAmount,
 } from '../../../data/retailAddMoneyMock';
 import {
@@ -44,7 +46,7 @@ const INITIAL_DRAFT: AddMoneyDraft = {
   sourceId: '',
   upiId: 'devansh@apexbank',
   upiApp: '',
-  amount: '5000',
+  amount: '',
 };
 
 interface AddMoneyFlowProps {
@@ -60,7 +62,12 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
   const [authPin, setAuthPin] = useState('');
   const [cardOtp, setCardOtp] = useState('');
   const [result, setResult] = useState<AddMoneyResult | null>(null);
-  const [failReason, setFailReason] = useState('Transaction could not be completed.');
+  const [failReason, setFailReason] = useState('We couldn\'t complete this transaction.');
+  const chimePlayed = useRef(false);
+
+  const skippedSourceSelection =
+    draft.sourceType === 'bank_account' && LINKED_BANK_ACCOUNTS.length === 1 ||
+    draft.sourceType === 'debit_card' && LINKED_DEBIT_CARDS.length === 1;
 
   const primaryAccount = getPrimaryAccount();
   const creditAccountLabel = primaryAccount
@@ -89,25 +96,43 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
 
   const goBack = useCallback(() => {
     const flow: AddMoneyStep[] = ['home', 'select-source', 'amount', 'review', 'auth'];
-    const idx = flow.indexOf(step);
     if (['processing', 'success', 'failed', 'transaction-detail'].includes(step)) {
       onClose();
       return;
     }
+    if (step === 'amount') {
+      if (skippedSourceSelection || draft.sourceType === 'upi') {
+        if (draft.sourceType === 'upi') setStep('select-source');
+        else setStep('home');
+      } else {
+        setStep('select-source');
+      }
+      return;
+    }
+    const idx = flow.indexOf(step);
     if (idx <= 0) onClose();
     else setStep(flow[idx - 1]);
-  }, [step, onClose]);
-
-  useEffect(() => {
-    if (step === 'select-source' && draft.sourceType === 'bank_account' && !draft.sourceId) {
-      setDraft((d) => ({ ...d, sourceId: LINKED_BANK_ACCOUNTS[0].id }));
-    }
-    if (step === 'select-source' && draft.sourceType === 'debit_card' && !draft.sourceId) {
-      setDraft((d) => ({ ...d, sourceId: LINKED_DEBIT_CARDS[0].id }));
-    }
-  }, [step, draft.sourceType, draft.sourceId]);
+  }, [step, onClose, skippedSourceSelection, draft.sourceType]);
 
   const pickSourceType = (sourceType: AddMoneySourceType) => {
+    if (sourceType === 'bank_account' && LINKED_BANK_ACCOUNTS.length === 1) {
+      setDraft((d) => ({
+        ...d,
+        sourceType,
+        sourceId: LINKED_BANK_ACCOUNTS[0].id,
+      }));
+      setStep('amount');
+      return;
+    }
+    if (sourceType === 'debit_card' && LINKED_DEBIT_CARDS.length === 1) {
+      setDraft((d) => ({
+        ...d,
+        sourceType,
+        sourceId: LINKED_DEBIT_CARDS[0].id,
+      }));
+      setStep('amount');
+      return;
+    }
     setDraft((d) => ({
       ...d,
       sourceType,
@@ -138,7 +163,7 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
 
     setTimeout(() => {
       if (shouldFail) {
-        setFailReason('Transaction could not be completed.');
+        setFailReason('We couldn\'t complete this transaction.');
         setStep('failed');
         return;
       }
@@ -160,6 +185,10 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
       };
       setResult(successResult);
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.55 } });
+      if (!chimePlayed.current) {
+        playAddMoneySuccessChime();
+        chimePlayed.current = true;
+      }
       addToast({
         type: 'success',
         title: 'Money Added',
@@ -188,7 +217,7 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
   if (step === 'processing') {
     return (
       <AddMoneyLayout title="Add Money" onBack={() => {}}>
-        <ProcessingState title="Adding Money" amount={amountNum} />
+        <ProcessingState title={`Adding ₹${amountNum.toLocaleString('en-IN')}…`} amount={amountNum} />
       </AddMoneyLayout>
     );
   }
@@ -197,13 +226,36 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
     return (
       <AddMoneyLayout title="Add Money" onBack={onClose}>
         <div className="flex flex-col items-center text-center px-2 pt-6">
-          <span className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mb-4">
-            <CheckCircle2 className="w-9 h-9" />
-          </span>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Money Added Successfully</h2>
-          <p className="text-3xl font-extrabold text-slate-900 dark:text-white mt-3 tabular-nums">
+          <motion.span
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+            className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mb-4"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 14 }}
+            >
+              <CheckCircle2 className="w-9 h-9" />
+            </motion.div>
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-lg font-bold text-slate-900 dark:text-white"
+          >
+            Money Added Successfully
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.28 }}
+            className="text-3xl font-extrabold text-slate-900 dark:text-white mt-3 tabular-nums"
+          >
             ₹{result.amount.toLocaleString('en-IN')}
-          </p>
+          </motion.p>
           <div className="w-full mt-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 text-left space-y-2">
             <ReviewRow label="Added to" value={result.creditedAccountLabel} />
             <ReviewRow label="Date & Time" value={result.timestamp} />
@@ -252,12 +304,11 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
           <span className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/40 text-red-600 flex items-center justify-center mb-4">
             <XCircle className="w-9 h-9" />
           </span>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Unable to Add Money</h2>
-          <p className="text-sm text-slate-500 mt-2">Your account was not credited.</p>
-          <div className="w-full mt-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 text-left">
-            <p className="text-xs font-bold text-slate-500 uppercase">Reason</p>
-            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-1">{failReason}</p>
-          </div>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Money Addition Failed</h2>
+          <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-3 tabular-nums">
+            ₹{amountNum.toLocaleString('en-IN')}
+          </p>
+          <p className="text-sm text-slate-500 mt-2">{failReason}</p>
         </div>
         <StickyAddMoneyCTA
           label="Try Again"
@@ -352,23 +403,24 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
   }
 
   if (step === 'review') {
+    const fromDetail =
+      draft.sourceType === 'bank_account' && selectedBank
+        ? `${selectedBank.bankName}\n${selectedBank.accountType} ${selectedBank.maskedNumber}`
+        : sourceLabel;
+
     return (
       <AddMoneyLayout title="Review Add Money" onBack={goBack}>
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
           <ReviewRow label="Amount" value={`₹${amountNum.toLocaleString('en-IN')}`} bold />
-          <ReviewRow label="From" value={sourceLabel} />
-          {selectedBank && (
-            <ReviewRow
-              label="Account"
-              value={`${selectedBank.accountType} ${selectedBank.maskedNumber}`}
-            />
-          )}
+          <ReviewRow label="From" value={fromDetail.replace('\n', ' · ')} />
           <ReviewRow label="To" value="My Account" />
-          <ReviewRow label="Credited Account" value={creditAccountLabel} />
           <ReviewRow label="Fee" value={`₹${ADD_MONEY_LIMITS.fee}`} />
           <ReviewRow label="Total" value={`₹${totalDebit.toLocaleString('en-IN')}`} bold />
         </div>
-        <StickyAddMoneyCTA label="Continue" onClick={() => setStep('auth')} />
+        <StickyAddMoneyCTA
+          label={`Add ₹${amountNum.toLocaleString('en-IN')}`}
+          onClick={() => setStep('auth')}
+        />
       </AddMoneyLayout>
     );
   }
@@ -392,8 +444,12 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
             setAmountError('');
           }}
         />
+        <p className="text-[11px] text-slate-400 px-1">
+          Minimum amount: ₹{ADD_MONEY_LIMITS.minAmount.toLocaleString('en-IN')} · Maximum amount: ₹
+          {ADD_MONEY_LIMITS.maxAmount.toLocaleString('en-IN')}
+        </p>
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Source</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Adding from</p>
           <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">{sourceLabel}</p>
         </div>
         <StickyAddMoneyCTA
@@ -409,7 +465,7 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
   if (step === 'select-source') {
     if (draft.sourceType === 'bank_account') {
       return (
-        <AddMoneyLayout title="Select Bank Account" onBack={goBack}>
+        <AddMoneyLayout title="Select Bank Account" subtitle="Which account do you want to use?" onBack={goBack}>
           <div className="space-y-2">
             {LINKED_BANK_ACCOUNTS.map((account) => (
               <RadioSelectCard
@@ -439,7 +495,7 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
               <RadioSelectCard
                 key={card.id}
                 selected={draft.sourceId === card.id}
-                title={card.bankName}
+                title="Debit Card"
                 subtitle={card.maskedNumber}
                 onSelect={() => setDraft((d) => ({ ...d, sourceId: card.id }))}
               />
@@ -464,7 +520,7 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
     }
 
     return (
-      <AddMoneyLayout title="Pay via UPI" onBack={goBack}>
+      <AddMoneyLayout title="Add Money via UPI" onBack={goBack}>
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
           <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-2">UPI ID</label>
           <input
@@ -475,7 +531,9 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
             className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-medium outline-none focus:border-congress-blue-500"
           />
         </div>
+        <p className="text-xs text-slate-500 px-1">Amount will be entered on the next screen.</p>
         <p className="text-center text-xs text-slate-400">or</p>
+        <p className="text-xs font-bold text-slate-500 px-1">Choose UPI App</p>
         <div className="grid grid-cols-3 gap-2">
           {UPI_APPS.map((app) => (
             <button
