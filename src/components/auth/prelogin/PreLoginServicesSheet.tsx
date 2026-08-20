@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BottomSheet } from '../../common/BottomSheet';
 import { PRE_LOGIN_MENU_ITEMS } from './preLoginMenuConfig';
+import { openPreLoginScreen } from './preLoginNavigation';
 
 interface PreLoginServicesSheetProps {
   isOpen: boolean;
@@ -10,6 +11,10 @@ interface PreLoginServicesSheetProps {
 
 export const PreLoginServicesSheet: React.FC<PreLoginServicesSheetProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
+
+  const handleItemClick = (path: string) => {
+    openPreLoginScreen(navigate, path, onClose);
+  };
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title="Help & Services" subtitle="Before you sign in">
@@ -20,10 +25,7 @@ export const PreLoginServicesSheet: React.FC<PreLoginServicesSheetProps> = ({ is
             <button
               key={item.id}
               type="button"
-              onClick={() => {
-                onClose();
-                navigate(item.path);
-              }}
+              onClick={() => handleItemClick(item.path)}
               aria-label={item.label}
               className="flex flex-col items-center gap-1 py-2.5 px-1 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 active:scale-95 transition-transform min-h-[72px]"
             >
@@ -45,20 +47,14 @@ export const PreLoginServicesSheet: React.FC<PreLoginServicesSheetProps> = ({ is
       <div className="px-4 pb-2 flex justify-center gap-4">
         <button
           type="button"
-          onClick={() => {
-            onClose();
-            navigate('/prelogin/terms');
-          }}
+          onClick={() => handleItemClick('/prelogin/terms')}
           className="text-[11px] font-semibold text-blue-600"
         >
           Terms & Conditions
         </button>
         <button
           type="button"
-          onClick={() => {
-            onClose();
-            navigate('/prelogin/privacy');
-          }}
+          onClick={() => handleItemClick('/prelogin/privacy')}
           className="text-[11px] font-semibold text-blue-600"
         >
           Privacy Policy

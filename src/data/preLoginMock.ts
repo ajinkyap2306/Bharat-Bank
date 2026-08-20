@@ -118,6 +118,22 @@ export const ATM_LOCATORS: PreLoginLocator[] = [
     hours: '24x7',
     services: ['Cash Withdrawal', 'Mini Statement'],
   },
+  {
+    id: 'atm_4',
+    name: 'Fort ATM — D N Road',
+    address: 'D N Road, Fort, Mumbai 400001',
+    distance: '8.0 km',
+    hours: '24x7',
+    services: ['Cash Withdrawal', 'Mini Statement'],
+  },
+  {
+    id: 'atm_5',
+    name: 'Juhu Tara Road ATM',
+    address: 'Juhu Tara Road, Mumbai 400049',
+    distance: '5.2 km',
+    hours: '24x7',
+    services: ['Cash Withdrawal', 'PIN Change'],
+  },
 ];
 
 export const BRANCH_LOCATORS: PreLoginLocator[] = [

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangle, Lock, Phone, PlayCircle, Shield } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { AlertTriangle, Lock, Phone, PlayCircle, Shield, ShieldCheck } from 'lucide-react';
 import {
   ATM_LOCATORS,
   BRANCH_LOCATORS,
@@ -18,7 +18,9 @@ import {
 } from '../../../data/preLoginMock';
 import { PreLoginCard, PreLoginListItem, PreLoginShell, PreLoginTopBar } from './PreLoginUI';
 import { PreLoginServicesSheet } from './PreLoginServicesSheet';
+import { openPreLoginScreen } from './preLoginNavigation';
 import { LOGIN_QUICK_ITEM_IDS, PRE_LOGIN_MENU_ITEMS } from './preLoginMenuConfig';
+import { getPreLoginScreenFromPath } from './preLoginScreenRegistry';
 import { useBanking } from '../../../context/BankingContext';
 
 export { PRE_LOGIN_MENU_ITEMS, LOGIN_QUICK_ITEM_IDS } from './preLoginMenuConfig';
@@ -66,7 +68,7 @@ const TipsList: React.FC<{ tips: PreLoginTip[] }> = ({ tips }) => (
   </div>
 );
 
-const LocatorList: React.FC<{ items: typeof ATM_LOCATORS }> = ({ items }) => {
+const LocatorList: React.FC<{ items: typeof ATM_LOCATORS; label: string }> = ({ items, label }) => {
   const [query, setQuery] = useState('');
   const filtered = useMemo(
     () =>
@@ -80,6 +82,9 @@ const LocatorList: React.FC<{ items: typeof ATM_LOCATORS }> = ({ items }) => {
 
   return (
     <div className="px-4 pb-8 space-y-3">
+      <p className="text-xs font-semibold text-slate-500">
+        {filtered.length} {label} near you
+      </p>
       <input
         type="search"
         value={query}
@@ -116,7 +121,11 @@ const LocatorList: React.FC<{ items: typeof ATM_LOCATORS }> = ({ items }) => {
 
 export const PreLoginModule: React.FC = () => {
   const navigate = useNavigate();
-  const { screen = 'faqs' } = useParams<{ screen: string }>();
+  const location = useLocation();
+  const activeScreen = useMemo(
+    () => getPreLoginScreenFromPath(location.pathname),
+    [location.pathname]
+  );
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
   const [faqFilter, setFaqFilter] = useState('All');
 
@@ -129,10 +138,21 @@ export const PreLoginModule: React.FC = () => {
 
   const filteredFaqs = PRE_LOGIN_FAQS.filter((f) => faqFilter === 'All' || f.category === faqFilter);
 
-  const title = SCREEN_TITLES[screen] ?? 'Information';
+  const title = activeScreen ? SCREEN_TITLES[activeScreen] ?? 'Information' : 'Information';
 
   const renderContent = () => {
-    switch (screen) {
+    if (!activeScreen) {
+      return (
+        <div className="px-4 pb-8">
+          <p className="text-sm text-slate-500">This help topic is not available.</p>
+          <button type="button" onClick={goBack} className="mt-4 text-sm font-bold text-blue-600">
+            Back to login
+          </button>
+        </div>
+      );
+    }
+
+    switch (activeScreen) {
       case 'contact':
         return (
           <div className="px-4 pb-8 space-y-3">
@@ -185,10 +205,10 @@ export const PreLoginModule: React.FC = () => {
         );
 
       case 'atm-locator':
-        return <LocatorList items={ATM_LOCATORS} />;
+        return <LocatorList items={ATM_LOCATORS} label="ATMs" />;
 
       case 'branch-locator':
-        return <LocatorList items={BRANCH_LOCATORS} />;
+        return <LocatorList items={BRANCH_LOCATORS} label="branches" />;
 
       case 'offers':
         return (
@@ -371,7 +391,7 @@ export const PreLoginQuickLinks: React.FC = () => {
               <button
                 key={item.id}
                 type="button"
-                onClick={() => navigate(item.path)}
+                onClick={() => openPreLoginScreen(navigate, item.path)}
                 aria-label={item.label}
                 className="flex flex-col items-center gap-1 py-2 px-1 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 active:scale-95 transition-transform"
               >
@@ -396,7 +416,7 @@ export const PreLoginQuickLinks: React.FC = () => {
         <div className="flex justify-center gap-3 mt-2">
           <button
             type="button"
-            onClick={() => navigate('/prelogin/terms')}
+            onClick={() => openPreLoginScreen(navigate, '/prelogin/terms')}
             className="text-[10px] font-semibold text-slate-500 hover:text-blue-600"
           >
             Terms
@@ -404,7 +424,7 @@ export const PreLoginQuickLinks: React.FC = () => {
           <span className="text-slate-300">·</span>
           <button
             type="button"
-            onClick={() => navigate('/prelogin/privacy')}
+            onClick={() => openPreLoginScreen(navigate, '/prelogin/privacy')}
             className="text-[10px] font-semibold text-slate-500 hover:text-blue-600"
           >
             Privacy
