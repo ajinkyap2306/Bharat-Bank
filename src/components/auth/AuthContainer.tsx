@@ -331,28 +331,23 @@ export const AuthContainer: React.FC = () => {
                     <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                       {loginMethod === 'password' ? 'Password' : loginMethod === 'mpin' ? 'MPIN' : 'Biometric'}
                     </label>
-                    {loginMethod !== 'fingerprint' && (
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => navigate('/forgot-mpin')}
-                          className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
-                        >
-                          Forgot MPIN?
-                        </button>
-                        {loginMethod === 'password' && (
-                          <>
-                            <span className="text-slate-300">|</span>
-                            <button
-                              type="button"
-                              onClick={() => navigate('/forgot-password')}
-                              className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
-                            >
-                              Forgot password?
-                            </button>
-                          </>
-                        )}
-                      </div>
+                    {loginMethod === 'password' && (
+                      <button
+                        type="button"
+                        onClick={() => navigate('/forgot-password')}
+                        className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        Forgot password?
+                      </button>
+                    )}
+                    {loginMethod === 'mpin' && (
+                      <button
+                        type="button"
+                        onClick={() => navigate('/forgot-mpin')}
+                        className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        Forgot MPIN?
+                      </button>
                     )}
                   </div>
 
