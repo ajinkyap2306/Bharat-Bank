@@ -22,13 +22,14 @@ import { ScheduledPaymentEditModule } from './scheduled/edit/ScheduledPaymentEdi
 import { PaymentHistoryScreen } from './history/PaymentHistoryScreen';
 import { PaymentTemplatesScreen } from './templates/PaymentTemplatesScreen';
 import { RouteLoadingState } from '../../common/RouteLoadingState';
+import { CorporateMobilePayModule } from './mobile/CorporateMobilePayModule';
 
 const VENDOR_BASE_PATH = '/corporate/payments/create/vendor';
 const INTERNAL_BASE_PATH = '/corporate/payments/create/internal-transfer';
 const INTERNAL_REVIEW_PATH = '/corporate/payments/create/internal-transfer/review';
 const BANK_BASE_PATH = '/corporate/payments/create/bank-transfer';
 const BANK_REVIEW_PATH = '/corporate/payments/create/bank-transfer/review';
-const RESERVED_PAYMENT_SEGMENTS = ['create', 'history', 'scheduled', 'transfer', 'templates'];
+const RESERVED_PAYMENT_SEGMENTS = ['create', 'history', 'scheduled', 'transfer', 'templates', 'mobile-pay'];
 const VENDOR_REVIEW_PATH = '/corporate/payments/create/vendor/review';
 const VENDOR_SUBMITTED_PATH = '/corporate/payments/create/vendor/submitted';
 
@@ -132,6 +133,11 @@ export const CorporatePaymentsModule: React.FC = () => {
     return path === '/corporate/payments/templates' || path === '/corporate/payments/templates/';
   }, [location.pathname]);
 
+  const isMobilePay = useMemo(() => {
+    const path = location.pathname;
+    return path === '/corporate/payments/mobile-pay' || path === '/corporate/payments/mobile-pay/';
+  }, [location.pathname]);
+
   useEffect(() => {
     setCorporateTab('payments');
   }, [setCorporateTab]);
@@ -145,7 +151,7 @@ export const CorporatePaymentsModule: React.FC = () => {
       return;
     }
 
-    if (isPaymentCreateFlow || isPaymentTracking || isScheduledDetail || isScheduledCreate || isScheduledEdit || isPaymentTemplates) {
+    if (isPaymentCreateFlow || isPaymentTracking || isScheduledDetail || isScheduledCreate || isScheduledEdit || isPaymentTemplates || isMobilePay) {
       setBottomNavHidden(true);
       return;
     }
@@ -173,6 +179,7 @@ export const CorporatePaymentsModule: React.FC = () => {
     isScheduledDetail,
     isScheduledCreate,
     isScheduledEdit,
+    isMobilePay,
     setBottomNavHidden,
     closeDetailFlow,
     navigate,
@@ -221,6 +228,10 @@ export const CorporatePaymentsModule: React.FC = () => {
 
   if (isPaymentTemplates) {
     return <PaymentTemplatesScreen />;
+  }
+
+  if (isMobilePay) {
+    return <CorporateMobilePayModule />;
   }
 
   const scheduledCreateStep = getScheduledCreateStep(location.pathname);

@@ -8,6 +8,7 @@ import { CorporateTransactionDetailsScreen } from './CorporateTransactionDetails
 import { CorporateStatements } from './CorporateStatements';
 import { AccountPreferences } from './AccountPreferences';
 import { AccountLimits } from './AccountLimits';
+import { CorporateFreezeAccountScreen } from './screens/CorporateFreezeAccountScreen';
 
 export const CorporateAccountsModule: React.FC = () => {
   const location = useLocation();
@@ -24,7 +25,8 @@ export const CorporateAccountsModule: React.FC = () => {
       /^\/corporate\/accounts\/([^/]+)\/transactions\/([^/]+)$/
     );
     const accountDetails = path.match(/^\/corporate\/accounts\/([^/]+)\/?$/);
-    return { limits, preferences, statements, transactions, transactionDetail, accountDetails };
+    const freeze = path.match(/^\/corporate\/accounts\/([^/]+)\/freeze\/?$/);
+    return { limits, preferences, statements, transactions, transactionDetail, accountDetails, freeze };
   }, [location.pathname]);
 
   const isOverview =
@@ -49,6 +51,7 @@ export const CorporateAccountsModule: React.FC = () => {
       route.statements ||
       route.transactions ||
       route.transactionDetail ||
+      route.freeze ||
       route.accountDetails;
     if (!valid) {
       navigate('/corporate/accounts', { replace: true });
@@ -62,6 +65,10 @@ export const CorporateAccountsModule: React.FC = () => {
         transactionId={route.transactionDetail[2]}
       />
     );
+  }
+
+  if (route.freeze) {
+    return <CorporateFreezeAccountScreen accountId={route.freeze[1]} />;
   }
 
   if (route.limits) {

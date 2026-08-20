@@ -83,6 +83,10 @@ export const CorporatePaymentsHome: React.FC = () => {
       navigate(path);
       return;
     }
+    if (path === '/corporate/payments/mobile-pay') {
+      navigate(path);
+      return;
+    }
     if (path === '/corporate/approvals' || path.startsWith('/corporate/approvals')) {
       setCorporateTab('approvals');
       navigate(path);
@@ -191,6 +195,7 @@ export const CorporatePaymentsHome: React.FC = () => {
         <PaymentQuickActions
           canCreatePayment={canCreatePayment}
           onTransfer={() => goToRoute('/corporate/payments/create/internal-transfer')}
+          onMobilePay={() => goToRoute('/corporate/payments/mobile-pay')}
           onScheduled={() => goToRoute('/corporate/payments/scheduled')}
           onBulk={() => goToRoute('/corporate/bulk-payments')}
           onPayroll={() => goToRoute('/corporate/payroll')}

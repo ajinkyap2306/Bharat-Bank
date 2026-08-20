@@ -4,6 +4,7 @@ import { useBanking } from '../../../context/BankingContext';
 import { CorporateMoreHome } from './CorporateMoreHome';
 import { CorporateReports } from '../CorporateReports';
 import { CorporateProfileModule } from '../profile/CorporateProfileModule';
+import { CorporatePositivePayModule } from '../cheque/CorporatePositivePayModule';
 
 const MORE_HOME = '/corporate/more';
 
@@ -36,7 +37,12 @@ export const CorporateMoreModule: React.FC = () => {
     return path === '/corporate/more/reports' || path === '/corporate/more/reports/';
   }, [location.pathname]);
 
-  const isSubScreen = isProfile || isReports;
+  const isPositivePay = useMemo(() => {
+    const path = location.pathname;
+    return path === '/corporate/more/positive-pay' || path === '/corporate/more/positive-pay/';
+  }, [location.pathname]);
+
+  const isSubScreen = isProfile || isReports || isPositivePay;
 
   useEffect(() => {
     setCorporateTab('more');
@@ -72,6 +78,10 @@ export const CorporateMoreModule: React.FC = () => {
 
   if (isProfile) {
     return <CorporateProfileModule />;
+  }
+
+  if (isPositivePay) {
+    return <CorporatePositivePayModule />;
   }
 
   if (isReports) {

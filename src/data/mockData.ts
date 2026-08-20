@@ -65,6 +65,7 @@ export const INITIAL_RETAIL_ACCOUNTS: BankAccount[] = [
     status: 'active',
     interestRate: 6.5,
     nominees: [{ name: 'Sneha Mehta', relationship: 'Sister', allocation: 100 }],
+    jointHolders: [{ name: 'Priya Sharma', relationship: 'Spouse', panMasked: 'ABCPX1234K' }],
   },
   {
     id: 'acc_ret_cur_02',
@@ -79,6 +80,7 @@ export const INITIAL_RETAIL_ACCOUNTS: BankAccount[] = [
     nickname: 'Trading & Wealth Flexi',
     status: 'active',
     holdAmount: 20000.00,
+    jointHolders: [{ name: 'Arjun Mehta', relationship: 'Primary', panMasked: 'AABCX5678L' }],
   },
   {
     id: 'acc_ret_fd_03',

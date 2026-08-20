@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Users } from 'lucide-react';
+import { CheckCircle2, UserRound, Users } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
 import { ScreenHeader } from '../../common/ScreenHeader';
 import { SecureAuthModal } from '../../common/SecureAuthModal';
@@ -94,8 +94,8 @@ export const NomineeModule: React.FC = () => {
   return (
     <div className="flex flex-col h-full -mx-3 px-3 bg-slate-50 dark:bg-slate-950 min-h-full">
       <ScreenHeader
-        title="Nominee Details"
-        subtitle="View, add or amend registered nominees"
+        title="Nominee & Joint Holders"
+        subtitle="View registered nominees and joint account holders"
         onBack={() => (step === 'list' ? setRetailTab('services') : setStep('list'))}
       />
 
@@ -125,6 +125,7 @@ export const NomineeModule: React.FC = () => {
                     <div key={i} className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-2">
                       <Users className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                       <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase">Nominee</p>
                         <p className="text-sm font-semibold">{n.name}</p>
                         <p className="text-xs text-slate-500">
                           {n.relationship} • {n.allocation}% allocation
@@ -134,6 +135,23 @@ export const NomineeModule: React.FC = () => {
                   ))
                 ) : (
                   <p className="text-xs text-amber-600 mt-2">No nominee registered</p>
+                )}
+                {acc.jointHolders?.length ? (
+                  acc.jointHolders.map((holder, i) => (
+                    <div key={`joint-${i}`} className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+                      <UserRound className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase">Joint Holder</p>
+                        <p className="text-sm font-semibold">{holder.name}</p>
+                        <p className="text-xs text-slate-500">
+                          {holder.relationship}
+                          {holder.panMasked ? ` • PAN ${holder.panMasked}` : ''}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-xs text-slate-400 mt-2">No joint holders on this account</p>
                 )}
               </div>
             ))}

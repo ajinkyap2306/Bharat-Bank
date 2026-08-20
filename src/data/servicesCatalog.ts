@@ -9,6 +9,7 @@ const nach = () => ({ kind: 'tab' as const, tab: 'nach' as const });
 const nominee = () => ({ kind: 'tab' as const, tab: 'nominee' as const });
 const taxPayment = () => ({ kind: 'bill' as const, screen: 'tax-payment' });
 const scheduled = () => ({ kind: 'tab' as const, tab: 'scheduled' as const });
+const ifscFinder = () => ({ kind: 'tab' as const, tab: 'ifsc-finder' as const });
 const requestMoney = () => ({ kind: 'tab' as const, tab: 'request-money' as const });
 const openAccount = () => ({ kind: 'tab' as const, tab: 'open-account' as const });
 const cardless = () => ({ kind: 'tab' as const, tab: 'cardless' as const });
@@ -44,7 +45,10 @@ export const SERVICES_CATALOG: ServiceCategory[] = [
       { id: 'update-kyc', name: 'Update KYC', description: 'Review or update your KYC information.', icon: 'ShieldCheck', keywords: ['kyc', 'verification'], route: profile('kyc-details') },
       { id: 'update-contact', name: 'Update Contact Details', description: 'Change mobile number or email address.', icon: 'Phone', keywords: ['contact', 'mobile', 'email'], route: profile('contact-details') },
       { id: 'update-address', name: 'Update Address', description: 'Update residential or mailing address.', icon: 'MapPin', keywords: ['address', 'mailing'], route: profile('edit-address') },
-      { id: 'update-nominee', name: 'Update Nominee', description: 'View, add, or amend registered nominees.', icon: 'Users', keywords: ['nominee'], route: nominee() },
+      { id: 'update-nominee', name: 'Update Nominee', description: 'View, add, or amend registered nominees.', icon: 'Users', keywords: ['nominee', 'joint holder'], route: nominee() },
+      { id: 'share-account', name: 'Share Account Details', description: 'Share account number and IFSC with others.', icon: 'Share2', keywords: ['share', 'ifsc', 'account details'], route: profile('linked-accounts') },
+      { id: 'freeze-account', name: 'Freeze Account', description: 'Temporarily block outgoing debits.', icon: 'Snowflake', keywords: ['freeze', 'block'], route: profile('freeze-account') },
+      { id: 'ifsc-search', name: 'IFSC Search', description: 'Find bank branch IFSC codes.', icon: 'Building2', keywords: ['ifsc', 'search', 'branch'], route: ifscFinder() },
       { id: 'interest-cert-acct', name: 'Interest Certificate', description: 'Download interest certificates for your accounts.', icon: 'FileText', keywords: ['interest', 'certificate'], route: profile('documents') },
       { id: 'account-upgrade', name: 'Account Upgrade', description: 'Explore premium banking tiers and benefits.', icon: 'TrendingUp', keywords: ['upgrade', 'premium'], badge: 'New', route: profile('account-management') },
     ],

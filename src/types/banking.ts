@@ -45,7 +45,8 @@ export type RetailTab =
   | 'loan-closure-cert'
   | 'bonds'
   | 'demat'
-  | 'feedback';
+  | 'feedback'
+  | 'ifsc-finder';
 
 export type CorporateTab = 
   | 'home'
@@ -98,6 +99,11 @@ export interface BankAccount {
     relationship: string;
     allocation: number;
     dateOfBirth?: string;
+  }[];
+  jointHolders?: {
+    name: string;
+    relationship: string;
+    panMasked?: string;
   }[];
 }
 

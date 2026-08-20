@@ -7,6 +7,7 @@ import {
   CreditCard,
   Settings,
   Shield,
+  ShieldCheck,
   UserCircle,
   Users,
   Wallet,
@@ -45,6 +46,13 @@ const BUSINESS_ITEMS: MoreMenuItem[] = [
     description: 'File-based vendor payouts',
     icon: Building2,
     route: '/corporate/bulk-payments',
+  },
+  {
+    id: 'positive-pay',
+    label: 'Positive Pay',
+    description: 'Register high-value cheques',
+    icon: ShieldCheck,
+    route: '/corporate/more/positive-pay',
   },
   {
     id: 'cards',

@@ -369,8 +369,25 @@ export const CORPORATE_CASH_FLOW_ACCOUNTS = {
   ],
 };
 
-export const getAccountById = (id: string) =>
-  CORPORATE_ACCOUNTS_LIST.find((a) => a.id === id);
+const frozenCorporateAccountIds = new Set<string>();
+
+export function setCorporateAccountFrozen(accountId: string, frozen: boolean) {
+  if (frozen) frozenCorporateAccountIds.add(accountId);
+  else frozenCorporateAccountIds.delete(accountId);
+}
+
+export function isCorporateAccountFrozen(accountId: string) {
+  return frozenCorporateAccountIds.has(accountId);
+}
+
+export const getAccountById = (id: string) => {
+  const account = CORPORATE_ACCOUNTS_LIST.find((a) => a.id === id);
+  if (!account) return undefined;
+  if (frozenCorporateAccountIds.has(id)) {
+    return { ...account, displayStatus: 'Restricted' as const };
+  }
+  return account;
+};
 
 export const getAccountsCategorySummary = (accounts: CorporateAccount[]) => ({
   total: accounts.length,

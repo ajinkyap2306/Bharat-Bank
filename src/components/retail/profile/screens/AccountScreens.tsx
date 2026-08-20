@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Wallet, Star, Eye, EyeOff, CreditCard, Snowflake } from 'lucide-react';
+import { Wallet, Star, Eye, EyeOff, CreditCard, Snowflake, Share2 } from 'lucide-react';
 import { useBanking } from '../../../../context/BankingContext';
 import { BankAccount } from '../../../../types/banking';
 import { ProfileScreen } from '../profileTypes';
+import { shareAccountDetails } from '../../../../utils/shareAccountDetails';
 import {
   ProfileLayout,
   InfoCard,
@@ -64,10 +65,26 @@ export const LinkedAccountsScreen: React.FC<ScreenProps> = ({ onNavigate, onBack
 };
 
 export const AccountDetailsScreen: React.FC<ScreenProps> = ({ onNavigate, onBack, params }) => {
-  const { accounts, primaryAccountId } = useBanking();
+  const { accounts, primaryAccountId, addToast } = useBanking();
   const account = accounts.find((a) => a.id === params?.accountId);
 
   if (!account) return <ProfileLayout title="Account" onBack={onBack}><p className="text-sm text-slate-500">Account not found.</p></ProfileLayout>;
+
+  const handleShare = async () => {
+    const result = await shareAccountDetails(
+      {
+        accountType: account.accountType,
+        accountNumber: account.accountNumber,
+        ifsc: account.ifsc,
+        branch: account.branch,
+        accountHolder: account.nickname,
+      },
+      (message) => addToast({ type: 'info', title: 'Share', message })
+    );
+    if (result === 'shared') {
+      addToast({ type: 'success', title: 'Shared', message: 'Account details shared successfully.' });
+    }
+  };
 
   return (
     <ProfileLayout title={account.nickname || account.accountType} subtitle={account.maskedNumber} onBack={onBack}>
@@ -77,6 +94,14 @@ export const AccountDetailsScreen: React.FC<ScreenProps> = ({ onNavigate, onBack
           <div className="flex justify-between"><span className="text-slate-500">Branch</span><span className="font-semibold text-right max-w-[60%]">{account.branch}</span></div>
           <div className="flex justify-between"><span className="text-slate-500">Available</span><span className="font-bold">₹{account.availableBalance.toLocaleString('en-IN')}</span></div>
         </div>
+        <button
+          type="button"
+          onClick={handleShare}
+          className="mt-3 w-full py-2.5 rounded-xl border border-blue-200 dark:border-blue-800 text-blue-600 text-xs font-bold flex items-center justify-center gap-2"
+        >
+          <Share2 className="w-4 h-4" />
+          Share Account (IFSC) Details
+        </button>
       </InfoCard>
       <MenuGroup title="Actions">
         <MenuItem icon={<Star className="w-4 h-4" />} label="Set as Primary" description={account.id === primaryAccountId ? 'Currently primary' : 'Use for default payments'} onClick={() => onNavigate('set-primary', { accountId: account.id })} />

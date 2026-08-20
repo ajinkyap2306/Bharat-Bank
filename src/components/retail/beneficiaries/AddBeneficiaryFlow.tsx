@@ -16,6 +16,7 @@ import {
 import { useBanking } from '../../../context/BankingContext';
 import { Beneficiary } from '../../../types/banking';
 import { SecureAuthModal } from '../../common/SecureAuthModal';
+import { searchIfsc } from '../../../data/ifscMock';
 
 interface AddBeneficiaryFlowProps {
   onBack: () => void;
@@ -42,6 +43,9 @@ const AddBeneficiaryFlow: React.FC<AddBeneficiaryFlowProps> = ({ onBack, onSucce
   const [isVerifying, setIsVerifying] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [newBeneficiary, setNewBeneficiary] = useState<Beneficiary | null>(null);
+  const [ifscQuery, setIfscQuery] = useState('');
+
+  const ifscMatches = searchIfsc(ifscQuery || formData.ifsc).slice(0, 6);
 
   useEffect(() => {
     hideBottomNav();
@@ -230,7 +234,11 @@ const AddBeneficiaryFlow: React.FC<AddBeneficiaryFlowProps> = ({ onBack, onSucce
                         <input
                           type="text"
                           value={formData.ifsc}
-                          onChange={(e) => setFormData({ ...formData, ifsc: e.target.value.toUpperCase() })}
+                          onChange={(e) => {
+                            const value = e.target.value.toUpperCase();
+                            setFormData({ ...formData, ifsc: value });
+                            setIfscQuery(value);
+                          }}
                           placeholder="e.g. HDFC0001"
                           className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition-all uppercase ${
                             errors.ifsc ? 'border-red-500' : 'border-slate-200 dark:border-slate-800'
@@ -252,6 +260,28 @@ const AddBeneficiaryFlow: React.FC<AddBeneficiaryFlowProps> = ({ onBack, onSucce
                         />
                       </div>
                     </div>
+                    {ifscMatches.length > 0 && formData.ifsc.length >= 2 && (
+                      <div className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                        {ifscMatches.map((match) => (
+                          <button
+                            key={match.ifsc}
+                            type="button"
+                            onClick={() => {
+                              setFormData({
+                                ...formData,
+                                ifsc: match.ifsc,
+                                bankName: match.bankName,
+                              });
+                              setIfscQuery('');
+                            }}
+                            className="w-full text-left px-3 py-2.5 border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+                          >
+                            <p className="text-xs font-bold font-mono">{match.ifsc}</p>
+                            <p className="text-[11px] text-slate-500">{match.bankName} — {match.branch}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     {(errors.ifsc || errors.bankName) && (
                       <p className="text-xs text-red-500 mt-1 font-medium">IFSC and Bank name are required</p>
                     )}

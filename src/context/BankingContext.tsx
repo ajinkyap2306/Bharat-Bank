@@ -137,6 +137,7 @@ import {
   INITIAL_FEEDBACK,
   BOND_OFFERINGS,
 } from '../data/level6Mock';
+import { setCorporateAccountFrozen } from '../data/corporateAccountsMock';
 import {
   PersonalInfo,
   KycDetails,
@@ -326,6 +327,8 @@ interface BankingContextType {
   updateEStatementFrequency: (subscriptionId: string, frequency: EStatementSubscription['frequency']) => void;
   freezeAccount: (accountId: string) => void;
   unfreezeAccount: (accountId: string) => void;
+  freezeCorporateAccount: (accountId: string) => void;
+  unfreezeCorporateAccount: (accountId: string) => void;
   setTransferRepeat: (payload: TransferRepeatPayload) => void;
   clearTransferRepeat: () => void;
   setLocatorType: (type: 'atm' | 'branch' | 'cdm') => void;
@@ -1736,6 +1739,26 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     addToast({ type: 'success', title: 'Account Unfrozen', message: 'Full account operations restored.' });
   };
 
+  const freezeCorporateAccount = (accountId: string) => {
+    setCorporateAccounts((prev) =>
+      prev.map((a) => (a.id === accountId ? { ...a, status: 'frozen' as const } : a))
+    );
+    setCorporateAccountFrozen(accountId, true);
+    addToast({
+      type: 'warning',
+      title: 'Account Frozen',
+      message: 'Outgoing debits are blocked for this corporate account.',
+    });
+  };
+
+  const unfreezeCorporateAccount = (accountId: string) => {
+    setCorporateAccounts((prev) =>
+      prev.map((a) => (a.id === accountId ? { ...a, status: 'active' as const } : a))
+    );
+    setCorporateAccountFrozen(accountId, false);
+    addToast({ type: 'success', title: 'Account Unfrozen', message: 'Corporate account operations restored.' });
+  };
+
   const setTransferRepeat = (payload: TransferRepeatPayload) => setTransferRepeatState(payload);
   const clearTransferRepeat = () => setTransferRepeatState(null);
 
@@ -3000,6 +3023,8 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       updateEStatementFrequency,
       freezeAccount,
       unfreezeAccount,
+      freezeCorporateAccount,
+      unfreezeCorporateAccount,
       setTransferRepeat,
       clearTransferRepeat,
       setLocatorType,

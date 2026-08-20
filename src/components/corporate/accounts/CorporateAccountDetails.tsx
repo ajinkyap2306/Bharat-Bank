@@ -18,6 +18,7 @@ import { AccountPreferencesCard } from './details/AccountPreferencesCard';
 import { AccountMoreSheet } from './details/AccountMoreSheet';
 import { AccountDetailsError, AccountDetailsSkeleton } from './details/AccountDetailsStates';
 import { canManageAccountSettings } from './shared/CorporateAccountsUI';
+import { shareAccountDetails } from '../../../utils/shareAccountDetails';
 
 interface CorporateAccountDetailsProps {
   accountId: string;
@@ -117,12 +118,26 @@ export const CorporateAccountDetails: React.FC<CorporateAccountDetailsProps> = (
     navigate('/corporate/payments/create/bank-transfer');
   };
 
-  const goToReceiveMoney = () => {
-    addToast({
-      type: 'info',
-      title: 'Receive Money',
-      message: 'Share collection account details with your clients.',
-    });
+  const goToReceiveMoney = async () => {
+    if (!data?.account) return;
+    const result = await shareAccountDetails(
+      {
+        accountHolder: data.account.nickname,
+        accountType: data.account.accountType,
+        accountNumber: data.account.accountNumber,
+        ifsc: data.account.ifsc,
+        branch: data.account.branch,
+        bankName: 'Bharat Co-operative Bank',
+      },
+      (message) => addToast({ type: 'info', title: 'Share', message })
+    );
+    if (result === 'shared') {
+      addToast({ type: 'success', title: 'Shared', message: 'Account details shared successfully.' });
+    }
+  };
+
+  const goToFreezeAccount = () => {
+    navigate(`/corporate/accounts/${accountId}/freeze`);
   };
 
   const handleTransactionSelect = (transactionId: string) => {
@@ -247,6 +262,8 @@ export const CorporateAccountDetails: React.FC<CorporateAccountDetailsProps> = (
           addToast({ type: 'info', title: 'Limits', message: 'Detailed limits view coming soon.' })
         }
         onSetPrimary={goToPreferences}
+        onShare={goToReceiveMoney}
+        onFreeze={canManage ? goToFreezeAccount : undefined}
       />
     </div>
   );

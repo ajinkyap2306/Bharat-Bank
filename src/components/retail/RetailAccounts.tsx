@@ -24,6 +24,7 @@ import {
 import { useBanking } from '../../context/BankingContext';
 import { BankAccount, Transaction } from '../../types/banking';
 import { MiniStatementSheet } from '../common/MiniStatementSheet';
+import { shareAccountDetails } from '../../utils/shareAccountDetails';
 
 export const RetailAccounts: React.FC = () => {
   const { accounts, transactions, addToast, setBottomNavHidden } = useBanking();
@@ -65,6 +66,22 @@ export const RetailAccounts: React.FC = () => {
       message: `${fieldName} copied successfully.`,
     });
     setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const handleShareAccount = async () => {
+    const result = await shareAccountDetails(
+      {
+        accountType: selectedAccount.accountType,
+        accountNumber: selectedAccount.accountNumber,
+        ifsc: selectedAccount.ifsc,
+        branch: selectedAccount.branch,
+        accountHolder: selectedAccount.nickname,
+      },
+      (message) => addToast({ type: 'info', title: 'Share', message })
+    );
+    if (result === 'shared') {
+      addToast({ type: 'success', title: 'Shared', message: 'Account details shared successfully.' });
+    }
   };
 
   const handleExportStatement = (format: 'PDF' | 'CSV' | 'Excel') => {
@@ -121,6 +138,14 @@ export const RetailAccounts: React.FC = () => {
           >
             {copiedField === 'Account Number' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
             <span className="text-[10px]">Copy</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleShareAccount}
+            className="flex items-center gap-1 text-xs text-slate-300 hover:text-white bg-slate-800 px-2.5 py-1 rounded-xl"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            <span className="text-[10px]">Share</span>
           </button>
         </div>
 

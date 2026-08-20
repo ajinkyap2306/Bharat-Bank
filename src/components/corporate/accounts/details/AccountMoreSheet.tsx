@@ -12,6 +12,8 @@ interface AccountMoreSheetProps {
   onDocuments: () => void;
   onLimits: () => void;
   onSetPrimary: () => void;
+  onShare?: () => void;
+  onFreeze?: () => void;
 }
 
 export const AccountMoreSheet: React.FC<AccountMoreSheetProps> = ({
@@ -24,10 +26,14 @@ export const AccountMoreSheet: React.FC<AccountMoreSheetProps> = ({
   onDocuments,
   onLimits,
   onSetPrimary,
+  onShare,
+  onFreeze,
 }) => {
   const items = [
     { id: 'preferences', label: 'Account Preferences', action: onPreferences },
     { id: 'information', label: 'Account Information', action: onInformation },
+    ...(onShare ? [{ id: 'share', label: 'Share Account (IFSC) Details', action: onShare }] : []),
+    ...(onFreeze ? [{ id: 'freeze', label: 'Freeze / Unfreeze Account', action: onFreeze }] : []),
     { id: 'documents', label: 'Account Documents', action: onDocuments },
     { id: 'limits', label: 'Account Limits', action: onLimits },
     ...(canManage && !isPrimary
