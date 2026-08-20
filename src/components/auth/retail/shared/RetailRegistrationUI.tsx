@@ -152,9 +152,8 @@ export const RegSelectCard: React.FC<{
   icon: React.ReactNode;
   title: string;
   description: string;
-  badge?: string;
   onSelect: () => void;
-}> = ({ selected, icon, title, description, badge, onSelect }) => (
+}> = ({ selected, icon, title, description, onSelect }) => (
   <button
     type="button"
     onClick={onSelect}
@@ -172,14 +171,7 @@ export const RegSelectCard: React.FC<{
       {icon}
     </div>
     <div className="flex-1 min-w-0">
-      <div className="flex items-center gap-2 flex-wrap">
-        <p className="text-sm font-bold text-[#0A2540] dark:text-white">{title}</p>
-        {badge && (
-          <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
-            {badge}
-          </span>
-        )}
-      </div>
+      <p className="text-sm font-bold text-[#0A2540] dark:text-white">{title}</p>
       <p className="text-xs text-slate-500 mt-0.5 leading-snug">{description}</p>
     </div>
     <span
@@ -211,6 +203,35 @@ export const RegMethodCard: React.FC<{
       <p className="text-xs text-slate-500 mt-0.5 leading-snug">{description}</p>
     </div>
     <ChevronRight className="w-5 h-5 text-slate-400 shrink-0" />
+  </button>
+);
+
+export const RegAccountRow: React.FC<{
+  selected: boolean;
+  title: string;
+  maskedAccount: string;
+  onSelect: () => void;
+}> = ({ selected, title, maskedAccount, onSelect }) => (
+  <button
+    type="button"
+    onClick={onSelect}
+    className={`w-full flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-all ${
+      selected
+        ? 'border-[#005DD4] bg-blue-50/50 dark:bg-blue-950/20'
+        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
+    }`}
+  >
+    <span
+      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+        selected ? 'border-[#005DD4]' : 'border-slate-300 dark:border-slate-600'
+      }`}
+    >
+      {selected && <span className="w-2.5 h-2.5 rounded-full bg-[#005DD4]" />}
+    </span>
+    <div className="flex-1 min-w-0">
+      <p className="text-sm font-bold text-[#0A2540] dark:text-white">{title}</p>
+      <p className="text-sm text-slate-500 font-mono mt-0.5">{maskedAccount}</p>
+    </div>
   </button>
 );
 

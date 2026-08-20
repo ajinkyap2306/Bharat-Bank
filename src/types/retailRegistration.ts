@@ -1,19 +1,24 @@
 export type RetailRegistrationMethod = 'sim_verify';
 
+export type VerificationMethod = 'customer_id' | 'debit_card' | 'aadhaar' | 'pan';
+
 export type SimSlotId = 'sim1' | 'sim2';
 
 export type RetailRegistrationStep =
   | 'welcome'
-  | 'terms'
-  | 'sim_select'
+  | 'sim_verify'
   | 'sim_processing'
-  | 'sim_success'
   | 'sim_failed'
-  | 'select_account'
   | 'otp'
+  | 'choose_verification_method'
+  | 'verify_customer_id'
+  | 'verify_debit_card'
+  | 'verify_aadhaar'
+  | 'verify_pan'
+  | 'accounts_found'
   | 'mpin'
   | 'tpin'
-  | 'processing'
+  | 'biometric'
   | 'complete';
 
 export interface RetailSimOption {
@@ -32,27 +37,30 @@ export interface RetailLinkedAccount {
 }
 
 export interface RetailRegistrationDraft {
-  termsAccepted: boolean;
   selectedSimId: SimSlotId | null;
   registeredMobile: string;
-  simVerified: boolean;
-  selectedAccountId: string;
+  verificationMethod: VerificationMethod | null;
   customerId: string;
-  accountNumber: string;
-  accountType: string;
+  dateOfBirth: string;
+  debitCardNumber: string;
+  debitCardExpiry: string;
+  aadhaarNumber: string;
+  pan: string;
+  linkedAccountId: string | null;
   userId: string;
   profileCode: string;
   mpin: string;
   tpin: string;
+  biometricEnabled: boolean;
 }
 
 export interface RetailRegistrationResult {
   userId: string;
   profileCode: string;
   customerId: string;
-  accountNumber: string;
   mpinSet: boolean;
   tpinSet: boolean;
+  biometricEnabled: boolean;
   method: RetailRegistrationMethod;
 }
 

@@ -795,7 +795,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       ...prev,
       mpinActive: result.mpinSet,
       tpinActive: result.tpinSet,
-      biometricEnabled: prev.biometricEnabled,
+      biometricEnabled: result.biometricEnabled || prev.biometricEnabled,
     }));
     addToast({
       type: 'success',
