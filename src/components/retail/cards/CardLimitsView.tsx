@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
-import { 
-  ArrowLeft, 
-  CreditCard, 
-  ShoppingBag, 
-  Store, 
-  Globe, 
-  ShieldCheck, 
-  Check, 
-  SlidersHorizontal,
-  Info
+import {
+  ArrowLeft,
+  CreditCard,
+  ShoppingBag,
+  Store,
+  Globe,
+  ShieldCheck,
+  Info,
 } from 'lucide-react';
 import { CreditDebitCard } from '../../../types/banking';
 import { SecureAuthModal } from './SecureAuthModal';
@@ -18,6 +15,40 @@ interface CardLimitsViewProps {
   card: CreditDebitCard;
   onBack: () => void;
   onUpdateLimits: (limits: { atm?: number; pos?: number; online?: number; intl?: number; domestic?: number }) => void;
+}
+
+const LIMIT_ZONE = {
+  low: { color: '#22c55e', label: 'Low', text: 'text-emerald-600 dark:text-emerald-400' },
+  medium: { color: '#f59e0b', label: 'Medium', text: 'text-amber-600 dark:text-amber-400' },
+  high: { color: '#ef4444', label: 'High', text: 'text-red-600 dark:text-red-400' },
+} as const;
+
+type LimitZone = keyof typeof LIMIT_ZONE;
+
+function getLimitZone(value: number, max: number): LimitZone {
+  const ratio = max > 0 ? value / max : 0;
+  if (ratio <= 0.33) return 'low';
+  if (ratio <= 0.66) return 'medium';
+  return 'high';
+}
+
+function getLimitZoneColor(value: number, max: number): string {
+  return LIMIT_ZONE[getLimitZone(value, max)].color;
+}
+
+function getLimitTrackBackground(value: number, max: number): string {
+  const pct = max > 0 ? (value / max) * 100 : 0;
+  const unfilled = 'rgba(148, 163, 184, 0.35)';
+  return `linear-gradient(to right,
+    #22c55e 0%,
+    #f59e0b ${Math.max(pct * 0.5, 0)}%,
+    #ef4444 ${pct}%,
+    ${unfilled} ${pct}%,
+    ${unfilled} 100%)`;
+}
+
+function getPresetZone(preset: number, max: number): LimitZone {
+  return getLimitZone(preset, max);
 }
 
 export const CardLimitsView: React.FC<CardLimitsViewProps> = ({
@@ -135,14 +166,34 @@ export const CardLimitsView: React.FC<CardLimitsViewProps> = ({
       <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 flex items-start gap-3 text-xs text-slate-600 dark:text-slate-400">
         <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
         <div>
-          Limits take effect immediately upon authentication. You can increase or reduce limits at any time up to your card variant's maximum eligibility.
+          Limits take effect immediately upon authentication. You can increase or reduce limits at any time up to your card variant&apos;s maximum eligibility.
         </div>
+      </div>
+
+      {/* Limit zone legend */}
+      <div className="flex items-center justify-center gap-4 text-[10px] font-semibold">
+        <span className="flex items-center gap-1.5 text-emerald-600">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+          Low
+        </span>
+        <span className="flex items-center gap-1.5 text-amber-600">
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+          Medium
+        </span>
+        <span className="flex items-center gap-1.5 text-red-600">
+          <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+          High
+        </span>
       </div>
 
       {/* Limit Sliders List */}
       <div className="space-y-4">
-        {limitCards.map(item => {
+        {limitCards.map((item) => {
           const Icon = item.icon;
+          const zone = getLimitZone(item.currentValue, item.max);
+          const zoneColor = getLimitZoneColor(item.currentValue, item.max);
+          const zoneMeta = LIMIT_ZONE[zone];
+
           return (
             <div
               key={item.id}
@@ -161,7 +212,7 @@ export const CardLimitsView: React.FC<CardLimitsViewProps> = ({
                 </div>
 
                 <div className="text-right">
-                  <p className="text-base font-bold font-mono text-blue-600 dark:text-blue-400">
+                  <p className={`text-base font-bold font-mono ${zoneMeta.text}`}>
                     ₹{item.currentValue.toLocaleString('en-IN')}
                   </p>
                   <p className="text-[10px] text-slate-400">Max: ₹{item.max.toLocaleString('en-IN')}</p>
@@ -169,7 +220,7 @@ export const CardLimitsView: React.FC<CardLimitsViewProps> = ({
               </div>
 
               {/* Slider Input */}
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <input
                   type="range"
                   min={0}
@@ -177,32 +228,46 @@ export const CardLimitsView: React.FC<CardLimitsViewProps> = ({
                   step={item.step}
                   value={item.currentValue}
                   onChange={(e) => item.setter(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  className="limit-risk-slider"
+                  style={
+                    {
+                      background: getLimitTrackBackground(item.currentValue, item.max),
+                      '--thumb-color': zoneColor,
+                    } as React.CSSProperties
+                  }
+                  aria-label={item.title}
                 />
                 <div className="flex justify-between text-[10px] text-slate-400">
-                  <span>₹0</span>
-                  <span>₹{(item.max / 2).toLocaleString('en-IN')}</span>
-                  <span>₹{item.max.toLocaleString('en-IN')}</span>
+                  <span className="text-emerald-600/80">₹0</span>
+                  <span className="text-amber-600/80">₹{(item.max / 2).toLocaleString('en-IN')}</span>
+                  <span className="text-red-600/80">₹{item.max.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
               {/* Quick Presets */}
               <div className="flex items-center gap-1.5 flex-wrap pt-1">
                 <span className="text-[10px] text-slate-400 mr-1">Presets:</span>
-                {item.presets.map((preset) => (
-                  <button
-                    key={preset}
-                    type="button"
-                    onClick={() => item.setter(preset)}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                      item.currentValue === preset
-                        ? 'bg-blue-600 text-white shadow-2xs'
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                    }`}
-                  >
-                    ₹{preset.toLocaleString('en-IN')}
-                  </button>
-                ))}
+                {item.presets.map((preset) => {
+                  const presetZone = getPresetZone(preset, item.max);
+                  const presetColor = LIMIT_ZONE[presetZone].color;
+                  const isSelected = item.currentValue === preset;
+
+                  return (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => item.setter(preset)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                        isSelected
+                          ? 'text-white shadow-sm'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      }`}
+                      style={isSelected ? { backgroundColor: presetColor } : undefined}
+                    >
+                      ₹{preset.toLocaleString('en-IN')}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           );
