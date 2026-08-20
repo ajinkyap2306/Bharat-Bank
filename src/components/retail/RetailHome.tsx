@@ -39,6 +39,7 @@ import {
   Building2,
   IndianRupee
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useBanking } from '../../context/BankingContext';
 import { BankAccount, Transaction } from '../../types/banking';
 import { AddMoneyModule } from './add-money/AddMoneyModule';
@@ -47,6 +48,7 @@ const SERVICE_ICON_BOX =
   'w-11 h-11 rounded-2xl bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-congress-blue-700 group-hover:text-white transition-all shadow-2xs';
 
 export const RetailHome: React.FC = () => {
+  const navigate = useNavigate();
   const { 
     user, 
     accounts, 
@@ -173,7 +175,10 @@ export const RetailHome: React.FC = () => {
             Your Accounts
           </h3>
           <button
-            onClick={() => setRetailTab('accounts')}
+            onClick={() => {
+              setRetailTab('accounts');
+              navigate('/retail/accounts');
+            }}
             className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
           >
             All Accounts <ChevronRight className="w-3.5 h-3.5" />
@@ -189,7 +194,10 @@ export const RetailHome: React.FC = () => {
               <motion.div
                 key={acc.id}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => setRetailTab('accounts')}
+                onClick={() => {
+              setRetailTab('accounts');
+              navigate('/retail/accounts');
+            }}
                 className={`min-w-70 sm:min-w-75 p-4.5 rounded-3xl cursor-pointer snap-center shadow-lg transition-all ${
                   isPrimary
                     ? 'bg-linear-to-tr from-blue-700 via-blue-600 to-indigo-600 text-white shadow-blue-500/20'
@@ -364,7 +372,10 @@ export const RetailHome: React.FC = () => {
           {/* 1. Accounts */}
           <motion.button
             whileTap={{ scale: 0.92 }}
-            onClick={() => setRetailTab('accounts')}
+            onClick={() => {
+              setRetailTab('accounts');
+              navigate('/retail/accounts');
+            }}
             className="flex flex-col items-center group"
           >
             <div className={SERVICE_ICON_BOX}>

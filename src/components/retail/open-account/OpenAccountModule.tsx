@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, Wallet } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
 import { ScreenHeader } from '../../common/ScreenHeader';
@@ -6,6 +7,7 @@ import { SecureAuthModal } from '../../common/SecureAuthModal';
 import { OPEN_ACCOUNT_TYPES } from '../../../data/level4Mock';
 
 export const OpenAccountModule: React.FC = () => {
+  const navigate = useNavigate();
   const { openRetailAccount, addToast, setRetailTab, setBottomNavHidden } = useBanking();
   const [step, setStep] = useState<'select' | 'details' | 'success'>('select');
   const [accountType, setAccountType] = useState<(typeof OPEN_ACCOUNT_TYPES)[number]['id']>('savings');
@@ -27,7 +29,7 @@ export const OpenAccountModule: React.FC = () => {
         <h2 className="text-xl font-extrabold">Account Opened</h2>
         <p className="text-sm text-slate-500 mt-2">{selected.label} is now active.</p>
         <p className="text-xs font-mono font-bold mt-2">{newAccountNumber}</p>
-        <button type="button" onClick={() => setRetailTab('accounts')} className="mt-8 w-full py-3.5 bg-blue-600 text-white font-bold rounded-2xl">
+        <button type="button" onClick={() => { setRetailTab('accounts'); navigate('/retail/accounts'); }} className="mt-8 w-full py-3.5 bg-blue-600 text-white font-bold rounded-2xl">
           View Accounts
         </button>
       </div>

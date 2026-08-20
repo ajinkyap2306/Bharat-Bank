@@ -20,7 +20,7 @@ import { PreLoginModule } from './components/auth/prelogin/PreLoginModule';
 
 // Retail Components
 import { RetailHome } from './components/retail/RetailHome';
-import { RetailAccounts } from './components/retail/RetailAccounts';
+import { RetailAccountsModule } from './components/retail/accounts/RetailAccountsModule';
 import { RetailTransfer } from './components/retail/RetailTransfer';
 import { RetailCards } from './components/retail/RetailCards';
 import { RetailBills } from './components/retail/RetailBills';
@@ -81,6 +81,7 @@ const BankingAppContent: React.FC = () => {
     retailTab, 
     corporateTab, 
     setCorporateTab,
+    setRetailTab,
     corporateSession,
     isScannerOpen, 
     closeScanner,
@@ -88,7 +89,14 @@ const BankingAppContent: React.FC = () => {
     activeDetailFlow,
   } = useBanking();
 
-  const isRetailHome = bankingType === 'retail' && retailTab === 'home';
+  const isRetailAccountsRoute =
+    bankingType === 'retail' && location.pathname.startsWith('/retail/accounts');
+  const isRetailRootPath =
+    location.pathname === '/' || location.pathname === '';
+  const isRetailHome =
+    bankingType === 'retail' &&
+    !isRetailAccountsRoute &&
+    (retailTab === 'home' || isRetailRootPath);
   const showGlobalHeader = isRetailHome && !isScannerOpen;
 
   const isRetailNativeScreen =
@@ -97,10 +105,14 @@ const BankingAppContent: React.FC = () => {
   const isCorporateRootTab =
     bankingType === 'corporate' && isCorporateBottomNavRoute(location.pathname);
 
+  const hideRetailAccountsBottomNav =
+    bankingType === 'retail' && location.pathname.startsWith('/retail/accounts');
+
   const showBottomNav =
     isAuthenticated &&
     !isScannerOpen &&
     !isRetailNativeScreen &&
+    !hideRetailAccountsBottomNav &&
     (bankingType === 'corporate'
       ? isCorporateRootTab && !isBottomNavHidden
       : !isBottomNavHidden && !activeDetailFlow);
@@ -163,6 +175,16 @@ const BankingAppContent: React.FC = () => {
       setCorporateTab('home');
     }
   }, [isAuthenticated, bankingType, location.pathname, navigate, corporateTab, setCorporateTab, corporateSession?.role]);
+
+  React.useEffect(() => {
+    if (!isAuthenticated || bankingType !== 'retail') return;
+    const path = location.pathname;
+    if (path.startsWith('/retail/accounts')) {
+      setRetailTab('accounts');
+    } else if (path === '/' || path === '') {
+      setRetailTab('home');
+    }
+  }, [isAuthenticated, bankingType, location.pathname, setRetailTab]);
 
   const renderCorporateScreen = () => {
     const path = location.pathname;
@@ -256,8 +278,8 @@ const BankingAppContent: React.FC = () => {
       >
         {bankingType === 'retail' ? (
           <>
-            {retailTab === 'home' && <RetailHome />}
-            {retailTab === 'accounts' && <RetailAccounts />}
+            {isRetailHome && <RetailHome />}
+            {isRetailAccountsRoute && <RetailAccountsModule />}
             {(retailTab === 'transfers' || retailTab === 'payments') && <RetailTransfer />}
             {retailTab === 'cards' && <RetailCards />}
             {retailTab === 'bills' && <RetailBills />}

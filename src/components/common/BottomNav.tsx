@@ -48,6 +48,10 @@ export const BottomNav: React.FC = () => {
       return false;
     }
 
+    if (bankingType === 'retail' && location.pathname.startsWith('/retail/accounts')) {
+      return false;
+    }
+
     if (bankingType === 'corporate') {
       return isCorporateBottomNavRoute(location.pathname) && !isBottomNavHidden;
     }
@@ -62,6 +66,12 @@ export const BottomNav: React.FC = () => {
     isBottomNavHidden,
     activeDetailFlow,
   ]);
+
+  const leaveAccountsRoute = () => {
+    if (location.pathname.startsWith('/retail/accounts')) {
+      navigate('/');
+    }
+  };
 
   if (!isVisible) {
     return null;
@@ -79,7 +89,10 @@ export const BottomNav: React.FC = () => {
         {bankingType === 'retail' ? (
           <div className="grid grid-cols-5 items-end px-1 pt-2 pb-1.5 max-w-lg mx-auto">
             <button
-              onClick={() => setRetailTab('home')}
+              onClick={() => {
+                setRetailTab('home');
+                navigate('/');
+              }}
               className={`${RETAIL_NAV_ITEM} ${
                 retailTab === 'home'
                   ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
@@ -91,7 +104,10 @@ export const BottomNav: React.FC = () => {
             </button>
 
             <button
-              onClick={() => setRetailTab('transfers')}
+              onClick={() => {
+                setRetailTab('transfers');
+                leaveAccountsRoute();
+              }}
               className={`${RETAIL_NAV_ITEM} ${
                 retailTab === 'transfers' || retailTab === 'payments'
                   ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
@@ -118,7 +134,10 @@ export const BottomNav: React.FC = () => {
             </button>
 
             <button
-              onClick={() => setRetailTab('services')}
+              onClick={() => {
+                setRetailTab('services');
+                leaveAccountsRoute();
+              }}
               className={`${RETAIL_NAV_ITEM} ${
                 retailTab === 'services' ||
                 retailTab === 'cards' ||
@@ -136,7 +155,10 @@ export const BottomNav: React.FC = () => {
             </button>
 
             <button
-              onClick={() => setRetailTab('profile')}
+              onClick={() => {
+                setRetailTab('profile');
+                leaveAccountsRoute();
+              }}
               className={`${RETAIL_NAV_ITEM} ${
                 retailTab === 'profile'
                   ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
