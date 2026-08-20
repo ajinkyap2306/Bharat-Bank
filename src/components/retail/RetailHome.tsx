@@ -43,6 +43,7 @@ import { useNavigate } from 'react-router-dom';
 import { useBanking } from '../../context/BankingContext';
 import { BankAccount, Transaction } from '../../types/banking';
 import { AddMoneyModule } from './add-money/AddMoneyModule';
+import { SendMoneyModule } from './send-money/SendMoneyModule';
 
 const SERVICE_ICON_BOX =
   'w-11 h-11 rounded-2xl bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-congress-blue-700 group-hover:text-white transition-all shadow-2xs';
@@ -84,6 +85,7 @@ export const RetailHome: React.FC = () => {
   const [showOffersModal, setShowOffersModal] = useState(false);
   const [showRewardsModal, setShowRewardsModal] = useState(false);
   const [showAddMoneyFlow, setShowAddMoneyFlow] = useState(false);
+  const [showSendMoneyFlow, setShowSendMoneyFlow] = useState(false);
 
   // Recharge State
   const [rechargeMobile, setRechargeMobile] = useState('9876543210');
@@ -108,7 +110,8 @@ export const RetailHome: React.FC = () => {
     showStatementsModal || 
     showOffersModal || 
     showRewardsModal ||
-    showAddMoneyFlow
+    showAddMoneyFlow ||
+    showSendMoneyFlow
   );
 
   useEffect(() => {
@@ -175,10 +178,7 @@ export const RetailHome: React.FC = () => {
             Your Accounts
           </h3>
           <button
-            onClick={() => {
-              setRetailTab('accounts');
-              navigate('/retail/accounts');
-            }}
+            onClick={() => navigate('/retail/accounts')}
             className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
           >
             All Accounts <ChevronRight className="w-3.5 h-3.5" />
@@ -194,10 +194,7 @@ export const RetailHome: React.FC = () => {
               <motion.div
                 key={acc.id}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => {
-              setRetailTab('accounts');
-              navigate('/retail/accounts');
-            }}
+                onClick={() => navigate(`/retail/accounts/${acc.id}`)}
                 className={`min-w-70 sm:min-w-75 p-4.5 rounded-3xl cursor-pointer snap-center shadow-lg transition-all ${
                   isPrimary
                     ? 'bg-linear-to-tr from-blue-700 via-blue-600 to-indigo-600 text-white shadow-blue-500/20'
@@ -280,7 +277,7 @@ export const RetailHome: React.FC = () => {
           {/* Send Money */}
           <motion.button
             whileTap={{ scale: 0.92 }}
-            onClick={() => setRetailTab('transfers')}
+            onClick={() => setShowSendMoneyFlow(true)}
             className="flex flex-col items-center justify-center p-1.5 sm:p-2 text-center group cursor-pointer"
           >
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-linear-to-tr from-congress-blue-600 to-congress-blue-800 text-white flex items-center justify-center shadow-md shadow-congress-blue-500/25 group-hover:scale-105 transition-transform mb-2">
@@ -290,7 +287,7 @@ export const RetailHome: React.FC = () => {
               Send Money
             </span>
             <span className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 hidden sm:block whitespace-nowrap mt-0.5">
-              Account / UPI
+              UPI / Mobile
             </span>
           </motion.button>
 
@@ -373,10 +370,7 @@ export const RetailHome: React.FC = () => {
           <motion.button
             type="button"
             whileTap={{ scale: 0.92 }}
-            onClick={() => {
-              navigate('/retail/accounts');
-              setRetailTab('accounts');
-            }}
+            onClick={() => navigate('/retail/accounts')}
             className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
@@ -407,7 +401,7 @@ export const RetailHome: React.FC = () => {
             <div className={SERVICE_ICON_BOX}>
               <ArrowLeftRight className="w-5 h-5" />
             </div>
-            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Transfers</span>
+            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Bank Transfer</span>
           </motion.button>
 
           {/* 4. Deposits */}
@@ -1331,6 +1325,10 @@ export const RetailHome: React.FC = () => {
 
       {showAddMoneyFlow && (
         <AddMoneyModule onClose={() => setShowAddMoneyFlow(false)} />
+      )}
+
+      {showSendMoneyFlow && (
+        <SendMoneyModule onClose={() => setShowSendMoneyFlow(false)} />
       )}
     </div>
   );

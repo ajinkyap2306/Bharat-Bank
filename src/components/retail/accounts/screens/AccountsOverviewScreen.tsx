@@ -12,7 +12,7 @@ const CAROUSEL_TYPES: BankAccount['accountType'][] = ['Savings', 'Current', 'Fix
 
 export const AccountsOverviewScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { accounts, transactions, primaryAccountId, setRetailTab } = useBanking();
+  const { accounts, transactions, primaryAccountId } = useBanking();
   const [showBalance, setShowBalance] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'debit' | 'credit'>('all');
@@ -33,7 +33,6 @@ export const AccountsOverviewScreen: React.FC = () => {
 
   const goHome = () => {
     navigate('/', { replace: true });
-    setRetailTab('home');
   };
 
   const openDetails = (accountId: string) => {
