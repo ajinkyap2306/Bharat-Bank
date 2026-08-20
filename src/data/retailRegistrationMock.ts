@@ -4,18 +4,50 @@ import type { PasswordRuleStatus, SecurityQuestionOption } from '../types/retail
 export const RETAIL_DEMO_REGISTERED_MOBILE = '9898765421';
 export const RETAIL_DEMO_CUSTOMER_ID = '2847193';
 export const RETAIL_DEMO_DOB = '15/08/1990';
+export const RETAIL_DEMO_ACCOUNT_NUMBER = '50123456789';
 
 export const RETAIL_DEMO_DEBIT_CARD = '4532123456789010';
+export const RETAIL_DEMO_DEBIT_EXPIRY = '12/28';
 export const RETAIL_DEMO_ATM_PIN = '1234';
 export const RETAIL_DEMO_AUTO_OTP = '582941';
 
+export const RETAIL_DEMO_AADHAAR = '123456781234';
 export const RETAIL_DEMO_PAN = 'ABCDE1234F';
+
 export const RETAIL_DEMO_CODE_A = '12';
 export const RETAIL_DEMO_CODE_J = '34';
 export const RETAIL_DEMO_CODE_L = '56';
 
-/** Triggers branch cooling-period demo when PAN matches. */
 export const RETAIL_COOLING_PAN = 'COOLING1234K';
+export const RETAIL_OTP_RESEND_SECONDS = 30;
+export const RETAIL_MAX_OTP_ATTEMPTS = 3;
+export const RETAIL_MAX_VERIFICATION_ATTEMPTS = 3;
+
+export const RETAIL_HELPLINE = '1800-202-APEX';
+
+/** Visible demo hints for client walkthroughs. */
+export const RETAIL_REGISTRATION_DEMO_HINTS = {
+  customerId: {
+    title: 'Customer ID',
+    lines: [`Customer ID: ${RETAIL_DEMO_CUSTOMER_ID}`, `DOB: ${RETAIL_DEMO_DOB}`],
+  },
+  customerIdRecovery: {
+    title: 'Customer ID Recovery',
+    lines: [`Account: ${RETAIL_DEMO_ACCOUNT_NUMBER}`, `DOB: ${RETAIL_DEMO_DOB}`],
+  },
+  debitCard: {
+    title: 'Debit Card',
+    lines: ['Card: 4532 1234 5678 9010', `Expiry: ${RETAIL_DEMO_DEBIT_EXPIRY}`],
+  },
+  aadhaar: {
+    title: 'Aadhaar',
+    lines: ['Aadhaar: 1234 5678 1234', `OTP: ${RETAIL_DEMO_AUTO_OTP}`],
+  },
+  pan: {
+    title: 'PAN',
+    lines: [`PAN: ${RETAIL_DEMO_PAN}`, `DOB: ${RETAIL_DEMO_DOB}`],
+  },
+} as const;
 
 export const RETAIL_TERMS_TEXT = `Bharat Co-operative Bank (Mumbai) Ltd — Mobile Banking Terms & Conditions
 
@@ -48,18 +80,24 @@ These terms are governed by the laws of India. Disputes shall be subject to the 
 
 By accepting, you confirm that you have read, understood, and agree to be bound by these Terms & Conditions.`;
 
-export const CODE_CARD_WHAT_IS = `A CODE CARD is a security card issued by Bharat Co-operative Bank containing printed reference values used during Mobile Banking registration.
+export const RETAIL_PRIVACY_TEXT = `Bharat Co-operative Bank (Mumbai) Ltd — Privacy Policy
 
-Each card has labelled boxes (for example A, J, L) with two-digit values printed inside. During registration you enter the values exactly as shown on your physical card.`;
+We collect personal information necessary to provide banking services, including identity, contact, transaction, and device data.
 
-export const CODE_CARD_HOW_TO_OBTAIN = `Your Code Card is provided when you open an account or request Mobile Banking at any Bharat Co-operative Bank branch.
+Your data is protected using industry-standard encryption and access controls. We do not sell your personal information to third parties.
 
-If you do not have a Code Card, visit your home branch with valid ID proof. A relationship manager will issue a new card and activate it against your account.
+For the full policy, visit www.bharatbank.co.in/privacy or contact our Data Protection Officer.`;
 
-Never share Code Card values with anyone, including bank staff on phone calls.`;
+export const RETAIL_MOBILE_BANKING_TERMS = `Mobile Banking Specific Terms
+
+• Registration is permitted only on devices with verified SIM matching your registered mobile number.
+• MPIN is required for login and transaction authentication.
+• Biometric login is optional and uses your device's secure enclave only.
+• Session timeout applies after periods of inactivity.
+• The Bank may suspend mobile banking access for security reasons.`;
 
 export const SECURITY_QUESTIONS: SecurityQuestionOption[] = [
-  { id: 'sq_01', text: 'What is your mother\'s maiden name?' },
+  { id: 'sq_01', text: "What is your mother's maiden name?" },
   { id: 'sq_02', text: 'What was the name of your first school?' },
   { id: 'sq_03', text: 'What is your favourite book?' },
   { id: 'sq_04', text: 'In which city were you born?' },
@@ -74,11 +112,42 @@ export function maskRegisteredMobile(digits: string): string {
   return `+91 ${local.slice(0, 2)}••••••${local.slice(-2)}`;
 }
 
+export function maskCustomerId(id: string): string {
+  const trimmed = id.trim();
+  if (!trimmed) return '—';
+  if (trimmed.length <= 4) return `CUST••••${trimmed}`;
+  return `CUST••••${trimmed.slice(-4)}`;
+}
+
+export function maskUserId(id: string): string {
+  const trimmed = id.trim();
+  if (!trimmed) return '—';
+  if (trimmed.length <= 3) return `user••••${trimmed}`;
+  return `user••••${trimmed.slice(-3)}`;
+}
+
+export function maskAadhaar(value: string): string {
+  const d = value.replace(/\D/g, '').slice(0, 12);
+  if (d.length <= 4) return d;
+  return `${'X'.repeat(Math.max(0, d.length - 4))} ${d.slice(-4)}`.replace(/(.{4})/g, '$1 ').trim();
+}
+
+export function formatAadhaarInput(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 12);
+  return digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+}
+
 export function formatDobInput(value: string): string {
   const digits = value.replace(/\D/g, '').slice(0, 8);
   if (digits.length <= 2) return digits;
   if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
   return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
+
+export function formatExpiryInput(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 4);
+  if (digits.length <= 2) return digits;
+  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
 }
 
 export function validateCustomerVerification(customerId: string, dateOfBirth: string): string | null {
@@ -90,9 +159,65 @@ export function validateCustomerVerification(customerId: string, dateOfBirth: st
     return 'Enter date of birth as DD/MM/YYYY.';
   }
   if (id !== RETAIL_DEMO_CUSTOMER_ID || dateOfBirth.trim() !== RETAIL_DEMO_DOB) {
-    return `Customer ID or date of birth is incorrect. Demo: ${RETAIL_DEMO_CUSTOMER_ID} / ${RETAIL_DEMO_DOB}`;
+    return 'Customer ID or date of birth could not be verified.';
   }
   return null;
+}
+
+export function recoverCustomerId(
+  accountNumber: string,
+  dateOfBirth: string
+): { error: string | null; customerId: string | null } {
+  const acct = accountNumber.replace(/\D/g, '');
+  if (acct.length < 8) {
+    return { error: 'Enter a valid account number.', customerId: null };
+  }
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dateOfBirth.trim())) {
+    return { error: 'Enter date of birth as DD/MM/YYYY.', customerId: null };
+  }
+  if (acct !== RETAIL_DEMO_ACCOUNT_NUMBER || dateOfBirth.trim() !== RETAIL_DEMO_DOB) {
+    return { error: 'Account details could not be verified.', customerId: null };
+  }
+  return { error: null, customerId: RETAIL_DEMO_CUSTOMER_ID };
+}
+
+export function validateDebitCardVerification(cardNumber: string, expiry: string): string | null {
+  const digits = normalizeCardNumber(cardNumber);
+  if (digits.length !== 16) return 'Enter a valid 16-digit card number.';
+  if (!/^\d{2}\/\d{2}$/.test(expiry.trim())) return 'Enter expiry as MM/YY.';
+  if (digits !== RETAIL_DEMO_DEBIT_CARD || expiry.trim() !== RETAIL_DEMO_DEBIT_EXPIRY) {
+    return 'Debit card details could not be verified.';
+  }
+  return null;
+}
+
+export function validateAadhaarVerification(aadhaar: string): { error: string | null; requiresOtp: boolean } {
+  const digits = aadhaar.replace(/\D/g, '');
+  if (digits.length !== 12) {
+    return { error: 'Enter a valid 12-digit Aadhaar number.', requiresOtp: false };
+  }
+  if (digits !== RETAIL_DEMO_AADHAAR) {
+    return { error: 'Aadhaar details could not be verified.', requiresOtp: false };
+  }
+  return { error: null, requiresOtp: true };
+}
+
+export function validatePanVerification(pan: string, dateOfBirth: string): string | null {
+  const panNorm = pan.trim().toUpperCase();
+  if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(panNorm)) {
+    return 'Enter a valid PAN (e.g. ABCDE1234F).';
+  }
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dateOfBirth.trim())) {
+    return 'Enter date of birth as DD/MM/YYYY.';
+  }
+  if (panNorm !== RETAIL_DEMO_PAN || dateOfBirth.trim() !== RETAIL_DEMO_DOB) {
+    return 'PAN details could not be verified.';
+  }
+  return null;
+}
+
+export function verifyRegistrationOtp(otp: string): boolean {
+  return otp.replace(/\D/g, '') === RETAIL_DEMO_AUTO_OTP;
 }
 
 export function getPasswordRuleStatus(password: string): PasswordRuleStatus {
@@ -126,10 +251,38 @@ export function validateLoginCredentials(
   return null;
 }
 
+export function isUserIdTaken(userId: string): boolean {
+  const reserved = ['admin', 'test', 'demo', 'bank', 'user'];
+  return reserved.includes(userId.trim().toLowerCase());
+}
+
+const WEAK_MPINS = new Set([
+  '000000', '111111', '222222', '333333', '444444', '555555',
+  '666666', '777777', '888888', '999999', '123456', '654321',
+  '121212', '112233', '123123',
+]);
+
+export function validateMpin(mpin: string, confirmMpin: string): string | null {
+  if (mpin.length !== 6) return 'MPIN must be 6 digits.';
+  if (mpin !== confirmMpin) return 'MPINs do not match.';
+  if (WEAK_MPINS.has(mpin)) return 'This MPIN is too common. Choose a stronger MPIN.';
+  if (/^(\d)\1{5}$/.test(mpin)) return 'Avoid repeated digits in your MPIN.';
+  if ('0123456789'.includes(mpin) || '9876543210'.includes(mpin)) {
+    return 'Avoid sequential digits in your MPIN.';
+  }
+  return null;
+}
+
 /** Demo: SIM on device matches registered mobile after short delay. */
 export function simulateSimVerification(simMismatch = false): Promise<{ success: boolean }> {
   return new Promise((resolve) => {
-    setTimeout(() => resolve({ success: !simMismatch }), 1500);
+    setTimeout(() => resolve({ success: !simMismatch }), 1800);
+  });
+}
+
+export function simulateRegistrationSubmit(): Promise<{ success: boolean }> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve({ success: true }), 2200);
   });
 }
 
@@ -147,12 +300,19 @@ export function formatCardNumberDisplay(digits: string): string {
   return d.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
 }
 
+export function formatCardNumberMasked(digits: string): string {
+  const d = normalizeCardNumber(digits);
+  if (d.length < 4) return formatCardNumberDisplay(digits);
+  const last4 = d.slice(-4);
+  return `•••• •••• •••• ${last4}`;
+}
+
 export function validateDebitCardAuth(cardNumber: string, atmPin: string): string | null {
   const digits = normalizeCardNumber(cardNumber);
   if (digits.length !== 16) return 'Enter a valid 16-digit card number.';
   if (atmPin.length !== 4) return 'ATM PIN must be 4 digits.';
   if (digits !== RETAIL_DEMO_DEBIT_CARD || atmPin !== RETAIL_DEMO_ATM_PIN) {
-    return 'Card number or ATM PIN is incorrect. Demo: 4532 1234 5678 9010 / PIN 1234';
+    return 'Card number or ATM PIN is incorrect.';
   }
   return null;
 }
@@ -180,7 +340,7 @@ export function validatePanCardCode(
     codeL !== RETAIL_DEMO_CODE_L
   ) {
     return {
-      error: 'PAN or Code Card values are incorrect. Demo: ABCDE1234F / A=12, J=34, L=56',
+      error: 'PAN or Code Card values are incorrect.',
       cooling: false,
     };
   }

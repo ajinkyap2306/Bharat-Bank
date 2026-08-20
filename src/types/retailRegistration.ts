@@ -1,15 +1,25 @@
 export type RetailRegistrationMethod = 'sim_verify';
 
+export type VerificationMethod = 'customer_id' | 'debit_card' | 'aadhaar' | 'pan';
+
 export type RetailRegistrationStep =
-  | 'activate'
+  | 'welcome'
   | 'sim_verify'
   | 'sim_processing'
   | 'sim_success'
   | 'sim_failed'
-  | 'customer_verify'
+  | 'choose_verification_method'
+  | 'verify_customer_id'
+  | 'verify_debit_card'
+  | 'verify_aadhaar'
+  | 'verify_pan'
+  | 'customer_verified'
+  | 'otp'
   | 'credentials'
   | 'mpin'
   | 'biometric'
+  | 'terms'
+  | 'processing'
   | 'complete';
 
 export interface RetailSecurityAnswer {
@@ -20,14 +30,22 @@ export interface RetailSecurityAnswer {
 export interface RetailRegistrationDraft {
   registeredMobile: string;
   simVerified: boolean;
+  verificationMethod: VerificationMethod | null;
   customerId: string;
   dateOfBirth: string;
+  accountNumber: string;
+  debitCardNumber: string;
+  debitCardExpiry: string;
+  aadhaarNumber: string;
+  pan: string;
   userId: string;
   password: string;
   confirmPassword: string;
   profileCode: string;
   mpin: string;
   biometricEnabled: boolean;
+  termsAccepted: boolean;
+  otpRequired: boolean;
 }
 
 export interface RetailRegistrationResult {
@@ -49,4 +67,10 @@ export interface PasswordRuleStatus {
   upperLower: boolean;
   number: boolean;
   special: boolean;
+}
+
+export interface VerificationMethodOption {
+  id: VerificationMethod;
+  title: string;
+  description: string;
 }
