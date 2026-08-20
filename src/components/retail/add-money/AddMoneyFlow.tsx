@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
 import {
@@ -32,7 +32,6 @@ import {
 import {
   AddMoneyLayout,
   AmountField,
-  BalanceHero,
   ProcessingState,
   QuickAmountChips,
   RadioSelectCard,
@@ -92,10 +91,9 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
   }, [draft, selectedBank, selectedCard]);
 
   const amountNum = Number(draft.amount) || 0;
-  const totalDebit = amountNum + ADD_MONEY_LIMITS.fee;
 
   const goBack = useCallback(() => {
-    const flow: AddMoneyStep[] = ['home', 'select-source', 'amount', 'review', 'auth'];
+    const flow: AddMoneyStep[] = ['home', 'select-source', 'amount', 'auth'];
     if (['processing', 'success', 'failed', 'transaction-detail'].includes(step)) {
       onClose();
       return;
@@ -402,29 +400,6 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
     );
   }
 
-  if (step === 'review') {
-    const fromDetail =
-      draft.sourceType === 'bank_account' && selectedBank
-        ? `${selectedBank.bankName}\n${selectedBank.accountType} ${selectedBank.maskedNumber}`
-        : sourceLabel;
-
-    return (
-      <AddMoneyLayout title="Review Add Money" onBack={goBack}>
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
-          <ReviewRow label="Amount" value={`₹${amountNum.toLocaleString('en-IN')}`} bold />
-          <ReviewRow label="From" value={fromDetail.replace('\n', ' · ')} />
-          <ReviewRow label="To" value="My Account" />
-          <ReviewRow label="Fee" value={`₹${ADD_MONEY_LIMITS.fee}`} />
-          <ReviewRow label="Total" value={`₹${totalDebit.toLocaleString('en-IN')}`} bold />
-        </div>
-        <StickyAddMoneyCTA
-          label={`Add ₹${amountNum.toLocaleString('en-IN')}`}
-          onClick={() => setStep('auth')}
-        />
-      </AddMoneyLayout>
-    );
-  }
-
   if (step === 'amount') {
     return (
       <AddMoneyLayout title="Add Money" onBack={goBack}>
@@ -453,9 +428,9 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
           <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">{sourceLabel}</p>
         </div>
         <StickyAddMoneyCTA
-          label="Continue"
+          label={`Add ₹${amountNum > 0 ? amountNum.toLocaleString('en-IN') : '0'}`}
           onClick={() => {
-            if (validateAmount()) setStep('review');
+            if (validateAmount()) setStep('auth');
           }}
         />
       </AddMoneyLayout>
@@ -561,10 +536,6 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
 
   return (
     <AddMoneyLayout title="Add Money" onBack={onClose}>
-      <BalanceHero
-        label="Current Balance"
-        amount={primaryAccount?.availableBalance ?? 0}
-      />
       <div>
         <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-1">
           Add money from

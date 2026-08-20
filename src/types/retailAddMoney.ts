@@ -4,7 +4,6 @@ export type AddMoneyStep =
   | 'home'
   | 'select-source'
   | 'amount'
-  | 'review'
   | 'auth'
   | 'processing'
   | 'success'
