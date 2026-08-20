@@ -43,6 +43,8 @@ export default defineConfig(() => {
           ],
         },
         workbox: {
+          // Main app chunk exceeds default 2 MiB Workbox precache limit
+          maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
           globPatterns: ['**/*.{js,css,html,ico,png,svg,csv,woff2,json}'],
           navigateFallback: '/index.html',
           navigateFallbackDenylist: [/^\/api\//],
