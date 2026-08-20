@@ -1,18 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  AlertTriangle,
-  Building2,
-  FileText,
-  Gift,
-  HelpCircle,
-  MapPinned,
-  Phone,
-  PlayCircle,
-  Shield,
-  ShieldCheck,
-  Lock,
-} from 'lucide-react';
+import { AlertTriangle, Lock, Phone, PlayCircle, Shield } from 'lucide-react';
 import {
   ATM_LOCATORS,
   BRANCH_LOCATORS,
@@ -20,6 +8,7 @@ import {
   INDUSFACE_SCAN,
   MOBILE_BANKING_DEMO_STEPS,
   PRE_LOGIN_FAQS,
+  PRE_LOGIN_TICKER_MESSAGES,
   PRIVACY_POLICY_EXCERPT,
   PROMOTIONAL_OFFERS,
   SAFETY_TIPS,
@@ -28,6 +17,11 @@ import {
   PreLoginTip,
 } from '../../../data/preLoginMock';
 import { PreLoginCard, PreLoginListItem, PreLoginShell, PreLoginTopBar } from './PreLoginUI';
+import { PreLoginServicesSheet } from './PreLoginServicesSheet';
+import { LOGIN_QUICK_ITEM_IDS, PRE_LOGIN_MENU_ITEMS } from './preLoginMenuConfig';
+import { useBanking } from '../../../context/BankingContext';
+
+export { PRE_LOGIN_MENU_ITEMS, LOGIN_QUICK_ITEM_IDS } from './preLoginMenuConfig';
 
 const TIP_ICONS = {
   shield: Shield,
@@ -44,7 +38,8 @@ const SCREEN_TITLES: Record<string, string> = {
   offers: 'Promotional Offers',
   'security-tips': 'Security Tips',
   'safety-tips': 'Safety Tips',
-  indusface: 'App Security Scan',
+  indusface: 'Indusface Security Scan',
+  ticker: 'Ticker',
   demo: 'Mobile Banking Demo',
   terms: 'Terms & Conditions',
   privacy: 'Privacy Policy',
@@ -254,6 +249,28 @@ export const PreLoginModule: React.FC = () => {
           </div>
         );
 
+      case 'ticker':
+        return (
+          <div className="px-4 pb-8 space-y-3">
+            <PreLoginCard>
+              <p className="text-xs text-slate-500 leading-relaxed mb-3">
+                Important updates and security alerts shown on the login screen.
+              </p>
+              {PRE_LOGIN_TICKER_MESSAGES.map((message, index) => (
+                <div
+                  key={message}
+                  className="flex gap-3 py-3 border-b border-slate-100 dark:border-slate-800 last:border-0"
+                >
+                  <span className="w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-950/50 text-blue-600 text-xs font-bold flex items-center justify-center shrink-0">
+                    {index + 1}
+                  </span>
+                  <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{message}</p>
+                </div>
+              ))}
+            </PreLoginCard>
+          </div>
+        );
+
       case 'demo':
         return (
           <div className="px-4 pb-8 space-y-3">
@@ -322,58 +339,79 @@ export const PreLoginModule: React.FC = () => {
   );
 };
 
-export const PRE_LOGIN_LINKS = [
-  { id: 'contact', label: 'Contact', icon: Phone, path: '/prelogin/contact' },
-  { id: 'atm', label: 'ATM', icon: MapPinned, path: '/prelogin/atm-locator' },
-  { id: 'branch', label: 'Branch', icon: Building2, path: '/prelogin/branch-locator' },
-  { id: 'faqs', label: 'FAQs', icon: HelpCircle, path: '/prelogin/faqs' },
-  { id: 'offers', label: 'Offers', icon: Gift, path: '/prelogin/offers' },
-  { id: 'security', label: 'Security', icon: Shield, path: '/prelogin/security-tips' },
-  { id: 'safety', label: 'Safety', icon: AlertTriangle, path: '/prelogin/safety-tips' },
-  { id: 'scan', label: 'Scan', icon: ShieldCheck, path: '/prelogin/indusface' },
-  { id: 'demo', label: 'Demo', icon: PlayCircle, path: '/prelogin/demo' },
-  { id: 'terms', label: 'T&C', icon: FileText, path: '/prelogin/terms' },
-  { id: 'privacy', label: 'Privacy', icon: FileText, path: '/prelogin/privacy' },
-] as const;
+/** @deprecated Use PRE_LOGIN_MENU_ITEMS */
+export const PRE_LOGIN_LINKS = PRE_LOGIN_MENU_ITEMS;
 
 export const PreLoginQuickLinks: React.FC = () => {
   const navigate = useNavigate();
+  const { quickDemoLogin } = useBanking();
+  const [showMore, setShowMore] = useState(false);
+
+  const quickItems = PRE_LOGIN_MENU_ITEMS.filter((item) =>
+    (LOGIN_QUICK_ITEM_IDS as readonly string[]).includes(item.id)
+  );
 
   return (
-    <div className="pt-4 border-t border-slate-200 dark:border-slate-900">
-      <p className="text-[11px] text-slate-500 text-center mb-2.5 font-medium">Before you sign in</p>
-      <div className="grid grid-cols-4 gap-2">
-        {PRE_LOGIN_LINKS.slice(0, 8).map((link) => {
-          const Icon = link.icon;
-          return (
-            <button
-              key={link.id}
-              type="button"
-              onClick={() => navigate(link.path)}
-              className="flex flex-col items-center gap-1 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 active:scale-95 transition-transform"
-            >
-              <Icon className="w-4 h-4 text-blue-600" />
-              <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300">{link.label}</span>
-            </button>
-          );
-        })}
-      </div>
-      <div className="flex justify-center gap-4 mt-2">
+    <>
+      <div className="pt-3 border-t border-slate-200 dark:border-slate-900">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[11px] text-slate-500 font-medium">Help & services</p>
+          <button
+            type="button"
+            onClick={() => setShowMore(true)}
+            className="text-[11px] font-bold text-blue-600"
+          >
+            More ›
+          </button>
+        </div>
+        <div className="grid grid-cols-4 gap-2">
+          {quickItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => navigate(item.path)}
+                aria-label={item.label}
+                className="flex flex-col items-center gap-1 py-2 px-1 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 active:scale-95 transition-transform"
+              >
+                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center">
+                  <Icon className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 text-center leading-tight">
+                  {item.gridLabel}
+                </span>
+              </button>
+            );
+          })}
+        </div>
         <button
           type="button"
-          onClick={() => navigate('/prelogin/terms')}
-          className="text-[10px] font-semibold text-blue-600"
+          onClick={() => quickDemoLogin('retail')}
+          className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-sm shadow-blue-600/20 active:scale-[0.98] transition-all"
         >
-          Terms & Conditions
+          <PlayCircle className="w-4 h-4" />
+          Demo — Open Retail Banking
         </button>
-        <button
-          type="button"
-          onClick={() => navigate('/prelogin/privacy')}
-          className="text-[10px] font-semibold text-blue-600"
-        >
-          Privacy Policy
-        </button>
+        <div className="flex justify-center gap-3 mt-2">
+          <button
+            type="button"
+            onClick={() => navigate('/prelogin/terms')}
+            className="text-[10px] font-semibold text-slate-500 hover:text-blue-600"
+          >
+            Terms
+          </button>
+          <span className="text-slate-300">·</span>
+          <button
+            type="button"
+            onClick={() => navigate('/prelogin/privacy')}
+            className="text-[10px] font-semibold text-slate-500 hover:text-blue-600"
+          >
+            Privacy
+          </button>
+        </div>
       </div>
-    </div>
+      <PreLoginServicesSheet isOpen={showMore} onClose={() => setShowMore(false)} />
+    </>
   );
 };

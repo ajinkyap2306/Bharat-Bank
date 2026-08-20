@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowRight,
   Fingerprint,
+  KeyRound,
+  Lock,
   Smartphone,
   ChevronLeft,
   Eye,
@@ -13,18 +15,18 @@ import {
 import { useBanking } from '../../context/BankingContext';
 import { BharatBankLogo } from '../common/BharatBankLogo';
 import { NumericPinInput } from '../common/NumericPinInput';
-import { CORPORATE_DEMO_HINT } from '../../data/corporateAuthMock';
+import { findCorporateDemoUserByCustomerIdOnly } from '../../data/corporateAuthMock';
 import { authenticateCorporate } from '../../services/corporateLoginService';
 import { isCorporateCustomerId } from '../../utils/customerId';
 import { PreLoginQuickLinks } from './prelogin/PreLoginModule';
-import { PreLoginTicker } from './prelogin/PreLoginTicker';
-import { LoginOfferSheet } from './prelogin/LoginOfferSheet';
 
 type LoginPersona = 'retail' | 'maker' | 'checker';
+type LoginMethod = 'password' | 'mpin' | 'fingerprint';
 
 const RETAIL_DEMO_USER_ID = 'RB-123456';
 const MAKER_DEMO_USER_ID = 'C001';
 const CHECKER_DEMO_USER_ID = 'C002';
+const DEMO_MPIN = '123456';
 
 const PERSONA_CUSTOMER_IDS: Record<LoginPersona, string> = {
   retail: RETAIL_DEMO_USER_ID,
@@ -47,8 +49,10 @@ export const AuthContainer: React.FC = () => {
   } = useBanking();
 
   const [loginPersona, setLoginPersona] = useState<LoginPersona>('retail');
+  const [loginMethod, setLoginMethod] = useState<LoginMethod>('password');
   const [customerId, setCustomerId] = useState(RETAIL_DEMO_USER_ID);
   const [password, setPassword] = useState('demo123');
+  const [mpin, setMpin] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState('');
   const [isBiometricScanning, setIsBiometricScanning] = useState(false);
@@ -66,6 +70,29 @@ export const AuthContainer: React.FC = () => {
     }
   }, [location.state, setBankingType, setAuthScreen]);
 
+  const enterCorporateFlow = (id: string) => {
+    const user = findCorporateDemoUserByCustomerIdOnly(id);
+    if (!user) {
+      addToast({
+        type: 'error',
+        title: 'Unable to sign in',
+        message: 'Please check your Customer ID.',
+      });
+      return false;
+    }
+    setPendingCorporateUser(user);
+    setBankingType('corporate');
+    clearSessionExpired();
+    setCorporateLoginVerified(true);
+    navigate('/corporate/otp');
+    return true;
+  };
+
+  const completeRetailLogin = (id: string) => {
+    setBankingType('retail');
+    login('retail', id);
+  };
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const id = customerId.trim();
@@ -77,6 +104,45 @@ export const AuthContainer: React.FC = () => {
       });
       return;
     }
+
+    if (loginMethod === 'mpin') {
+      if (mpin.length !== 6) {
+        addToast({
+          type: 'error',
+          title: 'Invalid MPIN',
+          message: 'Enter your 6-digit MPIN.',
+        });
+        return;
+      }
+      if (mpin !== DEMO_MPIN) {
+        addToast({
+          type: 'error',
+          title: 'Incorrect MPIN',
+          message: 'Demo MPIN is 123456.',
+        });
+        return;
+      }
+      if (isCorporateCustomerId(id)) {
+        enterCorporateFlow(id);
+        return;
+      }
+      completeRetailLogin(id);
+      return;
+    }
+
+    if (loginMethod === 'fingerprint') {
+      setIsBiometricScanning(true);
+      setTimeout(() => {
+        setIsBiometricScanning(false);
+        if (isCorporateCustomerId(id)) {
+          enterCorporateFlow(id);
+        } else {
+          completeRetailLogin(id);
+        }
+      }, 1200);
+      return;
+    }
+
     if (!password) {
       addToast({
         type: 'error',
@@ -132,6 +198,7 @@ export const AuthContainer: React.FC = () => {
     setLoginPersona(type);
     setCustomerId(PERSONA_CUSTOMER_IDS[type]);
     setPassword('demo123');
+    setMpin(DEMO_MPIN);
     setBankingType(type === 'retail' ? 'retail' : 'corporate');
     addToast({
       type: 'info',
@@ -141,7 +208,7 @@ export const AuthContainer: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-between text-slate-900 dark:text-white p-4 sm:p-6 font-['Plus_Jakarta_Sans',sans-serif] transition-colors duration-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col text-slate-900 dark:text-white p-4 sm:p-6 font-['Plus_Jakarta_Sans',sans-serif] transition-colors duration-200 overflow-y-auto">
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/20 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-teal-500/10 dark:bg-teal-600/20 rounded-full blur-3xl" />
@@ -154,23 +221,91 @@ export const AuthContainer: React.FC = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className="flex-1 flex flex-col justify-between max-w-md mx-auto w-full py-4 z-10"
+            className="flex flex-col max-w-md mx-auto w-full min-h-dvh z-10"
           >
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <BharatBankLogo variant="full" size="md" />
+            <div className="flex-1 pb-36 pt-2">
+              <div className="flex items-center mb-3">
+                <BharatBankLogo variant="full" size="sm" />
               </div>
 
-              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Sign in to Mobile Banking
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-3">
-                Bharat Co-operative Bank (Mumbai) Ltd • Retail & Corporate Banking
-              </p>
 
-              <PreLoginTicker />
+              <div className="grid grid-cols-3 gap-2 mt-4 mb-3 p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                {(
+                  [
+                    { id: 'password' as const, label: 'Password', icon: Lock },
+                    { id: 'mpin' as const, label: 'MPIN', icon: KeyRound },
+                    { id: 'fingerprint' as const, label: 'Fingerprint', icon: Fingerprint },
+                  ] as const
+                ).map((method) => {
+                  const Icon = method.icon;
+                  const active = loginMethod === method.id;
+                  return (
+                    <button
+                      key={method.id}
+                      type="button"
+                      onClick={() => {
+                        setLoginMethod(method.id);
+                        setMpin('');
+                      }}
+                      className={`flex flex-col items-center gap-1 py-2.5 rounded-xl text-[10px] font-bold transition-all ${
+                        active
+                          ? 'bg-white dark:bg-slate-800 text-blue-600 shadow-sm ring-1 ring-blue-200 dark:ring-blue-800'
+                          : 'text-slate-500 dark:text-slate-400'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      {method.label}
+                    </button>
+                  );
+                })}
+              </div>
 
-              <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <div className="mb-3">
+                <p className="text-[11px] font-semibold text-slate-500 mb-2">Quick demo login</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fillDemo('retail')}
+                    className={`py-2 px-2 rounded-xl text-[10px] font-bold border transition-all ${
+                      loginPersona === 'retail'
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-blue-700 dark:text-blue-300'
+                    }`}
+                  >
+                    <span className="block">Retail</span>
+                    <span className="block font-mono text-[9px] mt-0.5 opacity-90">RB-123456</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => fillDemo('maker')}
+                    className={`py-2 px-2 rounded-xl text-[10px] font-bold border transition-all ${
+                      loginPersona === 'maker'
+                        ? 'bg-teal-600 border-teal-600 text-white shadow-sm'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-teal-700 dark:text-teal-300'
+                    }`}
+                  >
+                    <span className="block">Maker</span>
+                    <span className="block font-mono text-[9px] mt-0.5 opacity-90">C001</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => fillDemo('checker')}
+                    className={`py-2 px-2 rounded-xl text-[10px] font-bold border transition-all ${
+                      loginPersona === 'checker'
+                        ? 'bg-amber-600 border-amber-600 text-white shadow-sm'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-amber-800 dark:text-amber-300'
+                    }`}
+                  >
+                    <span className="block">Checker</span>
+                    <span className="block font-mono text-[9px] mt-0.5 opacity-90">C002</span>
+                  </button>
+                </div>
+              </div>
+
+              <form id="login-form" onSubmit={handleLoginSubmit} className="space-y-3">
                 <div>
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
                     Customer ID
@@ -193,116 +328,124 @@ export const AuthContainer: React.FC = () => {
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Password</label>
-                    <div className="flex items-center gap-2">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      {loginMethod === 'password' ? 'Password' : loginMethod === 'mpin' ? 'MPIN' : 'Biometric'}
+                    </label>
+                    {loginMethod !== 'fingerprint' && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => navigate('/forgot-mpin')}
+                          className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                          Forgot MPIN?
+                        </button>
+                        {loginMethod === 'password' && (
+                          <>
+                            <span className="text-slate-300">|</span>
+                            <button
+                              type="button"
+                              onClick={() => navigate('/forgot-password')}
+                              className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
+                            >
+                              Forgot password?
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {loginMethod === 'password' && (
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="demo123"
+                        className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500 rounded-2xl py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-white outline-none shadow-xs"
+                        autoComplete="current-password"
+                        required
+                      />
                       <button
                         type="button"
-                        onClick={() => navigate('/forgot-mpin')}
-                        className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                       >
-                        Forgot MPIN?
-                      </button>
-                      <span className="text-slate-300">|</span>
-                      <button
-                        type="button"
-                        onClick={() => navigate('/forgot-password')}
-                        className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
-                      >
-                        Forgot password?
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
-                  </div>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="demo123"
-                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500 rounded-2xl py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-white outline-none shadow-xs"
-                      autoComplete="current-password"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
+                  )}
+
+                  {loginMethod === 'mpin' && (
+                    <div className="px-1">
+                      <NumericPinInput
+                        value={mpin}
+                        onChange={setMpin}
+                        length={6}
+                        masked
+                        autoFocus
+                        ariaLabel="6-digit MPIN"
+                      />
+                      <p className="text-[10px] text-slate-500 text-center mt-2">Demo MPIN: 123456</p>
+                    </div>
+                  )}
+
+                  {loginMethod === 'fingerprint' && (
+                    <div className="flex flex-col items-center py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <div
+                        className={`w-16 h-16 rounded-full border-2 flex items-center justify-center ${
+                          isBiometricScanning
+                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30'
+                            : 'border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-950/30'
+                        }`}
+                      >
+                        <Fingerprint
+                          className={`w-8 h-8 ${
+                            isBiometricScanning ? 'text-emerald-600' : 'text-blue-600 dark:text-blue-400'
+                          }`}
+                        />
+                      </div>
+                      <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 mt-2">
+                        {isBiometricScanning ? 'Scanning…' : 'Tap Sign In below to authenticate'}
+                      </p>
+                    </div>
+                  )}
                 </div>
+              </form>
 
-                <p className="text-[11px] text-[#0B5CAB] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 rounded-xl px-3 py-2 leading-relaxed">
-                  {CORPORATE_DEMO_HINT}
-                </p>
+              <PreLoginQuickLinks />
+            </div>
 
-                <div className="pt-2 space-y-3">
-                  <button
-                    type="submit"
-                    disabled={isLoggingIn}
-                    className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white font-bold rounded-2xl shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 transition-all active:scale-98"
-                  >
-                    <span>{isLoggingIn ? 'Signing in…' : 'Sign In'}</span>
-                    {!isLoggingIn && <ArrowRight className="w-4 h-4" />}
-                  </button>
+            <div className="fixed bottom-0 left-0 right-0 z-20 p-4 pb-safe bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
+              <div className="max-w-md mx-auto space-y-2">
+                <button
+                  type="submit"
+                  form="login-form"
+                  disabled={isLoggingIn || isBiometricScanning}
+                  className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white font-bold rounded-2xl shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 transition-all active:scale-98"
+                >
+                  <span>
+                    {isLoggingIn || isBiometricScanning
+                      ? 'Signing in…'
+                      : loginMethod === 'fingerprint'
+                        ? 'Sign In with Fingerprint'
+                        : loginMethod === 'mpin'
+                          ? 'Sign In with MPIN'
+                          : 'Sign In'}
+                  </span>
+                  {!isLoggingIn && !isBiometricScanning && <ArrowRight className="w-4 h-4" />}
+                </button>
+                <p className="text-center text-[12px] text-slate-500">
+                  New user?{' '}
                   <button
                     type="button"
                     onClick={() => navigate('/register')}
-                    className="w-full py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-bold text-blue-600 dark:text-blue-400"
+                    className="font-bold text-blue-600 dark:text-blue-400"
                   >
                     Register for Mobile Banking
                   </button>
-                </div>
-              </form>
-            </div>
-
-            <PreLoginQuickLinks />
-
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-900 mt-4">
-              <p className="text-[11px] text-slate-500 text-center mb-2.5 font-medium">Demo credentials</p>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => fillDemo('retail')}
-                  className={`py-2.5 px-2 rounded-xl text-[10px] font-bold border transition-all ${
-                    loginPersona === 'retail'
-                      ? 'bg-blue-600 border-blue-600 text-white shadow-md ring-2 ring-blue-300/50'
-                      : 'bg-blue-50 dark:bg-blue-950/60 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300'
-                  }`}
-                >
-                  <span className="block">Retail</span>
-                  <span className={`block font-mono text-[9px] mt-0.5 ${loginPersona === 'retail' ? 'text-blue-100' : 'opacity-80'}`}>
-                    RB-123456
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillDemo('maker')}
-                  className={`py-2.5 px-2 rounded-xl text-[10px] font-bold border transition-all ${
-                    loginPersona === 'maker'
-                      ? 'bg-teal-600 border-teal-600 text-white shadow-md ring-2 ring-teal-300/50'
-                      : 'bg-teal-50 dark:bg-teal-950/60 border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300'
-                  }`}
-                >
-                  <span className="block">Maker</span>
-                  <span className={`block font-mono text-[9px] mt-0.5 ${loginPersona === 'maker' ? 'text-teal-100' : 'opacity-80'}`}>
-                    C001
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillDemo('checker')}
-                  className={`py-2.5 px-2 rounded-xl text-[10px] font-bold border transition-all ${
-                    loginPersona === 'checker'
-                      ? 'bg-amber-600 border-amber-600 text-white shadow-md ring-2 ring-amber-300/50'
-                      : 'bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300'
-                  }`}
-                >
-                  <span className="block">Checker</span>
-                  <span className={`block font-mono text-[9px] mt-0.5 ${loginPersona === 'checker' ? 'text-amber-100' : 'opacity-80'}`}>
-                    C002
-                  </span>
-                </button>
+                </p>
               </div>
             </div>
           </motion.div>
@@ -407,8 +550,6 @@ export const AuthContainer: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <LoginOfferSheet onExploreOffers={() => navigate('/prelogin/offers')} />
     </div>
   );
 };

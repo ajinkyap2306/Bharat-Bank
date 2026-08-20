@@ -100,6 +100,14 @@ export function findCorporateDemoUserByCustomerId(
   return findCorporateDemoUser(CORPORATE_DEMO_COMPANY_ID, customerId, password);
 }
 
+/** Resolve corporate demo user by Customer ID only (MPIN / biometric quick login). */
+export function findCorporateDemoUserByCustomerIdOnly(
+  customerId: string
+): CorporateDemoUser | null {
+  const uid = customerId.trim().toUpperCase();
+  return CORPORATE_DEMO_USERS.find((u) => u.userId.toUpperCase() === uid) ?? null;
+}
+
 export const validateCorporateCredentials = (
   corporateId: string,
   userId: string,
