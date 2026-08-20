@@ -147,6 +147,51 @@ export const RegStickyFooter: React.FC<{ children: React.ReactNode }> = ({ child
   </div>
 );
 
+export const RegSelectCard: React.FC<{
+  selected: boolean;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  badge?: string;
+  onSelect: () => void;
+}> = ({ selected, icon, title, description, badge, onSelect }) => (
+  <button
+    type="button"
+    onClick={onSelect}
+    className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all min-h-[72px] text-left ${
+      selected
+        ? 'border-[#005DD4] bg-blue-50/60 dark:bg-blue-950/25'
+        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm'
+    }`}
+  >
+    <div
+      className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+        selected ? 'bg-[#005DD4] text-white' : 'bg-blue-50 dark:bg-blue-950/40 text-[#005DD4]'
+      }`}
+    >
+      {icon}
+    </div>
+    <div className="flex-1 min-w-0">
+      <div className="flex items-center gap-2 flex-wrap">
+        <p className="text-sm font-bold text-[#0A2540] dark:text-white">{title}</p>
+        {badge && (
+          <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+            {badge}
+          </span>
+        )}
+      </div>
+      <p className="text-xs text-slate-500 mt-0.5 leading-snug">{description}</p>
+    </div>
+    <span
+      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+        selected ? 'border-[#005DD4]' : 'border-slate-300 dark:border-slate-600'
+      }`}
+    >
+      {selected && <span className="w-2.5 h-2.5 rounded-full bg-[#005DD4]" />}
+    </span>
+  </button>
+);
+
 export const RegMethodCard: React.FC<{
   icon: React.ReactNode;
   title: string;

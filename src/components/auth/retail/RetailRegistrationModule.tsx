@@ -1,50 +1,29 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import {
-  CardSim,
-  CheckCircle2,
-  CreditCard,
-  Fingerprint,
-  IdCard,
-  Phone,
-  ScrollText,
-  WifiOff,
-} from 'lucide-react';
+import { CardSim, CheckCircle2, Landmark, Phone, WifiOff } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
-import type {
-  RetailRegistrationDraft,
-  RetailRegistrationStep,
-  VerificationMethod,
-} from '../../../types/retailRegistration';
+import type { RetailRegistrationDraft, RetailRegistrationStep, SimSlotId } from '../../../types/retailRegistration';
 import {
-  RETAIL_DEMO_CUSTOMER_ID,
   RETAIL_DEMO_AUTO_OTP,
-  RETAIL_DEMO_REGISTERED_MOBILE,
+  RETAIL_DEMO_SIMS,
   RETAIL_HELPLINE,
+  RETAIL_LINKED_ACCOUNTS,
   RETAIL_MAX_OTP_ATTEMPTS,
-  RETAIL_MAX_VERIFICATION_ATTEMPTS,
   RETAIL_MOBILE_BANKING_TERMS,
   RETAIL_OTP_RESEND_SECONDS,
   RETAIL_PRIVACY_TEXT,
   RETAIL_REGISTRATION_DEMO_HINTS,
   RETAIL_TERMS_TEXT,
-  formatAadhaarInput,
-  formatCardNumberDisplay,
-  formatDobInput,
-  formatExpiryInput,
   generateRetailUserId,
+  getLinkedAccountById,
   maskCustomerId,
   maskRegisteredMobile,
   maskUserId,
-  recoverCustomerId,
   simulateRegistrationSubmit,
   simulateSimVerification,
-  validateAadhaarVerification,
-  validateCustomerVerification,
-  validateDebitCardVerification,
   validateMpin,
-  validatePanVerification,
+  validateTpin,
   verifyRegistrationOtp,
 } from '../../../data/retailRegistrationMock';
 import { playPaymentSuccessSound } from '../../../utils/paymentSuccessFeedback';
@@ -52,21 +31,17 @@ import { BharatBankLogo } from '../../common/BharatBankLogo';
 import { BottomSheet } from '../../common/BottomSheet';
 import { OtpInput } from '../corporate/otp/OtpInput';
 import { OtpTimer } from '../corporate/otp/OtpTimer';
-import { SkipBiometricSheet } from '../corporate/device/SkipBiometricSheet';
 import {
   MpinInput,
   RegChecklist,
   RegDemoHint,
   RegErrorIcon,
-  RegField,
-  RegInfoLink,
   RegInfoRow,
   RegLegalLink,
   RegLoadingState,
-  RegMaskedValue,
-  RegMethodCard,
   RegPrimaryButton,
   RegSecondaryButton,
+  RegSelectCard,
   RegShell,
   RegStickyFooter,
   RegTextButton,
@@ -75,27 +50,20 @@ import {
 } from './shared/RetailRegistrationUI';
 
 const INITIAL_DRAFT: RetailRegistrationDraft = {
-  registeredMobile: RETAIL_DEMO_REGISTERED_MOBILE,
+  termsAccepted: false,
+  selectedSimId: null,
+  registeredMobile: '',
   simVerified: false,
-  verificationMethod: null,
+  selectedAccountId: '',
   customerId: '',
-  dateOfBirth: '',
   accountNumber: '',
-  debitCardNumber: '',
-  debitCardExpiry: '',
-  aadhaarNumber: '',
-  pan: '',
+  accountType: '',
   userId: '',
-  password: '',
-  confirmPassword: '',
   profileCode: 'P1',
   mpin: '',
-  biometricEnabled: false,
-  termsAccepted: false,
-  otpRequired: false,
+  tpin: '',
 };
 
-const MASKED_MOBILE = maskRegisteredMobile(RETAIL_DEMO_REGISTERED_MOBILE);
 const EMPTY_OTP = ['', '', '', '', '', ''];
 
 export const RetailRegistrationModule: React.FC = () => {
@@ -105,13 +73,12 @@ export const RetailRegistrationModule: React.FC = () => {
   const [step, setStep] = useState<RetailRegistrationStep>('welcome');
   const [draft, setDraft] = useState<RetailRegistrationDraft>(INITIAL_DRAFT);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [verificationAttempts, setVerificationAttempts] = useState(0);
-  const [isLocked, setIsLocked] = useState(false);
   const [networkError, setNetworkError] = useState(false);
 
   const [confirmMpin, setConfirmMpin] = useState('');
   const [mpinError, setMpinError] = useState('');
+  const [confirmTpin, setConfirmTpin] = useState('');
+  const [tpinError, setTpinError] = useState('');
 
   const [otpDigits, setOtpDigits] = useState([...EMPTY_OTP]);
   const [otpActiveIndex, setOtpActiveIndex] = useState(0);
@@ -122,16 +89,14 @@ export const RetailRegistrationModule: React.FC = () => {
 
   const [showHelp, setShowHelp] = useState(false);
   const [showExit, setShowExit] = useState(false);
-  const [showRecovery, setShowRecovery] = useState(false);
-  const [showBiometricSkip, setShowBiometricSkip] = useState(false);
   const [showLegal, setShowLegal] = useState<'terms' | 'privacy' | 'mobile' | null>(null);
-  const [recoveryAccount, setRecoveryAccount] = useState('');
-  const [recoveryDob, setRecoveryDob] = useState('');
-  const [recoveryError, setRecoveryError] = useState('');
-  const [recoverySuccess, setRecoverySuccess] = useState(false);
 
   const successSoundPlayed = useRef(false);
   const pendingBack = useRef<(() => void) | null>(null);
+
+  const maskedMobile = draft.registeredMobile
+    ? maskRegisteredMobile(draft.registeredMobile)
+    : maskRegisteredMobile(RETAIL_DEMO_SIMS[0].mobile);
 
   useEffect(() => {
     setBankingType('retail');
@@ -140,17 +105,19 @@ export const RetailRegistrationModule: React.FC = () => {
   useEffect(() => {
     if (step !== 'sim_processing') return;
     let cancelled = false;
-    simulateSimVerification(false).then(({ success }) => {
+    simulateSimVerification(draft.selectedSimId).then(({ success, mobile }) => {
       if (cancelled) return;
-      if (success) {
-        setDraft((d) => ({ ...d, simVerified: true }));
+      if (success && mobile) {
+        setDraft((d) => ({ ...d, simVerified: true, registeredMobile: mobile }));
         setStep('sim_success');
       } else {
         setStep('sim_failed');
       }
     });
-    return () => { cancelled = true; };
-  }, [step]);
+    return () => {
+      cancelled = true;
+    };
+  }, [step, draft.selectedSimId]);
 
   useEffect(() => {
     if (step !== 'processing') return;
@@ -161,17 +128,21 @@ export const RetailRegistrationModule: React.FC = () => {
         completeRetailRegistration({
           userId: draft.userId.trim(),
           profileCode: draft.profileCode,
+          customerId: draft.customerId,
+          accountNumber: draft.accountNumber,
           mpinSet: draft.mpin.length === 6,
-          biometricEnabled: draft.biometricEnabled,
+          tpinSet: draft.tpin.length === 4,
           method: 'sim_verify',
         });
         setStep('complete');
       } else {
         setNetworkError(true);
-        setStep('terms');
+        setStep('tpin');
       }
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [step, draft, completeRetailRegistration]);
 
   useEffect(() => {
@@ -188,32 +159,27 @@ export const RetailRegistrationModule: React.FC = () => {
     return () => window.clearInterval(t);
   }, [step, otpResendSeconds]);
 
-  const verifiedCustomerId = draft.customerId.trim() || RETAIL_DEMO_CUSTOMER_ID;
-
-  const goToCustomerVerified = useCallback(() => {
-    setVerificationAttempts(0);
-    setError('');
-    setDraft((d) => {
-      const customerId = d.customerId || RETAIL_DEMO_CUSTOMER_ID;
-      return {
+  const goToAccountOrOtp = useCallback(() => {
+    if (RETAIL_LINKED_ACCOUNTS.length === 1) {
+      const account = RETAIL_LINKED_ACCOUNTS[0];
+      setDraft((d) => ({
         ...d,
-        customerId,
+        selectedAccountId: account.id,
+        customerId: account.customerId,
+        accountNumber: account.accountNumber,
+        accountType: account.type,
         userId: d.userId || generateRetailUserId(),
-      };
-    });
-    setStep('customer_verified');
-  }, []);
-
-  const handleVerificationFailure = useCallback((message: string) => {
-    const next = verificationAttempts + 1;
-    setVerificationAttempts(next);
-    if (next >= RETAIL_MAX_VERIFICATION_ATTEMPTS) {
-      setIsLocked(true);
-      setError('');
+      }));
+      setOtpDigits([...EMPTY_OTP]);
+      setOtpResendSeconds(RETAIL_OTP_RESEND_SECONDS);
+      setOtpError('');
+      setOtpAttempts(0);
+      setOtpLocked(false);
+      setStep('otp');
     } else {
-      setError(message);
+      setStep('select_account');
     }
-  }, [verificationAttempts]);
+  }, []);
 
   const goBack = useCallback(() => {
     setError('');
@@ -221,109 +187,85 @@ export const RetailRegistrationModule: React.FC = () => {
       case 'welcome':
         navigate('/');
         break;
-      case 'sim_verify':
+      case 'terms':
         setStep('welcome');
         break;
+      case 'sim_select':
+        setStep('terms');
+        break;
       case 'sim_success':
-        setStep('sim_verify');
+        setStep('sim_select');
         break;
       case 'sim_failed':
-        setStep('sim_verify');
+        setStep('sim_select');
         break;
-      case 'choose_verification_method':
+      case 'select_account':
         setStep('sim_success');
         break;
-      case 'verify_customer_id':
-      case 'verify_debit_card':
-      case 'verify_aadhaar':
-      case 'verify_pan':
-        setStep('choose_verification_method');
-        break;
-      case 'customer_verified':
-        setStep('choose_verification_method');
-        break;
       case 'otp':
-        setStep('customer_verified');
+        setStep('select_account');
         break;
       case 'mpin':
-        setStep(draft.otpRequired ? 'otp' : 'customer_verified');
+        setStep('otp');
         break;
-      case 'biometric':
+      case 'tpin':
         setStep('mpin');
-        break;
-      case 'terms':
-        setStep('biometric');
         break;
       default:
         navigate('/');
     }
-  }, [step, navigate, draft.otpRequired]);
+  }, [step, navigate]);
 
-  const requestBack = useCallback((action: () => void) => {
-    if (['welcome', 'sim_processing', 'processing', 'complete'].includes(step)) {
-      action();
+  const requestBack = useCallback(
+    (action: () => void) => {
+      if (['welcome', 'sim_processing', 'processing', 'complete'].includes(step)) {
+        action();
+        return;
+      }
+      pendingBack.current = action;
+      setShowExit(true);
+    },
+    [step]
+  );
+
+  const handleTermsContinue = () => {
+    if (!draft.termsAccepted) return;
+    setStep('sim_select');
+  };
+
+  const handleVerifySim = () => {
+    if (!draft.selectedSimId) {
+      setError('Please select a SIM to verify.');
       return;
     }
-    pendingBack.current = action;
-    setShowExit(true);
-  }, [step]);
-
-  const handleChooseMethod = (method: VerificationMethod) => {
-    setDraft((d) => ({ ...d, verificationMethod: method }));
     setError('');
-    setIsLocked(false);
-    setVerificationAttempts(0);
-    switch (method) {
-      case 'customer_id':
-        setStep('verify_customer_id');
-        break;
-      case 'debit_card':
-        setStep('verify_debit_card');
-        break;
-      case 'aadhaar':
-        setStep('verify_aadhaar');
-        break;
-      case 'pan':
-        setStep('verify_pan');
-        break;
-    }
+    setStep('sim_processing');
   };
 
-  const handleCustomerIdContinue = () => {
-    const err = validateCustomerVerification(draft.customerId, draft.dateOfBirth);
-    if (err) {
-      handleVerificationFailure(err);
+  const handleAccountContinue = () => {
+    if (!draft.selectedAccountId) {
+      setError('Please select an account to activate.');
       return;
     }
-    goToCustomerVerified();
-  };
-
-  const handleDebitCardContinue = () => {
-    const err = validateDebitCardVerification(draft.debitCardNumber, draft.debitCardExpiry);
-    if (err) {
-      handleVerificationFailure(err);
+    const account = getLinkedAccountById(draft.selectedAccountId);
+    if (!account) {
+      setError('Selected account could not be loaded.');
       return;
     }
-    goToCustomerVerified();
-  };
-
-  const handleAadhaarContinue = () => {
-    const { error: err, requiresOtp } = validateAadhaarVerification(draft.aadhaarNumber);
-    if (err) {
-      handleVerificationFailure(err);
-      return;
-    }
-    setDraft((d) => ({ ...d, otpRequired: requiresOtp, customerId: d.customerId || RETAIL_DEMO_CUSTOMER_ID }));
-    goToCustomerVerified();
-  };
-
-  const handlePanContinue = () => {
-    const err = validatePanVerification(draft.pan, draft.dateOfBirth);
-    if (err) {
-      handleVerificationFailure(err);
-      return;
-    }
-    goToCustomerVerified();
+    setError('');
+    setDraft((d) => ({
+      ...d,
+      customerId: account.customerId,
+      accountNumber: account.accountNumber,
+      accountType: account.type,
+      userId: d.userId || generateRetailUserId(),
+    }));
+    setOtpDigits([...EMPTY_OTP]);
+    setOtpResendSeconds(RETAIL_OTP_RESEND_SECONDS);
+    setOtpError('');
+    setOtpAttempts(0);
+    setOtpLocked(false);
+    setStep('otp');
   };
 
   const handleOtpVerify = () => {
@@ -355,7 +297,7 @@ export const RetailRegistrationModule: React.FC = () => {
     setOtpActiveIndex(0);
     setOtpError('');
     setOtpResendSeconds(RETAIL_OTP_RESEND_SECONDS);
-    addToast({ type: 'info', title: 'OTP Sent', message: `A new OTP has been sent to ${MASKED_MOBILE}.` });
+    addToast({ type: 'info', title: 'OTP Sent', message: `A new OTP has been sent to ${maskedMobile}.` });
   };
 
   const handleMpinContinue = () => {
@@ -365,23 +307,16 @@ export const RetailRegistrationModule: React.FC = () => {
       return;
     }
     setMpinError('');
-    setStep('biometric');
+    setStep('tpin');
   };
 
-  const handleBiometricEnable = () => {
-    setDraft((d) => ({ ...d, biometricEnabled: true }));
-    addToast({ type: 'success', title: 'Biometric enabled', message: 'Fingerprint login is now available.' });
-    setStep('terms');
-  };
-
-  const handleBiometricSkip = () => {
-    setDraft((d) => ({ ...d, biometricEnabled: false }));
-    setShowBiometricSkip(false);
-    setStep('terms');
-  };
-
-  const handleTermsContinue = () => {
-    if (!draft.termsAccepted) return;
+  const handleTpinContinue = () => {
+    const err = validateTpin(draft.tpin, confirmTpin);
+    if (err) {
+      setTpinError(err);
+      return;
+    }
+    setTpinError('');
     setNetworkError(false);
     setStep('processing');
   };
@@ -391,52 +326,7 @@ export const RetailRegistrationModule: React.FC = () => {
     navigate('/', { state: { customerId: draft.userId.trim() } });
   };
 
-  const handleRecovery = () => {
-    const result = recoverCustomerId(recoveryAccount, recoveryDob);
-    if (result.error) {
-      setRecoveryError(result.error);
-      return;
-    }
-    setRecoveryError('');
-    setRecoverySuccess(true);
-  };
-
-  const applyRecoveredCustomerId = () => {
-    setDraft((d) => ({ ...d, customerId: RETAIL_DEMO_CUSTOMER_ID }));
-    setShowRecovery(false);
-    setRecoverySuccess(false);
-    setRecoveryAccount('');
-    setRecoveryDob('');
-  };
-
-  const renderLockedState = () => (
-    <div className="px-4 py-8 text-center flex-1 flex flex-col">
-      <RegErrorIcon />
-      <RegTitle
-        centered
-        title="Verification Temporarily Locked"
-        subtitle="Too many unsuccessful attempts. Please try again later or contact customer care."
-      />
-      <div className="mt-4 space-y-2">
-        <RegPrimaryButton label="Contact Support" onClick={() => setShowHelp(true)} />
-        <RegSecondaryButton
-          label="Choose Another Method"
-          onClick={() => {
-            setIsLocked(false);
-            setVerificationAttempts(0);
-            setError('');
-            setStep('choose_verification_method');
-          }}
-        />
-      </div>
-    </div>
-  );
-
   const renderStep = () => {
-    if (isLocked && ['verify_customer_id', 'verify_debit_card', 'verify_aadhaar', 'verify_pan'].includes(step)) {
-      return renderLockedState();
-    }
-
     switch (step) {
       case 'welcome':
         return (
@@ -451,39 +341,74 @@ export const RetailRegistrationModule: React.FC = () => {
               </p>
             </div>
             <RegStickyFooter>
-              <RegPrimaryButton label="Register / Activate Mobile Banking" onClick={() => setStep('sim_verify')} />
+              <RegPrimaryButton label="Register / Activate Mobile Banking" onClick={() => setStep('terms')} />
               <RegSecondaryButton label="Login" onClick={() => navigate('/')} />
             </RegStickyFooter>
           </div>
         );
 
-      case 'sim_verify':
+      case 'terms':
+        return (
+          <div className="flex flex-col flex-1">
+            <div className="flex-1 overflow-y-auto">
+              <RegTitle title="Terms & Conditions" subtitle="Please review and accept to continue registration." />
+              <div className="px-4">
+                <RegLegalLink label="Terms & Conditions" onClick={() => setShowLegal('terms')} />
+                <RegLegalLink label="Privacy Policy" onClick={() => setShowLegal('privacy')} />
+                <RegLegalLink label="Mobile Banking Terms" onClick={() => setShowLegal('mobile')} />
+                <label className="flex items-start gap-3 mt-6 p-4 rounded-2xl border border-slate-200 bg-slate-50/80 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={draft.termsAccepted}
+                    onChange={(e) => setDraft((d) => ({ ...d, termsAccepted: e.target.checked }))}
+                    className="mt-0.5 w-5 h-5 rounded border-slate-300 text-[#005DD4] focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-slate-700 leading-snug">I agree to the Terms & Conditions</span>
+                </label>
+              </div>
+            </div>
+            <RegStickyFooter>
+              <RegPrimaryButton label="Continue" onClick={handleTermsContinue} disabled={!draft.termsAccepted} />
+            </RegStickyFooter>
+          </div>
+        );
+
+      case 'sim_select':
         return (
           <div className="flex flex-col flex-1">
             <div className="flex-1 overflow-y-auto">
               <RegTitle
-                title="Verify Your SIM"
-                subtitle="We need to verify the mobile number registered with your bank account."
+                title="Select SIM to Verify"
+                subtitle="Choose the SIM registered with your bank account on this device."
               />
-              <div className="px-4 space-y-4">
-                <div className="flex justify-center py-2">
-                  <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
-                    <CardSim className="w-8 h-8 text-[#005DD4]" strokeWidth={1.75} />
-                  </div>
-                </div>
-                <RegMaskedValue label="Registered Mobile Number" value={MASKED_MOBILE} />
+              <div className="px-4 space-y-3">
+                {RETAIL_DEMO_SIMS.map((sim) => (
+                  <RegSelectCard
+                    key={sim.id}
+                    selected={draft.selectedSimId === sim.id}
+                    icon={<CardSim className="w-5 h-5" strokeWidth={1.75} />}
+                    title={`SIM ${sim.id === 'sim1' ? '1' : '2'} — ${sim.carrier}`}
+                    description={maskRegisteredMobile(sim.mobile)}
+                    badge={sim.isRegistered ? 'Bank registered' : undefined}
+                    onSelect={() => {
+                      setDraft((d) => ({ ...d, selectedSimId: sim.id as SimSlotId }));
+                      setError('');
+                    }}
+                  />
+                ))}
                 <RegChecklist
                   items={[
-                    'Registered SIM is inserted',
+                    'Selected SIM is inserted in this device',
                     'Mobile network is available',
                     'Required SMS permission is enabled',
                   ]}
                 />
+                <RegDemoHint title={RETAIL_REGISTRATION_DEMO_HINTS.sim.title} lines={RETAIL_REGISTRATION_DEMO_HINTS.sim.lines} />
                 {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
               </div>
             </div>
             <RegStickyFooter>
-              <RegPrimaryButton label="Verify SIM" onClick={() => setStep('sim_processing')} />
+              <RegPrimaryButton label="Verify Selected SIM" onClick={handleVerifySim} disabled={!draft.selectedSimId} />
               <RegTextButton label="Need Help?" onClick={() => setShowHelp(true)} className="w-full text-center py-1" />
             </RegStickyFooter>
           </div>
@@ -513,14 +438,10 @@ export const RetailRegistrationModule: React.FC = () => {
               >
                 <CheckCircle2 className="w-10 h-10 text-emerald-600" />
               </motion.div>
-              <RegTitle
-                centered
-                title="SIM Verified"
-                subtitle="Your registered mobile number has been verified successfully."
-              />
-              <p className="text-lg font-bold tracking-wide text-[#005DD4] mb-8">{MASKED_MOBILE}</p>
+              <RegTitle centered title="SIM Verified" subtitle="Your registered mobile number has been verified successfully." />
+              <p className="text-lg font-bold tracking-wide text-[#005DD4] mb-8">{maskedMobile}</p>
             </motion.div>
-            <RegPrimaryButton label="Continue" onClick={() => setStep('choose_verification_method')} />
+            <RegPrimaryButton label="Continue" onClick={goToAccountOrOtp} />
           </div>
         );
 
@@ -532,7 +453,7 @@ export const RetailRegistrationModule: React.FC = () => {
               <RegTitle
                 centered
                 title="SIM Verification Failed"
-                subtitle="The SIM in this device does not match the mobile number registered with your bank."
+                subtitle="The selected SIM does not match the mobile number registered with your bank."
               />
               <div className="mt-4 text-left max-w-sm mx-auto space-y-2">
                 {['Registered SIM is not inserted', 'Mobile network unavailable', 'SIM verification failed'].map(
@@ -546,243 +467,44 @@ export const RetailRegistrationModule: React.FC = () => {
               </div>
             </div>
             <RegStickyFooter>
-              <RegPrimaryButton label="Try Again" onClick={() => setStep('sim_verify')} />
+              <RegPrimaryButton label="Try Again" onClick={() => setStep('sim_select')} />
               <RegTextButton label="Need Help?" onClick={() => setShowHelp(true)} className="w-full text-center py-1" />
             </RegStickyFooter>
           </div>
         );
 
-      case 'choose_verification_method':
-        return (
-          <div className="flex flex-col flex-1">
-            <RegTitle
-              title="Verify Your Account"
-              subtitle="Choose how you'd like to verify your bank account."
-            />
-            <div className="px-4 space-y-3 flex-1">
-              <RegMethodCard
-                icon={<IdCard className="w-5 h-5" />}
-                title="Customer ID"
-                description="Verify using your Customer ID"
-                onSelect={() => handleChooseMethod('customer_id')}
-              />
-              <RegMethodCard
-                icon={<CreditCard className="w-5 h-5" />}
-                title="Debit Card"
-                description="Verify using your debit card"
-                onSelect={() => handleChooseMethod('debit_card')}
-              />
-              <RegMethodCard
-                icon={<IdCard className="w-5 h-5" />}
-                title="Aadhaar"
-                description="Verify your identity using Aadhaar"
-                onSelect={() => handleChooseMethod('aadhaar')}
-              />
-              <RegMethodCard
-                icon={<ScrollText className="w-5 h-5" />}
-                title="PAN"
-                description="Verify using PAN"
-                onSelect={() => handleChooseMethod('pan')}
-              />
-              <RegDemoHint
-                title="Demo — All verification methods"
-                lines={[
-                  ...RETAIL_REGISTRATION_DEMO_HINTS.customerId.lines,
-                  ...RETAIL_REGISTRATION_DEMO_HINTS.customerIdRecovery.lines,
-                  ...RETAIL_REGISTRATION_DEMO_HINTS.debitCard.lines,
-                  ...RETAIL_REGISTRATION_DEMO_HINTS.aadhaar.lines,
-                  ...RETAIL_REGISTRATION_DEMO_HINTS.pan.lines,
-                ]}
-              />
-            </div>
-          </div>
-        );
-
-      case 'verify_customer_id':
+      case 'select_account':
         return (
           <div className="flex flex-col flex-1">
             <div className="flex-1 overflow-y-auto">
-              <RegTitle title="Verify with Customer ID" />
-              <div className="px-4 space-y-4">
-                <RegField
-                  label="Customer ID"
-                  value={draft.customerId}
-                  onChange={(v) => setDraft((d) => ({ ...d, customerId: v.replace(/\D/g, '').slice(0, 12) }))}
-                  placeholder="Enter Customer ID"
-                  inputMode="numeric"
-                />
-                <RegField
-                  label="Date of Birth"
-                  value={draft.dateOfBirth}
-                  onChange={(v) => setDraft((d) => ({ ...d, dateOfBirth: formatDobInput(v) }))}
-                  placeholder="DD / MM / YYYY"
-                  inputMode="numeric"
-                />
-                {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
-                <RegDemoHint
-                  title={RETAIL_REGISTRATION_DEMO_HINTS.customerId.title}
-                  lines={RETAIL_REGISTRATION_DEMO_HINTS.customerId.lines}
-                />
-                <RegInfoLink label="Don't know your Customer ID?" onClick={() => setShowRecovery(true)} />
-              </div>
-            </div>
-            <RegStickyFooter>
-              <RegPrimaryButton label="Continue" onClick={handleCustomerIdContinue} />
-            </RegStickyFooter>
-          </div>
-        );
-
-      case 'verify_debit_card':
-        return (
-          <div className="flex flex-col flex-1">
-            <div className="flex-1 overflow-y-auto">
-              <RegTitle title="Verify with Debit Card" />
-              <div className="px-4 space-y-4">
-                <RegField
-                  label="Debit Card Number"
-                  value={formatCardNumberDisplay(draft.debitCardNumber)}
-                  onChange={(v) => setDraft((d) => ({ ...d, debitCardNumber: v.replace(/\D/g, '').slice(0, 16) }))}
-                  placeholder="•••• •••• •••• 4582"
-                  inputMode="numeric"
-                />
-                <RegField
-                  label="Expiry Date"
-                  value={draft.debitCardExpiry}
-                  onChange={(v) => setDraft((d) => ({ ...d, debitCardExpiry: formatExpiryInput(v) }))}
-                  placeholder="MM / YY"
-                  inputMode="numeric"
-                />
-                {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
-                <RegDemoHint
-                  title={RETAIL_REGISTRATION_DEMO_HINTS.debitCard.title}
-                  lines={RETAIL_REGISTRATION_DEMO_HINTS.debitCard.lines}
-                />
-              </div>
-            </div>
-            <RegStickyFooter>
-              <RegPrimaryButton label="Continue" onClick={handleDebitCardContinue} />
-              {error && (
-                <RegSecondaryButton
-                  label="Choose Another Method"
-                  onClick={() => setStep('choose_verification_method')}
-                />
-              )}
-            </RegStickyFooter>
-          </div>
-        );
-
-      case 'verify_aadhaar':
-        return (
-          <div className="flex flex-col flex-1">
-            <div className="flex-1 overflow-y-auto">
-              <RegTitle title="Verify with Aadhaar" />
-              <div className="px-4 space-y-4">
-                <RegField
-                  label="Aadhaar Number"
-                  value={formatAadhaarInput(draft.aadhaarNumber)}
-                  onChange={(v) => setDraft((d) => ({ ...d, aadhaarNumber: v.replace(/\D/g, '').slice(0, 12) }))}
-                  placeholder="XXXX XXXX 1234"
-                  inputMode="numeric"
-                />
-                {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
-                <RegDemoHint
-                  title={RETAIL_REGISTRATION_DEMO_HINTS.aadhaar.title}
-                  lines={RETAIL_REGISTRATION_DEMO_HINTS.aadhaar.lines}
-                />
-              </div>
-            </div>
-            <RegStickyFooter>
-              <RegPrimaryButton label="Continue" onClick={handleAadhaarContinue} />
-              {error && (
-                <RegSecondaryButton
-                  label="Choose Another Method"
-                  onClick={() => setStep('choose_verification_method')}
-                />
-              )}
-            </RegStickyFooter>
-          </div>
-        );
-
-      case 'verify_pan':
-        return (
-          <div className="flex flex-col flex-1">
-            <div className="flex-1 overflow-y-auto">
-              <RegTitle title="Verify with PAN" />
-              <div className="px-4 space-y-4">
-                <RegField
-                  label="PAN"
-                  value={draft.pan}
-                  onChange={(v) => setDraft((d) => ({ ...d, pan: v.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10) }))}
-                  placeholder="ABCDE1234F"
-                  autoCapitalize="characters"
-                />
-                <RegField
-                  label="Date of Birth"
-                  value={draft.dateOfBirth}
-                  onChange={(v) => setDraft((d) => ({ ...d, dateOfBirth: formatDobInput(v) }))}
-                  placeholder="DD / MM / YYYY"
-                  inputMode="numeric"
-                />
-                {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
-                <RegDemoHint
-                  title={RETAIL_REGISTRATION_DEMO_HINTS.pan.title}
-                  lines={RETAIL_REGISTRATION_DEMO_HINTS.pan.lines}
-                />
-              </div>
-            </div>
-            <RegStickyFooter>
-              <RegPrimaryButton label="Continue" onClick={handlePanContinue} />
-              {error && (
-                <RegSecondaryButton
-                  label="Choose Another Method"
-                  onClick={() => setStep('choose_verification_method')}
-                />
-              )}
-            </RegStickyFooter>
-          </div>
-        );
-
-      case 'customer_verified':
-        return (
-          <div className="flex flex-col flex-1 px-4 py-8 text-center">
-            <motion.div
-              initial={{ scale: 0.85, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="flex-1 flex flex-col items-center justify-center"
-            >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-                className="w-20 h-20 rounded-full bg-emerald-50 flex items-center justify-center mb-5"
-              >
-                <CheckCircle2 className="w-10 h-10 text-emerald-600" />
-              </motion.div>
               <RegTitle
-                centered
-                title="Customer Verified"
-                subtitle="Your banking relationship has been verified successfully."
+                title="Select Account to Activate"
+                subtitle="Multiple accounts are linked to your verified mobile number. Choose one to activate mobile banking."
               />
-              <div className="w-full max-w-sm mx-auto mt-4 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-left">
-                <RegInfoRow label="Customer ID" value={maskCustomerId(verifiedCustomerId)} />
-                <RegInfoRow label="Registered Mobile" value={MASKED_MOBILE} />
+              <div className="px-4 space-y-3">
+                {RETAIL_LINKED_ACCOUNTS.map((account) => (
+                  <RegSelectCard
+                    key={account.id}
+                    selected={draft.selectedAccountId === account.id}
+                    icon={<Landmark className="w-5 h-5" />}
+                    title={account.type}
+                    description={`Account ${account.maskedAccount} · ${maskCustomerId(account.customerId)}`}
+                    onSelect={() => {
+                      setDraft((d) => ({ ...d, selectedAccountId: account.id }));
+                      setError('');
+                    }}
+                  />
+                ))}
+                <RegDemoHint
+                  title={RETAIL_REGISTRATION_DEMO_HINTS.account.title}
+                  lines={RETAIL_REGISTRATION_DEMO_HINTS.account.lines}
+                />
+                {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
               </div>
-            </motion.div>
-            <RegPrimaryButton
-              label="Continue"
-              onClick={() => {
-                if (draft.otpRequired) {
-                  setOtpDigits([...EMPTY_OTP]);
-                  setOtpResendSeconds(RETAIL_OTP_RESEND_SECONDS);
-                  setOtpError('');
-                  setOtpAttempts(0);
-                  setOtpLocked(false);
-                  setStep('otp');
-                } else {
-                  setStep('mpin');
-                }
-              }}
-            />
+            </div>
+            <RegStickyFooter>
+              <RegPrimaryButton label="Continue" onClick={handleAccountContinue} disabled={!draft.selectedAccountId} />
+            </RegStickyFooter>
           </div>
         );
 
@@ -796,14 +518,14 @@ export const RetailRegistrationModule: React.FC = () => {
                 title="Maximum Attempts Reached"
                 subtitle="OTP verification is temporarily locked. Please try again later."
               />
-              <RegPrimaryButton label="Choose Another Method" onClick={() => setStep('choose_verification_method')} />
+              <RegPrimaryButton label="Back to Account Selection" onClick={() => setStep('select_account')} />
             </div>
           );
         }
         return (
           <div className="flex flex-col flex-1">
             <div className="flex-1 overflow-y-auto">
-              <RegTitle title="Verify Mobile Number" subtitle={`OTP sent to ${MASKED_MOBILE}`} />
+              <RegTitle title="Verify Mobile Number" subtitle={`OTP sent to ${maskedMobile}`} />
               <div className="px-4 space-y-5">
                 <OtpInput
                   digits={otpDigits}
@@ -813,7 +535,7 @@ export const RetailRegistrationModule: React.FC = () => {
                   onActiveIndexChange={setOtpActiveIndex}
                 />
                 {otpError && <p className="text-xs text-red-600 font-medium text-center">{otpError}</p>}
-                <RegDemoHint title="Demo OTP" lines={[`OTP: ${RETAIL_DEMO_AUTO_OTP}`]} />
+                <RegDemoHint title={RETAIL_REGISTRATION_DEMO_HINTS.otp.title} lines={RETAIL_REGISTRATION_DEMO_HINTS.otp.lines} />
                 <div className="text-center space-y-2">
                   <OtpTimer secondsRemaining={otpResendSeconds} />
                   {otpResendSeconds === 0 && (
@@ -832,10 +554,7 @@ export const RetailRegistrationModule: React.FC = () => {
         return (
           <div className="flex flex-col flex-1">
             <div className="flex-1 overflow-y-auto">
-              <RegTitle
-                title="Set Your MPIN"
-                subtitle="Create a 6-digit MPIN for secure mobile banking access."
-              />
+              <RegTitle title="Set Your MPIN" subtitle="Create a 6-digit MPIN for secure mobile banking login." />
               <div className="px-4 space-y-6">
                 <MpinInput
                   label="MPIN"
@@ -862,61 +581,47 @@ export const RetailRegistrationModule: React.FC = () => {
           </div>
         );
 
-      case 'biometric':
-        return (
-          <div className="flex flex-col flex-1 px-4 py-6 text-center">
-            <div className="flex-1 flex flex-col items-center justify-center">
-              <div className="w-20 h-20 rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center mb-5">
-                <Fingerprint className="w-10 h-10 text-[#005DD4]" />
-              </div>
-              <RegTitle
-                centered
-                title="Enable Biometric Login"
-                subtitle="Use fingerprint or face recognition for faster and secure access."
-              />
-            </div>
-            <RegStickyFooter>
-              <RegPrimaryButton label="Enable Biometric" onClick={handleBiometricEnable} />
-              <RegSecondaryButton label="Skip for Now" onClick={() => setShowBiometricSkip(true)} />
-            </RegStickyFooter>
-          </div>
-        );
-
-      case 'terms':
+      case 'tpin':
         return (
           <div className="flex flex-col flex-1">
             <div className="flex-1 overflow-y-auto">
-              <RegTitle title="Terms & Conditions" subtitle="Please review and accept to continue." />
-              <div className="px-4">
-                <RegLegalLink label="Terms & Conditions" onClick={() => setShowLegal('terms')} />
-                <RegLegalLink label="Privacy Policy" onClick={() => setShowLegal('privacy')} />
-                <RegLegalLink label="Mobile Banking Terms" onClick={() => setShowLegal('mobile')} />
-                <label className="flex items-start gap-3 mt-6 p-4 rounded-2xl border border-slate-200 bg-slate-50/80 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={draft.termsAccepted}
-                    onChange={(e) => setDraft((d) => ({ ...d, termsAccepted: e.target.checked }))}
-                    className="mt-0.5 w-5 h-5 rounded border-slate-300 text-[#005DD4] focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-slate-700 leading-snug">I agree to the Terms & Conditions</span>
-                </label>
+              <RegTitle
+                title="Set Your TPIN"
+                subtitle="Create a 4-digit transaction PIN to authorize payments and transfers."
+              />
+              <div className="px-4 space-y-6">
+                <MpinInput
+                  label="TPIN"
+                  value={draft.tpin}
+                  onChange={(v) => {
+                    setDraft((d) => ({ ...d, tpin: v }));
+                    setTpinError('');
+                  }}
+                  length={4}
+                />
+                <MpinInput
+                  label="Confirm TPIN"
+                  value={confirmTpin}
+                  onChange={(v) => {
+                    setConfirmTpin(v);
+                    setTpinError('');
+                  }}
+                  length={4}
+                  error={tpinError}
+                />
                 {networkError && (
-                  <div className="mt-4 p-4 rounded-2xl bg-red-50 border border-red-100 flex items-start gap-3">
+                  <div className="p-4 rounded-2xl bg-red-50 border border-red-100 flex items-start gap-3">
                     <WifiOff className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm font-semibold text-red-700">No Internet Connection</p>
-                      <p className="text-xs text-red-600 mt-0.5">Please check your connection and try again.</p>
+                      <p className="text-sm font-semibold text-red-700">Connection Error</p>
+                      <p className="text-xs text-red-600 mt-0.5">Please try again to complete registration.</p>
                     </div>
                   </div>
                 )}
               </div>
             </div>
             <RegStickyFooter>
-              <RegPrimaryButton
-                label="Continue"
-                onClick={handleTermsContinue}
-                disabled={!draft.termsAccepted}
-              />
+              <RegPrimaryButton label="Complete Registration" onClick={handleTpinContinue} />
             </RegStickyFooter>
           </div>
         );
@@ -951,7 +656,11 @@ export const RetailRegistrationModule: React.FC = () => {
                 Your mobile banking registration has been completed successfully.
               </p>
               <div className="w-full max-w-sm mx-auto mt-6 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-left">
-                <RegInfoRow label="Customer ID" value={maskCustomerId(verifiedCustomerId)} />
+                <RegInfoRow
+                  label="Account"
+                  value={`${draft.accountType}${getLinkedAccountById(draft.selectedAccountId) ? ` · ${getLinkedAccountById(draft.selectedAccountId)!.maskedAccount}` : ''}`}
+                />
+                <RegInfoRow label="Customer ID" value={maskCustomerId(draft.customerId)} />
                 <RegInfoRow label="User ID" value={maskUserId(draft.userId)} />
               </div>
             </motion.div>
@@ -968,14 +677,9 @@ export const RetailRegistrationModule: React.FC = () => {
 
   return (
     <RegShell>
-      {showBack && (
-        <RegTopBar
-          onBack={() => requestBack(goBack)}
-        />
-      )}
+      {showBack && <RegTopBar onBack={() => requestBack(goBack)} />}
       <main className="flex-1 flex flex-col min-h-0">{renderStep()}</main>
 
-      {/* Help Sheet */}
       <BottomSheet isOpen={showHelp} onClose={() => setShowHelp(false)} title="Need Help?" subtitle="We're here to assist you">
         <div className="space-y-4 pb-2">
           <div className="flex items-center gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
@@ -986,13 +690,9 @@ export const RetailRegistrationModule: React.FC = () => {
               <p className="text-xs text-slate-500">24×7 toll-free</p>
             </div>
           </div>
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Visit your nearest branch with valid ID proof for in-person assistance with mobile banking registration.
-          </p>
         </div>
       </BottomSheet>
 
-      {/* Exit Confirmation */}
       <BottomSheet
         isOpen={showExit}
         onClose={() => setShowExit(false)}
@@ -1018,57 +718,6 @@ export const RetailRegistrationModule: React.FC = () => {
         </div>
       </BottomSheet>
 
-      {/* Customer ID Recovery */}
-      <BottomSheet
-        isOpen={showRecovery}
-        onClose={() => {
-          setShowRecovery(false);
-          setRecoverySuccess(false);
-          setRecoveryError('');
-          setRecoveryAccount('');
-          setRecoveryDob('');
-        }}
-        title={recoverySuccess ? 'Customer ID Found' : 'Find Customer ID'}
-      >
-        {recoverySuccess ? (
-          <div className="space-y-4 pb-2 text-center">
-            <div className="w-14 h-14 mx-auto rounded-full bg-emerald-50 flex items-center justify-center">
-              <CheckCircle2 className="w-7 h-7 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500">Customer ID</p>
-              <p className="text-lg font-bold text-[#0A2540]">{maskCustomerId(RETAIL_DEMO_CUSTOMER_ID)}</p>
-            </div>
-            <RegPrimaryButton label="Continue" onClick={applyRecoveredCustomerId} />
-          </div>
-        ) : (
-          <div className="space-y-4 pb-2">
-            <RegMaskedValue label="Registered Mobile Number" value={MASKED_MOBILE} />
-            <RegField
-              label="Account Number"
-              value={recoveryAccount}
-              onChange={setRecoveryAccount}
-              placeholder="Enter Account Number"
-              inputMode="numeric"
-            />
-            <RegField
-              label="Date of Birth"
-              value={recoveryDob}
-              onChange={(v) => setRecoveryDob(formatDobInput(v))}
-              placeholder="DD / MM / YYYY"
-              inputMode="numeric"
-            />
-            {recoveryError && <p className="text-xs text-red-600 font-medium">{recoveryError}</p>}
-            <RegDemoHint
-              title={RETAIL_REGISTRATION_DEMO_HINTS.customerIdRecovery.title}
-              lines={RETAIL_REGISTRATION_DEMO_HINTS.customerIdRecovery.lines}
-            />
-            <RegPrimaryButton label="Find Customer ID" onClick={handleRecovery} />
-          </div>
-        )}
-      </BottomSheet>
-
-      {/* Legal Documents */}
       <BottomSheet
         isOpen={showLegal !== null}
         onClose={() => setShowLegal(null)}
@@ -1089,16 +738,6 @@ export const RetailRegistrationModule: React.FC = () => {
               : RETAIL_MOBILE_BANKING_TERMS}
         </pre>
       </BottomSheet>
-
-      <SkipBiometricSheet
-        isOpen={showBiometricSkip}
-        onClose={() => setShowBiometricSkip(false)}
-        onSkip={handleBiometricSkip}
-        onEnable={() => {
-          setShowBiometricSkip(false);
-          handleBiometricEnable();
-        }}
-      />
     </RegShell>
   );
 };

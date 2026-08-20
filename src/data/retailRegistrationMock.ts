@@ -1,4 +1,10 @@
-import type { PasswordRuleStatus, SecurityQuestionOption } from '../types/retailRegistration';
+import type {
+  PasswordRuleStatus,
+  RetailLinkedAccount,
+  RetailSimOption,
+  SecurityQuestionOption,
+  SimSlotId,
+} from '../types/retailRegistration';
 
 /** Registered mobile linked to the bank account (demo). */
 export const RETAIL_DEMO_REGISTERED_MOBILE = '9898765421';
@@ -25,27 +31,41 @@ export const RETAIL_MAX_VERIFICATION_ATTEMPTS = 3;
 
 export const RETAIL_HELPLINE = '1800-202-APEX';
 
+export const RETAIL_DEMO_SIMS: RetailSimOption[] = [
+  { id: 'sim1', carrier: 'Jio', mobile: RETAIL_DEMO_REGISTERED_MOBILE, isRegistered: true },
+  { id: 'sim2', carrier: 'Airtel', mobile: '9988774455', isRegistered: false },
+];
+
+export const RETAIL_LINKED_ACCOUNTS: RetailLinkedAccount[] = [
+  {
+    id: 'acc_savings',
+    type: 'Savings Account',
+    maskedAccount: '••••6789',
+    customerId: RETAIL_DEMO_CUSTOMER_ID,
+    accountNumber: RETAIL_DEMO_ACCOUNT_NUMBER,
+  },
+  {
+    id: 'acc_current',
+    type: 'Current Account',
+    maskedAccount: '••••4521',
+    customerId: '2847194',
+    accountNumber: '50123456790',
+  },
+];
+
 /** Visible demo hints for client walkthroughs. */
 export const RETAIL_REGISTRATION_DEMO_HINTS = {
-  customerId: {
-    title: 'Customer ID',
-    lines: [`Customer ID: ${RETAIL_DEMO_CUSTOMER_ID}`, `DOB: ${RETAIL_DEMO_DOB}`],
+  sim: {
+    title: 'Demo SIM',
+    lines: ['Select SIM 1 (Jio) — registered with bank', 'SIM 2 (Airtel) will fail verification'],
   },
-  customerIdRecovery: {
-    title: 'Customer ID Recovery',
-    lines: [`Account: ${RETAIL_DEMO_ACCOUNT_NUMBER}`, `DOB: ${RETAIL_DEMO_DOB}`],
+  account: {
+    title: 'Demo Accounts',
+    lines: ['Savings — CUST••••7193', 'Current — CUST••••7194'],
   },
-  debitCard: {
-    title: 'Debit Card',
-    lines: ['Card: 4532 1234 5678 9010', `Expiry: ${RETAIL_DEMO_DEBIT_EXPIRY}`],
-  },
-  aadhaar: {
-    title: 'Aadhaar',
-    lines: ['Aadhaar: 1234 5678 1234', `OTP: ${RETAIL_DEMO_AUTO_OTP}`],
-  },
-  pan: {
-    title: 'PAN',
-    lines: [`PAN: ${RETAIL_DEMO_PAN}`, `DOB: ${RETAIL_DEMO_DOB}`],
+  otp: {
+    title: 'Demo OTP',
+    lines: [`OTP: ${RETAIL_DEMO_AUTO_OTP}`],
   },
 } as const;
 
@@ -273,10 +293,37 @@ export function validateMpin(mpin: string, confirmMpin: string): string | null {
   return null;
 }
 
-/** Demo: SIM on device matches registered mobile after short delay. */
-export function simulateSimVerification(simMismatch = false): Promise<{ success: boolean }> {
+const WEAK_TPINS = new Set(['0000', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999', '1234', '4321']);
+
+export function validateTpin(tpin: string, confirmTpin: string): string | null {
+  if (tpin.length !== 4) return 'TPIN must be 4 digits.';
+  if (tpin !== confirmTpin) return 'TPINs do not match.';
+  if (WEAK_TPINS.has(tpin)) return 'This TPIN is too common. Choose a stronger TPIN.';
+  if (/^(\d)\1{3}$/.test(tpin)) return 'Avoid repeated digits in your TPIN.';
+  return null;
+}
+
+export function getSimById(simId: SimSlotId | null): RetailSimOption | undefined {
+  return RETAIL_DEMO_SIMS.find((sim) => sim.id === simId);
+}
+
+export function getLinkedAccountById(accountId: string): RetailLinkedAccount | undefined {
+  return RETAIL_LINKED_ACCOUNTS.find((account) => account.id === accountId);
+}
+
+/** Demo: verify selected SIM against bank-registered mobile. */
+export function simulateSimVerification(
+  selectedSimId: SimSlotId | null
+): Promise<{ success: boolean; mobile?: string }> {
   return new Promise((resolve) => {
-    setTimeout(() => resolve({ success: !simMismatch }), 1800);
+    setTimeout(() => {
+      const sim = getSimById(selectedSimId);
+      if (sim?.isRegistered) {
+        resolve({ success: true, mobile: sim.mobile });
+      } else {
+        resolve({ success: false });
+      }
+    }, 1800);
   });
 }
 
