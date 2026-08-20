@@ -15,7 +15,6 @@ export type RetailRegistrationStep =
   | 'verify_pan'
   | 'customer_verified'
   | 'otp'
-  | 'credentials'
   | 'mpin'
   | 'biometric'
   | 'terms'

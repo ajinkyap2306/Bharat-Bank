@@ -33,8 +33,7 @@ import {
   formatCardNumberDisplay,
   formatDobInput,
   formatExpiryInput,
-  getPasswordRuleStatus,
-  isUserIdTaken,
+  generateRetailUserId,
   maskCustomerId,
   maskRegisteredMobile,
   maskUserId,
@@ -44,7 +43,6 @@ import {
   validateAadhaarVerification,
   validateCustomerVerification,
   validateDebitCardVerification,
-  validateLoginCredentials,
   validateMpin,
   validatePanVerification,
   verifyRegistrationOtp,
@@ -99,13 +97,6 @@ const INITIAL_DRAFT: RetailRegistrationDraft = {
 
 const MASKED_MOBILE = maskRegisteredMobile(RETAIL_DEMO_REGISTERED_MOBILE);
 const EMPTY_OTP = ['', '', '', '', '', ''];
-
-const PasswordRuleItem: React.FC<{ ok: boolean; label: string }> = ({ ok, label }) => (
-  <div className="flex items-center gap-2 text-xs">
-    <CheckCircle2 className={`w-4 h-4 shrink-0 ${ok ? 'text-emerald-500' : 'text-slate-300 dark:text-slate-600'}`} />
-    <span className={ok ? 'text-slate-700 dark:text-slate-300' : 'text-slate-400'}>{label}</span>
-  </div>
-);
 
 export const RetailRegistrationModule: React.FC = () => {
   const navigate = useNavigate();
@@ -202,10 +193,14 @@ export const RetailRegistrationModule: React.FC = () => {
   const goToCustomerVerified = useCallback(() => {
     setVerificationAttempts(0);
     setError('');
-    setDraft((d) => ({
-      ...d,
-      customerId: d.customerId || RETAIL_DEMO_CUSTOMER_ID,
-    }));
+    setDraft((d) => {
+      const customerId = d.customerId || RETAIL_DEMO_CUSTOMER_ID;
+      return {
+        ...d,
+        customerId,
+        userId: d.userId || generateRetailUserId(),
+      };
+    });
     setStep('customer_verified');
   }, []);
 
@@ -250,11 +245,8 @@ export const RetailRegistrationModule: React.FC = () => {
       case 'otp':
         setStep('customer_verified');
         break;
-      case 'credentials':
-        setStep(draft.otpRequired ? 'otp' : 'customer_verified');
-        break;
       case 'mpin':
-        setStep('credentials');
+        setStep(draft.otpRequired ? 'otp' : 'customer_verified');
         break;
       case 'biometric':
         setStep('mpin');
@@ -354,7 +346,7 @@ export const RetailRegistrationModule: React.FC = () => {
       return;
     }
     setOtpError('');
-    setStep('credentials');
+    setStep('mpin');
   };
 
   const handleResendOtp = () => {
@@ -364,20 +356,6 @@ export const RetailRegistrationModule: React.FC = () => {
     setOtpError('');
     setOtpResendSeconds(RETAIL_OTP_RESEND_SECONDS);
     addToast({ type: 'info', title: 'OTP Sent', message: `A new OTP has been sent to ${MASKED_MOBILE}.` });
-  };
-
-  const handleCredentialsContinue = () => {
-    if (isUserIdTaken(draft.userId)) {
-      setError('This User ID is already taken. Please choose another.');
-      return;
-    }
-    const err = validateLoginCredentials(draft.userId, draft.password, draft.confirmPassword);
-    if (err) {
-      setError(err);
-      return;
-    }
-    setError('');
-    setStep('mpin');
   };
 
   const handleMpinContinue = () => {
@@ -430,8 +408,6 @@ export const RetailRegistrationModule: React.FC = () => {
     setRecoveryAccount('');
     setRecoveryDob('');
   };
-
-  const passwordRules = getPasswordRuleStatus(draft.password);
 
   const renderLockedState = () => (
     <div className="px-4 py-8 text-center flex-1 flex flex-col">
@@ -803,7 +779,7 @@ export const RetailRegistrationModule: React.FC = () => {
                   setOtpLocked(false);
                   setStep('otp');
                 } else {
-                  setStep('credentials');
+                  setStep('mpin');
                 }
               }}
             />
@@ -848,48 +824,6 @@ export const RetailRegistrationModule: React.FC = () => {
             </div>
             <RegStickyFooter>
               <RegPrimaryButton label="Verify" onClick={handleOtpVerify} />
-            </RegStickyFooter>
-          </div>
-        );
-
-      case 'credentials':
-        return (
-          <div className="flex flex-col flex-1">
-            <div className="flex-1 overflow-y-auto">
-              <RegTitle title="Create Login Credentials" />
-              <div className="px-4 space-y-4">
-                <RegField
-                  label="User ID"
-                  value={draft.userId}
-                  onChange={(v) => setDraft((d) => ({ ...d, userId: v.slice(0, 20) }))}
-                  placeholder="Enter User ID"
-                  hint="4–20 characters · letters, numbers, dots, hyphens"
-                />
-                <RegField
-                  label="Password"
-                  type="password"
-                  value={draft.password}
-                  onChange={(v) => setDraft((d) => ({ ...d, password: v.slice(0, 20) }))}
-                  placeholder="•••••••••"
-                />
-                <RegField
-                  label="Confirm Password"
-                  type="password"
-                  value={draft.confirmPassword}
-                  onChange={(v) => setDraft((d) => ({ ...d, confirmPassword: v.slice(0, 20) }))}
-                  placeholder="•••••••••"
-                />
-                <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 space-y-2">
-                  <PasswordRuleItem ok={passwordRules.length} label="8–20 characters" />
-                  <PasswordRuleItem ok={passwordRules.upperLower} label="Uppercase & lowercase" />
-                  <PasswordRuleItem ok={passwordRules.number} label="Number" />
-                  <PasswordRuleItem ok={passwordRules.special} label="Special character" />
-                </div>
-                {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
-              </div>
-            </div>
-            <RegStickyFooter>
-              <RegPrimaryButton label="Continue" onClick={handleCredentialsContinue} />
             </RegStickyFooter>
           </div>
         );
