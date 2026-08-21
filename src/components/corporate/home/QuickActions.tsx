@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeftRight, Building2, FileCheck2, SendHorizontal, type LucideIcon } from 'lucide-react';
-import { CORP_QUICK_ACTION_ICON } from './shared/CorporateHomeUI';
+import { CORP_QUICK_ACTION_ICON, CORP_ACCENT_BADGE } from './shared/CorporateHomeUI';
 
 interface QuickAction {
   id: string;
@@ -81,7 +81,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
         <h3 className="text-sm font-extrabold text-[#111827] dark:text-white tracking-tight">
           Quick Actions
         </h3>
-        <span className="text-[10px] font-bold px-2 py-0.5 bg-[#0B5CAB]/10 text-[#0B5CAB] dark:text-blue-400 rounded-full">
+        <span className={CORP_ACCENT_BADGE}>
           Enterprise
         </span>
       </div>
@@ -103,7 +103,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
             <div className={CORP_QUICK_ACTION_ICON}>
               <Icon className="w-6 h-6" aria-hidden />
             </div>
-            <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#0B5CAB] dark:group-hover:text-blue-400 transition-colors whitespace-nowrap">
+            <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-congress-blue-700 dark:group-hover:text-congress-blue-400 transition-colors whitespace-nowrap">
               {label}
             </span>
             <span className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 hidden sm:block whitespace-nowrap mt-0.5">

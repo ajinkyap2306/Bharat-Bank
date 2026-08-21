@@ -74,7 +74,8 @@ export default defineConfig(() => {
           ],
         },
         devOptions: {
-          enabled: true,
+          // Dev server serves assets from memory, not dev-dist — precache globs warn/fail in dev.
+          enabled: false,
         },
       }),
     ],

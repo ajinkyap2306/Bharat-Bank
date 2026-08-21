@@ -213,7 +213,7 @@ interface BankingContextType {
   setCorporateOtpVerified: (verified: boolean) => void;
   clearCorporateAuthFlow: () => void;
   corporateDeviceTrusted: boolean;
-  completeCorporateAuthentication: (deviceTrusted?: boolean) => void;
+  completeCorporateAuthentication: (deviceTrusted?: boolean, sessionUserOverride?: CorporateDemoUser | null) => void;
   corporateSession: CorporateDemoUser | null;
   pendingCorporateUser: CorporateDemoUser | null;
   setPendingCorporateUser: (user: CorporateDemoUser | null) => void;
@@ -669,8 +669,8 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setPendingCorporateUser(null);
   };
 
-  const completeCorporateAuthentication = (deviceTrusted = false) => {
-    const sessionUser = pendingCorporateUser;
+  const completeCorporateAuthentication = (deviceTrusted = false, sessionUserOverride?: CorporateDemoUser | null) => {
+    const sessionUser = sessionUserOverride ?? pendingCorporateUser;
     if (sessionUser) {
       setCorporateSession(sessionUser);
     }

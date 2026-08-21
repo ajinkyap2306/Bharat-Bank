@@ -111,7 +111,7 @@ export const CorporateSearchOverlay: React.FC<CorporateSearchOverlayProps> = ({ 
                       onClick={() => onNavigate?.(item.category)}
                       className="w-full flex items-center gap-3 p-3 text-left hover:bg-slate-50 dark:hover:bg-slate-800/50"
                     >
-                      <div className="w-9 h-9 rounded-xl bg-[#0B5CAB]/10 text-[#0B5CAB] flex items-center justify-center shrink-0">
+                      <div className="w-9 h-9 rounded-xl bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 flex items-center justify-center shrink-0">
                         <Icon className="w-4 h-4" />
                       </div>
                       <div className="min-w-0 flex-1">

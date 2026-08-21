@@ -52,7 +52,7 @@ export const CompanySwitcher: React.FC<CompanySwitcherProps> = ({
                   onClick={() => onSelect(entity.id)}
                   className={`w-full flex items-center justify-between gap-3 p-3.5 rounded-2xl text-left min-h-12 transition-colors ${
                     isSelected
-                      ? 'bg-[#0B5CAB]/8 border border-[#0B5CAB]/25'
+                      ? 'bg-congress-blue-50 dark:bg-congress-blue-950/60 border border-congress-blue-200 dark:border-congress-blue-800'
                       : 'hover:bg-[#F7F9FC] dark:hover:bg-slate-800 border border-transparent'
                   }`}
                 >
@@ -62,7 +62,7 @@ export const CompanySwitcher: React.FC<CompanySwitcherProps> = ({
                     </p>
                   </div>
                   {isSelected && (
-                    <Check className="w-4 h-4 text-[#0B5CAB] shrink-0" aria-hidden />
+                    <Check className="w-4 h-4 text-congress-blue-700 dark:text-congress-blue-400 shrink-0" aria-hidden />
                   )}
                 </button>
               );

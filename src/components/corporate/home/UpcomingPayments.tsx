@@ -41,8 +41,8 @@ export const UpcomingPayments: React.FC<UpcomingPaymentsProps> = ({
               onClick={() => onPaymentClick?.(payment.id)}
               className="w-full px-3 py-2.5 flex items-center gap-2.5 text-left active:bg-slate-50 dark:active:bg-slate-800/40 transition-colors"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#0B5CAB]/8 flex items-center justify-center shrink-0">
-                <CalendarClock className="w-4 h-4 text-[#0B5CAB]" aria-hidden />
+              <div className="w-8 h-8 rounded-lg bg-congress-blue-50 dark:bg-congress-blue-950/60 flex items-center justify-center shrink-0">
+                <CalendarClock className="w-4 h-4 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />
               </div>
 
               <div className="min-w-0 flex-1">

@@ -79,8 +79,7 @@ export const CorporateLogin: React.FC = () => {
     addToast,
     setBankingType,
     clearSessionExpired,
-    setCorporateLoginVerified,
-    setPendingCorporateUser,
+    completeCorporateAuthentication,
     isSessionExpired,
   } = useBanking();
 
@@ -125,15 +124,12 @@ export const CorporateLogin: React.FC = () => {
         return;
       }
 
-      setPendingCorporateUser(authenticated);
-
       dispatch({ type: 'SET_STATUS', status: 'success' });
       setBankingType('corporate');
       clearSessionExpired();
-      setCorporateLoginVerified(true);
 
       setTimeout(() => {
-        navigate('/corporate/otp');
+        completeCorporateAuthentication(false, authenticated);
       }, CORPORATE_LOGIN_SUCCESS_DELAY_MS);
     },
     [
@@ -142,11 +138,9 @@ export const CorporateLogin: React.FC = () => {
       state.corporateId,
       state.userId,
       state.password,
-      navigate,
       setBankingType,
       clearSessionExpired,
-      setCorporateLoginVerified,
-      setPendingCorporateUser,
+      completeCorporateAuthentication,
     ]
   );
 

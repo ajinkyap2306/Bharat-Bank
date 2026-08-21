@@ -93,7 +93,7 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
           <h3 className="text-sm font-extrabold text-[#111827] dark:text-white tracking-tight">
             Corporate Services
           </h3>
-          <span className="text-[10px] font-bold px-2 py-0.5 bg-[#0B5CAB]/10 text-[#0B5CAB] dark:text-blue-400 rounded-full">
+          <span className="text-[10px] font-bold px-2 py-0.5 bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 rounded-full">
             {visibleServices.length} Modules
           </span>
         </div>
@@ -101,7 +101,7 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
           <button
             type="button"
             onClick={onAllServicesClick}
-            className="text-xs font-bold text-[#0B5CAB] dark:text-blue-400 hover:underline flex items-center gap-0.5"
+            className="text-xs font-bold text-congress-blue-700 dark:text-congress-blue-400 hover:underline flex items-center gap-0.5"
           >
             All Services <ChevronRight className="w-3.5 h-3.5" />
           </button>

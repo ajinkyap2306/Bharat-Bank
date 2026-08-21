@@ -22,7 +22,7 @@ export const SecurityAlertCard: React.FC<SecurityAlertCardProps> = ({ alert, onR
             <button
               type="button"
               onClick={onReview}
-              className="mt-2 text-[13px] font-semibold text-[#0B5CAB] min-h-11"
+              className="mt-2 text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11"
             >
               Review Activity
             </button>

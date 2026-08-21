@@ -23,7 +23,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({
     whileTap={{ scale: 0.98 }}
     className={`shrink-0 min-w-[calc(100vw-2.5rem)] max-w-[22rem] p-4.5 rounded-3xl snap-center shadow-lg transition-all ${
       isPrimary
-        ? 'bg-linear-to-tr from-[#0B5CAB] via-blue-600 to-indigo-700 text-white shadow-[#0B5CAB]/20'
+        ? 'bg-linear-to-tr from-blue-700 via-blue-600 to-indigo-600 text-white shadow-blue-500/20'
         : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[#111827] dark:text-white'
     }`}
   >
@@ -31,7 +31,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({
       <div className="flex items-center gap-2 min-w-0">
         <span
           className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-            isPrimary ? 'bg-white/20' : 'bg-[#0B5CAB]/8 text-[#0B5CAB]'
+            isPrimary ? 'bg-white/20' : 'bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400'
           }`}
         >
           <Wallet className="w-4 h-4" aria-hidden />
@@ -104,7 +104,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({
         type="button"
         onClick={onClick}
         className={`inline-flex items-center gap-0.5 text-[11px] font-bold shrink-0 ${
-          isPrimary ? 'text-white hover:underline' : 'text-[#0B5CAB] hover:underline'
+          isPrimary ? 'text-white hover:underline' : 'text-congress-blue-700 dark:text-congress-blue-400 hover:underline'
         }`}
       >
         View Account

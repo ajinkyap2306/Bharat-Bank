@@ -147,7 +147,7 @@ export const CorporateHome: React.FC = () => {
         <button
           type="button"
           onClick={retry}
-          className="mt-4 px-5 py-3 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12"
+          className="mt-4 px-5 py-3 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12"
         >
           Retry
         </button>
@@ -163,7 +163,7 @@ export const CorporateHome: React.FC = () => {
       onTouchEnd={handleTouchEnd}
     >
       {(pullDistance > 0 || isRefreshing) && (
-        <div className="flex justify-center py-2 text-[#0B5CAB]" aria-live="polite">
+        <div className="flex justify-center py-2 text-congress-blue-700 dark:text-congress-blue-400" aria-live="polite">
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
         </div>
       )}

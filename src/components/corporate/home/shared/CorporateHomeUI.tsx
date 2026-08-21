@@ -1,12 +1,14 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import { CorporateTxnDisplayStatus } from '../../../../types/corporateDashboard';
+import {
+  CORP_ACCENT_BADGE,
+  CORP_ACCENT_LINK,
+  CORP_QUICK_ACTION_ICON,
+  SERVICE_ICON_BOX,
+} from './corporateTheme';
 
-export const SERVICE_ICON_BOX =
-  'w-11 h-11 rounded-2xl bg-[#0B5CAB]/8 dark:bg-[#0B5CAB]/15 text-[#0B5CAB] dark:text-blue-400 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-[#0B5CAB] group-hover:text-white transition-all shadow-2xs';
-
-export const CORP_QUICK_ACTION_ICON =
-  'w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-linear-to-tr from-[#0B5CAB] to-indigo-700 text-white flex items-center justify-center shadow-md shadow-[#0B5CAB]/25 group-hover:scale-105 transition-transform mb-2';
+export { CORP_ACCENT_BADGE, CORP_QUICK_ACTION_ICON, SERVICE_ICON_BOX } from './corporateTheme';
 
 export const formatCorpCurrency = (n: number, compact = false): string => {
   if (compact && n >= 10000000) return `₹${(n / 10000000).toFixed(2)} Cr`;
@@ -34,7 +36,7 @@ export const CorpSectionHeader: React.FC<{
         {title}
       </h2>
       {badge && (
-        <span className="text-[10px] font-bold px-2 py-0.5 bg-[#0B5CAB]/10 dark:bg-[#0B5CAB]/20 text-[#0B5CAB] dark:text-blue-400 rounded-full shrink-0">
+        <span className={`${CORP_ACCENT_BADGE} shrink-0`}>
           {badge}
         </span>
       )}
@@ -43,7 +45,7 @@ export const CorpSectionHeader: React.FC<{
       <button
         type="button"
         onClick={onAction}
-        className="text-[11px] font-semibold text-[#0B5CAB] dark:text-blue-400 hover:underline flex items-center gap-0.5 py-1 shrink-0"
+        className={`text-[11px] font-semibold ${CORP_ACCENT_LINK} flex items-center gap-0.5 py-1 shrink-0`}
       >
         {action} <ChevronRight className="w-3 h-3" />
       </button>

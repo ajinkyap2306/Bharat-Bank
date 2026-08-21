@@ -59,7 +59,7 @@ export const AccountCarousel: React.FC<AccountCarouselProps> = ({
         <button
           type="button"
           onClick={onAllAccountsClick}
-          className="text-xs font-bold text-[#0B5CAB] dark:text-blue-400 hover:underline flex items-center gap-0.5 min-h-11"
+          className="text-xs font-bold text-congress-blue-700 dark:text-congress-blue-400 hover:underline flex items-center gap-0.5 min-h-11"
         >
           All Accounts <ChevronRight className="w-3.5 h-3.5" />
         </button>
@@ -103,7 +103,7 @@ export const AccountCarousel: React.FC<AccountCarouselProps> = ({
                 setActiveIndex(index);
               }}
               className={`rounded-full transition-all ${
-                index === activeIndex ? 'w-2 h-2 bg-[#0B5CAB]' : 'w-2 h-2 bg-[#D0D5DD]'
+                index === activeIndex ? 'w-2 h-2 bg-congress-blue-700' : 'w-2 h-2 bg-[#D0D5DD]'
               }`}
             />
           ))}

@@ -11,11 +11,11 @@ export const CorporateDeviceVerificationPlaceholder: React.FC = () => {
       <div className="px-4 pt-3">
         <button
           type="button"
-          onClick={() => navigate('/corporate/otp')}
+          onClick={() => navigate('/')}
           className="flex items-center gap-1 text-sm font-medium text-[#0B5CAB] min-h-11"
         >
           <ChevronLeft className="w-4 h-4" />
-          Back to OTP
+          Back to Login
         </button>
       </div>
 

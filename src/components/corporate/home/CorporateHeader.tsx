@@ -43,7 +43,7 @@ export const CorporateHeader: React.FC<CorporateHeaderProps> = ({
             <img
               src={avatarUrl}
               alt=""
-              className="w-10 h-10 rounded-full object-cover ring-2 ring-[#0B5CAB]/25 shadow-xs"
+              className="w-10 h-10 rounded-full object-cover ring-2 ring-congress-blue-200 dark:ring-congress-blue-700/40 shadow-xs"
             />
             <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#F7F9FC] dark:border-slate-950" />
           </div>
@@ -53,7 +53,7 @@ export const CorporateHeader: React.FC<CorporateHeaderProps> = ({
               <h1 className="text-sm font-bold text-[#111827] dark:text-white leading-tight truncate">
                 {userName}
               </h1>
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase tracking-wider bg-[#0B5CAB]/10 text-[#0B5CAB] dark:bg-blue-950 dark:text-blue-300 shrink-0">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase tracking-wider bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 shrink-0">
                 Corporate
               </span>
             </div>
@@ -65,7 +65,7 @@ export const CorporateHeader: React.FC<CorporateHeaderProps> = ({
           <button
             type="button"
             onClick={onCompanyClick}
-            className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 flex items-center justify-center text-[#0B5CAB] shadow-xs"
+            className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 flex items-center justify-center text-congress-blue-700 dark:text-congress-blue-400 shadow-xs"
             aria-label={`Switch company, current: ${companyName}`}
           >
             <Building2 className="w-4 h-4" aria-hidden />

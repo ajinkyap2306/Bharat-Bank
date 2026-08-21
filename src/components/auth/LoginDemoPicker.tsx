@@ -120,7 +120,7 @@ export const LoginDemoPicker: React.FC<LoginDemoPickerProps> = ({ activePersona,
             ))}
           </div>
           <p className="text-[10px] text-slate-500 text-center pt-2">
-            Password: demo123 · MPIN varies by persona
+            MPIN varies by persona · Default demo MPIN: 123456
           </p>
         </div>
       </BottomSheet>

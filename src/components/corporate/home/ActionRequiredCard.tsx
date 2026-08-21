@@ -46,7 +46,7 @@ export const ActionRequiredCard: React.FC<ActionRequiredCardProps> = ({
             <button
               type="button"
               onClick={onReviewAll}
-              className="mt-3 w-full py-2.5 rounded-xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-11"
+              className="mt-3 w-full py-2.5 rounded-xl bg-congress-blue-700 text-white text-sm font-semibold min-h-11"
             >
               Review All
             </button>

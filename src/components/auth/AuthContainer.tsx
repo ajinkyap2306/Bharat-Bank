@@ -5,30 +5,25 @@ import {
   ArrowRight,
   Fingerprint,
   KeyRound,
-  Lock,
   Smartphone,
   ChevronLeft,
-  Eye,
-  EyeOff,
   User,
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { BharatBankLogo } from '../common/BharatBankLogo';
 import { NumericPinInput } from '../common/NumericPinInput';
 import { findCorporateDemoUserByCustomerIdOnly } from '../../data/corporateAuthMock';
-import { authenticateCorporate } from '../../services/corporateLoginService';
 import { isCorporateCustomerId } from '../../utils/customerId';
 import { PreLoginQuickLinks } from './prelogin/PreLoginModule';
 import { LoginPromoBanner } from './prelogin/LoginPromoBanner';
 import { PreLoginTicker } from './prelogin/PreLoginTicker';
 import { LoginOfferSheet } from './prelogin/LoginOfferSheet';
-import { LoginTermsSheet } from './prelogin/LoginTermsSheet';
 import { AuthSplashScreen } from './AuthSplashScreen';
 import { LoginDemoPicker, type LoginDemoPersona } from './LoginDemoPicker';
 import { getRetailJointUserByCustomerNumber } from '../../data/retailJointTransferMock';
 
 type LoginPersona = LoginDemoPersona;
-type LoginMethod = 'password' | 'mpin' | 'fingerprint';
+type LoginMethod = 'mpin' | 'fingerprint';
 
 const RETAIL_DEMO_USER_ID = 'RB-123456';
 const MAKER_DEMO_USER_ID = 'C001';
@@ -53,21 +48,16 @@ export const AuthContainer: React.FC = () => {
     setRetailSessionFromLogin,
     login,
     addToast,
-    setPendingCorporateUser,
-    setCorporateLoginVerified,
+    completeCorporateAuthentication,
     clearSessionExpired,
   } = useBanking();
 
   const [loginPersona, setLoginPersona] = useState<LoginPersona>('retail');
-  const [loginMethod, setLoginMethod] = useState<LoginMethod>('password');
+  const [loginMethod, setLoginMethod] = useState<LoginMethod>('mpin');
   const [customerId, setCustomerId] = useState(RETAIL_DEMO_USER_ID);
-  const [password, setPassword] = useState('demo123');
   const [mpin, setMpin] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState('');
   const [isBiometricScanning, setIsBiometricScanning] = useState(false);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [showLoginTerms, setShowLoginTerms] = useState(false);
 
   useEffect(() => {
     const state = location.state as { retailUserId?: string; customerId?: string } | null;
@@ -91,11 +81,9 @@ export const AuthContainer: React.FC = () => {
       });
       return false;
     }
-    setPendingCorporateUser(user);
     setBankingType('corporate');
     clearSessionExpired();
-    setCorporateLoginVerified(true);
-    navigate('/corporate/otp');
+    completeCorporateAuthentication(false, user);
     return true;
   };
 
@@ -124,26 +112,18 @@ export const AuthContainer: React.FC = () => {
       });
       return false;
     }
-    if (loginMethod === 'password' && !password) {
-      addToast({
-        type: 'error',
-        title: 'Input Missing',
-        message: 'Please enter your password.',
-      });
-      return false;
-    }
     return true;
   };
 
-  const beginLogin = () => {
+  const attemptLogin = () => {
     if (!validateLoginInputs()) return;
-    setShowLoginTerms(true);
+    void performLogin();
   };
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (loginMethod === 'fingerprint') return;
-    beginLogin();
+    attemptLogin();
   };
 
   const performLogin = async () => {
@@ -179,39 +159,7 @@ export const AuthContainer: React.FC = () => {
           completeRetailLogin(id);
         }
       }, 1200);
-      return;
     }
-
-    if (!password) return;
-
-    if (isCorporateCustomerId(id)) {
-      setIsLoggingIn(true);
-      const authenticated = await authenticateCorporate({
-        corporateId: '',
-        userId: id,
-        password,
-      });
-      setIsLoggingIn(false);
-
-      if (!authenticated) {
-        addToast({
-          type: 'error',
-          title: 'Unable to sign in',
-          message: 'Please check your Customer ID and password.',
-        });
-        return;
-      }
-
-      setPendingCorporateUser(authenticated);
-      setBankingType('corporate');
-      clearSessionExpired();
-      setCorporateLoginVerified(true);
-      navigate('/corporate/otp');
-      return;
-    }
-
-    setBankingType('retail');
-    setAuthScreen('otp');
   };
 
   const handleVerifyOtp = () => {
@@ -229,7 +177,6 @@ export const AuthContainer: React.FC = () => {
   const fillDemo = (type: LoginPersona) => {
     setLoginPersona(type);
     setCustomerId(PERSONA_CUSTOMER_IDS[type]);
-    setPassword('demo123');
     const jointUser = getRetailJointUserByCustomerNumber(PERSONA_CUSTOMER_IDS[type]);
     setMpin(jointUser?.demoMpin ?? DEMO_MPIN);
     setBankingType(type === 'retail' || type === 'rahul' || type === 'amit' ? 'retail' : 'corporate');
@@ -297,10 +244,9 @@ export const AuthContainer: React.FC = () => {
                 Sign in to Mobile Banking
               </h2>
 
-              <div className="grid grid-cols-3 gap-2 mt-3 mb-2.5 p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div className="grid grid-cols-2 gap-2 mt-3 mb-2.5 p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                 {(
                   [
-                    { id: 'password' as const, label: 'Password', icon: Lock },
                     { id: 'mpin' as const, label: 'MPIN', icon: KeyRound },
                     { id: 'fingerprint' as const, label: 'Fingerprint', icon: Fingerprint },
                   ] as const
@@ -352,17 +298,8 @@ export const AuthContainer: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
-                      {loginMethod === 'password' ? 'Password' : loginMethod === 'mpin' ? 'MPIN' : 'Biometric'}
+                      {loginMethod === 'mpin' ? 'MPIN' : 'Biometric'}
                     </label>
-                    {loginMethod === 'password' && (
-                      <button
-                        type="button"
-                        onClick={() => navigate('/forgot-password')}
-                        className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline"
-                      >
-                        Forgot password?
-                      </button>
-                    )}
                     {loginMethod === 'mpin' && (
                       <button
                         type="button"
@@ -373,27 +310,6 @@ export const AuthContainer: React.FC = () => {
                       </button>
                     )}
                   </div>
-
-                  {loginMethod === 'password' && (
-                    <div className="relative">
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="demo123"
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 dark:text-white outline-none shadow-xs"
-                        autoComplete="current-password"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  )}
 
                   {loginMethod === 'mpin' && (
                     <div className="px-1">
@@ -412,7 +328,7 @@ export const AuthContainer: React.FC = () => {
                   {loginMethod === 'fingerprint' && (
                     <button
                       type="button"
-                      onClick={beginLogin}
+                      onClick={attemptLogin}
                       disabled={isBiometricScanning}
                       aria-label="Authenticate with fingerprint"
                       className="w-full flex flex-col items-center py-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 active:scale-[0.98] transition-transform disabled:opacity-70"
@@ -440,17 +356,13 @@ export const AuthContainer: React.FC = () => {
                 {loginMethod !== 'fingerprint' && (
                 <button
                   type="submit"
-                  disabled={isLoggingIn || isBiometricScanning}
+                  disabled={isBiometricScanning}
                   className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white font-bold rounded-xl shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                 >
                   <span>
-                    {isLoggingIn || isBiometricScanning
-                      ? 'Signing in…'
-                      : loginMethod === 'mpin'
-                          ? 'Sign In with MPIN'
-                          : 'Sign In'}
+                    {isBiometricScanning ? 'Signing in…' : 'Sign In with MPIN'}
                   </span>
-                  {!isLoggingIn && !isBiometricScanning && <ArrowRight className="w-4 h-4" />}
+                  {!isBiometricScanning && <ArrowRight className="w-4 h-4" />}
                 </button>
                 )}
               </form>
@@ -580,14 +492,6 @@ export const AuthContainer: React.FC = () => {
         <>
           <LoginDemoPicker activePersona={loginPersona} onSelect={fillDemo} />
           <LoginOfferSheet onExploreOffers={() => navigate('/prelogin/offers')} />
-          <LoginTermsSheet
-            isOpen={showLoginTerms}
-            onClose={() => setShowLoginTerms(false)}
-            onAccept={() => {
-              setShowLoginTerms(false);
-              void performLogin();
-            }}
-          />
         </>
       )}
     </div>

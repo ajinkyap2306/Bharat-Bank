@@ -66,7 +66,6 @@ export const CorporateDeviceVerification: React.FC = () => {
   const {
     completeCorporateAuthentication,
     setCorporateLoginVerified,
-    setCorporateOtpVerified,
     pendingCorporateUser,
   } = useBanking();
 
@@ -135,17 +134,15 @@ export const CorporateDeviceVerification: React.FC = () => {
   }, [completeAndNavigate]);
 
   const handleBack = useCallback(() => {
-    setCorporateOtpVerified(true);
     setCorporateLoginVerified(true);
-    navigate('/corporate/otp', { replace: true });
-  }, [navigate, setCorporateLoginVerified, setCorporateOtpVerified]);
+    navigate('/', { replace: true });
+  }, [navigate, setCorporateLoginVerified]);
 
   const handleUseOtp = useCallback(() => {
     dispatch({ type: 'RESET_FAILURE' });
-    setCorporateOtpVerified(true);
     setCorporateLoginVerified(true);
-    navigate('/corporate/otp', { replace: true });
-  }, [navigate, setCorporateLoginVerified, setCorporateOtpVerified]);
+    navigate('/', { replace: true });
+  }, [navigate, setCorporateLoginVerified]);
 
   const handleTryAgain = useCallback(() => {
     dispatch({ type: 'RESET_FAILURE' });

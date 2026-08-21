@@ -37,7 +37,7 @@ export const CashFlowCard: React.FC<CashFlowCardProps> = ({
                 onClick={() => onPeriodChange(p)}
                 className={`px-3 py-1.5 rounded-full text-[12px] font-semibold min-h-8 transition-colors ${
                   period === p
-                    ? 'bg-[#0B5CAB] text-white'
+                    ? 'bg-congress-blue-700 text-white'
                     : 'bg-[#F7F9FC] dark:bg-slate-800 text-[#667085]'
                 }`}
               >

@@ -27,7 +27,7 @@ export const CashPositionCard: React.FC<CashPositionCardProps> = ({
         <button
           type="button"
           onClick={() => setHidden((v) => !v)}
-          className="flex items-center gap-1 text-[12px] font-medium text-[#0B5CAB] min-h-11 px-1"
+          className="flex items-center gap-1 text-[12px] font-medium text-congress-blue-700 dark:text-congress-blue-400 min-h-11 px-1"
           aria-label={hidden ? 'Show balance' : 'Hide balance'}
         >
           {hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -63,7 +63,7 @@ export const CashPositionCard: React.FC<CashPositionCardProps> = ({
       <button
         type="button"
         onClick={onViewAccounts}
-        className="mt-4 w-full py-3 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12 active:scale-[0.99] transition-transform"
+        className="mt-4 w-full py-3 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12 active:scale-[0.99] transition-transform"
       >
         View Accounts
       </button>

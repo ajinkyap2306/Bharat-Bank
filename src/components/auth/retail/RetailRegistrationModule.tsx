@@ -26,7 +26,6 @@ import {
   maskUserId,
   simulateSimVerification,
   validateAadhaarVerification,
-  validateCustomerVerification,
   validateDebitCardVerification,
   validateMpin,
   validatePanVerification,
@@ -39,6 +38,7 @@ import { BottomSheet } from '../../common/BottomSheet';
 import { OtpInput } from '../corporate/otp/OtpInput';
 import { OtpTimer } from '../corporate/otp/OtpTimer';
 import { SkipBiometricSheet } from '../corporate/device/SkipBiometricSheet';
+import { RegistrationTermsStep } from './RegistrationTermsStep';
 import {
   MpinInput,
   RegAccountRow,
@@ -60,6 +60,7 @@ import {
 
 
 const INITIAL_DRAFT: RetailRegistrationDraft = {
+  termsAccepted: false,
   selectedSimId: null,
   registeredMobile: '',
   verificationMethod: null,
@@ -206,9 +207,12 @@ export const RetailRegistrationModule: React.FC = () => {
       case 'welcome':
         navigate('/');
         break;
+      case 'terms':
+        setStep('welcome');
+        break;
       case 'sim_verify':
       case 'sim_failed':
-        setStep('welcome');
+        setStep('terms');
         break;
       case 'otp':
         setStep('sim_verify');
@@ -216,7 +220,6 @@ export const RetailRegistrationModule: React.FC = () => {
       case 'choose_verification_method':
         setStep('otp');
         break;
-      case 'verify_customer_id':
       case 'verify_debit_card':
       case 'verify_aadhaar':
       case 'verify_pan':
@@ -271,7 +274,7 @@ export const RetailRegistrationModule: React.FC = () => {
   );
 
   const renderStep = () => {
-    if (isLocked && ['verify_customer_id', 'verify_debit_card', 'verify_aadhaar', 'verify_pan'].includes(step)) {
+    if (isLocked && ['verify_debit_card', 'verify_aadhaar', 'verify_pan'].includes(step)) {
       return renderLockedState();
     }
 
@@ -291,11 +294,21 @@ export const RetailRegistrationModule: React.FC = () => {
             <RegStickyFooter>
               <RegPrimaryButton
                 label="Register / Activate Mobile Banking"
-                onClick={() => setStep('sim_verify')}
+                onClick={() => setStep('terms')}
               />
               <RegSecondaryButton label="Login" onClick={() => navigate('/')} />
             </RegStickyFooter>
           </div>
+        );
+
+      case 'terms':
+        return (
+          <RegistrationTermsStep
+            onContinue={() => {
+              setDraft((d) => ({ ...d, termsAccepted: true }));
+              setStep('sim_verify');
+            }}
+          />
         );
 
       case 'sim_verify':
@@ -434,28 +447,10 @@ export const RetailRegistrationModule: React.FC = () => {
           <div className="flex flex-col flex-1">
             <RegTitle title="Select Verification Method" subtitle="Choose how you'd like to verify your bank account." />
             <div className="px-4 space-y-3 flex-1">
-              <RegMethodCard icon={<IdCard className="w-5 h-5" />} title="Customer ID" description="Verify using your Customer ID" onSelect={() => { setDraft((d) => ({ ...d, verificationMethod: 'customer_id' })); setStep('verify_customer_id'); setError(''); setIsLocked(false); setVerificationAttempts(0); }} />
               <RegMethodCard icon={<CreditCard className="w-5 h-5" />} title="Debit Card" description="Verify using your debit card" onSelect={() => { setDraft((d) => ({ ...d, verificationMethod: 'debit_card' })); setStep('verify_debit_card'); setError(''); setIsLocked(false); setVerificationAttempts(0); }} />
               <RegMethodCard icon={<IdCard className="w-5 h-5" />} title="Aadhaar" description="Verify using Aadhaar" onSelect={() => { setDraft((d) => ({ ...d, verificationMethod: 'aadhaar' })); setStep('verify_aadhaar'); setError(''); setIsLocked(false); setVerificationAttempts(0); }} />
               <RegMethodCard icon={<ScrollText className="w-5 h-5" />} title="PAN" description="Verify using PAN" onSelect={() => { setDraft((d) => ({ ...d, verificationMethod: 'pan' })); setStep('verify_pan'); setError(''); setIsLocked(false); setVerificationAttempts(0); }} />
             </div>
-          </div>
-        );
-
-      case 'verify_customer_id':
-        return (
-          <div className="flex flex-col flex-1">
-            <div className="flex-1 overflow-y-auto">
-              <RegTitle title="Customer Verification" subtitle="Verify with Customer ID" />
-              <div className="px-4 space-y-4">
-                <RegField label="Customer ID" value={draft.customerId} onChange={(v) => setDraft((d) => ({ ...d, customerId: v.replace(/\D/g, '').slice(0, 12) }))} placeholder="Enter Customer ID" inputMode="numeric" />
-                <RegField label="Date of Birth" value={draft.dateOfBirth} onChange={(v) => setDraft((d) => ({ ...d, dateOfBirth: formatDobInput(v) }))} placeholder="DD / MM / YYYY" inputMode="numeric" />
-                {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
-              </div>
-            </div>
-            <RegStickyFooter>
-              <RegPrimaryButton label="Continue" onClick={() => { const err = validateCustomerVerification(draft.customerId, draft.dateOfBirth); if (err) handleVerificationFailure(err); else goToPostCustomerVerification(); }} />
-            </RegStickyFooter>
           </div>
         );
 

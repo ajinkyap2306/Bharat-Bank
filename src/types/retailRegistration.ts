@@ -1,17 +1,17 @@
 export type RetailRegistrationMethod = 'sim_verify';
 
-export type VerificationMethod = 'customer_id' | 'debit_card' | 'aadhaar' | 'pan';
+export type VerificationMethod = 'debit_card' | 'aadhaar' | 'pan';
 
 export type SimSlotId = 'sim1' | 'sim2';
 
 export type RetailRegistrationStep =
   | 'welcome'
+  | 'terms'
   | 'sim_verify'
   | 'sim_processing'
   | 'sim_failed'
   | 'otp'
   | 'choose_verification_method'
-  | 'verify_customer_id'
   | 'verify_debit_card'
   | 'verify_aadhaar'
   | 'verify_pan'
@@ -37,6 +37,7 @@ export interface RetailLinkedAccount {
 }
 
 export interface RetailRegistrationDraft {
+  termsAccepted: boolean;
   selectedSimId: SimSlotId | null;
   registeredMobile: string;
   verificationMethod: VerificationMethod | null;

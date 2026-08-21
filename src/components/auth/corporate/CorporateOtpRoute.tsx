@@ -1,14 +1,15 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useBanking } from '../../../context/BankingContext';
-import { CorporateOtpVerification } from './otp/CorporateOtpVerification';
+import { getCorporateLandingPath } from '../../../utils/corporateLanding';
 
+/** Legacy route — corporate OTP step removed. */
 export const CorporateOtpRoute: React.FC = () => {
-  const { corporateLoginVerified, isSessionExpired } = useBanking();
+  const { isAuthenticated, corporateSession } = useBanking();
 
-  if (!corporateLoginVerified && !isSessionExpired) {
-    return <Navigate to="/" replace />;
+  if (isAuthenticated) {
+    return <Navigate to={getCorporateLandingPath(corporateSession?.role)} replace />;
   }
 
-  return <CorporateOtpVerification />;
+  return <Navigate to="/" replace />;
 };

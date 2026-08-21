@@ -28,7 +28,7 @@ const NotifIcon: React.FC<{ type: CorporateDashboardNotification['type'] }> = ({
     );
   }
   return (
-    <div className="w-9 h-9 rounded-xl bg-[#0B5CAB]/10 text-[#0B5CAB] flex items-center justify-center shrink-0">
+    <div className="w-9 h-9 rounded-xl bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 flex items-center justify-center shrink-0">
       <ArrowUpRight className="w-4 h-4" />
     </div>
   );
@@ -66,7 +66,7 @@ export const CorporateNotificationsScreen: React.FC<CorporateNotificationsScreen
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <Bell className="w-5 h-5 text-[#0B5CAB]" />
+            <Bell className="w-5 h-5 text-congress-blue-700 dark:text-congress-blue-400" />
             <h1 className="text-base font-bold text-[#111827] dark:text-white">Notifications</h1>
           </div>
         </div>
@@ -78,7 +78,7 @@ export const CorporateNotificationsScreen: React.FC<CorporateNotificationsScreen
               onClick={() => setTab(t)}
               className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
                 tab === t
-                  ? 'bg-[#0B5CAB] text-white'
+                  ? 'bg-congress-blue-700 text-white'
                   : 'bg-slate-100 dark:bg-slate-800 text-[#667085]'
               }`}
             >
@@ -101,14 +101,14 @@ export const CorporateNotificationsScreen: React.FC<CorporateNotificationsScreen
                 n.type === 'security'
                   ? 'bg-rose-50/80 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/50'
                   : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800'
-              } ${!n.read ? 'ring-1 ring-[#0B5CAB]/20' : ''}`}
+              } ${!n.read ? 'ring-1 ring-congress-blue-200 dark:ring-congress-blue-800' : ''}`}
             >
               <div className="flex gap-3">
                 <NotifIcon type={n.type} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-sm font-bold text-[#111827] dark:text-white">{n.title}</p>
-                    {!n.read && <span className="w-2 h-2 rounded-full bg-[#0B5CAB] shrink-0 mt-1.5" />}
+                    {!n.read && <span className="w-2 h-2 rounded-full bg-congress-blue-700 shrink-0 mt-1.5" />}
                   </div>
                   <p className="text-xs text-[#667085] mt-0.5">{n.description}</p>
                   <p className="text-[10px] text-[#667085] mt-1">{n.time}</p>

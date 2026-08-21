@@ -1,14 +1,15 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useBanking } from '../../../context/BankingContext';
-import { CorporateDeviceVerification } from './device/CorporateDeviceVerification';
+import { getCorporateLandingPath } from '../../../utils/corporateLanding';
 
+/** Legacy route — device verification step removed. */
 export const CorporateDeviceVerificationRoute: React.FC = () => {
-  const { corporateOtpVerified } = useBanking();
+  const { isAuthenticated, corporateSession } = useBanking();
 
-  if (!corporateOtpVerified) {
-    return <Navigate to="/" replace />;
+  if (isAuthenticated) {
+    return <Navigate to={getCorporateLandingPath(corporateSession?.role)} replace />;
   }
 
-  return <CorporateDeviceVerification />;
+  return <Navigate to="/" replace />;
 };

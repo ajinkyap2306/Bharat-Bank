@@ -49,10 +49,10 @@ export const ApprovalAlertCard: React.FC<ApprovalAlertCardProps> = ({
         type="button"
         whileTap={{ scale: 0.99 }}
         onClick={onReviewApprovals}
-        className="w-full flex items-center gap-2.5 text-left rounded-2xl bg-white dark:bg-slate-900 border border-[#0B5CAB]/15 dark:border-[#0B5CAB]/25 px-3 py-2.5 shadow-xs"
+        className="w-full flex items-center gap-2.5 text-left rounded-2xl bg-white dark:bg-slate-900 border border-congress-blue-200 dark:border-congress-blue-800 dark:border-congress-blue-200 dark:border-congress-blue-800 px-3 py-2.5 shadow-xs"
       >
-        <div className="w-8 h-8 rounded-lg bg-[#0B5CAB]/10 flex items-center justify-center shrink-0">
-          <Icon className="w-4 h-4 text-[#0B5CAB]" aria-hidden />
+        <div className="w-8 h-8 rounded-lg bg-congress-blue-50 dark:bg-congress-blue-950/60 flex items-center justify-center shrink-0">
+          <Icon className="w-4 h-4 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />
         </div>
 
         <div className="min-w-0 flex-1">
@@ -60,11 +60,11 @@ export const ApprovalAlertCard: React.FC<ApprovalAlertCardProps> = ({
             {title}
           </p>
           <p className="text-[11px] text-[#667085] mt-0.5 leading-snug">
-            <span className="font-semibold text-[#0B5CAB] tabular-nums">
+            <span className="font-semibold text-congress-blue-700 dark:text-congress-blue-400 tabular-nums">
               {alert.requestCount} {isMaker ? 'payments' : 'pending'}
             </span>
             {' · '}
-            <span className="font-semibold text-[#0B5CAB] tabular-nums">
+            <span className="font-semibold text-congress-blue-700 dark:text-congress-blue-400 tabular-nums">
               {formatCorpCurrency(alert.totalAmount)}
             </span>{' '}
             {suffix}

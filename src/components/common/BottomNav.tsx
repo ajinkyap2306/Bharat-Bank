@@ -183,7 +183,7 @@ export const BottomNav: React.FC = () => {
               }}
               className={`${CORP_NAV_ITEM} ${
                 corporateTab === 'home'
-                  ? 'text-[#0B5CAB] dark:text-blue-400 font-bold'
+                  ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
                   : 'text-slate-500 dark:text-slate-400'
               }`}
               aria-current={corporateTab === 'home' ? 'page' : undefined}
@@ -200,7 +200,7 @@ export const BottomNav: React.FC = () => {
               }}
               className={`${CORP_NAV_ITEM} ${
                 corporateTab === 'payments'
-                  ? 'text-[#0B5CAB] dark:text-blue-400 font-bold'
+                  ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
                   : 'text-slate-500 dark:text-slate-400'
               }`}
               aria-current={corporateTab === 'payments' ? 'page' : undefined}
@@ -217,7 +217,7 @@ export const BottomNav: React.FC = () => {
               }}
               className={`${CORP_NAV_ITEM} ${
                 corporateTab === 'approvals'
-                  ? 'text-[#0B5CAB] dark:text-blue-400 font-bold'
+                  ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
                   : 'text-slate-500 dark:text-slate-400'
               }`}
               aria-current={corporateTab === 'approvals' ? 'page' : undefined}
@@ -242,7 +242,7 @@ export const BottomNav: React.FC = () => {
               }}
               className={`${CORP_NAV_ITEM} ${
                 corporateTab === 'accounts'
-                  ? 'text-[#0B5CAB] dark:text-blue-400 font-bold'
+                  ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
                   : 'text-slate-500 dark:text-slate-400'
               }`}
               aria-current={corporateTab === 'accounts' ? 'page' : undefined}
@@ -259,7 +259,7 @@ export const BottomNav: React.FC = () => {
               }}
               className={`${CORP_NAV_ITEM} ${
                 corporateTab === 'more'
-                  ? 'text-[#0B5CAB] dark:text-blue-400 font-bold'
+                  ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
                   : 'text-slate-500 dark:text-slate-400'
               }`}
               aria-current={corporateTab === 'more' ? 'page' : undefined}
