@@ -15,11 +15,7 @@ import {
   RETAIL_LINKED_ACCOUNTS,
   RETAIL_MAX_OTP_ATTEMPTS,
   RETAIL_MAX_VERIFICATION_ATTEMPTS,
-  RETAIL_MOBILE_BANKING_TERMS,
   RETAIL_OTP_RESEND_SECONDS,
-  RETAIL_PRIVACY_TEXT,
-  RETAIL_REGISTRATION_DEMO_HINTS,
-  RETAIL_TERMS_TEXT,
   formatAadhaarInput,
   formatCardNumberDisplay,
   formatDobInput,
@@ -47,7 +43,6 @@ import {
   MpinInput,
   RegAccountRow,
   RegChecklist,
-  RegDemoHint,
   RegErrorIcon,
   RegField,
   RegInfoRow,
@@ -109,8 +104,6 @@ export const RetailRegistrationModule: React.FC = () => {
   const [showHelp, setShowHelp] = useState(false);
   const [showExit, setShowExit] = useState(false);
   const [showBiometricSkip, setShowBiometricSkip] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const successSoundPlayed = useRef(false);
   const pendingBack = useRef<(() => void) | null>(null);
@@ -213,13 +206,9 @@ export const RetailRegistrationModule: React.FC = () => {
       case 'welcome':
         navigate('/');
         break;
-      case 'terms':
-        setTermsAccepted(false);
-        setStep('welcome');
-        break;
       case 'sim_verify':
       case 'sim_failed':
-        setStep('terms');
+        setStep('welcome');
         break;
       case 'otp':
         setStep('sim_verify');
@@ -252,7 +241,7 @@ export const RetailRegistrationModule: React.FC = () => {
 
   const requestBack = useCallback(
     (action: () => void) => {
-      if (['welcome', 'terms', 'sim_processing', 'complete'].includes(step)) {
+      if (['welcome', 'sim_processing', 'complete'].includes(step)) {
         action();
         return;
       }
@@ -302,70 +291,9 @@ export const RetailRegistrationModule: React.FC = () => {
             <RegStickyFooter>
               <RegPrimaryButton
                 label="Register / Activate Mobile Banking"
-                onClick={() => {
-                  setTermsAccepted(false);
-                  setStep('terms');
-                }}
+                onClick={() => setStep('sim_verify')}
               />
               <RegSecondaryButton label="Login" onClick={() => navigate('/')} />
-            </RegStickyFooter>
-          </div>
-        );
-
-      case 'terms':
-        return (
-          <div className="flex flex-col flex-1 min-h-0">
-            <RegTitle
-              title="Terms & Conditions"
-              subtitle="Please read and accept the terms to continue with mobile banking registration."
-            />
-            <div className="flex-1 overflow-y-auto px-4 pb-4">
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-4 max-h-[42vh] overflow-y-auto">
-                <pre className="text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap font-sans leading-relaxed">
-                  {RETAIL_TERMS_TEXT}
-                </pre>
-                <pre className="text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap font-sans leading-relaxed mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                  {RETAIL_MOBILE_BANKING_TERMS}
-                </pre>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowPrivacy(true)}
-                className="mt-3 text-xs font-semibold text-[#005DD4] dark:text-blue-400"
-              >
-                View Privacy Policy
-              </button>
-              <label className="mt-4 flex items-start gap-3 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={termsAccepted}
-                  onChange={(e) => {
-                    setTermsAccepted(e.target.checked);
-                    setError('');
-                  }}
-                  className="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#005DD4] focus:ring-[#005DD4]"
-                />
-                <span className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                  I have read, understood, and agree to the Terms & Conditions and Privacy Policy of Bharat
-                  Co-operative Bank (Mumbai) Ltd.
-                </span>
-              </label>
-              {error && <p className="text-xs text-red-600 font-medium mt-2">{error}</p>}
-            </div>
-            <RegStickyFooter>
-              <RegPrimaryButton
-                label="Accept & Continue"
-                disabled={!termsAccepted}
-                onClick={() => {
-                  if (!termsAccepted) {
-                    setError('Please accept the Terms & Conditions to continue.');
-                    return;
-                  }
-                  setError('');
-                  setStep('sim_verify');
-                }}
-              />
-              <RegSecondaryButton label="Decline" onClick={() => navigate('/')} />
             </RegStickyFooter>
           </div>
         );
@@ -396,7 +324,6 @@ export const RetailRegistrationModule: React.FC = () => {
                     'OTP will be sent to your registered mobile number',
                   ]}
                 />
-                <RegDemoHint title={RETAIL_REGISTRATION_DEMO_HINTS.sim.title} lines={RETAIL_REGISTRATION_DEMO_HINTS.sim.lines} />
                 {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
               </div>
             </div>
@@ -457,7 +384,6 @@ export const RetailRegistrationModule: React.FC = () => {
                   onActiveIndexChange={setOtpActiveIndex}
                 />
                 {otpError && <p className="text-xs text-red-600 font-medium text-center">{otpError}</p>}
-                <RegDemoHint title={RETAIL_REGISTRATION_DEMO_HINTS.otp.title} lines={RETAIL_REGISTRATION_DEMO_HINTS.otp.lines} />
                 <div className="text-center space-y-2">
                   <OtpTimer secondsRemaining={otpResendSeconds} />
                   {otpResendSeconds === 0 && (
@@ -525,7 +451,6 @@ export const RetailRegistrationModule: React.FC = () => {
                 <RegField label="Customer ID" value={draft.customerId} onChange={(v) => setDraft((d) => ({ ...d, customerId: v.replace(/\D/g, '').slice(0, 12) }))} placeholder="Enter Customer ID" inputMode="numeric" />
                 <RegField label="Date of Birth" value={draft.dateOfBirth} onChange={(v) => setDraft((d) => ({ ...d, dateOfBirth: formatDobInput(v) }))} placeholder="DD / MM / YYYY" inputMode="numeric" />
                 {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
-                <RegDemoHint title={RETAIL_REGISTRATION_DEMO_HINTS.customerId.title} lines={RETAIL_REGISTRATION_DEMO_HINTS.customerId.lines} />
               </div>
             </div>
             <RegStickyFooter>
@@ -543,7 +468,6 @@ export const RetailRegistrationModule: React.FC = () => {
                 <RegField label="Debit Card Number" value={formatCardNumberDisplay(draft.debitCardNumber)} onChange={(v) => setDraft((d) => ({ ...d, debitCardNumber: v.replace(/\D/g, '').slice(0, 16) }))} placeholder="•••• •••• •••• 4582" inputMode="numeric" />
                 <RegField label="Expiry Date" value={draft.debitCardExpiry} onChange={(v) => setDraft((d) => ({ ...d, debitCardExpiry: formatExpiryInput(v) }))} placeholder="MM / YY" inputMode="numeric" />
                 {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
-                <RegDemoHint title={RETAIL_REGISTRATION_DEMO_HINTS.debitCard.title} lines={RETAIL_REGISTRATION_DEMO_HINTS.debitCard.lines} />
               </div>
             </div>
             <RegStickyFooter>
@@ -561,7 +485,6 @@ export const RetailRegistrationModule: React.FC = () => {
               <div className="px-4 space-y-4">
                 <RegField label="Aadhaar Number" value={formatAadhaarInput(draft.aadhaarNumber)} onChange={(v) => setDraft((d) => ({ ...d, aadhaarNumber: v.replace(/\D/g, '').slice(0, 12) }))} placeholder="XXXX XXXX 1234" inputMode="numeric" />
                 {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
-                <RegDemoHint title={RETAIL_REGISTRATION_DEMO_HINTS.aadhaar.title} lines={RETAIL_REGISTRATION_DEMO_HINTS.aadhaar.lines} />
               </div>
             </div>
             <RegStickyFooter>
@@ -580,7 +503,6 @@ export const RetailRegistrationModule: React.FC = () => {
                 <RegField label="PAN" value={draft.pan} onChange={(v) => setDraft((d) => ({ ...d, pan: v.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10) }))} placeholder="ABCDE1234F" autoCapitalize="characters" />
                 <RegField label="Date of Birth" value={draft.dateOfBirth} onChange={(v) => setDraft((d) => ({ ...d, dateOfBirth: formatDobInput(v) }))} placeholder="DD / MM / YYYY" inputMode="numeric" />
                 {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
-                <RegDemoHint title={RETAIL_REGISTRATION_DEMO_HINTS.pan.title} lines={RETAIL_REGISTRATION_DEMO_HINTS.pan.lines} />
               </div>
             </div>
             <RegStickyFooter>
@@ -605,7 +527,6 @@ export const RetailRegistrationModule: React.FC = () => {
                     onSelect={() => selectAccount(account.id)}
                   />
                 ))}
-                <RegDemoHint title={RETAIL_REGISTRATION_DEMO_HINTS.accounts.title} lines={RETAIL_REGISTRATION_DEMO_HINTS.accounts.lines} />
                 {!draft.linkedAccountId && (
                   <p className="text-xs text-red-600 font-medium">Select an account to continue.</p>
                 )}
@@ -774,11 +695,6 @@ export const RetailRegistrationModule: React.FC = () => {
         onEnable={() => { setShowBiometricSkip(false); finishRegistration(true); }}
       />
 
-      <BottomSheet isOpen={showPrivacy} onClose={() => setShowPrivacy(false)} title="Privacy Policy">
-        <pre className="text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap font-sans leading-relaxed pb-2 max-h-[50vh] overflow-y-auto">
-          {RETAIL_PRIVACY_TEXT}
-        </pre>
-      </BottomSheet>
     </RegShell>
   );
 };

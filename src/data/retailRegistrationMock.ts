@@ -60,38 +60,6 @@ export const RETAIL_LINKED_ACCOUNTS: RetailLinkedAccount[] = [
   },
 ];
 
-/** Visible demo hints for client walkthroughs. */
-export const RETAIL_REGISTRATION_DEMO_HINTS = {
-  sim: {
-    title: 'Demo SIM',
-    lines: ['Select SIM 1 (Jio) for device check', 'SIM 2 (Airtel) will fail device verification'],
-  },
-  otp: {
-    title: 'Demo OTP (mobile verification)',
-    lines: [`OTP: ${RETAIL_DEMO_AUTO_OTP}`],
-  },
-  customerId: {
-    title: 'Customer ID',
-    lines: [`Customer ID: ${RETAIL_DEMO_CUSTOMER_ID}`, `DOB: ${RETAIL_DEMO_DOB}`],
-  },
-  debitCard: {
-    title: 'Debit Card',
-    lines: ['Card: 4532 1234 5678 9010', `Expiry: ${RETAIL_DEMO_DEBIT_EXPIRY}`],
-  },
-  aadhaar: {
-    title: 'Aadhaar',
-    lines: ['Aadhaar: 1234 5678 1234'],
-  },
-  pan: {
-    title: 'PAN',
-    lines: [`PAN: ${RETAIL_DEMO_PAN}`, `DOB: ${RETAIL_DEMO_DOB}`],
-  },
-  accounts: {
-    title: 'Demo',
-    lines: ['Select one account to link for mobile banking'],
-  },
-} as const;
-
 export const RETAIL_TERMS_TEXT = `Bharat Co-operative Bank (Mumbai) Ltd — Mobile Banking Terms & Conditions
 
 1. Definitions

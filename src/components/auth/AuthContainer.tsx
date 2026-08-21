@@ -22,6 +22,7 @@ import { PreLoginQuickLinks } from './prelogin/PreLoginModule';
 import { LoginPromoBanner } from './prelogin/LoginPromoBanner';
 import { PreLoginTicker } from './prelogin/PreLoginTicker';
 import { LoginOfferSheet } from './prelogin/LoginOfferSheet';
+import { LoginTermsSheet } from './prelogin/LoginTermsSheet';
 import { AuthSplashScreen } from './AuthSplashScreen';
 import { LoginDemoPicker, type LoginDemoPersona } from './LoginDemoPicker';
 import { getRetailJointUserByCustomerNumber } from '../../data/retailJointTransferMock';
@@ -66,6 +67,7 @@ export const AuthContainer: React.FC = () => {
   const [otp, setOtp] = useState('');
   const [isBiometricScanning, setIsBiometricScanning] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [showLoginTerms, setShowLoginTerms] = useState(false);
 
   useEffect(() => {
     const state = location.state as { retailUserId?: string; customerId?: string } | null;
@@ -104,8 +106,7 @@ export const AuthContainer: React.FC = () => {
     login('retail', jointUser?.name ?? id);
   };
 
-  const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateLoginInputs = (): boolean => {
     const id = customerId.trim();
     if (!id) {
       addToast({
@@ -113,18 +114,43 @@ export const AuthContainer: React.FC = () => {
         title: 'Input Missing',
         message: 'Please enter your Customer ID.',
       });
-      return;
+      return false;
     }
+    if (loginMethod === 'mpin' && mpin.length !== 6) {
+      addToast({
+        type: 'error',
+        title: 'Invalid MPIN',
+        message: 'Enter your 6-digit MPIN.',
+      });
+      return false;
+    }
+    if (loginMethod === 'password' && !password) {
+      addToast({
+        type: 'error',
+        title: 'Input Missing',
+        message: 'Please enter your password.',
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const beginLogin = () => {
+    if (!validateLoginInputs()) return;
+    setShowLoginTerms(true);
+  };
+
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loginMethod === 'fingerprint') return;
+    beginLogin();
+  };
+
+  const performLogin = async () => {
+    const id = customerId.trim();
+    if (!id) return;
 
     if (loginMethod === 'mpin') {
-      if (mpin.length !== 6) {
-        addToast({
-          type: 'error',
-          title: 'Invalid MPIN',
-          message: 'Enter your 6-digit MPIN.',
-        });
-        return;
-      }
       if (mpin !== (getRetailJointUserByCustomerNumber(id)?.demoMpin ?? DEMO_MPIN)) {
         addToast({
           type: 'error',
@@ -156,14 +182,7 @@ export const AuthContainer: React.FC = () => {
       return;
     }
 
-    if (!password) {
-      addToast({
-        type: 'error',
-        title: 'Input Missing',
-        message: 'Please enter your password.',
-      });
-      return;
-    }
+    if (!password) return;
 
     if (isCorporateCustomerId(id)) {
       setIsLoggingIn(true);
@@ -391,27 +410,34 @@ export const AuthContainer: React.FC = () => {
                   )}
 
                   {loginMethod === 'fingerprint' && (
-                    <div className="flex flex-col items-center py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <button
+                      type="button"
+                      onClick={beginLogin}
+                      disabled={isBiometricScanning}
+                      aria-label="Authenticate with fingerprint"
+                      className="w-full flex flex-col items-center py-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 active:scale-[0.98] transition-transform disabled:opacity-70"
+                    >
                       <div
-                        className={`w-14 h-14 rounded-full border-2 flex items-center justify-center ${
+                        className={`w-16 h-16 rounded-full border-2 flex items-center justify-center ${
                           isBiometricScanning
                             ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30'
                             : 'border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-950/30'
                         }`}
                       >
                         <Fingerprint
-                          className={`w-7 h-7 ${
+                          className={`w-8 h-8 ${
                             isBiometricScanning ? 'text-emerald-600' : 'text-blue-600 dark:text-blue-400'
                           }`}
                         />
                       </div>
-                      <p className="text-[10px] font-semibold text-slate-700 dark:text-slate-300 mt-1.5">
-                        {isBiometricScanning ? 'Scanning…' : 'Tap Sign In below to authenticate'}
+                      <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 mt-2">
+                        {isBiometricScanning ? 'Scanning…' : 'Tap to authenticate'}
                       </p>
-                    </div>
+                    </button>
                   )}
                 </div>
 
+                {loginMethod !== 'fingerprint' && (
                 <button
                   type="submit"
                   disabled={isLoggingIn || isBiometricScanning}
@@ -420,14 +446,13 @@ export const AuthContainer: React.FC = () => {
                   <span>
                     {isLoggingIn || isBiometricScanning
                       ? 'Signing in…'
-                      : loginMethod === 'fingerprint'
-                        ? 'Sign In with Fingerprint'
-                        : loginMethod === 'mpin'
+                      : loginMethod === 'mpin'
                           ? 'Sign In with MPIN'
                           : 'Sign In'}
                   </span>
                   {!isLoggingIn && !isBiometricScanning && <ArrowRight className="w-4 h-4" />}
                 </button>
+                )}
               </form>
 
               <p className="text-center text-[12px] text-slate-500 mt-2">
@@ -555,6 +580,14 @@ export const AuthContainer: React.FC = () => {
         <>
           <LoginDemoPicker activePersona={loginPersona} onSelect={fillDemo} />
           <LoginOfferSheet onExploreOffers={() => navigate('/prelogin/offers')} />
+          <LoginTermsSheet
+            isOpen={showLoginTerms}
+            onClose={() => setShowLoginTerms(false)}
+            onAccept={() => {
+              setShowLoginTerms(false);
+              void performLogin();
+            }}
+          />
         </>
       )}
     </div>

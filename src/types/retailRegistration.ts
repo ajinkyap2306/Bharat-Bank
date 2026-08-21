@@ -6,7 +6,6 @@ export type SimSlotId = 'sim1' | 'sim2';
 
 export type RetailRegistrationStep =
   | 'welcome'
-  | 'terms'
   | 'sim_verify'
   | 'sim_processing'
   | 'sim_failed'

@@ -320,18 +320,3 @@ export const RegInfoLink: React.FC<{ label: string; onClick: () => void }> = ({ 
     {label}
   </button>
 );
-
-export const RegDemoHint: React.FC<{ title?: string; lines: readonly string[] }> = ({ title = 'Demo credentials', lines }) => (
-  <div className="rounded-2xl border border-amber-200/90 bg-amber-50/90 dark:bg-amber-950/25 dark:border-amber-800/60 p-3.5">
-    <p className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-2">
-      {title}
-    </p>
-    <ul className="space-y-1">
-      {lines.map((line) => (
-        <li key={line} className="text-xs font-semibold text-amber-950 dark:text-amber-100 tabular-nums">
-          {line}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
