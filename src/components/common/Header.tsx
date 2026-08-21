@@ -4,11 +4,7 @@ import {
   Moon, 
   Sun, 
   ShieldCheck, 
-  Building2, 
   User, 
-  ChevronDown,
-  Sparkles,
-  Search
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { NotificationsModal } from './NotificationsModal';
@@ -62,24 +58,16 @@ export const Header: React.FC = () => {
 
           {/* Right Action Icons */}
           <div className="flex items-center gap-1.5 shrink-0">
-            {/* Quick Experience Toggle */}
-            <button
-              onClick={() => quickDemoLogin(bankingType === 'retail' ? 'corporate' : 'retail')}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all border border-slate-200 dark:border-slate-700/80"
-              title="Switch between Retail and Corporate banking"
-            >
-              {bankingType === 'retail' ? (
-                <>
-                  <Building2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                  <span className="hidden sm:inline">To Corp</span>
-                </>
-              ) : (
-                <>
-                  <User className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span className="hidden sm:inline">To Retail</span>
-                </>
-              )}
-            </button>
+            {bankingType === 'corporate' && (
+              <button
+                onClick={() => quickDemoLogin('retail')}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all border border-slate-200 dark:border-slate-700/80"
+                title="Switch to Retail banking"
+              >
+                <User className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="hidden sm:inline">To Retail</span>
+              </button>
+            )}
 
             {/* Dark / Light Mode Toggle */}
             <button
