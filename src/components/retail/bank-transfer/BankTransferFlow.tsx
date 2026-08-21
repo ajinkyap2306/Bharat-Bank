@@ -6,18 +6,18 @@ import {
   ArrowLeftRight,
   Building2,
   CheckCircle2,
+  Clock,
   Plus,
+  Search,
   XCircle,
+  Zap,
 } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
 import type { Beneficiary, BankAccount } from '../../../types/banking';
-import type {
-  BankTransferDraft,
-  BankTransferResult,
-  BankTransferStep,
-} from '../../../types/retailBankTransfer';
+import type { BankTransferDraft, BankTransferResult, BankTransferStep } from '../../../types/retailBankTransfer';
 import {
   DEMO_FAIL_TRANSFER_AMOUNT,
+  FUND_TRANSFER_TYPE_OPTIONS,
   TRANSFER_FEE,
   buildTransferTransactionId,
   defaultTransferMode,
@@ -25,6 +25,7 @@ import {
   getAvailableTransferModes,
   maskAccountNumber,
   playTransferSuccessChime,
+  validateTransferModeForAmount,
 } from '../../../data/retailBankTransferMock';
 import {
   AddMoneyLayout,
@@ -90,7 +91,21 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
   const [result, setResult] = useState<BankTransferResult | null>(null);
   const [failReason, setFailReason] = useState('We couldn\'t complete this transaction.');
   const [banlLoading, setBanlLoading] = useState(false);
+  const [beneficiarySearch, setBeneficiarySearch] = useState('');
   const chimePlayed = useRef(false);
+
+  const filteredPayees = useMemo(() => {
+    const q = beneficiarySearch.trim().toLowerCase();
+    if (!q) return payees;
+    return payees.filter(
+      (ben) =>
+        ben.name.toLowerCase().includes(q) ||
+        ben.bankName.toLowerCase().includes(q) ||
+        ben.maskedAccount.toLowerCase().includes(q) ||
+        ben.accountNumber.includes(q) ||
+        (ben.nickname?.toLowerCase().includes(q) ?? false)
+    );
+  }, [payees, beneficiarySearch]);
 
   const fromAccount = accounts.find((a) => a.id === draft.fromAccountId);
   const toAccount = accounts.find((a) => a.id === draft.toAccountId);
@@ -203,8 +218,44 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
       setAmountError(`Insufficient balance. Available ₹${bal.toLocaleString('en-IN')}.`);
       return false;
     }
+    if (draft.path === 'bank') {
+      const modeError = validateTransferModeForAmount(draft.transferMode, amountNum);
+      if (modeError) {
+        setAmountError(modeError);
+        return false;
+      }
+    }
     setAmountError('');
     return true;
+  };
+
+  const startFundTransfer = (option: (typeof FUND_TRANSFER_TYPE_OPTIONS)[number]) => {
+    setAmountError('');
+    if (option.path === 'self') {
+      setDraft((d) => ({ ...d, path: 'self', amount: '', note: '' }));
+      setStep('self');
+      return;
+    }
+    setDraft((d) => ({
+      ...d,
+      path: 'bank',
+      beneficiaryId: null,
+      manualReceiver: null,
+      accountNumber: '',
+      confirmAccountNumber: '',
+      ifsc: '',
+      amount: '',
+      note: '',
+      transferMode: option.mode ?? 'IMPS',
+    }));
+    setStep('bank-beneficiary');
+  };
+
+  const fundTransferIcons: Record<(typeof FUND_TRANSFER_TYPE_OPTIONS)[number]['id'], React.ReactNode> = {
+    'within-bank': <ArrowLeftRight className="w-5 h-5" />,
+    imps: <Zap className="w-5 h-5" />,
+    neft: <Clock className="w-5 h-5" />,
+    rtgs: <Building2 className="w-5 h-5" />,
   };
 
   const runProcessing = () => {
@@ -509,19 +560,26 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
         {availableModes.length > 0 && (
           <div>
             <p className="text-xs font-bold text-slate-500 mb-2">Transfer Type</p>
-            <div className="flex flex-wrap gap-2">
+            <div className="space-y-2">
               {availableModes.map((mode) => (
                 <button
                   key={mode}
                   type="button"
                   onClick={() => setDraft((d) => ({ ...d, transferMode: mode }))}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold border ${
+                  className={`w-full px-4 py-3 rounded-xl text-left border ${
                     draft.transferMode === mode
                       ? 'bg-congress-blue-700 text-white border-congress-blue-700'
                       : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-800'
                   }`}
                 >
-                  {mode}
+                  <p className="text-sm font-bold">{mode}</p>
+                  <p
+                    className={`text-[11px] mt-0.5 ${
+                      draft.transferMode === mode ? 'text-blue-100' : 'text-slate-500'
+                    }`}
+                  >
+                    {FUND_TRANSFER_TYPE_OPTIONS.find((o) => o.mode === mode)?.subtitle}
+                  </p>
                 </button>
               ))}
             </div>
@@ -616,23 +674,45 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
   if (step === 'bank-beneficiary') {
     return (
       <AddMoneyLayout title="Select Beneficiary" onBack={goBack}>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+          <input
+            type="search"
+            value={beneficiarySearch}
+            onChange={(e) => setBeneficiarySearch(e.target.value)}
+            placeholder="Search beneficiary, account, bank..."
+            aria-label="Search beneficiary"
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm outline-none focus:border-congress-blue-500"
+          />
+        </div>
         <div className="space-y-2">
-          {payees.map((ben) => (
-            <RadioSelectCard
-              key={ben.id}
-              selected={draft.beneficiaryId === ben.id}
-              title={ben.name}
-              subtitle={`${ben.bankName} · ${ben.maskedAccount}`}
-              onSelect={() =>
-                setDraft((d) => ({
-                  ...d,
-                  beneficiaryId: ben.id,
-                  manualReceiver: null,
-                  transferMode: defaultTransferMode(Number(d.amount) || 0),
-                }))
-              }
-            />
-          ))}
+          {filteredPayees.length === 0 ? (
+            <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-center">
+              <p className="text-sm font-bold text-slate-900 dark:text-white">No beneficiaries found</p>
+              <p className="text-xs text-slate-500 mt-1">
+                {beneficiarySearch.trim()
+                  ? `No match for "${beneficiarySearch.trim()}"`
+                  : 'Add a beneficiary to continue'}
+              </p>
+            </div>
+          ) : (
+            filteredPayees.map((ben) => (
+              <RadioSelectCard
+                key={ben.id}
+                selected={draft.beneficiaryId === ben.id}
+                title={ben.name}
+                subtitle={`${ben.bankName} · ${ben.maskedAccount}`}
+                onSelect={() =>
+                  setDraft((d) => ({
+                    ...d,
+                    beneficiaryId: ben.id,
+                    manualReceiver: null,
+                    transferMode: defaultTransferMode(Number(d.amount) || 0),
+                  }))
+                }
+              />
+            ))
+          )}
           <button
             type="button"
             onClick={() => {
@@ -663,7 +743,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
   if (step === 'self') {
     const otherAccounts = selfAccounts.filter((a) => a.id !== draft.fromAccountId);
     return (
-      <AddMoneyLayout title="Self Transfer" onBack={goBack}>
+      <AddMoneyLayout title="Within Bank" onBack={goBack}>
         <div>
           <p className="text-xs font-bold text-slate-500 mb-2 px-1">From</p>
           <div className="space-y-2">
@@ -726,35 +806,17 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
   }
 
   return (
-    <AddMoneyLayout title="Bank Transfer" subtitle="Transfer Money" onBack={onClose}>
+    <AddMoneyLayout title="Fund Transfer" subtitle="Transfer Money" onBack={onClose}>
       <div className="space-y-2">
-        <SourceOptionCard
-          icon={<ArrowLeftRight className="w-5 h-5" />}
-          title="Self Transfer"
-          subtitle="Transfer between your own bank accounts"
-          onClick={() => {
-            setDraft((d) => ({ ...d, path: 'self', amount: '', note: '' }));
-            setAmountError('');
-            setStep('self');
-          }}
-        />
-        <SourceOptionCard
-          icon={<Building2 className="w-5 h-5" />}
-          title="Bank Account"
-          subtitle="Transfer to another account"
-          onClick={() => {
-            setDraft((d) => ({
-              ...d,
-              path: 'bank',
-              beneficiaryId: null,
-              manualReceiver: null,
-              amount: '',
-              note: '',
-            }));
-            setAmountError('');
-            setStep('bank-beneficiary');
-          }}
-        />
+        {FUND_TRANSFER_TYPE_OPTIONS.map((option) => (
+          <SourceOptionCard
+            key={option.id}
+            icon={fundTransferIcons[option.id]}
+            title={option.label}
+            subtitle={option.subtitle}
+            onClick={() => startFundTransfer(option)}
+          />
+        ))}
       </div>
     </AddMoneyLayout>
   );

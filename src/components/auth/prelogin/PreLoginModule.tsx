@@ -407,9 +407,9 @@ export const PreLoginQuickLinks: React.FC = () => {
 
   return (
     <>
-      <div className="mt-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 shadow-sm shrink-0">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-[10px] text-slate-500 font-medium">Help & services</p>
+      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2.5 shadow-sm shrink-0">
+        <div className="flex items-center justify-between mb-2.5">
+          <p className="text-[11px] text-slate-500 font-medium">Help & services</p>
           <button
             type="button"
             onClick={() => setShowMore(true)}
@@ -418,7 +418,7 @@ export const PreLoginQuickLinks: React.FC = () => {
             More ›
           </button>
         </div>
-        <div className="grid grid-cols-5 gap-1">
+        <div className="grid grid-cols-5 gap-1.5">
           {quickItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -427,10 +427,10 @@ export const PreLoginQuickLinks: React.FC = () => {
                 type="button"
                 onClick={() => openPreLoginScreen(navigate, item.path)}
                 aria-label={item.label}
-                className="flex flex-col items-center gap-0.5 py-1.5 px-0.5 rounded-lg bg-slate-50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800 active:scale-95 transition-transform"
+                className="flex flex-col items-center gap-1 py-2 px-0.5 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800 active:scale-95 transition-transform"
               >
-                <Icon className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                <span className="text-[8px] font-bold text-slate-600 dark:text-slate-300 text-center leading-tight">
+                <Icon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 text-center leading-tight">
                   {item.gridLabel}
                 </span>
               </button>
@@ -441,12 +441,12 @@ export const PreLoginQuickLinks: React.FC = () => {
         <button
           type="button"
           onClick={() => setShowDemoVideo(true)}
-          className="w-full mt-2 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold shadow-sm shadow-blue-600/20 active:scale-[0.98] transition-all shrink-0"
+          className="w-full mt-2.5 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-sm shadow-blue-600/20 active:scale-[0.98] transition-all shrink-0"
         >
-          <PlayCircle className="w-3.5 h-3.5" />
+          <PlayCircle className="w-4 h-4" />
           Demo — Open Retail Banking
         </button>
-        <div className="flex justify-center gap-3 mt-1 shrink-0">
+        <div className="flex justify-center gap-3 mt-1.5 shrink-0">
           <button
             type="button"
             onClick={() => openPreLoginScreen(navigate, '/prelogin/terms')}

@@ -6,8 +6,11 @@ import {
   ArrowLeftRight,
   Building2,
   CheckCircle2,
+  Clock,
   Plus,
+  Search,
   XCircle,
+  Zap,
 } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
 import type { Beneficiary, BankAccount } from '../../../types/banking';
@@ -15,9 +18,11 @@ import type { BankTransferMode } from '../../../types/retailBankTransfer';
 import type { JointTransferRequest, JointTransferStep } from '../../../types/retailJointTransfer';
 import {
   DEMO_FAIL_TRANSFER_AMOUNT,
+  FUND_TRANSFER_TYPE_OPTIONS,
   defaultTransferMode,
   getAvailableTransferModes,
   playTransferSuccessChime,
+  validateTransferModeForAmount,
 } from '../../../data/retailBankTransferMock';
 import {
   getJointStatusLabel,
@@ -91,7 +96,21 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
   const [authError, setAuthError] = useState('');
   const [submittedRequest, setSubmittedRequest] = useState<JointTransferRequest | null>(null);
   const [failReason, setFailReason] = useState('');
+  const [beneficiarySearch, setBeneficiarySearch] = useState('');
   const chimePlayed = useRef(false);
+
+  const filteredPayees = useMemo(() => {
+    const q = beneficiarySearch.trim().toLowerCase();
+    if (!q) return payees;
+    return payees.filter(
+      (ben) =>
+        ben.name.toLowerCase().includes(q) ||
+        ben.bankName.toLowerCase().includes(q) ||
+        ben.maskedAccount.toLowerCase().includes(q) ||
+        ben.accountNumber.includes(q) ||
+        (ben.nickname?.toLowerCase().includes(q) ?? false)
+    );
+  }, [payees, beneficiarySearch]);
 
   const viewingRequest = requestParam
     ? getJointRequestById(requestParam)
@@ -133,8 +152,40 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
       setAmountError('Insufficient balance.');
       return false;
     }
+    if (draft.path === 'bank') {
+      const modeError = validateTransferModeForAmount(draft.transferMode, amountNum);
+      if (modeError) {
+        setAmountError(modeError);
+        return false;
+      }
+    }
     setAmountError('');
     return true;
+  };
+
+  const startFundTransfer = (option: (typeof FUND_TRANSFER_TYPE_OPTIONS)[number]) => {
+    setAmountError('');
+    if (option.path === 'self') {
+      setDraft((d) => ({ ...d, path: 'self', amount: '', note: '' }));
+      setStep('self');
+      return;
+    }
+    setDraft((d) => ({
+      ...d,
+      path: 'bank',
+      beneficiaryId: null,
+      amount: '',
+      note: '',
+      transferMode: option.mode ?? 'IMPS',
+    }));
+    setStep('bank-beneficiary');
+  };
+
+  const fundTransferIcons: Record<(typeof FUND_TRANSFER_TYPE_OPTIONS)[number]['id'], React.ReactNode> = {
+    'within-bank': <ArrowLeftRight className="w-5 h-5" />,
+    imps: <Zap className="w-5 h-5" />,
+    neft: <Clock className="w-5 h-5" />,
+    rtgs: <Building2 className="w-5 h-5" />,
   };
 
   const goBack = useCallback(() => {
@@ -412,10 +463,14 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
         <AmountField
           value={draft.amount}
           onChange={(v) => {
+            const nextAmount = parseFloat(v.replace(/,/g, '')) || 0;
+            const modes = getAvailableTransferModes(nextAmount);
             setDraft((d) => ({
               ...d,
               amount: v,
-              transferMode: defaultTransferMode(parseFloat(v.replace(/,/g, '')) || 0),
+              transferMode: modes.includes(d.transferMode)
+                ? d.transferMode
+                : defaultTransferMode(nextAmount),
             }));
             setAmountError('');
           }}
@@ -429,7 +484,7 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
                 key={m}
                 selected={draft.transferMode === m}
                 title={m}
-                subtitle={`${m} transfer`}
+                subtitle={FUND_TRANSFER_TYPE_OPTIONS.find((o) => o.mode === m)?.subtitle ?? `${m} transfer`}
                 onSelect={() => setDraft((d) => ({ ...d, transferMode: m }))}
               />
             ))}
@@ -458,19 +513,41 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
   if (step === 'bank-beneficiary') {
     return (
       <AddMoneyLayout title="Select Beneficiary" onBack={goBack}>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+          <input
+            type="search"
+            value={beneficiarySearch}
+            onChange={(e) => setBeneficiarySearch(e.target.value)}
+            placeholder="Search beneficiary, account, bank..."
+            aria-label="Search beneficiary"
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm outline-none focus:border-congress-blue-500"
+          />
+        </div>
         <div className="space-y-2">
-          {payees.map((ben: Beneficiary) => (
-            <RadioSelectCard
-              key={ben.id}
-              selected={draft.beneficiaryId === ben.id}
-              title={ben.nickname ?? ben.name}
-              subtitle={`${ben.bankName} • ${ben.maskedAccount}`}
-              onSelect={() => {
-                setDraft((d) => ({ ...d, beneficiaryId: ben.id }));
-                setStep('amount');
-              }}
-            />
-          ))}
+          {filteredPayees.length === 0 ? (
+            <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-center">
+              <p className="text-sm font-bold text-slate-900 dark:text-white">No beneficiaries found</p>
+              <p className="text-xs text-slate-500 mt-1">
+                {beneficiarySearch.trim()
+                  ? `No match for "${beneficiarySearch.trim()}"`
+                  : 'Add a beneficiary to continue'}
+              </p>
+            </div>
+          ) : (
+            filteredPayees.map((ben: Beneficiary) => (
+              <RadioSelectCard
+                key={ben.id}
+                selected={draft.beneficiaryId === ben.id}
+                title={ben.nickname ?? ben.name}
+                subtitle={`${ben.bankName} • ${ben.maskedAccount}`}
+                onSelect={() => {
+                  setDraft((d) => ({ ...d, beneficiaryId: ben.id }));
+                  setStep('amount');
+                }}
+              />
+            ))
+          )}
           <button
             type="button"
             onClick={() => navigate('/retail/beneficiaries')}
@@ -536,26 +613,17 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
         </div>
       )}
 
-      <p className="text-xs font-bold text-slate-500 mb-2 px-1">Transfer To</p>
+      <p className="text-xs font-bold text-slate-500 mb-2 px-1">Fund Transfer</p>
       <div className="space-y-2">
-        <SourceOptionCard
-          icon={<ArrowLeftRight className="w-5 h-5" />}
-          title="Self Transfer"
-          subtitle="Transfer between your own bank accounts"
-          onClick={() => {
-            setDraft((d) => ({ ...d, path: 'self', amount: '', note: '' }));
-            setStep('self');
-          }}
-        />
-        <SourceOptionCard
-          icon={<Building2 className="w-5 h-5" />}
-          title="Other Bank Account"
-          subtitle="Transfer to a registered beneficiary"
-          onClick={() => {
-            setDraft((d) => ({ ...d, path: 'bank', beneficiaryId: null, amount: '', note: '' }));
-            setStep('bank-beneficiary');
-          }}
-        />
+        {FUND_TRANSFER_TYPE_OPTIONS.map((option) => (
+          <SourceOptionCard
+            key={option.id}
+            icon={fundTransferIcons[option.id]}
+            title={option.label}
+            subtitle={option.subtitle}
+            onClick={() => startFundTransfer(option)}
+          />
+        ))}
       </div>
     </AddMoneyLayout>
   );

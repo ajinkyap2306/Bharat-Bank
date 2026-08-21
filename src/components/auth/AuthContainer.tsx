@@ -267,18 +267,18 @@ export const AuthContainer: React.FC = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
-              className="flex flex-col flex-1 min-h-0 max-w-md mx-auto w-full z-10 pt-9 pb-1 safe-bottom overflow-hidden"
+              className="flex flex-col flex-1 justify-evenly gap-2 max-w-md mx-auto w-full z-10 pt-9 pb-2 safe-bottom overflow-hidden"
             >
-            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-              <div className="flex items-center mb-1.5">
-                <BharatBankLogo variant="full" size="sm" />
+            <div className="shrink-0">
+              <div className="flex items-center mb-2">
+                <BharatBankLogo variant="full" size="md" />
               </div>
 
-              <h2 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Sign in to Mobile Banking
               </h2>
 
-              <div className="grid grid-cols-3 gap-1.5 mt-2.5 mb-2 p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div className="grid grid-cols-3 gap-2 mt-3 mb-2.5 p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                 {(
                   [
                     { id: 'password' as const, label: 'Password', icon: Lock },
@@ -296,7 +296,7 @@ export const AuthContainer: React.FC = () => {
                         setLoginMethod(method.id);
                         setMpin('');
                       }}
-                      className={`flex flex-col items-center gap-0.5 py-2 rounded-xl text-[10px] font-bold transition-all ${
+                      className={`flex flex-col items-center gap-1 py-2.5 rounded-xl text-[10px] font-bold transition-all ${
                         active
                           ? 'bg-white dark:bg-slate-800 text-blue-600 shadow-sm ring-1 ring-blue-200 dark:ring-blue-800'
                           : 'text-slate-500 dark:text-slate-400'
@@ -309,7 +309,7 @@ export const AuthContainer: React.FC = () => {
                 })}
               </div>
 
-              <form id="login-form" onSubmit={handleLoginSubmit} className="space-y-2">
+              <form id="login-form" onSubmit={handleLoginSubmit} className="space-y-2.5">
                 <div>
                   <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300 block mb-1">
                     Customer ID
@@ -430,7 +430,7 @@ export const AuthContainer: React.FC = () => {
                 </button>
               </form>
 
-              <p className="text-center text-[11px] text-slate-500 mt-1.5">
+              <p className="text-center text-[12px] text-slate-500 mt-2">
                 New user?{' '}
                 <button
                   type="button"
@@ -440,9 +440,9 @@ export const AuthContainer: React.FC = () => {
                   Register for Mobile Banking
                 </button>
               </p>
-
-              <LoginPromoBanner onExplore={() => navigate('/prelogin/offers')} />
             </div>
+
+            <LoginPromoBanner onExplore={() => navigate('/prelogin/offers')} />
 
             <div className="shrink-0">
               <PreLoginQuickLinks />
