@@ -15,8 +15,11 @@ import {
   RETAIL_LINKED_ACCOUNTS,
   RETAIL_MAX_OTP_ATTEMPTS,
   RETAIL_MAX_VERIFICATION_ATTEMPTS,
+  RETAIL_MOBILE_BANKING_TERMS,
   RETAIL_OTP_RESEND_SECONDS,
+  RETAIL_PRIVACY_TEXT,
   RETAIL_REGISTRATION_DEMO_HINTS,
+  RETAIL_TERMS_TEXT,
   formatAadhaarInput,
   formatCardNumberDisplay,
   formatDobInput,
@@ -106,6 +109,8 @@ export const RetailRegistrationModule: React.FC = () => {
   const [showHelp, setShowHelp] = useState(false);
   const [showExit, setShowExit] = useState(false);
   const [showBiometricSkip, setShowBiometricSkip] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const successSoundPlayed = useRef(false);
   const pendingBack = useRef<(() => void) | null>(null);
@@ -208,9 +213,13 @@ export const RetailRegistrationModule: React.FC = () => {
       case 'welcome':
         navigate('/');
         break;
+      case 'terms':
+        setTermsAccepted(false);
+        setStep('welcome');
+        break;
       case 'sim_verify':
       case 'sim_failed':
-        setStep('welcome');
+        setStep('terms');
         break;
       case 'otp':
         setStep('sim_verify');
@@ -243,7 +252,7 @@ export const RetailRegistrationModule: React.FC = () => {
 
   const requestBack = useCallback(
     (action: () => void) => {
-      if (['welcome', 'sim_processing', 'complete'].includes(step)) {
+      if (['welcome', 'terms', 'sim_processing', 'complete'].includes(step)) {
         action();
         return;
       }
@@ -291,8 +300,72 @@ export const RetailRegistrationModule: React.FC = () => {
               </p>
             </div>
             <RegStickyFooter>
-              <RegPrimaryButton label="Register / Activate Mobile Banking" onClick={() => setStep('sim_verify')} />
+              <RegPrimaryButton
+                label="Register / Activate Mobile Banking"
+                onClick={() => {
+                  setTermsAccepted(false);
+                  setStep('terms');
+                }}
+              />
               <RegSecondaryButton label="Login" onClick={() => navigate('/')} />
+            </RegStickyFooter>
+          </div>
+        );
+
+      case 'terms':
+        return (
+          <div className="flex flex-col flex-1 min-h-0">
+            <RegTitle
+              title="Terms & Conditions"
+              subtitle="Please read and accept the terms to continue with mobile banking registration."
+            />
+            <div className="flex-1 overflow-y-auto px-4 pb-4">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/40 p-4 max-h-[42vh] overflow-y-auto">
+                <pre className="text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap font-sans leading-relaxed">
+                  {RETAIL_TERMS_TEXT}
+                </pre>
+                <pre className="text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap font-sans leading-relaxed mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                  {RETAIL_MOBILE_BANKING_TERMS}
+                </pre>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPrivacy(true)}
+                className="mt-3 text-xs font-semibold text-[#005DD4] dark:text-blue-400"
+              >
+                View Privacy Policy
+              </button>
+              <label className="mt-4 flex items-start gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={(e) => {
+                    setTermsAccepted(e.target.checked);
+                    setError('');
+                  }}
+                  className="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#005DD4] focus:ring-[#005DD4]"
+                />
+                <span className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                  I have read, understood, and agree to the Terms & Conditions and Privacy Policy of Bharat
+                  Co-operative Bank (Mumbai) Ltd.
+                </span>
+              </label>
+              {error && <p className="text-xs text-red-600 font-medium mt-2">{error}</p>}
+            </div>
+            <RegStickyFooter>
+              <RegPrimaryButton
+                label="Accept & Continue"
+                disabled={!termsAccepted}
+                onClick={() => {
+                  if (!termsAccepted) {
+                    setError('Please accept the Terms & Conditions to continue.');
+                    return;
+                  }
+                  setError('');
+                  setStep('sim_verify');
+                }}
+              />
+              <RegSecondaryButton label="Decline" onClick={() => navigate('/')} />
             </RegStickyFooter>
           </div>
         );
@@ -700,6 +773,12 @@ export const RetailRegistrationModule: React.FC = () => {
         onSkip={() => { setShowBiometricSkip(false); finishRegistration(false); }}
         onEnable={() => { setShowBiometricSkip(false); finishRegistration(true); }}
       />
+
+      <BottomSheet isOpen={showPrivacy} onClose={() => setShowPrivacy(false)} title="Privacy Policy">
+        <pre className="text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap font-sans leading-relaxed pb-2 max-h-[50vh] overflow-y-auto">
+          {RETAIL_PRIVACY_TEXT}
+        </pre>
+      </BottomSheet>
     </RegShell>
   );
 };
