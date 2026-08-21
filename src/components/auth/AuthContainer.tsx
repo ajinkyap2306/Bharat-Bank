@@ -22,9 +22,10 @@ import { PreLoginQuickLinks } from './prelogin/PreLoginModule';
 import { PreLoginTicker } from './prelogin/PreLoginTicker';
 import { LoginOfferSheet } from './prelogin/LoginOfferSheet';
 import { AuthSplashScreen } from './AuthSplashScreen';
+import { LoginDemoPicker, type LoginDemoPersona } from './LoginDemoPicker';
 import { getRetailJointUserByCustomerNumber } from '../../data/retailJointTransferMock';
 
-type LoginPersona = 'retail' | 'rahul' | 'amit' | 'maker' | 'checker';
+type LoginPersona = LoginDemoPersona;
 type LoginMethod = 'password' | 'mpin' | 'fingerprint';
 
 const RETAIL_DEMO_USER_ID = 'RB-123456';
@@ -292,74 +293,6 @@ export const AuthContainer: React.FC = () => {
                 })}
               </div>
 
-              <div className="mb-3">
-                <p className="text-[11px] font-semibold text-slate-500 mb-2">Quick demo login</p>
-                <div className="grid grid-cols-2 gap-2 mb-2">
-                  <button
-                    type="button"
-                    onClick={() => fillDemo('rahul')}
-                    className={`py-2 px-2 rounded-xl text-[10px] font-bold border transition-all ${
-                      loginPersona === 'rahul'
-                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-blue-700 dark:text-blue-300'
-                    }`}
-                  >
-                    <span className="block">Rahul — Initiator</span>
-                    <span className="block font-mono text-[9px] mt-0.5 opacity-90">RB-RAHUL01</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => fillDemo('amit')}
-                    className={`py-2 px-2 rounded-xl text-[10px] font-bold border transition-all ${
-                      loginPersona === 'amit'
-                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-indigo-700 dark:text-indigo-300'
-                    }`}
-                  >
-                    <span className="block">Amit — Approver</span>
-                    <span className="block font-mono text-[9px] mt-0.5 opacity-90">RB-AMIT01</span>
-                  </button>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => fillDemo('retail')}
-                    className={`py-2 px-2 rounded-xl text-[10px] font-bold border transition-all ${
-                      loginPersona === 'retail'
-                        ? 'bg-slate-700 border-slate-700 text-white shadow-sm'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
-                    }`}
-                  >
-                    <span className="block">Retail</span>
-                    <span className="block font-mono text-[9px] mt-0.5 opacity-90">RB-123456</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => fillDemo('maker')}
-                    className={`py-2 px-2 rounded-xl text-[10px] font-bold border transition-all ${
-                      loginPersona === 'maker'
-                        ? 'bg-teal-600 border-teal-600 text-white shadow-sm'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-teal-700 dark:text-teal-300'
-                    }`}
-                  >
-                    <span className="block">Maker</span>
-                    <span className="block font-mono text-[9px] mt-0.5 opacity-90">C001</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => fillDemo('checker')}
-                    className={`py-2 px-2 rounded-xl text-[10px] font-bold border transition-all ${
-                      loginPersona === 'checker'
-                        ? 'bg-amber-600 border-amber-600 text-white shadow-sm'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-amber-800 dark:text-amber-300'
-                    }`}
-                  >
-                    <span className="block">Checker</span>
-                    <span className="block font-mono text-[9px] mt-0.5 opacity-90">C002</span>
-                  </button>
-                </div>
-              </div>
-
               <form id="login-form" onSubmit={handleLoginSubmit} className="space-y-3">
                 <div>
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
@@ -601,7 +534,10 @@ export const AuthContainer: React.FC = () => {
       </AnimatePresence>
 
       {authScreen === 'login' && (
-        <LoginOfferSheet onExploreOffers={() => navigate('/prelogin/offers')} />
+        <>
+          <LoginDemoPicker activePersona={loginPersona} onSelect={fillDemo} />
+          <LoginOfferSheet onExploreOffers={() => navigate('/prelogin/offers')} />
+        </>
       )}
     </div>
   );
