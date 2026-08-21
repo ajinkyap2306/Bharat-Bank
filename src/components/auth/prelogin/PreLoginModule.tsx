@@ -22,6 +22,7 @@ import { openPreLoginScreen } from './preLoginNavigation';
 import { LOGIN_QUICK_ITEM_IDS, PRE_LOGIN_MENU_ITEMS } from './preLoginMenuConfig';
 import { getPreLoginScreenFromPath } from './preLoginScreenRegistry';
 import { useBanking } from '../../../context/BankingContext';
+import { BharatBankDemoVideoModal } from './BharatBankDemoVideoModal';
 
 export { PRE_LOGIN_MENU_ITEMS, LOGIN_QUICK_ITEM_IDS } from './preLoginMenuConfig';
 
@@ -122,12 +123,14 @@ const LocatorList: React.FC<{ items: typeof ATM_LOCATORS; label: string }> = ({ 
 export const PreLoginModule: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { quickDemoLogin } = useBanking();
   const activeScreen = useMemo(
     () => getPreLoginScreenFromPath(location.pathname),
     [location.pathname]
   );
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
   const [faqFilter, setFaqFilter] = useState('All');
+  const [showDemoVideo, setShowDemoVideo] = useState(false);
 
   const goBack = () => navigate('/');
 
@@ -295,6 +298,23 @@ export const PreLoginModule: React.FC = () => {
         return (
           <div className="px-4 pb-8 space-y-3">
             <PreLoginCard>
+              <p className="text-xs font-bold text-slate-700 dark:text-slate-200 mb-2">
+                Official Bharat Co-operative Bank overview
+              </p>
+              <p className="text-xs text-slate-500 leading-relaxed mb-3">
+                Watch the product overview, then follow the steps below to explore retail and corporate
+                banking flows in this sandbox.
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowDemoVideo(true)}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-100 dark:border-blue-900/50"
+              >
+                <PlayCircle className="w-4 h-4" />
+                Watch Official Demo Video
+              </button>
+            </PreLoginCard>
+            <PreLoginCard>
               <p className="text-xs text-slate-500 leading-relaxed mb-3">
                 This is a demo environment. Follow these steps to explore retail and corporate banking flows.
               </p>
@@ -312,10 +332,12 @@ export const PreLoginModule: React.FC = () => {
             </PreLoginCard>
             <button
               type="button"
-              onClick={goBack}
+              onClick={() => {
+                setShowDemoVideo(true);
+              }}
               className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-2xl"
             >
-              Start Demo Login
+              Watch Demo & Start Login
             </button>
           </div>
         );
@@ -352,10 +374,21 @@ export const PreLoginModule: React.FC = () => {
   };
 
   return (
-    <PreLoginShell>
-      <PreLoginTopBar title={title} onBack={goBack} />
-      <div className="flex-1 overflow-y-auto pt-4">{renderContent()}</div>
-    </PreLoginShell>
+    <>
+      <PreLoginShell>
+        <PreLoginTopBar title={title} onBack={goBack} />
+        <div className="flex-1 overflow-y-auto pt-4">{renderContent()}</div>
+      </PreLoginShell>
+      <BharatBankDemoVideoModal
+        isOpen={showDemoVideo}
+        onClose={() => setShowDemoVideo(false)}
+        onStartDemo={() => {
+          setShowDemoVideo(false);
+          quickDemoLogin('retail');
+        }}
+        startLabel="Demo — Open Retail Banking"
+      />
+    </>
   );
 };
 
@@ -366,6 +399,7 @@ export const PreLoginQuickLinks: React.FC = () => {
   const navigate = useNavigate();
   const { quickDemoLogin } = useBanking();
   const [showMore, setShowMore] = useState(false);
+  const [showDemoVideo, setShowDemoVideo] = useState(false);
 
   const quickItems = PRE_LOGIN_MENU_ITEMS.filter((item) =>
     (LOGIN_QUICK_ITEM_IDS as readonly string[]).includes(item.id)
@@ -407,7 +441,7 @@ export const PreLoginQuickLinks: React.FC = () => {
         </div>
         <button
           type="button"
-          onClick={() => quickDemoLogin('retail')}
+          onClick={() => setShowDemoVideo(true)}
           className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-sm shadow-blue-600/20 active:scale-[0.98] transition-all"
         >
           <PlayCircle className="w-4 h-4" />
@@ -432,6 +466,15 @@ export const PreLoginQuickLinks: React.FC = () => {
         </div>
       </div>
       <PreLoginServicesSheet isOpen={showMore} onClose={() => setShowMore(false)} />
+      <BharatBankDemoVideoModal
+        isOpen={showDemoVideo}
+        onClose={() => setShowDemoVideo(false)}
+        onStartDemo={() => {
+          setShowDemoVideo(false);
+          quickDemoLogin('retail');
+        }}
+        startLabel="Demo — Open Retail Banking"
+      />
     </>
   );
 };

@@ -257,6 +257,62 @@ export const MOBILE_BANKING_DEMO_STEPS = [
   { step: 4, title: 'Corporate Demo', desc: 'Try C001 (Maker) or C002 (Checker) for approvals' },
 ];
 
+export interface BharatBankDemoSlide {
+  id: string;
+  title: string;
+  subtitle: string;
+  accent: string;
+}
+
+/** Official Bharat Co-operative Bank digital banking demo content (www.bharatbank.bank.in) */
+export const BHARAT_BANK_OFFICIAL_DEMO = {
+  bankName: 'Bharat Co-operative Bank (Mumbai) Ltd.',
+  tagline: 'Multi-State Scheduled Bank — Digital Banking Platform',
+  websiteUrl: 'https://www.bharatbank.bank.in/',
+  /** Drop official MP4 at public/videos/bharat-cooperative-banking-demo.mp4 to override slides */
+  videoSrc: '/videos/bharat-cooperative-banking-demo.mp4',
+  posterSrc: '/bharat_bank_logo.svg',
+  slideDurationMs: 3500,
+  slides: [
+    {
+      id: 'intro',
+      title: 'Bharat Co-operative Bank',
+      subtitle: "One of India's most customer-friendly co-operative multi-state scheduled banks.",
+      accent: 'from-blue-700 via-blue-600 to-indigo-700',
+    },
+    {
+      id: 'nexa',
+      title: 'NEXA Mobile Banking',
+      subtitle: 'Bharat Bank on your fingertips — award-winning mobile app with intuitive navigation.',
+      accent: 'from-indigo-700 via-blue-600 to-cyan-600',
+    },
+    {
+      id: 'pay',
+      title: 'Pay People & Bills',
+      subtitle: 'IMPS, NEFT, RTGS, UPI, bill pay and recharges — secure transfers with MPIN & OTP.',
+      accent: 'from-cyan-700 via-teal-600 to-emerald-600',
+    },
+    {
+      id: 'cheque',
+      title: 'Cheques & Deposits',
+      subtitle: 'Cheque book, stop cheque, positive pay, FD/RD and ePassbook — all in one app.',
+      accent: 'from-emerald-700 via-green-600 to-lime-600',
+    },
+    {
+      id: 'security',
+      title: 'Secure Banking',
+      subtitle: 'Touch ID login, end-to-end encryption and card ON/OFF controls for your safety.',
+      accent: 'from-slate-800 via-slate-700 to-blue-900',
+    },
+    {
+      id: 'demo',
+      title: 'Interactive Demo',
+      subtitle: 'Explore retail & corporate banking flows in this secure sandbox environment.',
+      accent: 'from-blue-600 via-indigo-600 to-violet-700',
+    },
+  ] satisfies BharatBankDemoSlide[],
+} as const;
+
 export const PRIVACY_POLICY_EXCERPT = `Bharat Co-operative Bank (Mumbai) Ltd — Privacy Policy (Excerpt)
 
 We collect personal information necessary to provide banking services, including identity, contact, transaction, and device data.
