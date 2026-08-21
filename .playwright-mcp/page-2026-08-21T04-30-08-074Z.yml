@@ -1,0 +1,211 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img "Arjun Mehta" [ref=e8]
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - generic [ref=e15]: Welcome back
+            - generic [ref=e16]: Retail
+          - heading "Arjun Mehta" [level=2] [ref=e17]
+      - generic [ref=e18]:
+        - button "To Corp" [ref=e19]
+        - button "Toggle theme" [ref=e25]
+        - button "Notifications" [ref=e28]
+  - main [ref=e33]:
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - heading "Your Accounts" [level=3] [ref=e37]
+          - button "All Accounts" [ref=e38]
+        - generic [ref=e41]:
+          - generic [ref=e42] [cursor=pointer]:
+            - generic [ref=e43]:
+              - generic [ref=e49]:
+                - paragraph [ref=e50]: Savings Account
+                - paragraph [ref=e51]: •••• •••• 0012
+              - generic [ref=e52]: Active
+            - generic [ref=e53]:
+              - generic [ref=e54]:
+                - paragraph [ref=e55]: Available Balance
+                - button "Hide balance" [ref=e56]
+              - paragraph [ref=e62]: ₹4,82,450.00
+            - generic [ref=e63]:
+              - generic [ref=e64]: "IFSC: APEX0001048"
+              - generic [ref=e65]: 6.5% p.a.
+          - generic [ref=e66] [cursor=pointer]:
+            - generic [ref=e67]:
+              - generic [ref=e73]:
+                - paragraph [ref=e74]: Current Account
+                - paragraph [ref=e75]: •••• •••• 9943
+              - generic [ref=e76]: Active
+            - generic [ref=e77]:
+              - generic [ref=e78]:
+                - paragraph [ref=e79]: Available Balance
+                - button "Hide balance" [ref=e80]
+              - paragraph [ref=e86]: ₹11,95,000.00
+            - generic [ref=e87]:
+              - generic [ref=e88]: "IFSC: APEX0001048"
+              - generic [ref=e89]: Flexi
+          - generic [ref=e90] [cursor=pointer]:
+            - generic [ref=e91]:
+              - generic [ref=e97]:
+                - paragraph [ref=e98]: Fixed Deposit Account
+                - paragraph [ref=e99]: •••• •••• 0199
+              - generic [ref=e100]: Active
+            - generic [ref=e101]:
+              - generic [ref=e102]:
+                - paragraph [ref=e103]: Available Balance
+                - button "Hide balance" [ref=e104]
+              - paragraph [ref=e110]: ₹5,00,000.00
+            - generic [ref=e111]:
+              - generic [ref=e112]: "IFSC: APEX0001048"
+              - generic [ref=e113]: 7.75% p.a.
+          - generic [ref=e114] [cursor=pointer]:
+            - generic [ref=e115]:
+              - generic [ref=e121]:
+                - paragraph [ref=e122]: NRE Savings Account
+                - paragraph [ref=e123]: •••• •••• 1122
+              - generic [ref=e124]: Active
+            - generic [ref=e125]:
+              - generic [ref=e126]:
+                - paragraph [ref=e127]: Available Balance
+                - button "Hide balance" [ref=e128]
+              - paragraph [ref=e134]: ₹8,50,000.00
+            - generic [ref=e135]:
+              - generic [ref=e136]: "IFSC: APEX0001048"
+              - generic [ref=e137]: 4.25% p.a.
+          - generic [ref=e138] [cursor=pointer]:
+            - generic [ref=e139]:
+              - generic [ref=e145]:
+                - paragraph [ref=e146]: Overdraft Account
+                - paragraph [ref=e147]: •••• •••• 5533
+              - generic [ref=e148]: Active
+            - generic [ref=e149]:
+              - generic [ref=e150]:
+                - paragraph [ref=e151]: Available Balance
+                - button "Hide balance" [ref=e152]
+              - paragraph [ref=e158]: ₹3,75,000.00
+            - generic [ref=e159]:
+              - generic [ref=e160]: "IFSC: APEX0001048"
+              - generic [ref=e161]: 10.5% p.a.
+          - generic [ref=e162] [cursor=pointer]:
+            - generic [ref=e163]:
+              - generic [ref=e169]:
+                - paragraph [ref=e170]: BDD Account
+                - paragraph [ref=e171]: •••• •••• 0088
+              - generic [ref=e172]: Active
+            - generic [ref=e173]:
+              - generic [ref=e174]:
+                - paragraph [ref=e175]: Available Balance
+                - button "Hide balance" [ref=e176]
+              - paragraph [ref=e182]: ₹2,00,000.00
+            - generic [ref=e183]:
+              - generic [ref=e184]: "IFSC: APEX0001048"
+              - generic [ref=e185]: 6.9% p.a.
+      - generic [ref=e186]:
+        - generic [ref=e188]:
+          - heading "Quick Actions" [level=3] [ref=e189]
+          - generic [ref=e190]: Instant (24/7)
+        - generic [ref=e191]:
+          - button "Send Money UPI / Mobile" [ref=e192] [cursor=pointer]:
+            - generic [ref=e196]: Send Money
+            - generic [ref=e197]: UPI / Mobile
+          - button "Pay Bills Electricity & DTH" [ref=e198] [cursor=pointer]:
+            - generic [ref=e202]: Pay Bills
+            - generic [ref=e203]: Electricity & DTH
+          - button "Scan & Pay Any QR Code" [ref=e204] [cursor=pointer]:
+            - generic [ref=e212]: Scan & Pay
+            - generic [ref=e213]: Any QR Code
+          - button "Add Money Bank, Card or UPI" [ref=e214] [cursor=pointer]:
+            - generic [ref=e218]: Add Money
+            - generic [ref=e219]: Bank, Card or UPI
+      - generic [ref=e220]:
+        - generic [ref=e221]:
+          - generic [ref=e222]:
+            - heading "Banking Services" [level=3] [ref=e223]
+            - generic [ref=e224]: 16 Modules
+          - button "All Services" [ref=e225]
+        - generic [ref=e228]:
+          - button "Accounts" [ref=e229] [cursor=pointer]
+          - button "Cards" [ref=e235] [cursor=pointer]
+          - button "Bank Transfer" [ref=e240] [cursor=pointer]
+          - button "Deposits" [ref=e246] [cursor=pointer]
+          - button "Loans" [ref=e252] [cursor=pointer]
+          - button "Investments" [ref=e257] [cursor=pointer]
+          - button "Insurance" [ref=e263] [cursor=pointer]
+          - button "Forex" [ref=e269] [cursor=pointer]
+          - button "Bill Payments" [ref=e275] [cursor=pointer]
+          - button "Recharge" [ref=e281] [cursor=pointer]
+          - button "UPI / QR" [ref=e286] [cursor=pointer]
+          - button "Beneficiaries" [ref=e295] [cursor=pointer]
+          - button "Statements" [ref=e303] [cursor=pointer]
+          - button "Offers" [ref=e309] [cursor=pointer]
+          - button "Rewards" [ref=e315] [cursor=pointer]
+          - button "More" [ref=e321] [cursor=pointer]
+      - generic [ref=e328]:
+        - generic [ref=e329]:
+          - generic [ref=e334]:
+            - paragraph [ref=e335]: Signature Mastercard
+            - paragraph [ref=e336]: •••• •••• •••• 3349
+          - generic [ref=e337]: Due in 11 days
+        - generic [ref=e338]:
+          - generic [ref=e339]:
+            - generic [ref=e340]:
+              - paragraph [ref=e341]: Total Outstanding Due
+              - button "Hide outstanding due" [ref=e342]
+            - paragraph [ref=e348]: ₹67,500
+          - button "Pay Card Bill" [ref=e349]
+      - generic [ref=e350]:
+        - generic [ref=e351]:
+          - heading "Recent Transactions" [level=3] [ref=e352]
+          - button "View Statement" [ref=e353]
+        - generic [ref=e354]:
+          - generic [ref=e355] [cursor=pointer]:
+            - generic [ref=e361]:
+              - heading "Apple Store Mumbai BKC" [level=4] [ref=e362]
+              - paragraph [ref=e363]: Today, 10:14 AM • Card
+            - generic [ref=e364]:
+              - paragraph [ref=e365]: "-₹14,500"
+              - paragraph [ref=e366]: Success
+          - generic [ref=e367] [cursor=pointer]:
+            - generic [ref=e373]:
+              - heading "Starbucks Coffee Reserve" [level=4] [ref=e374]
+              - paragraph [ref=e375]: Yesterday, 07:30 PM • UPI
+            - generic [ref=e376]:
+              - paragraph [ref=e377]: "-₹1,250"
+              - paragraph [ref=e378]: Success
+          - generic [ref=e379] [cursor=pointer]:
+            - generic [ref=e385]:
+              - heading "Monthly Salary Credit - Nexus Tech" [level=4] [ref=e386]
+              - paragraph [ref=e387]: 15 Aug 2026 • NEFT
+            - generic [ref=e388]:
+              - paragraph [ref=e389]: +₹2,25,000
+              - paragraph [ref=e390]: Success
+          - generic [ref=e391] [cursor=pointer]:
+            - generic [ref=e397]:
+              - heading "Adani Electricity Mumbai" [level=4] [ref=e398]
+              - paragraph [ref=e399]: 14 Aug 2026 • UPI
+            - generic [ref=e400]:
+              - paragraph [ref=e401]: "-₹4,500"
+              - paragraph [ref=e402]: Success
+          - generic [ref=e403] [cursor=pointer]:
+            - generic [ref=e409]:
+              - heading "Bharat Bluechip Flexi SIP" [level=4] [ref=e410]
+              - paragraph [ref=e411]: 12 Aug 2026 • IMPS
+            - generic [ref=e412]:
+              - paragraph [ref=e413]: "-₹25,000"
+              - paragraph [ref=e414]: Success
+      - generic [ref=e415]:
+        - generic [ref=e416]:
+          - generic [ref=e417]: Pre-Approved Offer
+          - heading "Instant Personal Loan up to ₹5,00,000" [level=4] [ref=e421]
+          - paragraph [ref=e422]: Disbursed in 30 seconds with zero paperwork.
+        - button "Avail Now" [ref=e423]
+  - navigation [ref=e424]:
+    - generic [ref=e425]:
+      - button "Home" [ref=e426]
+      - button "Payments" [ref=e431]
+      - button "Scan QR code" [ref=e435]
+      - button "Services" [ref=e444]
+      - button "Profile" [ref=e448]

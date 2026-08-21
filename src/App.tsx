@@ -53,6 +53,7 @@ import { BondsModule } from './components/retail/bonds/BondsModule';
 import { DematModule } from './components/retail/demat/DematModule';
 import { FeedbackModule } from './components/retail/feedback/FeedbackModule';
 import { IfscFinderModule } from './components/retail/ifsc/IfscFinderModule';
+import { RetailJointModule } from './components/retail/joint-transfer/RetailJointModule';
 
 // Corporate Components
 import { CorporateHome } from './components/corporate/CorporateHome';
@@ -90,8 +91,14 @@ const BankingAppContent: React.FC = () => {
 
   const isRetailAccountsRoute =
     bankingType === 'retail' && location.pathname.startsWith('/retail/accounts');
+  const isRetailJointRoute =
+    bankingType === 'retail' &&
+    (location.pathname.startsWith('/retail/joint-account') ||
+      location.pathname.startsWith('/retail/joint-transfer') ||
+      location.pathname.startsWith('/retail/joint-approvals'));
   const isRetailHome =
     bankingType === 'retail' &&
+    !isRetailJointRoute &&
     !isRetailAccountsRoute &&
     (retailTab === 'home' ||
       (location.pathname === '/' && retailTab === 'accounts'));
@@ -104,7 +111,8 @@ const BankingAppContent: React.FC = () => {
     bankingType === 'corporate' && isCorporateBottomNavRoute(location.pathname);
 
   const hideRetailAccountsBottomNav =
-    bankingType === 'retail' && location.pathname.startsWith('/retail/accounts');
+    bankingType === 'retail' &&
+    (location.pathname.startsWith('/retail/accounts') || isRetailJointRoute);
 
   const showBottomNav =
     isAuthenticated &&
@@ -276,9 +284,10 @@ const BankingAppContent: React.FC = () => {
       >
         {bankingType === 'retail' ? (
           <>
+            {isRetailJointRoute && <RetailJointModule />}
             {isRetailHome && <RetailHome />}
             {isRetailAccountsRoute && <RetailAccountsModule />}
-            {(retailTab === 'transfers' || retailTab === 'payments') && <RetailTransfer />}
+            {!isRetailJointRoute && (retailTab === 'transfers' || retailTab === 'payments') && <RetailTransfer />}
             {retailTab === 'cards' && <RetailCards />}
             {retailTab === 'bills' && <RetailBills />}
             {retailTab === 'deposits' && <RetailDeposits />}

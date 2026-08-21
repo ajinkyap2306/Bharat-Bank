@@ -105,6 +105,12 @@ export interface BankAccount {
     relationship: string;
     panMasked?: string;
   }[];
+  /** Retail joint account — operating instruction drives approval requirement */
+  isJointAccount?: boolean;
+  jointAccountLabel?: string;
+  operatingInstruction?: 'jointly_operated' | 'either_or_survivor';
+  primaryHolderUserId?: string;
+  jointHolderUserIds?: string[];
 }
 
 export interface Transaction {

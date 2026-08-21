@@ -65,6 +65,20 @@ import {
 import type { CorporateDemoUser } from '../types/corporateDemoUser';
 import type { RetailRegistrationResult } from '../types/retailRegistration';
 import { RETAIL_REGISTRATION_STORAGE_KEY } from '../data/retailRegistrationMock';
+import type { JointTransferRequest } from '../types/retailJointTransfer';
+import {
+  INITIAL_JOINT_ACCOUNTS,
+  JOINT_TRANSFER_STORAGE_KEY,
+  RETAIL_SESSION_USER_KEY,
+  buildJointTransactionId,
+  buildJointTransferReference,
+  canUserAccessJointAccount,
+  canUserApproveJointRequest,
+  formatJointTimestamp,
+  getJointApproverUserId,
+  getRetailJointUser,
+  getRetailJointUserByCustomerNumber,
+} from '../data/retailJointTransferMock';
 import { BillPaymentRecord, FetchedBill, BillProvider } from '../types/bills';
 import {
   BILL_PROVIDERS,
@@ -202,6 +216,27 @@ interface BankingContextType {
   setPendingCorporateUser: (user: CorporateDemoUser | null) => void;
   retailRegistration: RetailRegistrationResult | null;
   completeRetailRegistration: (result: RetailRegistrationResult) => void;
+  retailActiveUserId: string;
+  setRetailSessionFromLogin: (customerNumber: string) => void;
+  jointTransferRequests: JointTransferRequest[];
+  submitJointTransferRequest: (params: {
+    fromAccountId: string;
+    beneficiaryId?: string;
+    beneficiaryName: string;
+    beneficiaryBank: string;
+    beneficiaryAccountMasked: string;
+    amount: number;
+    mode: 'IMPS' | 'NEFT' | 'RTGS' | 'Internal';
+    note?: string;
+    isSelfTransfer?: boolean;
+    toAccountId?: string;
+  }) => JointTransferRequest | null;
+  approveJointTransferRequest: (requestId: string) => boolean;
+  rejectJointTransferRequest: (requestId: string, reason?: string) => boolean;
+  executeApprovedJointTransfer: (requestId: string) => Promise<boolean>;
+  getPendingJointApprovalsForUser: (userId: string) => JointTransferRequest[];
+  getJointRequestsForUser: (userId: string) => JointTransferRequest[];
+  getJointRequestById: (requestId: string) => JointTransferRequest | undefined;
   canApproveCorporate: boolean;
   canSubmitCorporatePayment: boolean;
   canCreateCorporateBulk: boolean;
@@ -580,6 +615,31 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return null;
     }
   });
+  const [retailActiveUserId, setRetailActiveUserId] = useState(() => {
+    try {
+      return localStorage.getItem(RETAIL_SESSION_USER_KEY) ?? 'usr_ret_001';
+    } catch {
+      return 'usr_ret_001';
+    }
+  });
+  const [jointTransferRequests, setJointTransferRequests] = useState<JointTransferRequest[]>(() => {
+    try {
+      const raw = localStorage.getItem(JOINT_TRANSFER_STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as JointTransferRequest[]) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const persistJointRequests = (
+    updater: JointTransferRequest[] | ((prev: JointTransferRequest[]) => JointTransferRequest[])
+  ) => {
+    setJointTransferRequests((prev) => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      localStorage.setItem(JOINT_TRANSFER_STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  };
 
   const clearCorporateAuthFlow = () => {
     setCorporateLoginVerified(false);
@@ -603,7 +663,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   // Data Store
-  const [retailAccounts, setRetailAccounts] = useState<BankAccount[]>(INITIAL_RETAIL_ACCOUNTS);
+  const [retailAccounts, setRetailAccounts] = useState<BankAccount[]>([
+    ...INITIAL_RETAIL_ACCOUNTS,
+    ...INITIAL_JOINT_ACCOUNTS,
+  ]);
   const [corporateAccounts, setCorporateAccounts] = useState<BankAccount[]>(INITIAL_CORPORATE_ACCOUNTS);
   const [retailTransactions, setRetailTransactions] = useState<Transaction[]>(INITIAL_RETAIL_TRANSACTIONS);
   const [corporateTransactions, setCorporateTransactions] = useState<Transaction[]>(INITIAL_CORPORATE_TRANSACTIONS);
@@ -698,13 +761,27 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Active user depending on bankingType
   const user =
     bankingType === 'retail'
-      ? retailRegistration
-        ? {
-            ...INITIAL_RETAIL_USER,
-            customerNumber: retailRegistration.userId,
-            name: INITIAL_RETAIL_USER.name,
+      ? (() => {
+          const jointUser = getRetailJointUser(retailActiveUserId);
+          if (jointUser) {
+            return {
+              ...INITIAL_RETAIL_USER,
+              id: jointUser.id,
+              name: jointUser.name,
+              customerNumber: jointUser.customerNumber,
+              phone: jointUser.phone,
+              email: jointUser.email,
+            };
           }
-        : INITIAL_RETAIL_USER
+          if (retailRegistration) {
+            return {
+              ...INITIAL_RETAIL_USER,
+              customerNumber: retailRegistration.userId,
+              name: INITIAL_RETAIL_USER.name,
+            };
+          }
+          return INITIAL_RETAIL_USER;
+        })()
       : corporateSession
         ? corporateDemoUserToProfile(corporateSession)
         : INITIAL_CORPORATE_USER;
@@ -712,7 +789,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const canApproveCorporate = corporateSession?.canApprove ?? false;
   const canSubmitCorporatePayment = corporateSession?.canSubmitPayment ?? true;
   const canCreateCorporateBulk = corporateSession?.canCreateBulk ?? true;
-  const accounts = bankingType === 'retail' ? retailAccounts : corporateAccounts;
+  const accounts =
+    bankingType === 'retail'
+      ? retailAccounts.filter((a) => canUserAccessJointAccount(a, retailActiveUserId))
+      : corporateAccounts;
   const transactions = bankingType === 'retail' ? retailTransactions : corporateTransactions;
   const beneficiaries = bankingType === 'retail' ? retailBeneficiaries : corporateBeneficiaries;
   const cards = bankingType === 'retail' ? retailCards : corporateCards;
@@ -735,11 +815,20 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
+  const setRetailSessionFromLogin = (customerNumber: string) => {
+    const jointUser = getRetailJointUserByCustomerNumber(customerNumber);
+    const userId = jointUser?.id ?? 'usr_ret_001';
+    setRetailActiveUserId(userId);
+    localStorage.setItem(RETAIL_SESSION_USER_KEY, userId);
+  };
+
   const logout = () => {
     setIsAuthenticated(false);
     setIsSessionTimeoutModalOpen(false);
     clearCorporateAuthFlow();
     setCorporateSession(null);
+    setRetailActiveUserId('usr_ret_001');
+    localStorage.removeItem(RETAIL_SESSION_USER_KEY);
     if (bankingType === 'corporate') {
       setBankingType('corporate');
       setAuthScreen('login');
@@ -802,6 +891,208 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       title: 'Registration complete',
       message: `User ID ${result.userId} (Profile ${result.profileCode}) is ready.`,
     });
+  };
+
+  const getJointRequestById = (requestId: string) =>
+    jointTransferRequests.find((r) => r.id === requestId);
+
+  const getPendingJointApprovalsForUser = (userId: string) =>
+    jointTransferRequests.filter(
+      (r) => r.status === 'pending_joint_approval' && canUserApproveJointRequest(r, userId)
+    );
+
+  const getJointRequestsForUser = (userId: string) =>
+    jointTransferRequests.filter(
+      (r) => r.initiatedByUserId === userId || r.approverUserId === userId
+    );
+
+  const submitJointTransferRequest = ({
+    fromAccountId,
+    beneficiaryId = '',
+    beneficiaryName,
+    beneficiaryBank,
+    beneficiaryAccountMasked,
+    amount,
+    mode,
+    note,
+    isSelfTransfer = false,
+    toAccountId,
+  }: {
+    fromAccountId: string;
+    beneficiaryId?: string;
+    beneficiaryName: string;
+    beneficiaryBank: string;
+    beneficiaryAccountMasked: string;
+    amount: number;
+    mode: 'IMPS' | 'NEFT' | 'RTGS' | 'Internal';
+    note?: string;
+    isSelfTransfer?: boolean;
+    toAccountId?: string;
+  }): JointTransferRequest | null => {
+    const fromAccount = retailAccounts.find((a) => a.id === fromAccountId);
+    if (!fromAccount) return null;
+
+    const approverUserId = getJointApproverUserId(fromAccount, retailActiveUserId);
+    const approverUser = approverUserId ? getRetailJointUser(approverUserId) : null;
+    if (!approverUserId || !approverUser) {
+      addToast({
+        type: 'error',
+        title: 'Joint Approval Unavailable',
+        message: 'This transaction requires authorization from another eligible joint holder.',
+      });
+      return null;
+    }
+
+    const now = formatJointTimestamp();
+    const request: JointTransferRequest = {
+      id: `jtr_${Date.now()}`,
+      reference: buildJointTransferReference(),
+      fromAccountId,
+      initiatedByUserId: retailActiveUserId,
+      initiatedByName: user.name,
+      approverUserId,
+      approverName: approverUser.name,
+      beneficiaryId,
+      beneficiaryName,
+      beneficiaryBank,
+      beneficiaryAccountMasked,
+      amount,
+      mode,
+      note,
+      status: 'pending_joint_approval',
+      isSelfTransfer,
+      toAccountId,
+      approvalHistory: [
+        { actorName: user.name, action: 'initiated', timestamp: now },
+      ],
+      createdAt: now,
+    };
+
+    const next = [request, ...jointTransferRequests];
+    persistJointRequests((prev) => [request, ...prev]);
+    addToast({
+      type: 'info',
+      title: 'Request Submitted',
+      message: `Sent to ${approverUser.name} for joint approval.`,
+    });
+    return request;
+  };
+
+  const approveJointTransferRequest = (requestId: string): boolean => {
+    const request = getJointRequestById(requestId);
+    if (!request || !canUserApproveJointRequest(request, retailActiveUserId)) {
+      return false;
+    }
+
+    const now = formatJointTimestamp();
+    const updated: JointTransferRequest = {
+      ...request,
+      status: 'approved',
+      approvedAt: now,
+      approvalHistory: [
+        ...request.approvalHistory,
+        { actorName: user.name, action: 'approved', timestamp: now },
+      ],
+    };
+
+    persistJointRequests((prev) =>
+      prev.map((r) => (r.id === requestId ? updated : r))
+    );
+    return true;
+  };
+
+  const rejectJointTransferRequest = (requestId: string, reason?: string): boolean => {
+    const request = getJointRequestById(requestId);
+    if (!request || !canUserApproveJointRequest(request, retailActiveUserId)) {
+      return false;
+    }
+
+    const now = formatJointTimestamp();
+    const updated: JointTransferRequest = {
+      ...request,
+      status: 'rejected',
+      rejectedByName: user.name,
+      rejectReason: reason,
+      approvalHistory: [
+        ...request.approvalHistory,
+        { actorName: user.name, action: 'rejected', timestamp: now },
+      ],
+    };
+
+    persistJointRequests((prev) =>
+      prev.map((r) => (r.id === requestId ? updated : r))
+    );
+    return true;
+  };
+
+  const executeApprovedJointTransfer = async (requestId: string): Promise<boolean> => {
+    const request = getJointRequestById(requestId);
+    if (!request || request.status !== 'approved') return false;
+
+    const processingNow = formatJointTimestamp();
+    persistJointRequests((prev) =>
+      prev.map((r) =>
+        r.id === requestId
+          ? {
+              ...r,
+              status: 'processing',
+              approvalHistory: [
+                ...r.approvalHistory,
+                { actorName: 'System', action: 'processing', timestamp: processingNow },
+              ],
+            }
+          : r
+      )
+    );
+
+    await new Promise((resolve) => window.setTimeout(resolve, 1800));
+
+    try {
+      const txnId = buildJointTransactionId();
+      if (request.isSelfTransfer && request.toAccountId) {
+        executeSelfTransfer({
+          fromAccountId: request.fromAccountId,
+          toAccountId: request.toAccountId,
+          amount: request.amount,
+          remarks: request.note,
+        });
+      } else {
+        const ben = retailBeneficiaries.find((b) => b.id === request.beneficiaryId);
+        executeTransfer({
+          fromAccountId: request.fromAccountId,
+          beneficiaryName: request.beneficiaryName,
+          beneficiaryAccount: ben?.accountNumber ?? request.beneficiaryAccountMasked,
+          bankName: request.beneficiaryBank,
+          amount: request.amount,
+          mode: request.mode === 'Internal' ? 'Internal' : request.mode,
+          remarks: request.note,
+        });
+      }
+
+      const completedAt = formatJointTimestamp();
+      persistJointRequests((prev) =>
+        prev.map((r) =>
+          r.id === requestId
+            ? {
+                ...r,
+                status: 'completed',
+                transactionId: txnId,
+                completedAt,
+                approvalHistory: [
+                  ...r.approvalHistory,
+                  { actorName: 'System', action: 'completed', timestamp: completedAt },
+                ],
+              }
+            : r
+        )
+      );
+      return true;
+    } catch {
+      persistJointRequests((prev) =>
+        prev.map((r) => (r.id === requestId ? { ...r, status: 'failed' } : r))
+      );
+      return false;
+    }
   };
 
   // Fund Transfer
@@ -2853,7 +3144,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     retailAccounts.find((a) => a.id === defaultDebitAccountId) || getPrimaryAccount();
 
   const getVisibleAccounts = (): BankAccount[] =>
-    retailAccounts.filter((a) => !hiddenAccountIds.includes(a.id));
+    accounts.filter((a) => !hiddenAccountIds.includes(a.id));
 
   const setPrimaryCorporateAccount = (accountId: string) => {
     setPrimaryCorporateAccountId(accountId);
@@ -2948,7 +3239,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const resetDemoData = () => {
-    setRetailAccounts(INITIAL_RETAIL_ACCOUNTS);
+    setRetailAccounts([...INITIAL_RETAIL_ACCOUNTS, ...INITIAL_JOINT_ACCOUNTS]);
     setCorporateAccounts(INITIAL_CORPORATE_ACCOUNTS);
     setRetailTransactions(INITIAL_RETAIL_TRANSACTIONS);
     setCorporateTransactions(INITIAL_CORPORATE_TRANSACTIONS);
@@ -3037,6 +3328,16 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setPendingCorporateUser,
       retailRegistration,
       completeRetailRegistration,
+      retailActiveUserId,
+      setRetailSessionFromLogin,
+      jointTransferRequests,
+      submitJointTransferRequest,
+      approveJointTransferRequest,
+      rejectJointTransferRequest,
+      executeApprovedJointTransfer,
+      getPendingJointApprovalsForUser,
+      getJointRequestsForUser,
+      getJointRequestById,
       canApproveCorporate,
       canSubmitCorporatePayment,
       canCreateCorporateBulk,

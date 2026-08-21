@@ -19,8 +19,9 @@ import { findCorporateDemoUserByCustomerIdOnly } from '../../data/corporateAuthM
 import { authenticateCorporate } from '../../services/corporateLoginService';
 import { isCorporateCustomerId } from '../../utils/customerId';
 import { PreLoginQuickLinks } from './prelogin/PreLoginModule';
+import { getRetailJointUserByCustomerNumber } from '../../data/retailJointTransferMock';
 
-type LoginPersona = 'retail' | 'maker' | 'checker';
+type LoginPersona = 'retail' | 'rahul' | 'amit' | 'maker' | 'checker';
 type LoginMethod = 'password' | 'mpin' | 'fingerprint';
 
 const RETAIL_DEMO_USER_ID = 'RB-123456';
@@ -30,6 +31,8 @@ const DEMO_MPIN = '123456';
 
 const PERSONA_CUSTOMER_IDS: Record<LoginPersona, string> = {
   retail: RETAIL_DEMO_USER_ID,
+  rahul: 'RB-RAHUL01',
+  amit: 'RB-AMIT01',
   maker: MAKER_DEMO_USER_ID,
   checker: CHECKER_DEMO_USER_ID,
 };
@@ -41,6 +44,7 @@ export const AuthContainer: React.FC = () => {
     authScreen,
     setAuthScreen,
     setBankingType,
+    setRetailSessionFromLogin,
     login,
     addToast,
     setPendingCorporateUser,
@@ -63,7 +67,7 @@ export const AuthContainer: React.FC = () => {
     const incomingId = state?.customerId ?? state?.retailUserId;
     if (incomingId) {
       setCustomerId(incomingId);
-      setLoginPersona(isCorporateCustomerId(incomingId) ? 'maker' : 'retail');
+      setLoginPersona(isCorporateCustomerId(incomingId) ? 'maker' : incomingId.toUpperCase() === 'RB-RAHUL01' ? 'rahul' : incomingId.toUpperCase() === 'RB-AMIT01' ? 'amit' : 'retail');
       setBankingType(isCorporateCustomerId(incomingId) ? 'corporate' : 'retail');
       setAuthScreen('login');
       window.history.replaceState({}, document.title);
@@ -89,8 +93,10 @@ export const AuthContainer: React.FC = () => {
   };
 
   const completeRetailLogin = (id: string) => {
+    setRetailSessionFromLogin(id);
     setBankingType('retail');
-    login('retail', id);
+    const jointUser = getRetailJointUserByCustomerNumber(id);
+    login('retail', jointUser?.name ?? id);
   };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -114,11 +120,13 @@ export const AuthContainer: React.FC = () => {
         });
         return;
       }
-      if (mpin !== DEMO_MPIN) {
+      if (mpin !== (getRetailJointUserByCustomerNumber(id)?.demoMpin ?? DEMO_MPIN)) {
         addToast({
           type: 'error',
           title: 'Incorrect MPIN',
-          message: 'Demo MPIN is 123456.',
+          message: getRetailJointUserByCustomerNumber(id)
+            ? 'Use the demo MPIN shown for this joint holder.'
+            : 'Demo MPIN is 123456.',
         });
         return;
       }
@@ -190,7 +198,7 @@ export const AuthContainer: React.FC = () => {
     setIsBiometricScanning(true);
     setTimeout(() => {
       setIsBiometricScanning(false);
-      login('retail', customerId.trim());
+      completeRetailLogin(customerId.trim());
     }, 1200);
   };
 
@@ -198,12 +206,20 @@ export const AuthContainer: React.FC = () => {
     setLoginPersona(type);
     setCustomerId(PERSONA_CUSTOMER_IDS[type]);
     setPassword('demo123');
-    setMpin(DEMO_MPIN);
-    setBankingType(type === 'retail' ? 'retail' : 'corporate');
+    const jointUser = getRetailJointUserByCustomerNumber(PERSONA_CUSTOMER_IDS[type]);
+    setMpin(jointUser?.demoMpin ?? DEMO_MPIN);
+    setBankingType(type === 'retail' || type === 'rahul' || type === 'amit' ? 'retail' : 'corporate');
+    const labels: Record<LoginPersona, string> = {
+      retail: 'Retail login',
+      rahul: 'Rahul — Initiator',
+      amit: 'Amit — Approver',
+      maker: 'Finance Maker',
+      checker: 'Finance Checker',
+    };
     addToast({
       type: 'info',
       title: 'Demo credentials loaded',
-      message: type === 'retail' ? 'Retail login' : type === 'maker' ? 'Finance Maker' : 'Finance Checker',
+      message: labels[type],
     });
   };
 
@@ -265,14 +281,40 @@ export const AuthContainer: React.FC = () => {
 
               <div className="mb-3">
                 <p className="text-[11px] font-semibold text-slate-500 mb-2">Quick demo login</p>
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  <button
+                    type="button"
+                    onClick={() => fillDemo('rahul')}
+                    className={`py-2 px-2 rounded-xl text-[10px] font-bold border transition-all ${
+                      loginPersona === 'rahul'
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-blue-700 dark:text-blue-300'
+                    }`}
+                  >
+                    <span className="block">Rahul — Initiator</span>
+                    <span className="block font-mono text-[9px] mt-0.5 opacity-90">RB-RAHUL01</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => fillDemo('amit')}
+                    className={`py-2 px-2 rounded-xl text-[10px] font-bold border transition-all ${
+                      loginPersona === 'amit'
+                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-indigo-700 dark:text-indigo-300'
+                    }`}
+                  >
+                    <span className="block">Amit — Approver</span>
+                    <span className="block font-mono text-[9px] mt-0.5 opacity-90">RB-AMIT01</span>
+                  </button>
+                </div>
                 <div className="grid grid-cols-3 gap-2">
                   <button
                     type="button"
                     onClick={() => fillDemo('retail')}
                     className={`py-2 px-2 rounded-xl text-[10px] font-bold border transition-all ${
                       loginPersona === 'retail'
-                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-blue-700 dark:text-blue-300'
+                        ? 'bg-slate-700 border-slate-700 text-white shadow-sm'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
                     }`}
                   >
                     <span className="block">Retail</span>

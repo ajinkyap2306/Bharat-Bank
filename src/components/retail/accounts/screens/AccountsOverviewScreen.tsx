@@ -35,8 +35,8 @@ export const AccountsOverviewScreen: React.FC = () => {
     navigate('/', { replace: true });
   };
 
-  const openDetails = (accountId: string) => {
-    navigate(`/retail/accounts/${accountId}`);
+  const openDetails = (accountId: string, isJoint?: boolean) => {
+    navigate(isJoint ? `/retail/joint-account/${accountId}` : `/retail/accounts/${accountId}`);
   };
 
   return (
@@ -48,7 +48,7 @@ export const AccountsOverviewScreen: React.FC = () => {
             account={acc}
             isPrimary={acc.id === primaryAccountId}
             showBalance={showBalance}
-            onClick={() => openDetails(acc.id)}
+            onClick={() => openDetails(acc.id, acc.isJointAccount)}
             compact
           />
         ))}

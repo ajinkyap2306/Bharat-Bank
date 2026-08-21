@@ -62,6 +62,8 @@ export const RetailHome: React.FC = () => {
     setBottomNavHidden,
     getPrimaryAccount,
     getVisibleAccounts,
+    getPendingJointApprovalsForUser,
+    retailActiveUserId,
   } = useBanking();
 
   const [hiddenAccounts, setHiddenAccounts] = useState<Record<string, boolean>>({});
@@ -169,8 +171,28 @@ export const RetailHome: React.FC = () => {
     setTimeout(() => setCopiedUpi(false), 2000);
   };
 
+  const pendingJointApprovals = getPendingJointApprovalsForUser(retailActiveUserId);
+
   return (
     <div className="space-y-4 pb-6">
+      {pendingJointApprovals.length > 0 && (
+        <button
+          type="button"
+          onClick={() => navigate('/retail/joint-approvals')}
+          className="w-full text-left p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800"
+        >
+          <p className="text-xs font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider">
+            Pending Approvals
+          </p>
+          <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">
+            {pendingJointApprovals.length} request awaiting your approval
+          </p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {pendingJointApprovals[0].beneficiaryName} • ₹
+            {pendingJointApprovals[0].amount.toLocaleString('en-IN')}
+          </p>
+        </button>
+      )}
       {/* 1. Account Cards Carousel */}
       <div className="pt-1">
         <div className="flex items-center justify-between px-1 mb-2">

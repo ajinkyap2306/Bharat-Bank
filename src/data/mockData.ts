@@ -620,8 +620,8 @@ export const INITIAL_RETAIL_BENEFICIARIES: Beneficiary[] = [
   {
     id: 'ben_ret_05',
     name: 'ABC Suppliers Ltd.',
-    accountNumber: '50211458024582',
-    maskedAccount: '•••• 4582',
+    accountNumber: '502114580247821',
+    maskedAccount: '•••• 7821',
     bankName: 'HDFC Bank',
     ifsc: 'HDFC0001234',
     type: 'retail_other',

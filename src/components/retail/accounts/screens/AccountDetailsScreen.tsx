@@ -117,8 +117,12 @@ export const AccountDetailsScreen: React.FC<{ accountId: string }> = ({ accountI
       />
 
       <AccountsStickyCTA
-        label="Manage Account"
-        onClick={() => navigate(`/retail/accounts/${accountId}/manage`)}
+        label={account.isJointAccount ? 'Joint Account' : 'Manage Account'}
+        onClick={() =>
+          account.isJointAccount
+            ? navigate(`/retail/joint-account/${accountId}`)
+            : navigate(`/retail/accounts/${accountId}/manage`)
+        }
       />
 
       <MiniStatementSheet
