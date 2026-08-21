@@ -65,6 +65,7 @@ import {
 import type { CorporateDemoUser } from '../types/corporateDemoUser';
 import type { RetailRegistrationResult } from '../types/retailRegistration';
 import { RETAIL_REGISTRATION_STORAGE_KEY } from '../data/retailRegistrationMock';
+import { LOGIN_OFFER } from '../data/preLoginMock';
 import type { JointRequestPayload, JointRequestType, JointTransferRequest } from '../types/retailJointTransfer';
 import {
   INITIAL_JOINT_ACCOUNTS,
@@ -204,6 +205,8 @@ interface BankingContextType {
   isSessionExpired: boolean;
   clearSessionExpired: () => void;
   expireSession: () => void;
+  loginPromoPending: boolean;
+  clearLoginPromoPending: () => void;
   corporateLoginVerified: boolean;
   corporateOtpVerified: boolean;
   setCorporateLoginVerified: (verified: boolean) => void;
@@ -549,7 +552,15 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true); // Default to logged-in home view for instant preview, can log out anytime
   const [bankingType, setBankingType] = useState<BankingType>('retail');
   const [authScreen, setAuthScreen] = useState<AuthScreen>('splash');
-  
+  const [loginPromoPending, setLoginPromoPending] = useState(false);
+
+  const clearLoginPromoPending = () => setLoginPromoPending(false);
+
+  const triggerLoginPromo = () => {
+    localStorage.removeItem(LOGIN_OFFER.dismissKey);
+    setLoginPromoPending(true);
+  };
+
   // Tabs
   const [retailTab, setRetailTab] = useState<RetailTab>('home');
   const [corporateTab, setCorporateTab] = useState<CorporateTab>('home');
@@ -839,6 +850,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setCorporateSession(null);
     setRetailActiveUserId('usr_ret_001');
     localStorage.removeItem(RETAIL_SESSION_USER_KEY);
+    triggerLoginPromo();
     if (bankingType === 'corporate') {
       setBankingType('corporate');
       setAuthScreen('splash');
@@ -860,6 +872,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setIsSessionExpired(true);
     clearCorporateAuthFlow();
     setCorporateSession(null);
+    triggerLoginPromo();
     if (bankingType === 'corporate') {
       setBankingType('corporate');
       setAuthScreen('splash');
@@ -3431,6 +3444,8 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       isSessionExpired,
       clearSessionExpired,
       expireSession,
+      loginPromoPending,
+      clearLoginPromoPending,
       corporateLoginVerified,
       corporateOtpVerified,
       setCorporateLoginVerified,

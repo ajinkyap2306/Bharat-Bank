@@ -37,4 +37,4 @@ export const PRE_LOGIN_MENU_ITEMS = [
   { id: 'privacy', label: 'Privacy Policy', gridLabel: 'Privacy', icon: FileText, path: '/prelogin/privacy' },
 ] as const;
 
-export const LOGIN_QUICK_ITEM_IDS = ['offers', 'atm', 'branch', 'faqs', 'contact'] as const;
+export const LOGIN_QUICK_ITEM_IDS = ['contact', 'atm', 'branch', 'faqs', 'offers'] as const;

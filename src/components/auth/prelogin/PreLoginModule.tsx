@@ -401,14 +401,14 @@ export const PreLoginQuickLinks: React.FC = () => {
   const [showMore, setShowMore] = useState(false);
   const [showDemoVideo, setShowDemoVideo] = useState(false);
 
-  const quickItems = PRE_LOGIN_MENU_ITEMS.filter((item) =>
-    (LOGIN_QUICK_ITEM_IDS as readonly string[]).includes(item.id)
-  );
+  const quickItems = LOGIN_QUICK_ITEM_IDS.map((id) =>
+    PRE_LOGIN_MENU_ITEMS.find((item) => item.id === id)
+  ).filter((item): item is (typeof PRE_LOGIN_MENU_ITEMS)[number] => item != null);
 
   return (
     <>
-      <div className="pt-3 border-t border-slate-200 dark:border-slate-900">
-        <div className="flex items-center justify-between mb-2">
+      <div className="mt-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 shadow-sm">
+        <div className="flex items-center justify-between mb-3">
           <p className="text-[11px] text-slate-500 font-medium">Help & services</p>
           <button
             type="button"
@@ -418,7 +418,7 @@ export const PreLoginQuickLinks: React.FC = () => {
             More ›
           </button>
         </div>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-5 gap-1.5">
           {quickItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -427,7 +427,7 @@ export const PreLoginQuickLinks: React.FC = () => {
                 type="button"
                 onClick={() => openPreLoginScreen(navigate, item.path)}
                 aria-label={item.label}
-                className="flex flex-col items-center gap-1 py-2 px-1 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 active:scale-95 transition-transform"
+                className="flex flex-col items-center gap-1 py-2 px-0.5 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800 active:scale-95 transition-transform"
               >
                 <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center">
                   <Icon className="w-3.5 h-3.5" />
@@ -439,10 +439,11 @@ export const PreLoginQuickLinks: React.FC = () => {
             );
           })}
         </div>
+      </div>
         <button
           type="button"
           onClick={() => setShowDemoVideo(true)}
-          className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-sm shadow-blue-600/20 active:scale-[0.98] transition-all"
+          className="w-full mt-3 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-sm shadow-blue-600/20 active:scale-[0.98] transition-all"
         >
           <PlayCircle className="w-4 h-4" />
           Demo — Open Retail Banking
@@ -464,7 +465,6 @@ export const PreLoginQuickLinks: React.FC = () => {
             Privacy
           </button>
         </div>
-      </div>
       <PreLoginServicesSheet isOpen={showMore} onClose={() => setShowMore(false)} />
       <BharatBankDemoVideoModal
         isOpen={showDemoVideo}

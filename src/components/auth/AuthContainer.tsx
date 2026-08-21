@@ -19,6 +19,7 @@ import { findCorporateDemoUserByCustomerIdOnly } from '../../data/corporateAuthM
 import { authenticateCorporate } from '../../services/corporateLoginService';
 import { isCorporateCustomerId } from '../../utils/customerId';
 import { PreLoginQuickLinks } from './prelogin/PreLoginModule';
+import { LoginPromoBanner } from './prelogin/LoginPromoBanner';
 import { PreLoginTicker } from './prelogin/PreLoginTicker';
 import { LoginOfferSheet } from './prelogin/LoginOfferSheet';
 import { AuthSplashScreen } from './AuthSplashScreen';
@@ -251,9 +252,9 @@ export const AuthContainer: React.FC = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
-              className="flex flex-col max-w-md mx-auto w-full min-h-dvh z-10 pt-10"
+              className="flex flex-col max-w-md mx-auto w-full z-10 pt-10 pb-6 safe-bottom"
             >
-            <div className="flex-1 pt-2 pb-4">
+            <div className="pt-2">
               <div className="flex items-center mb-3">
                 <BharatBankLogo variant="full" size="sm" />
               </div>
@@ -424,11 +425,11 @@ export const AuthContainer: React.FC = () => {
                   Register for Mobile Banking
                 </button>
               </p>
+
+              <LoginPromoBanner onExplore={() => navigate('/prelogin/offers')} />
             </div>
 
-            <div className="pb-6 safe-bottom">
-              <PreLoginQuickLinks />
-            </div>
+            <PreLoginQuickLinks />
           </motion.div>
           </>
         )}
