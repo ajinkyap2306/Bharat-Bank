@@ -39,6 +39,14 @@ export const PRE_LOGIN_TICKER_MESSAGES = [
   'Register for Mobile Banking in under 5 minutes with your debit card.',
 ];
 
+/** Messages for the fixed top marquee on the login screen (maintenance & alerts). */
+export const PRE_LOGIN_FIXED_TICKER_MESSAGES = [
+  'Due to planned maintenance, services will be intermittently unavailable on Sat 15 Aug 2026, 12:30 AM – 5:00 AM.',
+  'Bharat Bank website is now www.bharatbank.bank.in — secure RBI verified platform.',
+  'Please ensure NOMINATION in your bank account in the interest of your loved ones.',
+  'Never share MPIN, OTP, or card details with anyone — including bank staff.',
+];
+
 export const INDUSFACE_SCAN = {
   provider: 'Indusface',
   lastScanDate: '18 Aug 2026, 09:14 AM',

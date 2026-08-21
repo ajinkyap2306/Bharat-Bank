@@ -25,7 +25,6 @@ export const DemoController: React.FC = () => {
     isDarkMode, 
     toggleDarkMode, 
     logout, 
-    setAuthScreen,
     openScanner,
     addToast,
     triggerSessionTimeout,
@@ -110,7 +109,6 @@ export const DemoController: React.FC = () => {
               <button
                 onClick={() => {
                   logout();
-                  setAuthScreen('login');
                   setIsOpen(false);
                 }}
                 className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center gap-1.5 text-[11px] text-slate-300"

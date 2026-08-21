@@ -143,3 +143,28 @@
 .dark .limit-risk-slider::-moz-range-thumb {
   background: #0f172a;
 }
+
+@keyframes prelogin-ticker-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.prelogin-ticker-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: prelogin-ticker-marquee 45s linear infinite;
+}
+
+.prelogin-ticker-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prelogin-ticker-marquee-track {
+    animation: none;
+  }
+}

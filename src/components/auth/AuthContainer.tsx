@@ -243,19 +243,19 @@ export const AuthContainer: React.FC = () => {
         )}
 
         {authScreen === 'login' && (
-          <motion.div
-            key="login"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            className="flex flex-col max-w-md mx-auto w-full min-h-dvh z-10"
-          >
+          <>
+            <PreLoginTicker fixed />
+            <motion.div
+              key="login"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              className="flex flex-col max-w-md mx-auto w-full min-h-dvh z-10 pt-10"
+            >
             <div className="flex-1 pt-2 pb-4">
               <div className="flex items-center mb-3">
                 <BharatBankLogo variant="full" size="sm" />
               </div>
-
-              <PreLoginTicker />
 
               <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Sign in to Mobile Banking
@@ -497,6 +497,7 @@ export const AuthContainer: React.FC = () => {
               <PreLoginQuickLinks />
             </div>
           </motion.div>
+          </>
         )}
 
         {authScreen === 'otp' && !isCorporateCustomerId(customerId) && (

@@ -841,9 +841,9 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     localStorage.removeItem(RETAIL_SESSION_USER_KEY);
     if (bankingType === 'corporate') {
       setBankingType('corporate');
-      setAuthScreen('login');
+      setAuthScreen('splash');
     } else {
-      setAuthScreen('login');
+      setAuthScreen('splash');
     }
     addToast({
       type: 'info',
@@ -862,9 +862,9 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setCorporateSession(null);
     if (bankingType === 'corporate') {
       setBankingType('corporate');
-      setAuthScreen('login');
+      setAuthScreen('splash');
     } else {
-      setAuthScreen('login');
+      setAuthScreen('splash');
     }
   };
 
