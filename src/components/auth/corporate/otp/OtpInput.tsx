@@ -27,10 +27,10 @@ export const OtpInput: React.FC<OtpInputProps> = ({
   useEffect(() => {
     if (disabled) return;
     const t = window.setTimeout(() => {
-      inputRefs.current[activeIndex]?.focus();
+      inputRefs.current[0]?.focus();
     }, 0);
     return () => window.clearTimeout(t);
-  }, [resetKey, disabled, activeIndex]);
+  }, [resetKey, disabled]);
 
   const handleChange = (index: number, raw: string) => {
     const char = raw.replace(/\D/g, '').slice(-1);

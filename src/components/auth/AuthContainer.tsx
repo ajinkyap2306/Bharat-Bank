@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -19,6 +19,9 @@ import { findCorporateDemoUserByCustomerIdOnly } from '../../data/corporateAuthM
 import { authenticateCorporate } from '../../services/corporateLoginService';
 import { isCorporateCustomerId } from '../../utils/customerId';
 import { PreLoginQuickLinks } from './prelogin/PreLoginModule';
+import { PreLoginTicker } from './prelogin/PreLoginTicker';
+import { LoginOfferSheet } from './prelogin/LoginOfferSheet';
+import { AuthSplashScreen } from './AuthSplashScreen';
 import { getRetailJointUserByCustomerNumber } from '../../data/retailJointTransferMock';
 
 type LoginPersona = 'retail' | 'rahul' | 'amit' | 'maker' | 'checker';
@@ -223,6 +226,10 @@ export const AuthContainer: React.FC = () => {
     });
   };
 
+  const completeSplash = useCallback(() => {
+    setAuthScreen('login');
+  }, [setAuthScreen]);
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col text-slate-900 dark:text-white p-4 sm:p-6 font-['Plus_Jakarta_Sans',sans-serif] transition-colors duration-200 overflow-y-auto">
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -231,6 +238,10 @@ export const AuthContainer: React.FC = () => {
       </div>
 
       <AnimatePresence mode="wait">
+        {authScreen === 'splash' && (
+          <AuthSplashScreen onComplete={completeSplash} />
+        )}
+
         {authScreen === 'login' && (
           <motion.div
             key="login"
@@ -243,6 +254,8 @@ export const AuthContainer: React.FC = () => {
               <div className="flex items-center mb-3">
                 <BharatBankLogo variant="full" size="sm" />
               </div>
+
+              <PreLoginTicker />
 
               <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Sign in to Mobile Banking
@@ -585,6 +598,10 @@ export const AuthContainer: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {authScreen === 'login' && (
+        <LoginOfferSheet onExploreOffers={() => navigate('/prelogin/offers')} />
+      )}
     </div>
   );
 };

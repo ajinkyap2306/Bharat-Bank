@@ -28,7 +28,12 @@ export interface OtpSessionContext {
 }
 
 export function isOtpSessionExpired(otpIssuedAt: number): boolean {
-  return (Date.now() - otpIssuedAt) / 1000 > CORPORATE_OTP_EXPIRY_SECONDS;
+  return getOtpSecondsRemaining(otpIssuedAt) <= 0;
+}
+
+export function getOtpSecondsRemaining(otpIssuedAt: number): number {
+  const elapsed = (Date.now() - otpIssuedAt) / 1000;
+  return Math.max(0, Math.ceil(CORPORATE_OTP_EXPIRY_SECONDS - elapsed));
 }
 
 export function formatOtpCountdown(seconds: number): string {
