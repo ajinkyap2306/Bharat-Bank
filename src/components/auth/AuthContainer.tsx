@@ -228,12 +228,27 @@ export const AuthContainer: React.FC = () => {
     });
   };
 
+  useEffect(() => {
+    if (authScreen !== 'login') return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [authScreen]);
+
   const completeSplash = useCallback(() => {
     setAuthScreen('login');
   }, [setAuthScreen]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col text-slate-900 dark:text-white p-4 sm:p-6 font-['Plus_Jakarta_Sans',sans-serif] transition-colors duration-200 overflow-y-auto">
+    <div
+      className={`bg-slate-50 dark:bg-slate-950 flex flex-col text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] transition-colors duration-200 ${
+        authScreen === 'login'
+          ? 'h-dvh overflow-hidden p-3 sm:p-4 flex flex-col'
+          : 'min-h-screen overflow-y-auto p-4 sm:p-6'
+      }`}
+    >
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/20 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-teal-500/10 dark:bg-teal-600/20 rounded-full blur-3xl" />
@@ -245,25 +260,25 @@ export const AuthContainer: React.FC = () => {
         )}
 
         {authScreen === 'login' && (
-          <>
+          <div className="flex flex-col flex-1 min-h-0">
             <PreLoginTicker fixed />
             <motion.div
               key="login"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
-              className="flex flex-col max-w-md mx-auto w-full z-10 pt-10 pb-6 safe-bottom"
+              className="flex flex-col flex-1 min-h-0 max-w-md mx-auto w-full z-10 pt-9 pb-1 safe-bottom overflow-hidden"
             >
-            <div className="pt-2">
-              <div className="flex items-center mb-3">
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+              <div className="flex items-center mb-1.5">
                 <BharatBankLogo variant="full" size="sm" />
               </div>
 
-              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Sign in to Mobile Banking
               </h2>
 
-              <div className="grid grid-cols-3 gap-2 mt-4 mb-3 p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div className="grid grid-cols-3 gap-1.5 mt-2.5 mb-2 p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                 {(
                   [
                     { id: 'password' as const, label: 'Password', icon: Lock },
@@ -281,7 +296,7 @@ export const AuthContainer: React.FC = () => {
                         setLoginMethod(method.id);
                         setMpin('');
                       }}
-                      className={`flex flex-col items-center gap-1 py-2.5 rounded-xl text-[10px] font-bold transition-all ${
+                      className={`flex flex-col items-center gap-0.5 py-2 rounded-xl text-[10px] font-bold transition-all ${
                         active
                           ? 'bg-white dark:bg-slate-800 text-blue-600 shadow-sm ring-1 ring-blue-200 dark:ring-blue-800'
                           : 'text-slate-500 dark:text-slate-400'
@@ -294,9 +309,9 @@ export const AuthContainer: React.FC = () => {
                 })}
               </div>
 
-              <form id="login-form" onSubmit={handleLoginSubmit} className="space-y-3">
+              <form id="login-form" onSubmit={handleLoginSubmit} className="space-y-2">
                 <div>
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
+                  <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300 block mb-1">
                     Customer ID
                   </label>
                   <div className="relative">
@@ -305,7 +320,7 @@ export const AuthContainer: React.FC = () => {
                       value={customerId}
                       onChange={(e) => setCustomerId(e.target.value.toUpperCase())}
                       placeholder="RB-123456"
-                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500 rounded-2xl py-3.5 px-4 pr-11 text-sm font-mono font-medium text-slate-900 dark:text-white outline-none shadow-xs"
+                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500 rounded-xl py-3 px-4 pr-11 text-sm font-mono font-medium text-slate-900 dark:text-white outline-none shadow-xs"
                       autoComplete="username"
                       required
                     />
@@ -316,8 +331,8 @@ export const AuthContainer: React.FC = () => {
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
                       {loginMethod === 'password' ? 'Password' : loginMethod === 'mpin' ? 'MPIN' : 'Biometric'}
                     </label>
                     {loginMethod === 'password' && (
@@ -347,7 +362,7 @@ export const AuthContainer: React.FC = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="demo123"
-                        className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500 rounded-2xl py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-white outline-none shadow-xs"
+                        className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500 rounded-xl py-3 px-4 text-sm font-medium text-slate-900 dark:text-white outline-none shadow-xs"
                         autoComplete="current-password"
                         required
                       />
@@ -371,26 +386,26 @@ export const AuthContainer: React.FC = () => {
                         autoFocus
                         ariaLabel="6-digit MPIN"
                       />
-                      <p className="text-[10px] text-slate-500 text-center mt-2">Demo MPIN: 123456</p>
+                      <p className="text-[9px] text-slate-500 text-center mt-1">Demo MPIN: 123456</p>
                     </div>
                   )}
 
                   {loginMethod === 'fingerprint' && (
-                    <div className="flex flex-col items-center py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <div className="flex flex-col items-center py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                       <div
-                        className={`w-16 h-16 rounded-full border-2 flex items-center justify-center ${
+                        className={`w-14 h-14 rounded-full border-2 flex items-center justify-center ${
                           isBiometricScanning
                             ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30'
                             : 'border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-950/30'
                         }`}
                       >
                         <Fingerprint
-                          className={`w-8 h-8 ${
+                          className={`w-7 h-7 ${
                             isBiometricScanning ? 'text-emerald-600' : 'text-blue-600 dark:text-blue-400'
                           }`}
                         />
                       </div>
-                      <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 mt-2">
+                      <p className="text-[10px] font-semibold text-slate-700 dark:text-slate-300 mt-1.5">
                         {isBiometricScanning ? 'Scanning…' : 'Tap Sign In below to authenticate'}
                       </p>
                     </div>
@@ -400,7 +415,7 @@ export const AuthContainer: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoggingIn || isBiometricScanning}
-                  className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white font-bold rounded-2xl shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98] mt-1"
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white font-bold rounded-xl shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                 >
                   <span>
                     {isLoggingIn || isBiometricScanning
@@ -415,7 +430,7 @@ export const AuthContainer: React.FC = () => {
                 </button>
               </form>
 
-              <p className="text-center text-[12px] text-slate-500 mt-3">
+              <p className="text-center text-[11px] text-slate-500 mt-1.5">
                 New user?{' '}
                 <button
                   type="button"
@@ -429,9 +444,11 @@ export const AuthContainer: React.FC = () => {
               <LoginPromoBanner onExplore={() => navigate('/prelogin/offers')} />
             </div>
 
-            <PreLoginQuickLinks />
+            <div className="shrink-0">
+              <PreLoginQuickLinks />
+            </div>
           </motion.div>
-          </>
+          </div>
         )}
 
         {authScreen === 'otp' && !isCorporateCustomerId(customerId) && (

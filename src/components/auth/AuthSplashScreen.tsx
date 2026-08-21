@@ -35,8 +35,8 @@ export const AuthSplashScreen: React.FC<AuthSplashScreenProps> = ({ onComplete }
         transition={{ type: 'spring', stiffness: 220, damping: 22 }}
         className="relative z-10 flex flex-col items-center px-8 text-center"
       >
-        <div className="rounded-3xl bg-white px-5 py-4 shadow-2xl shadow-blue-900/30 mb-8">
-          <BharatBankLogo variant="full" size="lg" />
+        <div className="rounded-3xl bg-white px-6 py-5 shadow-2xl shadow-blue-900/30 mb-8 max-w-[min(100%,22rem)]">
+          <BharatBankLogo variant="full" size="lg" className="mx-auto" />
         </div>
         <h1 className="text-xl font-extrabold tracking-tight">Mobile Banking</h1>
         <p className="text-sm text-blue-100 mt-2 max-w-xs leading-relaxed">
