@@ -429,9 +429,7 @@ export const PreLoginQuickLinks: React.FC = () => {
                 aria-label={item.label}
                 className="flex flex-col items-center gap-1 py-2 px-0.5 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800 active:scale-95 transition-transform"
               >
-                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center">
-                  <Icon className="w-3.5 h-3.5" />
-                </div>
+                <Icon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 text-center leading-tight">
                   {item.gridLabel}
                 </span>
