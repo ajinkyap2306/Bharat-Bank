@@ -549,7 +549,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
   // Authentication & Mode
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true); // Default to logged-in home view for instant preview, can log out anytime
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [bankingType, setBankingType] = useState<BankingType>('retail');
   const [authScreen, setAuthScreen] = useState<AuthScreen>('splash');
   const [loginPromoPending, setLoginPromoPending] = useState(false);
