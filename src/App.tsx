@@ -70,6 +70,7 @@ import { CorporateBulkPaymentsModule } from './components/corporate/bulk-payment
 import { CorporateMoreModule } from './components/corporate/more/CorporateMoreModule';
 import { CorporateProfileModule } from './components/corporate/profile/CorporateProfileModule';
 import { isCorporateBottomNavRoute } from './utils/corporateBottomNav';
+import { parseRetailAccountsRoute } from './utils/retailAccountsRoutes';
 import { getCorporateLandingPath } from './utils/corporateLanding';
 
 const BankingAppContent: React.FC = () => {
@@ -112,7 +113,9 @@ const BankingAppContent: React.FC = () => {
 
   const hideRetailAccountsBottomNav =
     bankingType === 'retail' &&
-    (location.pathname.startsWith('/retail/accounts') || isRetailJointRoute);
+    (isRetailJointRoute ||
+      (location.pathname.startsWith('/retail/accounts') &&
+        parseRetailAccountsRoute(location.pathname).screen !== 'overview'));
 
   const showBottomNav =
     isAuthenticated &&

@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
   SendHorizontal,
-  QrCode,
   Grid,
   User,
   FileCheck2,
@@ -11,6 +10,7 @@ import {
   ArrowLeftRight,
   MoreHorizontal,
 } from 'lucide-react';
+import { parseRetailAccountsRoute } from '../../utils/retailAccountsRoutes';
 import { motion, AnimatePresence } from 'motion/react';
 import { useBanking } from '../../context/BankingContext';
 import { getApprovalsBadgeCount } from '../../data/corporateApprovalsDashboardMock';
@@ -32,7 +32,6 @@ export const BottomNav: React.FC = () => {
     setRetailTab,
     corporateTab,
     setCorporateTab,
-    openScanner,
     isScannerOpen,
     isBottomNavHidden,
     activeDetailFlow,
@@ -48,7 +47,11 @@ export const BottomNav: React.FC = () => {
       return false;
     }
 
-    if (bankingType === 'retail' && location.pathname.startsWith('/retail/accounts')) {
+    if (
+      bankingType === 'retail' &&
+      location.pathname.startsWith('/retail/accounts') &&
+      parseRetailAccountsRoute(location.pathname).screen !== 'overview'
+    ) {
       return false;
     }
 
@@ -119,18 +122,20 @@ export const BottomNav: React.FC = () => {
             </button>
 
             <button
-              onClick={openScanner}
-              className="flex flex-col items-center justify-end flex-1 min-w-0 py-1 transition-all active:scale-95"
-              aria-label="Scan QR code"
+              onClick={() => {
+                setRetailTab('accounts');
+                navigate('/retail/accounts');
+              }}
+              className={`${RETAIL_NAV_ITEM} ${
+                retailTab === 'accounts' ||
+                (location.pathname.startsWith('/retail/accounts') &&
+                  parseRetailAccountsRoute(location.pathname).screen === 'overview')
+                  ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
+                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+              }`}
             >
-              <div className="relative -mt-5 mb-0.5">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-congress-blue-600 to-congress-blue-800 flex items-center justify-center shadow-[0_8px_20px_rgba(0,93,212,0.45)] ring-[3px] ring-white dark:ring-slate-900">
-                  <QrCode className="w-6 h-6 text-white shrink-0" strokeWidth={2.25} />
-                </div>
-              </div>
-              <span className="text-[10px] mt-1 leading-none invisible" aria-hidden="true">
-                QR
-              </span>
+              <Wallet className="w-5 h-5 shrink-0" />
+              <span className="text-[10px] mt-1 leading-none">Accounts</span>
             </button>
 
             <button

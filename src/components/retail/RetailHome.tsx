@@ -40,10 +40,13 @@ import {
   BookOpen,
   CalendarClock,
   BookMarked,
+  UserCircle,
+  Repeat,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useBanking } from '../../context/BankingContext';
 import { BankAccount, Transaction } from '../../types/banking';
+import { shareAccountDetails } from '../../utils/shareAccountDetails';
 import { AddMoneyModule } from './add-money/AddMoneyModule';
 import { SendMoneyModule } from './send-money/SendMoneyModule';
 
@@ -173,6 +176,31 @@ export const RetailHome: React.FC = () => {
     setTimeout(() => setCopiedUpi(false), 2000);
   };
 
+  const handleShareIfsc = async () => {
+    const acc = getPrimaryAccount();
+    if (!acc?.accountNumber) {
+      addToast({ type: 'error', title: 'No account', message: 'No account available to share.' });
+      return;
+    }
+
+    const result = await shareAccountDetails(
+      {
+        accountHolder: user?.name,
+        accountType: acc.accountType,
+        accountNumber: acc.accountNumber,
+        ifsc: acc.ifsc,
+        branch: acc.branch,
+      },
+      (message) => addToast({ type: 'info', title: 'Copied', message })
+    );
+
+    if (result === 'shared') {
+      addToast({ type: 'success', title: 'Shared', message: 'Account IFSC details shared successfully.' });
+    } else if (result === 'copied') {
+      addToast({ type: 'success', title: 'Copied', message: 'Account IFSC details copied to clipboard.' });
+    }
+  };
+
   const pendingJointApprovals = getPendingJointApprovalsForUser(retailActiveUserId);
 
   return (
@@ -298,20 +326,20 @@ export const RetailHome: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-4 gap-1 sm:gap-2">
-          {/* Send Money */}
+          {/* Transfer */}
           <motion.button
             whileTap={{ scale: 0.92 }}
-            onClick={() => setShowSendMoneyFlow(true)}
+            onClick={() => setRetailTab('transfers')}
             className="flex flex-col items-center justify-center p-1.5 sm:p-2 text-center group cursor-pointer"
           >
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-linear-to-tr from-congress-blue-600 to-congress-blue-800 text-white flex items-center justify-center shadow-md shadow-congress-blue-500/25 group-hover:scale-105 transition-transform mb-2">
-              <SendHorizontal className="w-6 h-6" />
+              <ArrowLeftRight className="w-6 h-6" />
             </div>
             <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-congress-blue-700 dark:group-hover:text-congress-blue-400 transition-colors whitespace-nowrap">
-              Send Money
+              Transfer
             </span>
             <span className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 hidden sm:block whitespace-nowrap mt-0.5">
-              UPI / Mobile
+              NEFT / IMPS / RTGS
             </span>
           </motion.button>
 
@@ -332,37 +360,37 @@ export const RetailHome: React.FC = () => {
             </span>
           </motion.button>
 
-          {/* Scan & Pay */}
+          {/* Send via Mobile */}
           <motion.button
             whileTap={{ scale: 0.92 }}
-            onClick={openScanner}
+            onClick={() => setShowSendMoneyFlow(true)}
             className="flex flex-col items-center justify-center p-1.5 sm:p-2 text-center group cursor-pointer"
           >
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-linear-to-tr from-congress-blue-600 to-congress-blue-800 text-white flex items-center justify-center shadow-md shadow-congress-blue-500/25 group-hover:scale-105 transition-transform mb-2">
-              <QrCode className="w-6 h-6" />
+              <Smartphone className="w-6 h-6" />
             </div>
             <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-congress-blue-700 dark:group-hover:text-congress-blue-400 transition-colors whitespace-nowrap">
-              Scan & Pay
+              Send via Mobile
             </span>
             <span className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 hidden sm:block whitespace-nowrap mt-0.5">
-              Any QR Code
+              Mobile / UPI
             </span>
           </motion.button>
 
-          {/* Add Money */}
+          {/* Beneficiaries */}
           <motion.button
             whileTap={{ scale: 0.92 }}
-            onClick={() => setShowAddMoneyFlow(true)}
+            onClick={() => setRetailTab('beneficiaries')}
             className="flex flex-col items-center justify-center p-1.5 sm:p-2 text-center group cursor-pointer"
           >
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-linear-to-tr from-congress-blue-600 to-congress-blue-800 text-white flex items-center justify-center shadow-md shadow-congress-blue-500/25 group-hover:scale-105 transition-transform mb-2">
-              <PlusCircle className="w-6 h-6" />
+              <Users className="w-6 h-6" />
             </div>
             <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-congress-blue-700 dark:group-hover:text-congress-blue-400 transition-colors whitespace-nowrap">
-              Add Money
+              Beneficiaries
             </span>
             <span className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 hidden sm:block whitespace-nowrap mt-0.5">
-              Bank, Card or UPI
+              Manage payees
             </span>
           </motion.button>
         </div>
@@ -425,7 +453,7 @@ export const RetailHome: React.FC = () => {
             <div className={SERVICE_ICON_BOX}>
               <ArrowLeftRight className="w-5 h-5" />
             </div>
-            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Bank Transfer</span>
+            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Transfer</span>
           </motion.button>
 
           {/* 4. Deposits */}
@@ -475,7 +503,7 @@ export const RetailHome: React.FC = () => {
             <div className={SERVICE_ICON_BOX}>
               <IndianRupee className="w-5 h-5" />
             </div>
-            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Bill Payments</span>
+            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Bill Pay</span>
           </motion.button>
 
           {/* 8. Recharge */}
@@ -491,19 +519,7 @@ export const RetailHome: React.FC = () => {
           </motion.button>
 
           {/* Row 3 — Pay & Documents */}
-          {/* 9. UPI / QR */}
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={() => setShowUpiModal(true)}
-            className="flex flex-col items-center group cursor-pointer"
-          >
-            <div className={SERVICE_ICON_BOX}>
-              <QrCode className="w-5 h-5" />
-            </div>
-            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">UPI / QR</span>
-          </motion.button>
-
-          {/* 10. Beneficiaries */}
+          {/* 9. Beneficiaries */}
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('beneficiaries')}
@@ -515,7 +531,7 @@ export const RetailHome: React.FC = () => {
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Beneficiaries</span>
           </motion.button>
 
-          {/* 11. Statements */}
+          {/* 10. Statements */}
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('statements')}
@@ -527,7 +543,7 @@ export const RetailHome: React.FC = () => {
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Statements</span>
           </motion.button>
 
-          {/* 12. Scheduled */}
+          {/* 11. Scheduled */}
           <motion.button
             type="button"
             whileTap={{ scale: 0.92 }}
@@ -540,32 +556,7 @@ export const RetailHome: React.FC = () => {
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Scheduled</span>
           </motion.button>
 
-          {/* Row 4 — Extras */}
-          {/* 13. Offers */}
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={() => setShowOffersModal(true)}
-            className="flex flex-col items-center group cursor-pointer"
-          >
-            <div className={SERVICE_ICON_BOX}>
-              <Tag className="w-5 h-5" />
-            </div>
-            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Offers</span>
-          </motion.button>
-
-          {/* 14. Rewards */}
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={() => setShowRewardsModal(true)}
-            className="flex flex-col items-center group cursor-pointer"
-          >
-            <div className={SERVICE_ICON_BOX}>
-              <Award className="w-5 h-5" />
-            </div>
-            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Rewards</span>
-          </motion.button>
-
-          {/* 15. ePassbook */}
+          {/* 12. ePassbook */}
           <motion.button
             type="button"
             whileTap={{ scale: 0.92 }}
@@ -576,6 +567,46 @@ export const RetailHome: React.FC = () => {
               <BookMarked className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">ePassbook</span>
+          </motion.button>
+
+          {/* Row 4 — Extras */}
+          {/* 13. Nominee */}
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.92 }}
+            onClick={() => setRetailTab('nominee')}
+            className="flex flex-col items-center group cursor-pointer"
+          >
+            <div className={SERVICE_ICON_BOX}>
+              <UserCircle className="w-5 h-5" />
+            </div>
+            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Nominee</span>
+          </motion.button>
+
+          {/* 14. Share IFSC */}
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.92 }}
+            onClick={() => void handleShareIfsc()}
+            className="flex flex-col items-center group cursor-pointer"
+          >
+            <div className={SERVICE_ICON_BOX}>
+              <Share2 className="w-5 h-5" />
+            </div>
+            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Share IFSC</span>
+          </motion.button>
+
+          {/* 15. NACH */}
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.92 }}
+            onClick={() => setRetailTab('nach')}
+            className="flex flex-col items-center group cursor-pointer"
+          >
+            <div className={SERVICE_ICON_BOX}>
+              <Repeat className="w-5 h-5" />
+            </div>
+            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">NACH</span>
           </motion.button>
 
           {/* 16. More */}

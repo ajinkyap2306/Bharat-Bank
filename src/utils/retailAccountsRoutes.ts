@@ -1,4 +1,4 @@
-/** Retail accounts route helpers. Bottom navigation is hidden for the entire accounts flow. */
+/** Retail accounts route helpers. Bottom navigation stays visible on the accounts overview. */
 
 export const RETAIL_ACCOUNTS_ROOT = '/retail/accounts';
 
