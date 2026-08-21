@@ -6,6 +6,12 @@ import { useBanking } from '../../../context/BankingContext';
 import type { JointApprovalStep } from '../../../types/retailJointTransfer';
 import {
   canUserApproveJointRequest,
+  getJointRequestListAmount,
+  getJointRequestListTitle,
+  getJointRequestProcessingTitle,
+  getJointRequestSuccessTitle,
+  getJointRequestType,
+  getJointRequestTypeLabel,
   getJointStatusLabel,
   verifyRetailJointUserMpin,
 } from '../../../data/retailJointTransferMock';
@@ -55,6 +61,11 @@ export const JointApprovalModule: React.FC = () => {
   const fromAccount = activeRequest
     ? accounts.find((a) => a.id === activeRequest.fromAccountId)
     : undefined;
+  const requestType = activeRequest ? getJointRequestType(activeRequest) : 'transfer';
+  const isTransfer = requestType === 'transfer';
+  const detailTitle = isTransfer ? 'Transfer Details' : 'Request Details';
+  const approveSheetTitle = isTransfer ? 'Approve Transfer?' : 'Approve Request?';
+  const rejectSheetTitle = isTransfer ? 'Reject Transfer?' : 'Reject Request?';
 
   useEffect(() => {
     setBottomNavHidden(true);
@@ -118,9 +129,12 @@ export const JointApprovalModule: React.FC = () => {
                   onClick={() => navigate(`/retail/joint-approvals/${req.id}`)}
                   className="w-full text-left p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
                 >
-                  <p className="text-sm font-bold">{req.beneficiaryName}</p>
+                  <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wide">
+                    {getJointRequestTypeLabel(getJointRequestType(req))}
+                  </p>
+                  <p className="text-sm font-bold">{getJointRequestListTitle(req)}</p>
                   <p className="text-lg font-extrabold tabular-nums">
-                    ₹{req.amount.toLocaleString('en-IN')}
+                    {getJointRequestListAmount(req)}
                   </p>
                   <p className="text-xs text-slate-500 mt-1">
                     {reqAccount?.maskedNumber ?? 'Joint Savings ••••4582'}
@@ -140,7 +154,7 @@ export const JointApprovalModule: React.FC = () => {
 
   if (!activeRequest) {
     return (
-      <AddMoneyLayout title="Transfer Details" onBack={() => navigate('/retail/joint-approvals')}>
+      <AddMoneyLayout title={detailTitle} onBack={() => navigate('/retail/joint-approvals')}>
         <p className="text-sm text-slate-500">Request not found.</p>
       </AddMoneyLayout>
     );
@@ -150,11 +164,12 @@ export const JointApprovalModule: React.FC = () => {
 
   if (step === 'approved') {
     return (
-      <AddMoneyLayout title="Transfer Approved" onBack={goHome}>
+      <AddMoneyLayout title="Request Approved" onBack={goHome}>
         <div className="text-center pt-4">
           <CheckCircle2 className="w-14 h-14 text-emerald-600 mx-auto mb-3" />
-          <p className="text-2xl font-extrabold tabular-nums">
-            ₹{activeRequest.amount.toLocaleString('en-IN')}
+          <p className="text-xs font-bold text-blue-700 uppercase">{getJointRequestTypeLabel(requestType)}</p>
+          <p className="text-2xl font-extrabold tabular-nums mt-1">
+            {getJointRequestListAmount(activeRequest)}
           </p>
           <ReviewRow label="Approved by" value={activeRequest.approverName} />
           <ReviewRow label="Reference" value={activeRequest.reference} />
@@ -167,11 +182,11 @@ export const JointApprovalModule: React.FC = () => {
 
   if (step === 'processing') {
     return (
-      <AddMoneyLayout title="Processing Transfer" onBack={() => {}}>
+      <AddMoneyLayout title={getJointRequestProcessingTitle(activeRequest)} onBack={() => {}}>
         <ProcessingState
-          title="Processing Transfer"
+          title={getJointRequestProcessingTitle(activeRequest)}
           amount={activeRequest.amount}
-          message={`To ${activeRequest.beneficiaryName}. Please wait while the transaction is being processed.`}
+          message={`${getJointRequestListTitle(activeRequest)}. Please wait while the request is being processed.`}
         />
       </AddMoneyLayout>
     );
@@ -180,13 +195,17 @@ export const JointApprovalModule: React.FC = () => {
   if (step === 'success') {
     const updated = getJointRequestById(activeRequest.id);
     return (
-      <AddMoneyLayout title="Transfer Successful" onBack={goHome}>
+      <AddMoneyLayout title={getJointRequestSuccessTitle(activeRequest)} onBack={goHome}>
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center pt-4">
           <CheckCircle2 className="w-14 h-14 text-emerald-600 mx-auto mb-3" />
           <p className="text-2xl font-extrabold tabular-nums">
-            ₹{activeRequest.amount.toLocaleString('en-IN')}
+            {getJointRequestListAmount(activeRequest)}
           </p>
-          <ReviewRow label="Sent to" value={activeRequest.beneficiaryName} />
+          {isTransfer ? (
+            <ReviewRow label="Sent to" value={activeRequest.beneficiaryName} />
+          ) : (
+            <ReviewRow label="Request" value={getJointRequestListTitle(activeRequest)} />
+          )}
           <ReviewRow label="From" value={fromAccount?.maskedNumber ?? 'Joint account'} />
           {updated?.transactionId && (
             <ReviewRow label="Transaction ID" value={updated.transactionId} />
@@ -201,11 +220,11 @@ export const JointApprovalModule: React.FC = () => {
   if (step === 'rejected') {
     const updated = getJointRequestById(activeRequest.id);
     return (
-      <AddMoneyLayout title="Transfer Rejected" onBack={goHome}>
+      <AddMoneyLayout title="Request Rejected" onBack={goHome}>
         <div className="text-center pt-4">
           <XCircle className="w-14 h-14 text-red-600 mx-auto mb-3" />
           <p className="text-2xl font-extrabold tabular-nums">
-            ₹{activeRequest.amount.toLocaleString('en-IN')}
+            {getJointRequestListAmount(activeRequest)}
           </p>
           <ReviewRow label="Rejected by" value={updated?.rejectedByName ?? user.name} />
           <ReviewRow label="Reference" value={activeRequest.reference} />
@@ -221,9 +240,9 @@ export const JointApprovalModule: React.FC = () => {
       <AddMoneyLayout title="Confirm Approval" onBack={() => setStep('detail')}>
         <div className="text-center pt-2">
           <p className="text-3xl font-extrabold tabular-nums">
-            ₹{activeRequest.amount.toLocaleString('en-IN')}
+            {getJointRequestListAmount(activeRequest)}
           </p>
-          <p className="text-sm text-slate-500 mt-1">{activeRequest.beneficiaryName}</p>
+          <p className="text-sm text-slate-500 mt-1">{getJointRequestListTitle(activeRequest)}</p>
         </div>
         <div className="bg-white dark:bg-slate-900 rounded-2xl border p-4 mt-4">
           <label className="text-xs font-bold text-slate-600 block mb-3">Enter MPIN</label>
@@ -248,16 +267,52 @@ export const JointApprovalModule: React.FC = () => {
   return (
     <>
       <AddMoneyLayout
-        title="Transfer Details"
+        title={detailTitle}
         onBack={() => navigate('/retail/joint-approvals')}
       >
         <div className="bg-white dark:bg-slate-900 rounded-2xl border p-4">
-          <p className="text-lg font-bold">{activeRequest.beneficiaryName}</p>
-          <p className="text-xs text-slate-500">{activeRequest.beneficiaryBank}</p>
-          <ReviewRow label="Account" value={activeRequest.beneficiaryAccountMasked} />
-          <ReviewRow label="From" value={`Joint Savings ${fromAccount?.maskedNumber ?? ''}`} />
-          <ReviewRow label="Amount" value={`₹${activeRequest.amount.toLocaleString('en-IN')}`} />
-          <ReviewRow label="Transfer Type" value={activeRequest.mode} />
+          <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wide">
+            {getJointRequestTypeLabel(requestType)}
+          </p>
+          <p className="text-lg font-bold mt-1">{getJointRequestListTitle(activeRequest)}</p>
+          {!isTransfer && activeRequest.beneficiaryBank && (
+            <p className="text-xs text-slate-500">{activeRequest.beneficiaryBank}</p>
+          )}
+          {activeRequest.beneficiaryAccountMasked && (
+            <ReviewRow label={isTransfer ? 'Account' : 'Details'} value={activeRequest.beneficiaryAccountMasked} />
+          )}
+          <ReviewRow label="From" value={`${fromAccount?.jointAccountLabel ?? 'Joint Savings'} ${fromAccount?.maskedNumber ?? ''}`} />
+          {activeRequest.amount > 0 && (
+            <ReviewRow label="Amount" value={`₹${activeRequest.amount.toLocaleString('en-IN')}`} />
+          )}
+          {isTransfer && <ReviewRow label="Transfer Type" value={activeRequest.mode} />}
+          {requestType === 'deposit_fd' && activeRequest.payload && 'tenureMonths' in activeRequest.payload && (
+            <>
+              <ReviewRow label="Tenure" value={`${activeRequest.payload.tenureMonths} months`} />
+              {activeRequest.payload.payout && (
+                <ReviewRow label="Payout" value={activeRequest.payload.payout} />
+              )}
+            </>
+          )}
+          {requestType === 'deposit_rd' && activeRequest.payload && 'tenureMonths' in activeRequest.payload && (
+            <ReviewRow label="Tenure" value={`${activeRequest.payload.tenureMonths} months`} />
+          )}
+          {requestType === 'stop_cheque' && activeRequest.payload && 'chequeNumber' in activeRequest.payload && (
+            <>
+              <ReviewRow label="Cheque No." value={activeRequest.payload.chequeNumber} />
+              <ReviewRow label="Reason" value={activeRequest.payload.reason} />
+            </>
+          )}
+          {requestType === 'positive_pay' && activeRequest.payload && 'chequeNumber' in activeRequest.payload && (
+            <>
+              <ReviewRow label="Cheque No." value={activeRequest.payload.chequeNumber} />
+              <ReviewRow label="Payee" value={activeRequest.payload.payeeName} />
+              <ReviewRow label="Issue Date" value={activeRequest.payload.issueDate} />
+            </>
+          )}
+          {requestType === 'cheque_book' && activeRequest.payload && 'leaves' in activeRequest.payload && (
+            <ReviewRow label="Leaves" value={String(activeRequest.payload.leaves)} />
+          )}
           <ReviewRow label="Reference" value={activeRequest.reference} />
           <ReviewRow label="Initiated By" value={activeRequest.initiatedByName} />
           <ReviewRow label="Created" value={activeRequest.createdAt} />
@@ -290,13 +345,13 @@ export const JointApprovalModule: React.FC = () => {
       <BottomSheet
         isOpen={showApproveSheet}
         onClose={() => setShowApproveSheet(false)}
-        title="Approve Transfer?"
+        title={approveSheetTitle}
       >
         <p className="text-2xl font-extrabold tabular-nums mb-1">
-          ₹{activeRequest.amount.toLocaleString('en-IN')}
+          {getJointRequestListAmount(activeRequest)}
         </p>
-        <p className="text-sm text-slate-500 mb-1">To: {activeRequest.beneficiaryName}</p>
-        <p className="text-xs text-slate-500 mb-4">This action will authorize the transaction.</p>
+        <p className="text-sm text-slate-500 mb-1">{getJointRequestListTitle(activeRequest)}</p>
+        <p className="text-xs text-slate-500 mb-4">This action will authorize the request.</p>
         <StickyAddMoneyCTA
           label="Approve"
           onClick={() => {
@@ -308,11 +363,11 @@ export const JointApprovalModule: React.FC = () => {
         />
       </BottomSheet>
 
-      <BottomSheet isOpen={showRejectSheet} onClose={() => setShowRejectSheet(false)} title="Reject Transfer?">
+      <BottomSheet isOpen={showRejectSheet} onClose={() => setShowRejectSheet(false)} title={rejectSheetTitle}>
         <p className="text-sm font-bold tabular-nums mb-1">
-          ₹{activeRequest.amount.toLocaleString('en-IN')}
+          {getJointRequestListAmount(activeRequest)}
         </p>
-        <p className="text-sm text-slate-500 mb-3">{activeRequest.beneficiaryName}</p>
+        <p className="text-sm text-slate-500 mb-3">{getJointRequestListTitle(activeRequest)}</p>
         <label className="text-xs font-bold text-slate-600 block mb-2">Reason for rejection</label>
         <textarea
           value={rejectReason}

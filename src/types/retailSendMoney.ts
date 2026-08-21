@@ -6,7 +6,9 @@ export type SendMoneyStep =
   | 'processing'
   | 'success'
   | 'failed'
-  | 'pending';
+  | 'pending'
+  | 'submitted'
+  | 'unavailable';
 
 export interface SendMoneyRecipient {
   id: string;

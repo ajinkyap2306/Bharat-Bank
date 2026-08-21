@@ -28,6 +28,12 @@ import {
   recipientDisplayLine,
 } from '../../../data/retailSendMoneyMock';
 import {
+  getJointStatusLabel,
+  requiresJointApproval,
+  verifyRetailJointUserMpin,
+} from '../../../data/retailJointTransferMock';
+import type { JointTransferRequest } from '../../../types/retailJointTransfer';
+import {
   AddMoneyLayout,
   AmountField,
   ProcessingState,
@@ -48,6 +54,8 @@ export const SendMoneyFlow: React.FC<SendMoneyFlowProps> = ({ onClose }) => {
     addToast,
     getDefaultDebitAccount,
     defaultDebitAccountId,
+    retailActiveUserId,
+    submitJointTransferRequest,
   } = useBanking();
 
   const defaultDebit = getDefaultDebitAccount();
@@ -65,12 +73,15 @@ export const SendMoneyFlow: React.FC<SendMoneyFlowProps> = ({ onClose }) => {
   });
   const [amountError, setAmountError] = useState('');
   const [authPin, setAuthPin] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [submittedRequest, setSubmittedRequest] = useState<JointTransferRequest | null>(null);
   const [result, setResult] = useState<SendMoneyResult | null>(null);
   const [failReason, setFailReason] = useState('We couldn\'t complete this payment.');
   const chimePlayed = useRef(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const fromAccount = accounts.find((a) => a.id === draft.fromAccountId) ?? defaultDebit;
+  const needsApproval = requiresJointApproval(fromAccount);
   const amountNum = Number(draft.amount) || 0;
   const lookupResult = search.trim() ? lookupSendMoneyQuery(search) : null;
 
@@ -172,9 +183,38 @@ export const SendMoneyFlow: React.FC<SendMoneyFlowProps> = ({ onClose }) => {
 
   const handleAuthConfirm = () => {
     if (authPin.length < 6) {
-      addToast({ type: 'error', title: 'Invalid UPI PIN', message: 'Enter your 6-digit UPI PIN.' });
+      const message = needsApproval ? 'Enter your 6-digit MPIN.' : 'Enter your 6-digit UPI PIN.';
+      addToast({ type: 'error', title: needsApproval ? 'Invalid MPIN' : 'Invalid UPI PIN', message });
       return;
     }
+
+    if (needsApproval) {
+      if (!verifyRetailJointUserMpin(retailActiveUserId, authPin)) {
+        setAuthError('Incorrect MPIN.');
+        setAuthPin('');
+        return;
+      }
+      setAuthError('');
+
+      if (!draft.recipient) return;
+      const req = submitJointTransferRequest({
+        fromAccountId: draft.fromAccountId,
+        beneficiaryName: draft.recipient.name,
+        beneficiaryBank: 'UPI',
+        beneficiaryAccountMasked: recipientDisplayLine(draft.recipient),
+        amount: amountNum,
+        mode: 'UPI',
+        note: draft.note || undefined,
+      });
+      if (req) {
+        setSubmittedRequest(req);
+        setStep('submitted');
+      } else {
+        setStep('unavailable');
+      }
+      return;
+    }
+
     runProcessing();
   };
 
@@ -201,6 +241,45 @@ export const SendMoneyFlow: React.FC<SendMoneyFlowProps> = ({ onClose }) => {
       </div>
     </div>
   );
+
+  if (step === 'unavailable') {
+    return (
+      <AddMoneyLayout title="Send Money" onBack={onClose}>
+        <div className="flex flex-col items-center text-center px-2 pt-6">
+          <span className="w-16 h-16 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center mb-4">
+            <XCircle className="w-9 h-9" />
+          </span>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Approval Unavailable</h2>
+          <p className="text-sm text-slate-500 mt-2">
+            This jointly operated account requires authorization from another eligible joint holder.
+          </p>
+        </div>
+        <StickyAddMoneyCTA label="Try Again" onClick={() => setStep('amount')} />
+      </AddMoneyLayout>
+    );
+  }
+
+  if (step === 'submitted' && submittedRequest) {
+    return (
+      <AddMoneyLayout title="Request Submitted" onBack={onClose}>
+        <div className="flex flex-col items-center text-center px-2 pt-4">
+          <CheckCircle2 className="w-14 h-14 text-emerald-600 mb-3" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Sent for Approval</h2>
+          <p className="text-sm text-slate-500 mt-2 max-w-xs">
+            Your payment request has been sent to the other joint holder for approval.
+          </p>
+          <div className="w-full mt-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 text-left space-y-2">
+            <ReviewRow label="Amount" value={`₹${submittedRequest.amount.toLocaleString('en-IN')}`} />
+            <ReviewRow label="To" value={submittedRequest.beneficiaryName} />
+            <ReviewRow label="From" value={`${fromAccount.jointAccountLabel ?? fromAccount.accountType} ${fromAccount.maskedNumber}`} />
+            <ReviewRow label="Status" value={getJointStatusLabel(submittedRequest.status)} />
+            <ReviewRow label="Reference" value={submittedRequest.reference} />
+          </div>
+        </div>
+        <StickyAddMoneyCTA label="Done" onClick={onClose} />
+      </AddMoneyLayout>
+    );
+  }
 
   if (step === 'processing') {
     return (
@@ -310,38 +389,58 @@ export const SendMoneyFlow: React.FC<SendMoneyFlowProps> = ({ onClose }) => {
 
   if (step === 'auth' && draft.recipient) {
     return (
-      <AddMoneyLayout title="Confirm Payment" onBack={goBack}>
+      <AddMoneyLayout title={needsApproval ? 'Confirm Request' : 'Confirm Payment'} onBack={goBack}>
         <div className="text-center pt-2">
           <p className="text-3xl font-extrabold text-slate-900 dark:text-white tabular-nums">
             ₹{amountNum.toLocaleString('en-IN')}
           </p>
           <p className="text-sm text-slate-500 mt-1">{draft.recipient.name}</p>
+          <p className="text-xs text-slate-400 mt-0.5">{recipientDisplayLine(draft.recipient)}</p>
         </div>
+        {needsApproval && (
+          <p className="text-xs text-slate-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-100 rounded-xl p-3 mt-4">
+            This jointly operated account requires approval from the other joint holder before payment
+            is sent.
+          </p>
+        )}
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 mt-4">
           <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-3">
-            Enter UPI PIN
+            {needsApproval ? 'Enter MPIN' : 'Enter UPI PIN'}
           </label>
           <input
             type="password"
             inputMode="numeric"
             maxLength={6}
             value={authPin}
-            onChange={(e) => setAuthPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            placeholder="• • • • • •"
-            className="w-full text-center text-xl tracking-[0.5em] font-bold py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-congress-blue-500"
-          />
-          <button
-            type="button"
-            onClick={() => {
-              addToast({ type: 'info', title: 'Biometric', message: 'Fingerprint verified (demo).' });
-              setAuthPin('123456');
+            onChange={(e) => {
+              setAuthPin(e.target.value.replace(/\D/g, '').slice(0, 6));
+              setAuthError('');
             }}
-            className="w-full mt-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-center gap-2"
-          >
-            <Fingerprint className="w-4 h-4" /> Use Biometric
-          </button>
+            placeholder="• • • • • •"
+            className={`w-full text-center text-xl tracking-[0.5em] font-bold py-3 rounded-xl border bg-slate-50 dark:bg-slate-800 outline-none focus:border-congress-blue-500 ${
+              authError
+                ? 'border-red-300 dark:border-red-800'
+                : 'border-slate-200 dark:border-slate-700'
+            }`}
+          />
+          {authError && <p className="text-xs text-red-600 text-center mt-2">{authError}</p>}
+          {!needsApproval && (
+            <button
+              type="button"
+              onClick={() => {
+                addToast({ type: 'info', title: 'Biometric', message: 'Fingerprint verified (demo).' });
+                setAuthPin('123456');
+              }}
+              className="w-full mt-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-center gap-2"
+            >
+              <Fingerprint className="w-4 h-4" /> Use Biometric
+            </button>
+          )}
         </div>
-        <StickyAddMoneyCTA label="Confirm" onClick={handleAuthConfirm} />
+        <StickyAddMoneyCTA
+          label={needsApproval ? 'Submit for Approval' : 'Confirm'}
+          onClick={handleAuthConfirm}
+        />
       </AddMoneyLayout>
     );
   }
@@ -388,24 +487,38 @@ export const SendMoneyFlow: React.FC<SendMoneyFlowProps> = ({ onClose }) => {
         </div>
         <div>
           <p className="text-xs font-bold text-slate-500 mb-2 px-1">From</p>
+          {needsApproval && (
+            <p className="text-xs text-slate-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-100 rounded-xl p-3 mb-2">
+              Joint account selected — payment will be sent to the other joint holder for approval.
+            </p>
+          )}
           <div className="space-y-2">
-            {debitAccounts.map((acc) => (
-              <RadioSelectCard
-                key={acc.id}
-                selected={draft.fromAccountId === acc.id}
-                title={`${acc.accountType} Account`}
-                subtitle={acc.maskedNumber}
-                meta={`Available ₹${acc.availableBalance.toLocaleString('en-IN')}`}
-                onSelect={() => setDraft((d) => ({ ...d, fromAccountId: acc.id }))}
-              />
-            ))}
+            {debitAccounts.map((acc) => {
+              const isJoint = requiresJointApproval(acc);
+              const accountTitle = acc.jointAccountLabel ?? `${acc.accountType} Account`;
+              return (
+                <RadioSelectCard
+                  key={acc.id}
+                  selected={draft.fromAccountId === acc.id}
+                  title={accountTitle}
+                  subtitle={acc.maskedNumber}
+                  meta={`Available ₹${acc.availableBalance.toLocaleString('en-IN')}${isJoint ? ' · Jointly Operated' : ''}`}
+                  onSelect={() => setDraft((d) => ({ ...d, fromAccountId: acc.id }))}
+                />
+              );
+            })}
           </div>
         </div>
         <StickyAddMoneyCTA
-          label={`Pay ₹${amountNum > 0 ? amountNum.toLocaleString('en-IN') : '0'}`}
+          label={
+            needsApproval
+              ? `Submit ₹${amountNum > 0 ? amountNum.toLocaleString('en-IN') : '0'} for Approval`
+              : `Pay ₹${amountNum > 0 ? amountNum.toLocaleString('en-IN') : '0'}`
+          }
           onClick={() => {
             if (validateAmount()) {
               setAuthPin('');
+              setAuthError('');
               setStep('auth');
             }
           }}

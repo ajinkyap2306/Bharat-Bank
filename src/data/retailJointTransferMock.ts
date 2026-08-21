@@ -1,6 +1,7 @@
 import type { BankAccount } from '../types/banking';
 import type {
   JointOperatingInstruction,
+  JointRequestType,
   JointTransferRequest,
   RetailJointUser,
 } from '../types/retailJointTransfer';
@@ -137,6 +138,63 @@ export function getJointStatusLabel(status: JointTransferRequest['status']): str
     failed: 'Failed',
   };
   return labels[status];
+}
+
+export function getJointRequestType(request: JointTransferRequest): JointRequestType {
+  return request.requestType ?? 'transfer';
+}
+
+export function getJointRequestTypeLabel(type: JointRequestType): string {
+  const labels: Record<JointRequestType, string> = {
+    transfer: 'Fund Transfer',
+    deposit_fd: 'Open Fixed Deposit',
+    deposit_rd: 'Open Recurring Deposit',
+    stop_cheque: 'Stop Cheque',
+    positive_pay: 'Positive Pay',
+    cheque_book: 'Cheque Book Request',
+  };
+  return labels[type];
+}
+
+export function getJointRequestListTitle(request: JointTransferRequest): string {
+  const type = getJointRequestType(request);
+  if (type === 'transfer') return request.beneficiaryName;
+  if (type === 'stop_cheque' && request.payload && 'chequeNumber' in request.payload) {
+    return `Stop Cheque #${request.payload.chequeNumber}`;
+  }
+  if (type === 'positive_pay' && request.payload && 'chequeNumber' in request.payload) {
+    return `Positive Pay #${request.payload.chequeNumber}`;
+  }
+  if (type === 'cheque_book') return 'Cheque Book Request';
+  return getJointRequestTypeLabel(type);
+}
+
+export function getJointRequestListAmount(request: JointTransferRequest): string {
+  const type = getJointRequestType(request);
+  if (type === 'cheque_book') return `${(request.payload as { leaves?: number })?.leaves ?? 0} leaves`;
+  if (type === 'stop_cheque') return '—';
+  if (request.amount > 0) return `₹${request.amount.toLocaleString('en-IN')}`;
+  return '—';
+}
+
+export function getJointRequestSuccessTitle(request: JointTransferRequest): string {
+  const type = getJointRequestType(request);
+  const labels: Record<JointRequestType, string> = {
+    transfer: 'Transfer Successful',
+    deposit_fd: 'Fixed Deposit Created',
+    deposit_rd: 'Recurring Deposit Created',
+    stop_cheque: 'Cheque Stopped',
+    positive_pay: 'Positive Pay Registered',
+    cheque_book: 'Cheque Book Requested',
+  };
+  return labels[type];
+}
+
+export function getJointRequestProcessingTitle(request: JointTransferRequest): string {
+  const type = getJointRequestType(request);
+  if (type === 'transfer') return 'Processing Transfer';
+  if (type.startsWith('deposit_')) return 'Creating Deposit';
+  return 'Processing Request';
 }
 
 export const INITIAL_JOINT_ACCOUNTS: BankAccount[] = [

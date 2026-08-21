@@ -17,16 +17,18 @@ import {
 } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
 import { SecureAuthModal } from '../../common/SecureAuthModal';
+import { getJointStatusLabel, requiresJointApproval } from '../../../data/retailJointTransferMock';
+import type { JointTransferRequest } from '../../../types/retailJointTransfer';
 
 interface OpenDepositFlowProps {
   type: 'FD' | 'RD';
   onClose: () => void;
 }
 
-type Step = 'intro' | 'configure' | 'payout' | 'account' | 'review' | 'success';
+type Step = 'intro' | 'configure' | 'payout' | 'account' | 'review' | 'submitted' | 'success';
 
 export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose }) => {
-  const { accounts, createFixedDeposit, createRecurringDeposit, addToast, getDefaultDebitAccount } = useBanking();
+  const { accounts, createFixedDeposit, createRecurringDeposit, addToast, getDefaultDebitAccount, submitJointApprovalRequest } = useBanking();
   const defaultDebit = getDefaultDebitAccount();
   const [step, setStep] = useState<Step>('intro');
   const [amount, setAmount] = useState(type === 'FD' ? 100000 : 10000);
@@ -35,8 +37,10 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
   const [maturityInstruction, setMaturityInstruction] = useState<'Renew Principal + Interest' | 'Renew Principal Only' | 'Transfer to Account'>('Renew Principal + Interest');
   const [selectedAccountId, setSelectedAccountId] = useState(defaultDebit.id);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [submittedRequest, setSubmittedRequest] = useState<JointTransferRequest | null>(null);
 
   const selectedAccount = accounts.find(a => a.id === selectedAccountId);
+  const needsApproval = requiresJointApproval(selectedAccount);
   
   const interestRate = useMemo(() => {
     if (type === 'FD') return tenure >= 18 ? 7.75 : 7.25;
@@ -91,6 +95,29 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
 
   const handleAuthComplete = () => {
     setIsAuthOpen(false);
+
+    if (needsApproval) {
+      const req = submitJointApprovalRequest({
+        requestType: type === 'FD' ? 'deposit_fd' : 'deposit_rd',
+        fromAccountId: selectedAccountId,
+        amount,
+        beneficiaryName: type === 'FD' ? 'Fixed Deposit' : 'Recurring Deposit',
+        beneficiaryBank: 'Deposits',
+        beneficiaryAccountMasked: `${tenure} months · ${interestRate}% p.a.`,
+        payload: {
+          tenureMonths: tenure,
+          ...(type === 'FD'
+            ? { payout, maturityInstruction }
+            : {}),
+        },
+      });
+      if (req) {
+        setSubmittedRequest(req);
+        setStep('submitted');
+      }
+      return;
+    }
+
     if (type === 'FD') {
       createFixedDeposit(amount, tenure, payout, maturityInstruction, selectedAccountId);
     } else {
@@ -104,16 +131,16 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center gap-3">
-          {step !== 'intro' && step !== 'success' && (
+          {step !== 'intro' && step !== 'success' && step !== 'submitted' && (
             <button onClick={handleBack} className="p-2 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
               <ChevronLeft className="w-5 h-5 text-slate-600 dark:text-slate-400" />
             </button>
           )}
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-            {step === 'success' ? 'Deposit Created' : `Open ${type === 'FD' ? 'Fixed' : 'Recurring'} Deposit`}
+            {step === 'success' ? 'Deposit Created' : step === 'submitted' ? 'Sent for Approval' : `Open ${type === 'FD' ? 'Fixed' : 'Recurring'} Deposit`}
           </h2>
         </div>
-        {step !== 'success' && (
+        {step !== 'success' && step !== 'submitted' && (
           <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
             <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
           </button>
@@ -121,7 +148,7 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
       </div>
 
       {/* Progress Bar */}
-      {step !== 'intro' && step !== 'success' && (
+      {step !== 'intro' && step !== 'success' && step !== 'submitted' && (
         <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 overflow-hidden">
           <motion.div 
             className="h-full bg-blue-600"
@@ -332,8 +359,15 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
             >
               <div className="space-y-4">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider px-1">Debit From</label>
+                {needsApproval && (
+                  <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-100 text-xs text-slate-600 leading-relaxed">
+                    Joint account selected — this deposit will be sent to the other joint holder for approval.
+                  </div>
+                )}
                 <div className="space-y-3">
-                  {accounts.filter(a => a.accountType === 'Savings' || a.accountType === 'Current').map(acc => (
+                  {accounts.filter(a => a.accountType === 'Savings' || a.accountType === 'Current').map(acc => {
+                    const isJoint = requiresJointApproval(acc);
+                    return (
                     <button
                       key={acc.id}
                       onClick={() => setSelectedAccountId(acc.id)}
@@ -348,7 +382,10 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
                           <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                             <Wallet className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                           </div>
-                          <span className="text-xs font-bold text-slate-900 dark:text-white">{acc.accountType} Account</span>
+                          <span className="text-xs font-bold text-slate-900 dark:text-white">
+                            {acc.jointAccountLabel ?? `${acc.accountType} Account`}
+                            {isJoint ? ' · Jointly Operated' : ''}
+                          </span>
                         </div>
                         {selectedAccountId === acc.id && <CheckCircle2 className="w-5 h-5 text-blue-600" />}
                       </div>
@@ -362,7 +399,7 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
                         </p>
                       </div>
                     </button>
-                  ))}
+                  );})}
                 </div>
               </div>
 
@@ -429,9 +466,48 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 flex gap-3 border border-slate-100 dark:border-slate-800">
                 <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
                 <p className="text-[10px] text-slate-500 leading-normal">
-                  I agree to the terms and conditions and understand that premature withdrawal may attract a penalty as per bank policy.
+                  {needsApproval
+                    ? 'I agree to the terms. This jointly operated account requires approval from the other joint holder before the deposit is booked.'
+                    : 'I agree to the terms and conditions and understand that premature withdrawal may attract a penalty as per bank policy.'}
                 </p>
               </div>
+            </motion.div>
+          )}
+
+          {step === 'submitted' && submittedRequest && (
+            <motion.div
+              key="submitted"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center justify-center text-center space-y-6 py-8"
+            >
+              <CheckCircle2 className="w-16 h-16 text-emerald-600" />
+              <div className="space-y-2">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white">Sent for Approval</h3>
+                <p className="text-sm text-slate-500 max-w-xs mx-auto">
+                  Your {type === 'FD' ? 'Fixed' : 'Recurring'} Deposit request has been sent to the other joint holder.
+                </p>
+              </div>
+              <div className="w-full bg-slate-50 dark:bg-slate-900/50 rounded-3xl p-5 space-y-3 text-left">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-slate-500">Amount</span>
+                  <span className="font-bold">₹{amount.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-slate-500">Status</span>
+                  <span className="font-bold text-amber-700">{getJointStatusLabel(submittedRequest.status)}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-slate-500">Reference</span>
+                  <span className="font-bold">{submittedRequest.reference}</span>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-full py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-2xl"
+              >
+                Done
+              </button>
             </motion.div>
           )}
 
@@ -487,7 +563,7 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
       </div>
 
       {/* Footer Controls */}
-      {step !== 'success' && (
+      {step !== 'success' && step !== 'submitted' && (
         <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
           <button
             onClick={handleNext}
@@ -499,7 +575,7 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
             }`}
           >
             {step === 'intro' ? `Start ${type} Application` : 
-             step === 'review' ? 'Confirm Deposit' : 'Continue'} 
+             step === 'review' ? (needsApproval ? 'Submit for Approval' : 'Confirm Deposit') : 'Continue'} 
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
@@ -510,7 +586,7 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
         onSuccess={handleAuthComplete}
-        title={`Confirm ${type} Deposit`}
+        title={needsApproval ? `Submit ${type} for Approval` : `Confirm ${type} Deposit`}
       />
     </div>
   );

@@ -65,7 +65,7 @@ import {
 import type { CorporateDemoUser } from '../types/corporateDemoUser';
 import type { RetailRegistrationResult } from '../types/retailRegistration';
 import { RETAIL_REGISTRATION_STORAGE_KEY } from '../data/retailRegistrationMock';
-import type { JointTransferRequest } from '../types/retailJointTransfer';
+import type { JointRequestPayload, JointRequestType, JointTransferRequest } from '../types/retailJointTransfer';
 import {
   INITIAL_JOINT_ACCOUNTS,
   JOINT_TRANSFER_STORAGE_KEY,
@@ -226,10 +226,20 @@ interface BankingContextType {
     beneficiaryBank: string;
     beneficiaryAccountMasked: string;
     amount: number;
-    mode: 'IMPS' | 'NEFT' | 'RTGS' | 'Internal';
+    mode: 'IMPS' | 'NEFT' | 'RTGS' | 'Internal' | 'UPI';
     note?: string;
     isSelfTransfer?: boolean;
     toAccountId?: string;
+  }) => JointTransferRequest | null;
+  submitJointApprovalRequest: (params: {
+    requestType: Exclude<JointRequestType, 'transfer'>;
+    fromAccountId: string;
+    amount: number;
+    beneficiaryName: string;
+    beneficiaryBank?: string;
+    beneficiaryAccountMasked?: string;
+    note?: string;
+    payload: JointRequestPayload;
   }) => JointTransferRequest | null;
   approveJointTransferRequest: (requestId: string) => boolean;
   rejectJointTransferRequest: (requestId: string, reason?: string) => boolean;
@@ -906,6 +916,72 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       (r) => r.initiatedByUserId === userId || r.approverUserId === userId
     );
 
+  const submitJointApprovalRequest = ({
+    requestType,
+    fromAccountId,
+    amount,
+    beneficiaryName,
+    beneficiaryBank = 'Retail Banking',
+    beneficiaryAccountMasked = '',
+    note,
+    payload,
+  }: {
+    requestType: Exclude<JointRequestType, 'transfer'>;
+    fromAccountId: string;
+    amount: number;
+    beneficiaryName: string;
+    beneficiaryBank?: string;
+    beneficiaryAccountMasked?: string;
+    note?: string;
+    payload: JointRequestPayload;
+  }): JointTransferRequest | null => {
+    const fromAccount = retailAccounts.find((a) => a.id === fromAccountId);
+    if (!fromAccount) return null;
+
+    const approverUserId = getJointApproverUserId(fromAccount, retailActiveUserId);
+    const approverUser = approverUserId ? getRetailJointUser(approverUserId) : null;
+    if (!approverUserId || !approverUser) {
+      addToast({
+        type: 'error',
+        title: 'Joint Approval Unavailable',
+        message: 'This transaction requires authorization from another eligible joint holder.',
+      });
+      return null;
+    }
+
+    const now = formatJointTimestamp();
+    const request: JointTransferRequest = {
+      id: `jar_${Date.now()}`,
+      reference: buildJointTransferReference(),
+      requestType,
+      payload,
+      fromAccountId,
+      initiatedByUserId: retailActiveUserId,
+      initiatedByName: user.name,
+      approverUserId,
+      approverName: approverUser.name,
+      beneficiaryId: '',
+      beneficiaryName,
+      beneficiaryBank,
+      beneficiaryAccountMasked,
+      amount,
+      mode: 'Internal',
+      note,
+      status: 'pending_joint_approval',
+      isSelfTransfer: false,
+      approvalHistory: [{ actorName: user.name, action: 'initiated', timestamp: now }],
+      createdAt: now,
+    };
+
+    persistJointRequests((prev) => [request, ...prev]);
+    addToast({
+      type: 'info',
+      title: 'Request Submitted',
+      message: `Sent to ${approverUser.name} for joint approval.`,
+    });
+    return request;
+  };
+
   const submitJointTransferRequest = ({
     fromAccountId,
     beneficiaryId = '',
@@ -924,7 +1000,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     beneficiaryBank: string;
     beneficiaryAccountMasked: string;
     amount: number;
-    mode: 'IMPS' | 'NEFT' | 'RTGS' | 'Internal';
+    mode: 'IMPS' | 'NEFT' | 'RTGS' | 'Internal' | 'UPI';
     note?: string;
     isSelfTransfer?: boolean;
     toAccountId?: string;
@@ -947,6 +1023,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const request: JointTransferRequest = {
       id: `jtr_${Date.now()}`,
       reference: buildJointTransferReference(),
+      requestType: 'transfer',
       fromAccountId,
       initiatedByUserId: retailActiveUserId,
       initiatedByName: user.name,
@@ -1049,24 +1126,62 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     try {
       const txnId = buildJointTransactionId();
-      if (request.isSelfTransfer && request.toAccountId) {
-        executeSelfTransfer({
-          fromAccountId: request.fromAccountId,
-          toAccountId: request.toAccountId,
+      const requestType = request.requestType ?? 'transfer';
+
+      if (requestType === 'transfer') {
+        if (request.isSelfTransfer && request.toAccountId) {
+          executeSelfTransfer({
+            fromAccountId: request.fromAccountId,
+            toAccountId: request.toAccountId,
+            amount: request.amount,
+            remarks: request.note,
+          });
+        } else {
+          const ben = retailBeneficiaries.find((b) => b.id === request.beneficiaryId);
+          executeTransfer({
+            fromAccountId: request.fromAccountId,
+            beneficiaryName: request.beneficiaryName,
+            beneficiaryAccount: ben?.accountNumber ?? request.beneficiaryAccountMasked,
+            bankName: request.beneficiaryBank,
+            amount: request.amount,
+            mode:
+              request.mode === 'Internal'
+                ? 'Internal'
+                : request.mode === 'UPI'
+                  ? 'UPI'
+                  : request.mode,
+            remarks: request.note,
+          });
+        }
+      } else if (requestType === 'deposit_fd' && request.payload && 'tenureMonths' in request.payload) {
+        createFixedDeposit(
+          request.amount,
+          request.payload.tenureMonths,
+          request.payload.payout ?? 'On Maturity',
+          request.payload.maturityInstruction ?? 'Renew Principal + Interest',
+          request.fromAccountId
+        );
+      } else if (requestType === 'deposit_rd' && request.payload && 'tenureMonths' in request.payload) {
+        createRecurringDeposit(
+          request.amount,
+          request.payload.tenureMonths,
+          request.fromAccountId
+        );
+      } else if (requestType === 'stop_cheque' && request.payload && 'chequeNumber' in request.payload) {
+        stopCheque(
+          request.fromAccountId,
+          request.payload.chequeNumber,
+          request.payload.reason
+        );
+      } else if (requestType === 'positive_pay' && request.payload && 'chequeNumber' in request.payload) {
+        registerPositivePay({
+          chequeNumber: request.payload.chequeNumber,
+          payeeName: request.payload.payeeName,
           amount: request.amount,
-          remarks: request.note,
+          issueDate: request.payload.issueDate,
         });
-      } else {
-        const ben = retailBeneficiaries.find((b) => b.id === request.beneficiaryId);
-        executeTransfer({
-          fromAccountId: request.fromAccountId,
-          beneficiaryName: request.beneficiaryName,
-          beneficiaryAccount: ben?.accountNumber ?? request.beneficiaryAccountMasked,
-          bankName: request.beneficiaryBank,
-          amount: request.amount,
-          mode: request.mode === 'Internal' ? 'Internal' : request.mode,
-          remarks: request.note,
-        });
+      } else if (requestType === 'cheque_book' && request.payload && 'leaves' in request.payload) {
+        requestChequeBook(request.fromAccountId, request.payload.leaves);
       }
 
       const completedAt = formatJointTimestamp();
@@ -3332,6 +3447,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setRetailSessionFromLogin,
       jointTransferRequests,
       submitJointTransferRequest,
+      submitJointApprovalRequest,
       approveJointTransferRequest,
       rejectJointTransferRequest,
       executeApprovedJointTransfer,

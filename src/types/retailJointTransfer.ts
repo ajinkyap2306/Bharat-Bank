@@ -1,6 +1,42 @@
+import type { FixedDeposit } from './banking';
 import type { BankTransferMode } from './retailBankTransfer';
 
 export type JointOperatingInstruction = 'jointly_operated' | 'either_or_survivor';
+
+export type JointRequestType =
+  | 'transfer'
+  | 'deposit_fd'
+  | 'deposit_rd'
+  | 'stop_cheque'
+  | 'positive_pay'
+  | 'cheque_book';
+
+export interface JointDepositPayload {
+  tenureMonths: number;
+  payout?: FixedDeposit['payoutFrequency'];
+  maturityInstruction?: FixedDeposit['maturityInstruction'];
+}
+
+export interface JointChequeStopPayload {
+  chequeNumber: string;
+  reason: string;
+}
+
+export interface JointPositivePayPayload {
+  chequeNumber: string;
+  payeeName: string;
+  issueDate: string;
+}
+
+export interface JointChequeBookPayload {
+  leaves: number;
+}
+
+export type JointRequestPayload =
+  | JointDepositPayload
+  | JointChequeStopPayload
+  | JointPositivePayPayload
+  | JointChequeBookPayload;
 
 export type JointTransferRequestStatus =
   | 'pending_joint_approval'
@@ -20,6 +56,8 @@ export interface JointTransferRequest {
   id: string;
   reference: string;
   transactionId?: string;
+  requestType?: JointRequestType;
+  payload?: JointRequestPayload;
   fromAccountId: string;
   initiatedByUserId: string;
   initiatedByName: string;
@@ -30,7 +68,7 @@ export interface JointTransferRequest {
   beneficiaryBank: string;
   beneficiaryAccountMasked: string;
   amount: number;
-  mode: BankTransferMode | 'Internal';
+  mode: BankTransferMode | 'Internal' | 'UPI';
   note?: string;
   status: JointTransferRequestStatus;
   isSelfTransfer: boolean;

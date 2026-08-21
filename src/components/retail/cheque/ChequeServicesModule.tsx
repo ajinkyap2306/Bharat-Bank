@@ -12,6 +12,7 @@ import {
 import { useBanking } from '../../../context/BankingContext';
 import { ScreenHeader } from '../../common/ScreenHeader';
 import { SecureAuthModal } from '../../common/SecureAuthModal';
+import { requiresJointApproval } from '../../../data/retailJointTransferMock';
 import {
   ChequeBook,
   ChequeRecord,
@@ -53,6 +54,7 @@ export const ChequeServicesModule: React.FC = () => {
     addToast,
     setRetailTab,
     setBottomNavHidden,
+    submitJointApprovalRequest,
   } = useBanking();
 
   const [screen, setScreen] = useState<ChequeScreen>('home');
@@ -79,6 +81,14 @@ export const ChequeServicesModule: React.FC = () => {
   const [ppPayee, setPpPayee] = useState('');
   const [ppAmount, setPpAmount] = useState('');
   const [ppDate, setPpDate] = useState(new Date().toISOString().slice(0, 10));
+  const [ppAccountId, setPpAccountId] = useState(accounts[0]?.id ?? '');
+
+  const reqAccount = accounts.find((a) => a.id === reqAccountId);
+  const stopAccount = accounts.find((a) => a.id === stopAccountId);
+  const ppAccount = accounts.find((a) => a.id === ppAccountId);
+  const reqNeedsApproval = requiresJointApproval(reqAccount);
+  const stopNeedsApproval = requiresJointApproval(stopAccount);
+  const ppNeedsApproval = requiresJointApproval(ppAccount);
 
   useEffect(() => {
     setBottomNavHidden(screen !== 'home');
@@ -94,25 +104,81 @@ export const ChequeServicesModule: React.FC = () => {
   const handleAuthSuccess = () => {
     setShowAuth(false);
     if (pendingAction === 'request') {
-      const ref = requestChequeBook(reqAccountId, Number(reqLeaves));
-      setSuccessMsg(`Cheque book requested. Tracking ID: ${ref}`);
-      setScreen('success');
+      if (reqNeedsApproval) {
+        const req = submitJointApprovalRequest({
+          requestType: 'cheque_book',
+          fromAccountId: reqAccountId,
+          amount: 0,
+          beneficiaryName: 'Cheque Book Request',
+          beneficiaryBank: 'Cheque Services',
+          beneficiaryAccountMasked: `${reqLeaves} leaves`,
+          payload: { leaves: Number(reqLeaves) },
+        });
+        if (req) {
+          setSuccessMsg(`Cheque book request sent to ${req.approverName} for approval. Ref: ${req.reference}`);
+          setScreen('success');
+        }
+      } else {
+        const ref = requestChequeBook(reqAccountId, Number(reqLeaves));
+        setSuccessMsg(`Cheque book requested. Tracking ID: ${ref}`);
+        setScreen('success');
+      }
     } else if (pendingAction === 'stop') {
-      const ref = stopCheque(stopAccountId, stopChequeNum, stopReason);
-      setSuccessMsg(`Stop cheque order registered. Reference: ${ref}`);
-      setScreen('success');
+      if (stopNeedsApproval) {
+        const req = submitJointApprovalRequest({
+          requestType: 'stop_cheque',
+          fromAccountId: stopAccountId,
+          amount: 0,
+          beneficiaryName: 'Stop Cheque',
+          beneficiaryBank: 'Cheque Services',
+          beneficiaryAccountMasked: `Cheque #${stopChequeNum}`,
+          payload: { chequeNumber: stopChequeNum, reason: stopReason },
+        });
+        if (req) {
+          setSuccessMsg(`Stop cheque request sent to ${req.approverName} for approval. Ref: ${req.reference}`);
+          setScreen('success');
+        }
+      } else {
+        const ref = stopCheque(stopAccountId, stopChequeNum, stopReason);
+        setSuccessMsg(`Stop cheque order registered. Reference: ${ref}`);
+        setScreen('success');
+      }
     } else if (pendingAction === 'positive') {
-      const ref = registerPositivePay({
-        chequeNumber: ppCheque,
-        payeeName: ppPayee,
-        amount: Number(ppAmount),
-        issueDate: ppDate,
-      });
-      setSuccessMsg(`Positive Pay registered. Reference: ${ref}`);
-      setScreen('success');
+      const amount = Number(ppAmount);
+      if (ppNeedsApproval) {
+        const req = submitJointApprovalRequest({
+          requestType: 'positive_pay',
+          fromAccountId: ppAccountId,
+          amount,
+          beneficiaryName: ppPayee,
+          beneficiaryBank: 'Positive Pay',
+          beneficiaryAccountMasked: `Cheque #${ppCheque}`,
+          payload: { chequeNumber: ppCheque, payeeName: ppPayee, issueDate: ppDate },
+        });
+        if (req) {
+          setSuccessMsg(`Positive Pay request sent to ${req.approverName} for approval. Ref: ${req.reference}`);
+          setScreen('success');
+        }
+      } else {
+        const ref = registerPositivePay({
+          chequeNumber: ppCheque,
+          payeeName: ppPayee,
+          amount,
+          issueDate: ppDate,
+        });
+        setSuccessMsg(`Positive Pay registered. Reference: ${ref}`);
+        setScreen('success');
+      }
     }
     setPendingAction(null);
   };
+
+  const jointNote = (needsApproval: boolean) =>
+    needsApproval ? (
+      <p className="text-xs text-slate-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-100 rounded-xl p-3">
+        Joint account selected — this request will be sent to the other joint holder for approval.
+      </p>
+    ) : null;
 
   const lookupStatus = () => {
     const all = [...issuedCheques, ...depositedCheques];
@@ -280,11 +346,13 @@ export const ChequeServicesModule: React.FC = () => {
                 >
                   {accounts.filter((a) => ['Savings', 'Current'].includes(a.accountType)).map((a) => (
                     <option key={a.id} value={a.id}>
-                      {a.nickname || a.accountType} ({a.maskedNumber})
+                      {a.jointAccountLabel ?? a.accountType} ({a.maskedNumber})
+                      {requiresJointApproval(a) ? ' · Joint' : ''}
                     </option>
                   ))}
                 </select>
               </div>
+              {jointNote(reqNeedsApproval)}
               <div>
                 <label className="text-xs font-bold text-slate-500">Number of leaves</label>
                 <select
@@ -304,7 +372,7 @@ export const ChequeServicesModule: React.FC = () => {
                 }}
                 className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-2xl"
               >
-                Submit Request
+                {reqNeedsApproval ? 'Submit for Approval' : 'Submit Request'}
               </button>
             </motion.div>
           )}
@@ -319,10 +387,14 @@ export const ChequeServicesModule: React.FC = () => {
                   className="mt-1 w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm"
                 >
                   {accounts.filter((a) => ['Savings', 'Current'].includes(a.accountType)).map((a) => (
-                    <option key={a.id} value={a.id}>{a.maskedNumber}</option>
+                    <option key={a.id} value={a.id}>
+                      {a.jointAccountLabel ?? a.maskedNumber}
+                      {requiresJointApproval(a) ? ' · Joint' : ''}
+                    </option>
                   ))}
                 </select>
               </div>
+              {jointNote(stopNeedsApproval)}
               <div>
                 <label className="text-xs font-bold text-slate-500">Cheque number</label>
                 <input
@@ -357,7 +429,7 @@ export const ChequeServicesModule: React.FC = () => {
                 }}
                 className="w-full py-3.5 bg-rose-600 text-white font-bold rounded-2xl"
               >
-                Stop Cheque
+                {stopNeedsApproval ? 'Submit Stop Request for Approval' : 'Stop Cheque'}
               </button>
             </motion.div>
           )}
@@ -410,6 +482,22 @@ export const ChequeServicesModule: React.FC = () => {
 
           {screen === 'positive_pay_new' && (
             <motion.div key="ppnew" className="space-y-4 px-1">
+              <div>
+                <label className="text-xs font-bold text-slate-500">Account</label>
+                <select
+                  value={ppAccountId}
+                  onChange={(e) => setPpAccountId(e.target.value)}
+                  className="mt-1 w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm"
+                >
+                  {accounts.filter((a) => ['Savings', 'Current'].includes(a.accountType)).map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.jointAccountLabel ?? a.accountType} ({a.maskedNumber})
+                      {requiresJointApproval(a) ? ' · Joint' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {jointNote(ppNeedsApproval)}
               <input value={ppCheque} onChange={(e) => setPpCheque(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="Cheque number" className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm" />
               <input value={ppPayee} onChange={(e) => setPpPayee(e.target.value)} placeholder="Payee name" className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm" />
               <input value={ppAmount} onChange={(e) => setPpAmount(e.target.value.replace(/\D/g, ''))} placeholder="Amount (₹)" inputMode="numeric" className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm" />
@@ -426,7 +514,7 @@ export const ChequeServicesModule: React.FC = () => {
                 }}
                 className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-2xl"
               >
-                Register
+                {ppNeedsApproval ? 'Submit for Approval' : 'Register'}
               </button>
             </motion.div>
           )}
@@ -451,7 +539,7 @@ export const ChequeServicesModule: React.FC = () => {
           setPendingAction(null);
         }}
         onSuccess={handleAuthSuccess}
-        title="Authenticate to proceed"
+        title="Enter MPIN"
       />
     </div>
   );
