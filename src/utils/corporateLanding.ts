@@ -1,5 +1,6 @@
 import type { CorporateDemoRole } from '../types/corporateDemoUser';
 
-export function getCorporateLandingPath(role?: CorporateDemoRole | null): string {
-  return role === 'checker' ? '/corporate/approvals' : '/corporate/home';
+/** Post-login landing for all corporate roles (maker and checker). */
+export function getCorporateLandingPath(_role?: CorporateDemoRole | null): string {
+  return '/corporate/home';
 }

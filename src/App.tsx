@@ -142,7 +142,7 @@ const BankingAppContent: React.FC = () => {
     ];
     const isAllowed = allowedPrefixes.some((p) => path === p || path.startsWith(`${p}/`));
 
-    // After login the URL may still be "/" — send to role-appropriate corporate landing
+    // After login the URL may still be "/" — send to corporate home
     if (!path.startsWith('/corporate/')) {
       navigate(getCorporateLandingPath(corporateSession?.role), { replace: true });
       return;
