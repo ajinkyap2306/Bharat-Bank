@@ -8,7 +8,6 @@ import {
   Scan, 
   CreditCard, 
   PiggyBank, 
-  TrendingUp, 
   Landmark, 
   Plus, 
   ArrowUpRight, 
@@ -37,7 +36,10 @@ import {
   Check,
   PlusCircle,
   Building2,
-  IndianRupee
+  IndianRupee,
+  BookOpen,
+  CalendarClock,
+  BookMarked,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useBanking } from '../../context/BankingContext';
@@ -438,7 +440,7 @@ export const RetailHome: React.FC = () => {
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Deposits</span>
           </motion.button>
 
-          {/* Row 2 — Financial */}
+          {/* Row 2 — Loans, Cheque & Bills */}
           {/* 5. Loans */}
           <motion.button
             whileTap={{ scale: 0.92 }}
@@ -451,44 +453,20 @@ export const RetailHome: React.FC = () => {
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Loans</span>
           </motion.button>
 
-          {/* 6. Investments */}
+          {/* 6. Cheque */}
           <motion.button
+            type="button"
             whileTap={{ scale: 0.92 }}
-            onClick={() => setRetailTab('investments')}
+            onClick={() => setRetailTab('cheque')}
             className="flex flex-col items-center group cursor-pointer"
           >
             <div className={SERVICE_ICON_BOX}>
-              <TrendingUp className="w-5 h-5" />
+              <BookOpen className="w-5 h-5" />
             </div>
-            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Investments</span>
+            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Cheque</span>
           </motion.button>
 
-          {/* 7. Insurance */}
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={() => setShowInsuranceModal(true)}
-            className="flex flex-col items-center group cursor-pointer"
-          >
-            <div className={SERVICE_ICON_BOX}>
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Insurance</span>
-          </motion.button>
-
-          {/* 8. Forex */}
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={() => setShowForexModal(true)}
-            className="flex flex-col items-center group cursor-pointer"
-          >
-            <div className={SERVICE_ICON_BOX}>
-              <Globe className="w-5 h-5" />
-            </div>
-            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Forex</span>
-          </motion.button>
-
-          {/* Row 3 — Payments */}
-          {/* 9. Bill Payments */}
+          {/* 7. Bill Payments */}
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('bills')}
@@ -500,7 +478,7 @@ export const RetailHome: React.FC = () => {
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Bill Payments</span>
           </motion.button>
 
-          {/* 10. Mobile Recharge */}
+          {/* 8. Recharge */}
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setShowRechargeModal(true)}
@@ -512,7 +490,8 @@ export const RetailHome: React.FC = () => {
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Recharge</span>
           </motion.button>
 
-          {/* 11. UPI / QR */}
+          {/* Row 3 — Pay & Documents */}
+          {/* 9. UPI / QR */}
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setShowUpiModal(true)}
@@ -524,7 +503,7 @@ export const RetailHome: React.FC = () => {
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">UPI / QR</span>
           </motion.button>
 
-          {/* 12. Beneficiaries */}
+          {/* 10. Beneficiaries */}
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('beneficiaries')}
@@ -536,8 +515,7 @@ export const RetailHome: React.FC = () => {
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Beneficiaries</span>
           </motion.button>
 
-          {/* Row 4 — Utility */}
-          {/* 13. Statements */}
+          {/* 11. Statements */}
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setRetailTab('statements')}
@@ -549,7 +527,21 @@ export const RetailHome: React.FC = () => {
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Statements</span>
           </motion.button>
 
-          {/* 14. Offers */}
+          {/* 12. Scheduled */}
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.92 }}
+            onClick={() => setRetailTab('scheduled')}
+            className="flex flex-col items-center group cursor-pointer"
+          >
+            <div className={SERVICE_ICON_BOX}>
+              <CalendarClock className="w-5 h-5" />
+            </div>
+            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Scheduled</span>
+          </motion.button>
+
+          {/* Row 4 — Extras */}
+          {/* 13. Offers */}
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setShowOffersModal(true)}
@@ -561,7 +553,7 @@ export const RetailHome: React.FC = () => {
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Offers</span>
           </motion.button>
 
-          {/* 15. Rewards */}
+          {/* 14. Rewards */}
           <motion.button
             whileTap={{ scale: 0.92 }}
             onClick={() => setShowRewardsModal(true)}
@@ -571,6 +563,19 @@ export const RetailHome: React.FC = () => {
               <Award className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">Rewards</span>
+          </motion.button>
+
+          {/* 15. ePassbook */}
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.92 }}
+            onClick={() => setRetailTab('epassbook')}
+            className="flex flex-col items-center group cursor-pointer"
+          >
+            <div className={SERVICE_ICON_BOX}>
+              <BookMarked className="w-5 h-5" />
+            </div>
+            <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">ePassbook</span>
           </motion.button>
 
           {/* 16. More */}
