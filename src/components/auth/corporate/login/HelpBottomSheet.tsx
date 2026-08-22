@@ -64,16 +64,16 @@ export const HelpBottomSheet: React.FC<HelpBottomSheetProps> = ({
                 handlers[option.action]();
                 onClose();
               }}
-              className="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-[#F7F9FC] dark:bg-slate-800/60 border border-[#E4E7EC] dark:border-slate-700 text-left active:scale-[0.99] transition-transform min-h-11"
+              className="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-[#E4E7EC] dark:border-slate-700 text-left active:scale-[0.99] transition-transform min-h-11"
             >
               <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-700 flex items-center justify-center shrink-0">
-                <Icon className="w-4.5 h-4.5 text-[#0B5CAB]" />
+                <Icon className="w-4.5 h-4.5 text-congress-blue-700" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-[#111827] dark:text-white">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   {option.label}
                 </p>
-                <p className="text-[12px] text-[#667085] dark:text-slate-400 mt-0.5">
+                <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">
                   {option.description}
                 </p>
               </div>
@@ -84,7 +84,7 @@ export const HelpBottomSheet: React.FC<HelpBottomSheetProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="w-full mt-2 py-3.5 rounded-2xl border border-[#E4E7EC] dark:border-slate-700 text-sm font-semibold text-[#667085] dark:text-slate-300 flex items-center justify-center gap-2 min-h-11 active:scale-[0.99] transition-transform"
+          className="w-full mt-2 py-3.5 rounded-2xl border border-[#E4E7EC] dark:border-slate-700 text-sm font-semibold text-slate-500 dark:text-slate-300 flex items-center justify-center gap-2 min-h-11 active:scale-[0.99] transition-transform"
         >
           <X className="w-4 h-4" />
           Close

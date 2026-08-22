@@ -35,9 +35,13 @@ export const BottomNav: React.FC = () => {
     isScannerOpen,
     isBottomNavHidden,
     activeDetailFlow,
+    hasRetailJointApprovalAccess,
+    retailActiveUserId,
+    getPendingJointApprovalsForUser,
   } = useBanking();
 
   const pendingApprovalsCount = getApprovalsBadgeCount();
+  const pendingRetailJointApprovalsCount = getPendingJointApprovalsForUser(retailActiveUserId).length;
 
   const isRetailNativeScreen =
     bankingType === 'retail' && ['loans', 'deposits', 'cards', 'insurance', 'cheque', 'epassbook', 'estatement', 'locator', 'nach', 'nominee', 'scheduled', 'request-money', 'open-account', 'cardless', 'govt-savings', 'form-15g', 'remittance', 'forex-card', 'branch-appointment', 'rewards', 'locker', 'loan-closure-cert', 'bonds', 'demat', 'feedback'].includes(retailTab);
@@ -76,6 +80,13 @@ export const BottomNav: React.FC = () => {
     }
   };
 
+  const leaveRetailRootRoutes = () => {
+    leaveAccountsRoute();
+    if (location.pathname.startsWith('/retail/joint-approvals')) {
+      navigate('/');
+    }
+  };
+
   if (!isVisible) {
     return null;
   }
@@ -109,7 +120,7 @@ export const BottomNav: React.FC = () => {
             <button
               onClick={() => {
                 setRetailTab('transfers');
-                leaveAccountsRoute();
+                leaveRetailRootRoutes();
               }}
               className={`${RETAIL_NAV_ITEM} ${
                 retailTab === 'transfers' || retailTab === 'payments'
@@ -121,48 +132,98 @@ export const BottomNav: React.FC = () => {
               <span className="text-[10px] mt-1 leading-none">Payments</span>
             </button>
 
-            <button
-              onClick={() => {
-                setRetailTab('accounts');
-                navigate('/retail/accounts');
-              }}
-              className={`${RETAIL_NAV_ITEM} ${
-                retailTab === 'accounts' ||
-                (location.pathname.startsWith('/retail/accounts') &&
-                  parseRetailAccountsRoute(location.pathname).screen === 'overview')
-                  ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
-                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
-              }`}
-            >
-              <Wallet className="w-5 h-5 shrink-0" />
-              <span className="text-[10px] mt-1 leading-none">Accounts</span>
-            </button>
+            {hasRetailJointApprovalAccess ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setRetailTab('approvals');
+                  navigate('/retail/joint-approvals');
+                }}
+                className={`${RETAIL_NAV_ITEM} ${
+                  retailTab === 'approvals' ||
+                  location.pathname.startsWith('/retail/joint-approvals')
+                    ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
+                    : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                }`}
+                aria-label={`Approvals${
+                  pendingRetailJointApprovalsCount > 0
+                    ? `, ${pendingRetailJointApprovalsCount} pending`
+                    : ''
+                }`}
+              >
+                <div className="relative">
+                  <FileCheck2 className="w-5 h-5 shrink-0" />
+                  {pendingRetailJointApprovalsCount > 0 && (
+                    <span className="absolute -top-1.5 -right-2.5 min-w-4 h-4 px-1 bg-[#DC2626] text-white rounded-full text-[9px] font-bold flex items-center justify-center leading-none">
+                      {pendingRetailJointApprovalsCount}
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] mt-1 leading-none">Approvals</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setRetailTab('accounts');
+                  navigate('/retail/accounts');
+                }}
+                className={`${RETAIL_NAV_ITEM} ${
+                  retailTab === 'accounts' ||
+                  (location.pathname.startsWith('/retail/accounts') &&
+                    parseRetailAccountsRoute(location.pathname).screen === 'overview')
+                    ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
+                    : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                }`}
+              >
+                <Wallet className="w-5 h-5 shrink-0" />
+                <span className="text-[10px] mt-1 leading-none">Accounts</span>
+              </button>
+            )}
 
-            <button
-              onClick={() => {
-                setRetailTab('services');
-                leaveAccountsRoute();
-              }}
-              className={`${RETAIL_NAV_ITEM} ${
-                retailTab === 'services' ||
-                retailTab === 'cards' ||
-                retailTab === 'bills' ||
-                retailTab === 'deposits' ||
-                retailTab === 'loans' ||
-                retailTab === 'investments' ||
-                retailTab === 'insurance'
-                  ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
-                  : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
-              }`}
-            >
-              <Grid className="w-5 h-5 shrink-0" />
-              <span className="text-[10px] mt-1 leading-none">Services</span>
-            </button>
+            {hasRetailJointApprovalAccess ? (
+              <button
+                onClick={() => {
+                  setRetailTab('accounts');
+                  navigate('/retail/accounts');
+                }}
+                className={`${RETAIL_NAV_ITEM} ${
+                  retailTab === 'accounts' ||
+                  (location.pathname.startsWith('/retail/accounts') &&
+                    parseRetailAccountsRoute(location.pathname).screen === 'overview')
+                    ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
+                    : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                }`}
+              >
+                <Wallet className="w-5 h-5 shrink-0" />
+                <span className="text-[10px] mt-1 leading-none">Accounts</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setRetailTab('services');
+                  leaveRetailRootRoutes();
+                }}
+                className={`${RETAIL_NAV_ITEM} ${
+                  retailTab === 'services' ||
+                  retailTab === 'cards' ||
+                  retailTab === 'bills' ||
+                  retailTab === 'deposits' ||
+                  retailTab === 'loans' ||
+                  retailTab === 'investments' ||
+                  retailTab === 'insurance'
+                    ? 'text-congress-blue-700 dark:text-congress-blue-400 font-bold'
+                    : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                }`}
+              >
+                <Grid className="w-5 h-5 shrink-0" />
+                <span className="text-[10px] mt-1 leading-none">Services</span>
+              </button>
+            )}
 
             <button
               onClick={() => {
                 setRetailTab('profile');
-                leaveAccountsRoute();
+                leaveRetailRootRoutes();
               }}
               className={`${RETAIL_NAV_ITEM} ${
                 retailTab === 'profile'

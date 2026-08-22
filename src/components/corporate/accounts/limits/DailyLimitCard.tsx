@@ -41,7 +41,7 @@ export const DailyLimitCard: React.FC<DailyLimitCardProps> = ({
     <LimitsCard ariaLabel="Daily transfer limit">
       <div className="p-4">
         <div className="flex items-start justify-between gap-3 mb-3">
-          <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white">
+          <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">
             Daily Transfer Limit
           </h2>
           <LimitStatusBadge
@@ -58,7 +58,7 @@ export const DailyLimitCard: React.FC<DailyLimitCardProps> = ({
         <LimitsRow
           label="Remaining"
           value={maskAmount(remaining, currency, showBalances)}
-          valueClassName="text-[#16A34A]"
+          valueClassName="text-emerald-600 dark:text-emerald-400"
         />
 
         <div className="mt-4">
@@ -70,7 +70,7 @@ export const DailyLimitCard: React.FC<DailyLimitCardProps> = ({
           />
         </div>
 
-        <p className="text-[11px] text-[#667085] mt-3">Configured by Corporate Administrator</p>
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-3">Configured by Corporate Administrator</p>
       </div>
     </LimitsCard>
   );

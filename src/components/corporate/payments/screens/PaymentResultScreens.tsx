@@ -19,10 +19,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ title, onBack, onConfirm
   const [method, setMethod] = useState<'mpin' | 'otp' | 'biometric'>('mpin');
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title={title} onBack={onBack} edgeToEdge={false} />
       <PayCard className="p-4 space-y-4">
-        <p className="text-sm text-[#667085]">Authenticate to authorize this payment.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Authenticate to authorize this payment.</p>
         <div className="flex gap-2">
           {(['mpin', 'otp', 'biometric'] as const).map((m) => (
             <button
@@ -30,7 +30,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ title, onBack, onConfirm
               type="button"
               onClick={() => setMethod(m)}
               className={`flex-1 py-2 rounded-xl text-xs font-bold capitalize ${
-                method === m ? 'bg-[#0B5CAB] text-white' : 'bg-slate-100 text-[#667085]'
+                method === m ? 'bg-congress-blue-700 text-white' : 'bg-slate-100 text-slate-500 dark:text-slate-400'
               }`}
             >
               {m}
@@ -58,7 +58,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ title, onBack, onConfirm
           />
         )}
         {method === 'biometric' && (
-          <button type="button" className="w-full py-4 rounded-xl border border-dashed text-sm font-bold text-[#0B5CAB]">
+          <button type="button" className="w-full py-4 rounded-xl border border-dashed text-sm font-bold text-congress-blue-700 dark:text-congress-blue-400">
             Use Biometric Authentication
           </button>
         )}
@@ -87,16 +87,16 @@ export const ProcessingScreen: React.FC<{ onComplete: () => void }> = ({ onCompl
   }, [onComplete]);
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full flex flex-col items-center justify-center p-6">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full flex flex-col items-center justify-center p-6">
       <div className="space-y-4 w-full max-w-xs">
         {steps.map((s, i) => (
           <div key={s.label} className="flex items-center gap-3">
             <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-              s.done ? 'bg-[#16A34A] text-white' : s.active ? 'bg-[#0B5CAB] text-white animate-pulse' : 'bg-slate-200 text-slate-400'
+              s.done ? 'bg-emerald-600 text-white' : s.active ? 'bg-congress-blue-700 text-white animate-pulse' : 'bg-slate-200 text-slate-400'
             }`}>
               {s.done ? '✓' : s.active ? '●' : '○'}
             </div>
-            <span className={`text-sm ${s.active ? 'font-bold text-[#111827]' : 'text-[#667085]'}`}>{s.label}</span>
+            <span className={`text-sm ${s.active ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>{s.label}</span>
           </div>
         ))}
       </div>
@@ -112,11 +112,11 @@ interface ResultScreenProps {
 }
 
 export const SubmittedScreen: React.FC<ResultScreenProps> = ({ payment, onDone, onTrack }) => (
-  <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full flex flex-col items-center p-6 text-center pb-24">
+  <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full flex flex-col items-center p-6 text-center pb-24">
     <div className="w-16 h-16 rounded-full bg-amber-100 text-[#F59E0B] flex items-center justify-center mb-4">
       <CheckCircle2 className="w-8 h-8" />
     </div>
-    <h2 className="text-lg font-bold text-[#111827] dark:text-white">Payment Submitted for Approval</h2>
+    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Payment Submitted for Approval</h2>
     <PayCard className="p-4 mt-4 w-full text-left">
       <Info label="Payment ID" value={payment.paymentId || ''} />
       <Info label="Amount" value={formatPaymentCurrency(payment.amount || 0)} />
@@ -128,7 +128,7 @@ export const SubmittedScreen: React.FC<ResultScreenProps> = ({ payment, onDone, 
       {onTrack && (
         <button type="button" onClick={onTrack} className="flex-1 py-3.5 rounded-2xl border font-bold text-sm min-h-11">Track Payment</button>
       )}
-      <button type="button" onClick={onDone} className="flex-1 py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11">Done</button>
+      <button type="button" onClick={onDone} className="flex-1 py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11">Done</button>
     </div>
   </div>
 );
@@ -136,11 +136,11 @@ export const SubmittedScreen: React.FC<ResultScreenProps> = ({ payment, onDone, 
 export const SuccessScreen: React.FC<ResultScreenProps> = ({ payment, onDone, onSaveTemplate }) => {
   const { addToast } = useBanking();
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full p-6 text-center pb-28">
-      <div className="w-16 h-16 rounded-full bg-emerald-100 text-[#16A34A] flex items-center justify-center mx-auto mb-4">
+    <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full p-6 text-center pb-28">
+      <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4">
         <CheckCircle2 className="w-8 h-8" />
       </div>
-      <h2 className="text-lg font-bold text-[#111827] dark:text-white">Payment Completed Successfully</h2>
+      <h2 className="text-lg font-bold text-slate-900 dark:text-white">Payment Completed Successfully</h2>
       <PayCard className="p-4 mt-4 text-left">
         <Info label="Payment ID" value={payment.paymentId || ''} />
         <Info label="Transaction ID" value={payment.transactionId || ''} />
@@ -158,7 +158,7 @@ export const SuccessScreen: React.FC<ResultScreenProps> = ({ payment, onDone, on
         </button>
       </div>
       {onSaveTemplate && (
-        <button type="button" onClick={onSaveTemplate} className="mt-3 text-sm font-bold text-[#0B5CAB]">Save this payment as a template?</button>
+        <button type="button" onClick={onSaveTemplate} className="mt-3 text-sm font-bold text-congress-blue-700 dark:text-congress-blue-400">Save this payment as a template?</button>
       )}
       <StickyPayCTA label="Done" onClick={onDone} />
     </motion.div>
@@ -172,7 +172,7 @@ export const PaymentDetailScreen: React.FC<{
   onReject?: () => void;
   canApprove?: boolean;
 }> = ({ payment, onBack, onApprove, onReject, canApprove }) => (
-  <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+  <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
     <ScreenHeader title="Payment Details" onBack={onBack} edgeToEdge={false} />
     <PayCard className="p-4 text-center mb-4">
       <p className="text-2xl font-bold font-mono">{formatPaymentCurrency(payment.amount)}</p>
@@ -193,14 +193,14 @@ export const PaymentDetailScreen: React.FC<{
     </PayCard>
     {payment.approvalLevels && payment.approvalLevels.length > 0 && (
       <PayCard className="p-4 mt-4">
-        <p className="text-[10px] font-bold text-[#667085] uppercase mb-2">Approval Required — 2 approvals</p>
+        <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Approval Required — 2 approvals</p>
         {payment.approvalLevels.map((l) => (
           <div key={l.level} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
             <div>
               <p className="text-xs font-bold">Level {l.level}</p>
               <p className="text-sm">{l.name}</p>
             </div>
-            <span className={`text-xs font-bold ${l.status === 'approved' ? 'text-[#16A34A]' : 'text-[#F59E0B]'}`}>
+            <span className={`text-xs font-bold ${l.status === 'approved' ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#F59E0B]'}`}>
               {l.status === 'approved' ? '✓ Approved' : '● Pending'}
             </span>
           </div>
@@ -208,9 +208,9 @@ export const PaymentDetailScreen: React.FC<{
       </PayCard>
     )}
     {canApprove && payment.status === 'Pending Approval' && (
-      <div className="fixed bottom-0 left-0 right-0 p-3 flex gap-2 bg-[#F7F9FC]/95 backdrop-blur-md border-t">
+      <div className="fixed bottom-0 left-0 right-0 p-3 flex gap-2 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-t">
         <button type="button" onClick={onReject} className="flex-1 py-3.5 rounded-2xl border border-rose-200 text-rose-600 font-bold text-sm min-h-11">Reject</button>
-        <button type="button" onClick={onApprove} className="flex-1 py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11">Approve</button>
+        <button type="button" onClick={onApprove} className="flex-1 py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11">Approve</button>
       </div>
     )}
   </div>
@@ -221,7 +221,7 @@ export const ApproveConfirmScreen: React.FC<{
   onBack: () => void;
   onConfirm: () => void;
 }> = ({ payment, onBack, onConfirm }) => (
-  <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+  <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
     <ScreenHeader title="Approve Payment?" onBack={onBack} edgeToEdge={false} />
     <PayCard className="p-4">
       <Info label="Beneficiary" value={payment.beneficiaryName} />
@@ -240,10 +240,10 @@ export const RejectReasonScreen: React.FC<{
 }> = ({ onBack, onConfirm }) => {
   const [reason, setReason] = useState('');
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Reject Payment" onBack={onBack} edgeToEdge={false} />
       <PayCard className="p-4">
-        <label className="text-xs font-bold text-[#667085]">Reason</label>
+        <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Reason</label>
         <textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
@@ -263,10 +263,10 @@ export const SaveTemplateScreen: React.FC<{
 }> = ({ onBack, onSave }) => {
   const [name, setName] = useState('Monthly Vendor Payment');
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Save Template" onBack={onBack} edgeToEdge={false} />
       <PayCard className="p-4">
-        <label className="text-xs font-bold text-[#667085]">Template Name</label>
+        <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Template Name</label>
         <input value={name} onChange={(e) => setName(e.target.value)} className="w-full mt-1 p-3 rounded-xl border text-sm" />
       </PayCard>
       <StickyPayCTA label="Save Template" onClick={() => onSave(name)} />
@@ -276,7 +276,7 @@ export const SaveTemplateScreen: React.FC<{
 
 const Info: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div className="flex justify-between gap-3 py-2 border-b border-slate-100 dark:border-slate-800 last:border-0 text-sm">
-    <span className="text-[#667085]">{label}</span>
-    <span className="font-medium text-[#111827] dark:text-white text-right">{value}</span>
+    <span className="text-slate-500 dark:text-slate-400">{label}</span>
+    <span className="font-medium text-slate-900 dark:text-white text-right">{value}</span>
   </div>
 );

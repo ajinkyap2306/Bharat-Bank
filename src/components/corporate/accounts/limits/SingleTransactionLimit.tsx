@@ -14,10 +14,10 @@ export const SingleTransactionLimit: React.FC<SingleTransactionLimitProps> = ({
 }) => (
   <LimitsCard ariaLabel="Single transaction limit">
     <div className="p-4">
-      <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white">
+      <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">
         Single Transaction Limit
       </h2>
-      <p className="text-[12px] text-[#667085] mt-1">
+      <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-1">
         Maximum amount allowed for a single eligible transaction.
       </p>
       <div className="mt-3 space-y-0">
@@ -27,7 +27,7 @@ export const SingleTransactionLimit: React.FC<SingleTransactionLimitProps> = ({
           value={maskAmount(limit, currency, showBalances)}
         />
       </div>
-      <p className="text-[11px] text-[#667085] mt-3">
+      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-3">
         Limits may vary by transaction type and corporate policy.
       </p>
     </div>

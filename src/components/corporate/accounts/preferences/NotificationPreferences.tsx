@@ -54,7 +54,7 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
 }) => (
   <PreferencesCard ariaLabel="Account notifications">
     <div className="p-4 pb-0">
-      <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white">
+      <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">
         Account Notifications
       </h2>
     </div>

@@ -32,7 +32,7 @@ export const BulkPaymentLimit: React.FC<BulkPaymentLimitProps> = ({
     <LimitsCard ariaLabel="Bulk payment limit">
       <div className="p-4">
         <div className="flex items-start justify-between gap-3 mb-3">
-          <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white">
+          <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">
             Bulk Payment Limit
           </h2>
           <LimitStatusBadge
@@ -50,7 +50,7 @@ export const BulkPaymentLimit: React.FC<BulkPaymentLimitProps> = ({
         <LimitsRow
           label="Remaining"
           value={maskAmount(remaining, currency, showBalances)}
-          valueClassName="text-[#16A34A]"
+          valueClassName="text-emerald-600 dark:text-emerald-400"
         />
 
         <div className="mt-3">
@@ -65,7 +65,7 @@ export const BulkPaymentLimit: React.FC<BulkPaymentLimitProps> = ({
         <button
           type="button"
           onClick={onViewRules}
-          className="w-full mt-4 flex items-center justify-center gap-1 text-[13px] font-semibold text-[#0B5CAB] min-h-11"
+          className="w-full mt-4 flex items-center justify-center gap-1 text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11"
         >
           View Bulk Payment Rules
           <ChevronRight className="w-4 h-4" aria-hidden />

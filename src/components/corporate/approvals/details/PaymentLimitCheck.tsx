@@ -14,12 +14,12 @@ export const PaymentLimitCheck: React.FC<PaymentLimitCheckProps> = ({
   <section
     className={`mx-4 rounded-2xl border p-4 ${
       limit.withinLimit
-        ? 'bg-white dark:bg-slate-900 border-[#E4E7EC] dark:border-slate-800'
+        ? 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
         : 'bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900'
     }`}
     aria-labelledby="limit-check-heading"
   >
-    <h2 id="limit-check-heading" className="text-[14px] font-semibold text-[#111827] dark:text-white">
+    <h2 id="limit-check-heading" className="text-[14px] font-semibold text-slate-900 dark:text-white">
       Limit Check
     </h2>
     <dl className="mt-3 space-y-2 text-[13px]">
@@ -30,7 +30,7 @@ export const PaymentLimitCheck: React.FC<PaymentLimitCheckProps> = ({
         { label: 'Remaining After', value: limit.remainingAfter },
       ].map((row) => (
         <div key={row.label} className="flex justify-between gap-3">
-          <dt className="text-[#667085]">{row.label}</dt>
+          <dt className="text-slate-500 dark:text-slate-400">{row.label}</dt>
           <dd className="font-medium tabular-nums">
             {formatPaymentCurrency(row.value, currency)}
           </dd>
@@ -39,7 +39,7 @@ export const PaymentLimitCheck: React.FC<PaymentLimitCheckProps> = ({
     </dl>
     <p
       className={`mt-3 text-[13px] font-semibold ${
-        limit.withinLimit ? 'text-[#16A34A]' : 'text-[#DC2626]'
+        limit.withinLimit ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#DC2626]'
       }`}
       role="status"
     >

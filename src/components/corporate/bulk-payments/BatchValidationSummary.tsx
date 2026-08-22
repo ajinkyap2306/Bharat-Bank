@@ -8,7 +8,7 @@ interface BatchValidationSummaryProps {
 
 export const BatchValidationSummary: React.FC<BatchValidationSummaryProps> = ({ batch }) => (
   <PayCard className="p-4" aria-label="Batch validation summary">
-    <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white mb-3">
+    <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white mb-3">
       Batch Validation
     </h3>
     <div className="grid grid-cols-2 gap-3">
@@ -20,18 +20,18 @@ export const BatchValidationSummary: React.FC<BatchValidationSummaryProps> = ({ 
       ].map((item) => (
         <div
           key={item.label}
-          className="rounded-xl bg-[#F7F9FC] dark:bg-slate-800/50 p-3 text-center"
+          className="rounded-xl bg-slate-50 dark:bg-slate-950 dark:bg-slate-800/50 p-3 text-center"
         >
-          <p className="text-[11px] text-[#667085]">{item.label}</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">{item.label}</p>
           <p
             className={`text-[18px] font-bold mt-0.5 ${
               item.tone === 'success'
-                ? 'text-[#16A34A]'
+                ? 'text-emerald-600 dark:text-emerald-400'
                 : item.tone === 'error'
                   ? 'text-[#DC2626]'
                   : item.tone === 'warning'
                     ? 'text-[#F59E0B]'
-                    : 'text-[#111827] dark:text-white'
+                    : 'text-slate-900 dark:text-white'
             }`}
           >
             {item.value}
@@ -39,9 +39,9 @@ export const BatchValidationSummary: React.FC<BatchValidationSummaryProps> = ({ 
         </div>
       ))}
     </div>
-    <div className="mt-3 pt-3 border-t border-[#E4E7EC] dark:border-slate-800 flex justify-between text-[13px]">
-      <span className="text-[#667085]">Total Amount</span>
-      <span className="font-bold text-[#111827] dark:text-white">
+    <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between text-[13px]">
+      <span className="text-slate-500 dark:text-slate-400">Total Amount</span>
+      <span className="font-bold text-slate-900 dark:text-white">
         {formatPaymentCurrency(batch.totalAmount)}
       </span>
     </div>

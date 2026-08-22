@@ -171,7 +171,7 @@ export const CorporateAccountDetails: React.FC<CorporateAccountDetailsProps> = (
 
   if (error && !data) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 font-['Inter',sans-serif]">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 ">
         <AccountDetailsHeader
           title="Account Details"
           onBack={handleBack}
@@ -184,13 +184,13 @@ export const CorporateAccountDetails: React.FC<CorporateAccountDetailsProps> = (
 
   return (
     <div
-      className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-6 font-['Inter',sans-serif]"
+      className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-6 "
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {(pullDistance > 0 || isRefreshing) && (
-        <div className="flex justify-center py-2 text-[#0B5CAB]" aria-live="polite">
+        <div className="flex justify-center py-2 text-congress-blue-700 dark:text-congress-blue-400" aria-live="polite">
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
         </div>
       )}

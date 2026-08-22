@@ -45,11 +45,11 @@ export const AccountInformation: React.FC<AccountInformationProps> = ({
         aria-expanded={expanded}
       >
         <CorpListCard className="p-4 flex items-center justify-between gap-3 text-left">
-          <span className="text-[15px] font-bold text-[#111827] dark:text-white">Account Information</span>
+          <span className="text-[15px] font-bold text-slate-900 dark:text-white">Account Information</span>
           {expanded ? (
-            <ChevronUp className="w-5 h-5 text-[#667085]" aria-hidden />
+            <ChevronUp className="w-5 h-5 text-slate-500 dark:text-slate-400" aria-hidden />
           ) : (
-            <ChevronDown className="w-5 h-5 text-[#667085]" aria-hidden />
+            <ChevronDown className="w-5 h-5 text-slate-500 dark:text-slate-400" aria-hidden />
           )}
         </CorpListCard>
       </button>
@@ -61,11 +61,11 @@ export const AccountInformation: React.FC<AccountInformationProps> = ({
               key={row.label}
               className="flex items-start justify-between gap-3 py-2.5 border-b border-slate-100 dark:border-slate-800 last:border-0"
             >
-              <span className="text-[13px] text-[#667085] shrink-0">{row.label}</span>
+              <span className="text-[13px] text-slate-500 dark:text-slate-400 shrink-0">{row.label}</span>
               {row.label === 'Status' ? (
                 <AccountStatusBadge status={account.displayStatus} />
               ) : (
-                <span className="text-[13px] font-semibold text-[#111827] dark:text-white text-right">
+                <span className="text-[13px] font-semibold text-slate-900 dark:text-white text-right">
                   {row.value}
                 </span>
               )}

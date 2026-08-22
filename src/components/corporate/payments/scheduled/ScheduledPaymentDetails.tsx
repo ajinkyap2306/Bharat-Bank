@@ -91,7 +91,7 @@ export const ScheduledPaymentDetails: React.FC = () => {
 
   if (loading && !data) {
     return (
-      <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto">
+      <div className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto">
         <ScheduledPaymentsHeader title="Scheduled Payment" onBack={handleBack} />
         <div className="pt-4">
           <ScheduledPaymentsSkeleton />
@@ -102,7 +102,7 @@ export const ScheduledPaymentDetails: React.FC = () => {
 
   if (error || !data) {
     return (
-      <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto">
+      <div className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto">
         <ScheduledPaymentsHeader title="Scheduled Payment" onBack={handleBack} />
         <PaymentErrorState onRetry={load} />
       </div>
@@ -110,7 +110,7 @@ export const ScheduledPaymentDetails: React.FC = () => {
   }
 
   return (
-    <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto">
+    <div className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto">
       <ScheduledPaymentsHeader title="Scheduled Payment" onBack={handleBack} />
 
       <main className={`space-y-4 pt-4 ${showEditCancel || showApprovalCta ? 'pb-36' : 'pb-8'}`}>
@@ -119,13 +119,13 @@ export const ScheduledPaymentDetails: React.FC = () => {
       </main>
 
       {showApprovalCta && (
-        <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-[#F7F9FC]/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-[#E4E7EC] dark:border-slate-800">
+        <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-slate-50/95 dark:bg-slate-950/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
           <div className="max-w-[430px] mx-auto">
             <button
               type="button"
               onClick={handleViewApproval}
               disabled={!data.approvalId}
-              className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11 disabled:opacity-50"
+              className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11 disabled:opacity-50"
             >
               View Approval Status
             </button>
@@ -134,13 +134,13 @@ export const ScheduledPaymentDetails: React.FC = () => {
       )}
 
       {showEditCancel && (
-        <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-[#F7F9FC]/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-[#E4E7EC] dark:border-slate-800">
+        <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-slate-50/95 dark:bg-slate-950/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
           <div className="max-w-[430px] mx-auto flex gap-2">
             {data.canEdit && (
               <button
                 type="button"
                 onClick={handleEdit}
-                className="flex-1 py-3.5 rounded-2xl border border-[#E4E7EC] dark:border-slate-700 font-bold text-sm text-[#111827] dark:text-white min-h-11"
+                className="flex-1 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 font-bold text-sm text-slate-900 dark:text-white min-h-11"
               >
                 Edit Schedule
               </button>

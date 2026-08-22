@@ -110,10 +110,10 @@ const ACCOUNT_ITEMS: MoreMenuItem[] = [
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <section>
-    <h2 className="text-[13px] font-semibold text-[#667085] uppercase tracking-wide px-4 mb-2">
+    <h2 className="text-[13px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide px-4 mb-2">
       {title}
     </h2>
-    <div className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 divide-y divide-[#E4E7EC] dark:divide-slate-800 shadow-sm">
+    <div className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-200 dark:divide-slate-800 dark:divide-slate-800 shadow-sm">
       {children}
     </div>
   </section>
@@ -123,16 +123,16 @@ const MoreRow: React.FC<{ item: MoreMenuItem; onClick: () => void }> = ({ item, 
   <button
     type="button"
     onClick={onClick}
-    className="w-full flex items-center gap-3 p-3.5 text-left min-h-[3.75rem] active:bg-[#F7F9FC] dark:active:bg-slate-800/50"
+    className="w-full flex items-center gap-3 p-3.5 text-left min-h-[3.75rem] active:bg-slate-50 dark:active:bg-slate-800/50 dark:active:bg-slate-800/50"
   >
-    <div className="w-10 h-10 rounded-xl bg-[#0B5CAB]/8 flex items-center justify-center shrink-0">
-      <item.icon className="w-5 h-5 text-[#0B5CAB]" aria-hidden />
+    <div className="w-10 h-10 rounded-xl bg-congress-blue-50 dark:bg-congress-blue-950/40 flex items-center justify-center shrink-0">
+      <item.icon className="w-5 h-5 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />
     </div>
     <div className="flex-1 min-w-0">
-      <p className="text-[14px] font-semibold text-[#111827] dark:text-white">{item.label}</p>
-      <p className="text-[12px] text-[#667085] mt-0.5">{item.description}</p>
+      <p className="text-[14px] font-semibold text-slate-900 dark:text-white">{item.label}</p>
+      <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">{item.description}</p>
     </div>
-    <ChevronRight className="w-4 h-4 text-[#667085] shrink-0" aria-hidden />
+    <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" aria-hidden />
   </button>
 );
 
@@ -156,10 +156,10 @@ export const CorporateMoreHome: React.FC = () => {
   };
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-4 font-['Inter',sans-serif]">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-4 ">
       <header className="px-4 pt-3 pb-4">
-        <h1 className="text-[20px] font-semibold text-[#111827] dark:text-white">More</h1>
-        <p className="text-[13px] text-[#667085] mt-0.5">{user.companyName}</p>
+        <h1 className="text-[20px] font-semibold text-slate-900 dark:text-white">More</h1>
+        <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-0.5">{user.companyName}</p>
       </header>
 
       <div className="space-y-5">

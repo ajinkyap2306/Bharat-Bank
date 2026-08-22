@@ -25,8 +25,8 @@ interface PaymentsEmptyStateProps {
 }
 
 export const PaymentsEmptyState: React.FC<PaymentsEmptyStateProps> = ({ message }) => (
-  <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-6 text-center shadow-sm">
-    <p className="text-[13px] text-[#667085]">{message}</p>
+  <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 text-center shadow-sm">
+    <p className="text-[13px] text-slate-500 dark:text-slate-400">{message}</p>
   </div>
 );
 
@@ -35,14 +35,14 @@ export const PaymentsErrorState: React.FC<PaymentsErrorStateProps> = ({ onRetry 
     <div className="w-14 h-14 rounded-full bg-[#DC2626]/10 flex items-center justify-center mb-4">
       <AlertCircle className="w-7 h-7 text-[#DC2626]" aria-hidden />
     </div>
-    <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white">
+    <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">
       Unable to load payments
     </h2>
-    <p className="text-[13px] text-[#667085] mt-2">Please try again.</p>
+    <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-2">Please try again.</p>
     <button
       type="button"
       onClick={onRetry}
-      className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12"
+      className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12"
     >
       <RefreshCw className="w-4 h-4" aria-hidden />
       Retry

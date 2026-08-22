@@ -36,7 +36,7 @@ export const AccountSearchOverlay: React.FC<AccountSearchOverlayProps> = ({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
-      className="fixed inset-0 z-50 bg-[#F7F9FC] dark:bg-slate-950 flex flex-col"
+      className="fixed inset-0 z-50 bg-slate-50 dark:bg-slate-950 flex flex-col"
     >
       <div className="px-3 pt-3 pb-2 safe-top border-b border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div className="flex items-center gap-2">
@@ -57,9 +57,9 @@ export const AccountSearchOverlay: React.FC<AccountSearchOverlayProps> = ({
       </div>
       <div className="flex-1 overflow-y-auto px-3 py-3">
         {query.trim() === '' ? (
-          <p className="text-sm text-[#667085] text-center py-12">Search by account name, number, or type</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-12">Search by account name, number, or type</p>
         ) : results.length === 0 ? (
-          <p className="text-sm text-[#667085] text-center py-12">No accounts found</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-12">No accounts found</p>
         ) : (
           <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
             {results.map((a) => (
@@ -69,10 +69,10 @@ export const AccountSearchOverlay: React.FC<AccountSearchOverlayProps> = ({
                 onClick={() => onSelect(a.id)}
                 className="w-full p-3 text-left hover:bg-slate-50 dark:hover:bg-slate-800/40"
               >
-                <p className="text-sm font-bold text-[#111827] dark:text-white">
+                <p className="text-sm font-bold text-slate-900 dark:text-white">
                   {a.nickname} ••••{a.maskedNumber.slice(-4)}
                 </p>
-                <p className="text-xs text-[#667085]">{a.accountType} • {formatAccountCurrency(a.availableBalance, a.currency)}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{a.accountType} • {formatAccountCurrency(a.availableBalance, a.currency)}</p>
               </button>
             ))}
           </div>

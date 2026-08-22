@@ -67,7 +67,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
         />
       ))}
       {isLoadingMore && (
-        <p className="text-center text-[13px] text-[#667085] py-4" aria-live="polite">
+        <p className="text-center text-[13px] text-slate-500 dark:text-slate-400 py-4" aria-live="polite">
           Loading more transactions...
         </p>
       )}

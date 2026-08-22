@@ -62,7 +62,7 @@ export const AccountsCarousel: React.FC<AccountsCarouselProps> = ({
                 setActiveIndex(index);
               }}
               className={`rounded-full transition-all ${
-                index === activeIndex ? 'w-4 h-1.5 bg-[#0B5CAB]' : 'w-1.5 h-1.5 bg-[#D0D5DD]'
+                index === activeIndex ? 'w-4 h-1.5 bg-congress-blue-700' : 'w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600'
               }`}
             />
           ))}

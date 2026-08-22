@@ -19,19 +19,19 @@ export const SecurityIcon: React.FC<SecurityIconProps> = ({
 
   return (
     <div
-      className={`${boxSize} rounded-2xl bg-[#0B5CAB]/10 flex items-center justify-center relative`}
+      className={`${boxSize} rounded-2xl bg-congress-blue-700/10 flex items-center justify-center relative`}
       aria-hidden
     >
       {isAnimating && (
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
-          className="absolute inset-1 rounded-2xl border-2 border-transparent border-t-[#0B5CAB]/60 motion-reduce:animate-none"
+          className="absolute inset-1 rounded-2xl border-2 border-transparent border-t-congress-blue-700/60 motion-reduce:animate-none"
         />
       )}
       <Icon
         className={`${iconSize} ${
-          isAnimating ? 'text-[#0B5CAB]' : 'text-[#0B5CAB]'
+          isAnimating ? 'text-congress-blue-700' : 'text-congress-blue-700'
         }`}
       />
     </div>

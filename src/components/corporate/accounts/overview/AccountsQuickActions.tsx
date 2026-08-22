@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { ArrowLeftRight, FileText, List, SendHorizontal } from 'lucide-react';
 
 const QUICK_ICON =
-  'w-10 h-10 rounded-xl bg-linear-to-tr from-[#0B5CAB] to-indigo-700 text-white flex items-center justify-center shadow-md shadow-[#0B5CAB]/20 mb-1 group-hover:scale-105 transition-transform';
+  'w-10 h-10 rounded-xl bg-linear-to-tr from-congress-blue-800 to-indigo-700 text-white flex items-center justify-center shadow-md shadow-congress-blue-700/20 mb-1 group-hover:scale-105 transition-transform';
 
 interface AccountsQuickActionsProps {
   onSendMoney: () => void;

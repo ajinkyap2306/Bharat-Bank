@@ -19,10 +19,10 @@ export const ActionRequiredCard: React.FC<ActionRequiredCardProps> = ({
     return (
       <section className="mx-4" aria-labelledby="action-required-heading">
         <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 shadow-xs">
-          <h2 id="action-required-heading" className="text-[14px] font-bold text-[#111827] dark:text-white">
+          <h2 id="action-required-heading" className="text-[14px] font-bold text-slate-900 dark:text-white">
             All caught up
           </h2>
-          <p className="text-[13px] text-[#667085] mt-1">No approvals require your attention.</p>
+          <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">No approvals require your attention.</p>
         </div>
       </section>
     );
@@ -34,7 +34,7 @@ export const ActionRequiredCard: React.FC<ActionRequiredCardProps> = ({
 
   return (
     <section className="mx-4" aria-labelledby="action-required-heading">
-      <div className="rounded-3xl bg-linear-to-tr from-[#0B5CAB] via-blue-600 to-indigo-700 text-white p-4 shadow-lg shadow-[#0B5CAB]/20">
+      <div className="rounded-3xl bg-linear-to-tr from-congress-blue-800 via-blue-600 to-indigo-700 text-white p-4 shadow-lg shadow-congress-blue-700/20">
         <p
           id="action-required-heading"
           className="text-[11px] font-bold uppercase tracking-wider text-blue-100"
@@ -50,7 +50,7 @@ export const ActionRequiredCard: React.FC<ActionRequiredCardProps> = ({
           type="button"
           whileTap={{ scale: 0.98 }}
           onClick={onReviewNow}
-          className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white text-[#0B5CAB] text-[14px] font-bold min-h-11"
+          className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white text-congress-blue-700 dark:text-congress-blue-400 text-[14px] font-bold min-h-11"
         >
           Review Now
           <ArrowRight className="w-4 h-4" aria-hidden />

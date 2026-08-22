@@ -88,7 +88,7 @@ export const CorporateProfileModule: React.FC = () => {
   };
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-8 font-['Inter',sans-serif]">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-8 ">
       <ProfileScreenHeader
         title={screen === 'home' ? 'Profile' : SCREEN_TITLES[screen]}
         onBack={handleBack}

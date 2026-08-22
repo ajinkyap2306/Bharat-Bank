@@ -24,7 +24,7 @@ export const TotalBalanceCard: React.FC<TotalBalanceCardProps> = ({
     : '₹••••••';
 
   return (
-    <div className="mx-4 rounded-2xl bg-linear-to-tr from-[#0B5CAB] via-blue-600 to-indigo-700 text-white px-4 py-3 shadow-md shadow-[#0B5CAB]/15">
+    <div className="mx-4 rounded-2xl bg-linear-to-tr from-congress-blue-800 via-blue-600 to-indigo-700 text-white px-4 py-3 shadow-md shadow-congress-blue-700/15">
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-medium text-blue-100">Total Available Balance</p>

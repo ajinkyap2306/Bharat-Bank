@@ -24,15 +24,15 @@ export const BatchReadyStatus: React.FC<BatchReadyStatusProps> = ({ isReady }) =
         className="flex justify-center mb-3"
       >
         {isReady ? (
-          <CheckCircle className="w-12 h-12 text-[#16A34A]" aria-hidden />
+          <CheckCircle className="w-12 h-12 text-emerald-600 dark:text-emerald-400" aria-hidden />
         ) : (
           <AlertTriangle className="w-12 h-12 text-[#F59E0B]" aria-hidden />
         )}
       </motion.div>
-      <h2 className="text-[17px] font-semibold text-[#111827] dark:text-white">
+      <h2 className="text-[17px] font-semibold text-slate-900 dark:text-white">
         {isReady ? 'Batch Ready for Submission' : 'Batch Requires Attention'}
       </h2>
-      <p className="text-[13px] text-[#667085] mt-2">
+      <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-2">
         {isReady
           ? 'All payment records have passed validation.'
           : 'Resolve all blocking issues before submitting.'}

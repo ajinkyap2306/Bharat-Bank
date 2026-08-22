@@ -228,7 +228,7 @@ export const VendorBeneficiarySelection: React.FC = () => {
 
   if (isLoading && beneficiaries.length === 0) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <BeneficiarySelectionHeader onBack={handleBack} onSearch={() => {}} />
         <BeneficiarySkeleton />
       </div>
@@ -237,7 +237,7 @@ export const VendorBeneficiarySelection: React.FC = () => {
 
   if (error && beneficiaries.length === 0) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-safe">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-safe">
         <BeneficiarySelectionHeader onBack={handleBack} onSearch={() => {}} />
         <div className="pt-4">
           <BeneficiaryErrorState onRetry={() => load()} onAddBeneficiary={handleAddBeneficiary} />
@@ -248,7 +248,7 @@ export const VendorBeneficiarySelection: React.FC = () => {
 
   if (!selectedAccount) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <BeneficiarySelectionHeader onBack={handleBack} onSearch={() => {}} />
         <BeneficiarySkeleton />
       </div>
@@ -257,14 +257,14 @@ export const VendorBeneficiarySelection: React.FC = () => {
 
   return (
     <div
-      className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-safe"
+      className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-safe"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {(pullDistance > 0 || isRefreshing) && (
         <div
-          className="flex justify-center py-2 text-[#667085]"
+          className="flex justify-center py-2 text-slate-500 dark:text-slate-400"
           style={{ height: isRefreshing ? 32 : pullDistance * 0.4 }}
         >
           <RefreshCw
@@ -282,7 +282,7 @@ export const VendorBeneficiarySelection: React.FC = () => {
 
       <div className="space-y-4 pt-4 pb-8 max-w-[430px] mx-auto">
         {lastUpdated && (
-          <p className="px-4 text-[11px] text-[#667085] text-center">{lastUpdated}</p>
+          <p className="px-4 text-[11px] text-slate-500 dark:text-slate-400 text-center">{lastUpdated}</p>
         )}
 
         <PaymentSourceAccount
@@ -335,7 +335,7 @@ export const VendorBeneficiarySelection: React.FC = () => {
             />
 
             {isSearching && filteredBeneficiaries.length > 0 && (
-              <p className="px-4 text-[12px] text-[#667085]">
+              <p className="px-4 text-[12px] text-slate-500 dark:text-slate-400">
                 {filteredBeneficiaries.length} result
                 {filteredBeneficiaries.length !== 1 ? 's' : ''}
               </p>

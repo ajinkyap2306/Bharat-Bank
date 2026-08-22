@@ -29,12 +29,12 @@ export const StatementShareSheet: React.FC<StatementShareSheetProps> = ({
               onClick={() => setFormat(opt.id)}
               className={`flex-1 flex flex-col items-center gap-2 py-4 rounded-2xl border min-h-20 ${
                 format === opt.id
-                  ? 'border-[#0B5CAB] bg-[#0B5CAB]/10'
-                  : 'border-[#E4E7EC] dark:border-slate-800 bg-white dark:bg-slate-900'
+                  ? 'border-congress-blue-700 bg-congress-blue-50 dark:bg-congress-blue-950/40'
+                  : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
               }`}
             >
-              <opt.icon className="w-6 h-6 text-[#0B5CAB]" aria-hidden />
-              <span className="text-[13px] font-semibold text-[#111827] dark:text-white">{opt.label}</span>
+              <opt.icon className="w-6 h-6 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />
+              <span className="text-[13px] font-semibold text-slate-900 dark:text-white">{opt.label}</span>
             </button>
           ))}
         </div>
@@ -44,7 +44,7 @@ export const StatementShareSheet: React.FC<StatementShareSheetProps> = ({
             onShare(format);
             onClose();
           }}
-          className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12"
+          className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12"
         >
           Share
         </button>

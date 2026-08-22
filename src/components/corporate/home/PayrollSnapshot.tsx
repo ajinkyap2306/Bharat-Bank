@@ -19,13 +19,13 @@ export const PayrollSnapshot: React.FC<PayrollSnapshotProps> = ({
       <CorpSkeleton className="h-28 mx-4" />
     ) : !payroll ? (
       <CorpCard className="mx-4! p-4 text-center">
-        <p className="text-sm font-semibold text-[#111827] dark:text-white">No upcoming payroll</p>
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">No upcoming payroll</p>
       </CorpCard>
     ) : (
-      <CorpCard className="mx-4! p-4 border-[#E4E7EC]">
-        <p className="text-sm font-semibold text-[#111827] dark:text-white">{payroll.title}</p>
-        <p className="text-[12px] text-[#667085] mt-0.5">{payroll.employeeCount} Employees</p>
-        <p className="text-[18px] font-semibold text-[#111827] dark:text-white tabular-nums mt-2">
+      <CorpCard className="mx-4! p-4 border-slate-200 dark:border-slate-800">
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">{payroll.title}</p>
+        <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">{payroll.employeeCount} Employees</p>
+        <p className="text-[18px] font-semibold text-slate-900 dark:text-white tabular-nums mt-2">
           {formatCorpCurrency(payroll.amount)}
         </p>
         <div className="mt-2">

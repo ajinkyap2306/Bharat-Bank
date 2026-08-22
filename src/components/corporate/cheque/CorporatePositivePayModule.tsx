@@ -32,7 +32,7 @@ export const CorporatePositivePayModule: React.FC = () => {
 
   if (done) {
     return (
-      <div className="flex flex-col items-center text-center px-4 pt-16 -mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="flex flex-col items-center text-center px-4 pt-16 -mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <CheckCircle2 className="w-16 h-16 text-emerald-500 mb-4" />
         <h2 className="text-xl font-extrabold">Positive Pay Registered</h2>
         <p className="text-xs text-slate-500 mt-2 max-w-xs">
@@ -41,7 +41,7 @@ export const CorporatePositivePayModule: React.FC = () => {
         <button
           type="button"
           onClick={() => navigate('/corporate/more')}
-          className="mt-8 w-full max-w-sm py-3.5 bg-[#0B5CAB] text-white font-bold rounded-2xl"
+          className="mt-8 w-full max-w-sm py-3.5 bg-congress-blue-700 text-white font-bold rounded-2xl"
         >
           Done
         </button>
@@ -50,7 +50,7 @@ export const CorporatePositivePayModule: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-full -mx-3 px-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-8">
+    <div className="flex flex-col h-full -mx-3 px-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-8">
       <ScreenHeader
         title="Positive Pay"
         subtitle="Register high-value cheques for added security"
@@ -107,7 +107,7 @@ export const CorporatePositivePayModule: React.FC = () => {
         <button
           type="button"
           onClick={submit}
-          className="w-full py-3.5 bg-[#0B5CAB] text-white font-bold rounded-2xl mt-2"
+          className="w-full py-3.5 bg-congress-blue-700 text-white font-bold rounded-2xl mt-2"
         >
           Register Positive Pay
         </button>

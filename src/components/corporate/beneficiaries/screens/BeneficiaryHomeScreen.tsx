@@ -68,7 +68,7 @@ export const BeneficiaryHomeScreen: React.FC<BeneficiaryHomeScreenProps> = ({
   };
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-28">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-28">
       <ScreenHeader
         title="Beneficiaries"
         subtitle="Manage business payees"
@@ -81,7 +81,7 @@ export const BeneficiaryHomeScreen: React.FC<BeneficiaryHomeScreenProps> = ({
             className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center min-h-11 min-w-11"
             aria-label="Filter beneficiaries"
           >
-            <Filter className="w-4 h-4 text-[#667085]" />
+            <Filter className="w-4 h-4 text-slate-500 dark:text-slate-400" />
           </button>
         }
       />
@@ -109,8 +109,8 @@ export const BeneficiaryHomeScreen: React.FC<BeneficiaryHomeScreenProps> = ({
               { label: 'Blocked', value: CORPORATE_BENEFICIARY_SUMMARY.blocked },
             ].map((s) => (
               <div key={s.label} className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 text-center">
-                <p className="text-lg font-bold text-[#111827] dark:text-white">{s.value}</p>
-                <p className="text-[9px] text-[#667085] font-bold uppercase">{s.label}</p>
+                <p className="text-lg font-bold text-slate-900 dark:text-white">{s.value}</p>
+                <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase">{s.label}</p>
               </div>
             ))}
           </div>
@@ -123,7 +123,7 @@ export const BeneficiaryHomeScreen: React.FC<BeneficiaryHomeScreenProps> = ({
               type="button"
               onClick={() => setTab(t.id)}
               className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold ${
-                tab === t.id ? 'bg-[#0B5CAB] text-white' : 'bg-white dark:bg-slate-900 text-[#667085] border border-slate-200'
+                tab === t.id ? 'bg-congress-blue-700 text-white' : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200'
               }`}
             >
               {t.label}
@@ -136,22 +136,22 @@ export const BeneficiaryHomeScreen: React.FC<BeneficiaryHomeScreenProps> = ({
           onClick={onGroups}
           className="mx-3 w-[calc(100%-1.5rem)] p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 flex items-center justify-between min-h-11"
         >
-          <span className="text-sm font-bold text-[#111827] dark:text-white">Beneficiary Groups</span>
-          <ChevronRight className="w-4 h-4 text-[#667085]" />
+          <span className="text-sm font-bold text-slate-900 dark:text-white">Beneficiary Groups</span>
+          <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400" />
         </button>
 
         {isLoading ? (
           <BenSkeleton className="h-36" />
         ) : filtered.length === 0 ? (
           <BenCard className="p-6 text-center">
-            <p className="text-sm font-bold text-[#111827] dark:text-white">
+            <p className="text-sm font-bold text-slate-900 dark:text-white">
               {tab === 'pending' ? "You're all caught up" : 'No beneficiaries yet'}
             </p>
-            <p className="text-xs text-[#667085] mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               {tab === 'all' ? 'Add a vendor, supplier or other business beneficiary.' : 'Try another tab or search.'}
             </p>
             {tab === 'all' && canCreatePayment && (
-              <button type="button" onClick={handleAdd} className="mt-3 text-sm font-bold text-[#0B5CAB] min-h-11">
+              <button type="button" onClick={handleAdd} className="mt-3 text-sm font-bold text-congress-blue-700 dark:text-congress-blue-400 min-h-11">
                 Add Beneficiary
               </button>
             )}
@@ -160,24 +160,24 @@ export const BeneficiaryHomeScreen: React.FC<BeneficiaryHomeScreenProps> = ({
           filtered.map((ben) => (
             <BenCard key={ben.id} className="p-4">
               <div className="flex items-start justify-between gap-2">
-                <p className="text-sm font-bold text-[#111827] dark:text-white truncate flex-1">{ben.name}</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white truncate flex-1">{ben.name}</p>
                 <BenStatusBadge status={ben.status} />
               </div>
 
               <div className="mt-2 space-y-0.5">
-                <p className="text-xs text-[#667085]">{ben.typeLabel}</p>
-                <p className="text-xs text-[#667085]">{ben.bankName}</p>
-                <p className="text-xs font-mono text-[#111827] dark:text-white">A/C {ben.maskedAccount}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{ben.typeLabel}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{ben.bankName}</p>
+                <p className="text-xs font-mono text-slate-900 dark:text-white">A/C {ben.maskedAccount}</p>
               </div>
 
               {ben.status === 'Pending Approval' && (
                 <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-1 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-[#667085]">Submitted By</span>
+                    <span className="text-slate-500 dark:text-slate-400">Submitted By</span>
                     <span className="font-medium">{ben.createdBy}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#667085]">Submitted</span>
+                    <span className="text-slate-500 dark:text-slate-400">Submitted</span>
                     <span className="font-medium">{ben.createdDate}</span>
                   </div>
                   <p className="text-[11px] font-bold text-amber-600 pt-1">Pending Checker Approval</p>
@@ -188,13 +188,13 @@ export const BeneficiaryHomeScreen: React.FC<BeneficiaryHomeScreenProps> = ({
                 <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-1 text-xs">
                   {ben.blockedReason && (
                     <div>
-                      <span className="text-[#667085]">Reason</span>
+                      <span className="text-slate-500 dark:text-slate-400">Reason</span>
                       <p className="font-medium mt-0.5">{ben.blockedReason}</p>
                     </div>
                   )}
                   {ben.blockedOn && (
                     <div className="flex justify-between pt-1">
-                      <span className="text-[#667085]">Blocked On</span>
+                      <span className="text-slate-500 dark:text-slate-400">Blocked On</span>
                       <span className="font-medium">{ben.blockedOn}</span>
                     </div>
                   )}
@@ -204,11 +204,11 @@ export const BeneficiaryHomeScreen: React.FC<BeneficiaryHomeScreenProps> = ({
               {(ben.status === 'Active' || ben.status === 'Cooling Period') && ben.lastPaymentAmount && (
                 <>
                   <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between text-xs">
-                    <span className="text-[#667085]">Last Payment</span>
+                    <span className="text-slate-500 dark:text-slate-400">Last Payment</span>
                     <span className="font-bold font-mono">{formatBenCurrency(ben.lastPaymentAmount)}</span>
                   </div>
                   {ben.lastPaymentDate && (
-                    <p className="text-[10px] text-[#667085] text-right">{ben.lastPaymentDate}</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 text-right">{ben.lastPaymentDate}</p>
                   )}
                 </>
               )}
@@ -216,7 +216,7 @@ export const BeneficiaryHomeScreen: React.FC<BeneficiaryHomeScreenProps> = ({
               <button
                 type="button"
                 onClick={() => onOpen(ben.id)}
-                className="mt-3 w-full flex items-center justify-between text-xs font-bold text-[#0B5CAB] min-h-11"
+                className="mt-3 w-full flex items-center justify-between text-xs font-bold text-congress-blue-700 dark:text-congress-blue-400 min-h-11"
               >
                 View Details <ChevronRight className="w-4 h-4" />
               </button>

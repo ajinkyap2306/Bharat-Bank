@@ -88,9 +88,9 @@ export const BulkPaymentResults: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-8">
-        <header className="sticky top-0 z-10 bg-[#F7F9FC]/95 backdrop-blur-md border-b border-[#E4E7EC] px-4 py-3 safe-top">
-          <h1 className="text-[17px] font-semibold text-[#111827]">Payment Results</h1>
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-8">
+        <header className="sticky top-0 z-10 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 safe-top">
+          <h1 className="text-[17px] font-semibold text-slate-900 dark:text-white">Payment Results</h1>
         </header>
         <div className="p-4 space-y-3">
           <div className="h-28 rounded-2xl bg-slate-200/60 animate-pulse" />
@@ -102,55 +102,55 @@ export const BulkPaymentResults: React.FC = () => {
 
   if (error || !data) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <BulkPaymentErrorState onRetry={load} />
       </div>
     );
   }
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-8">
-      <header className="sticky top-0 z-10 bg-[#F7F9FC]/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-[#E4E7EC] dark:border-slate-800 px-4 py-3 safe-top">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-8">
+      <header className="sticky top-0 z-10 bg-slate-50/95 dark:bg-slate-950/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 safe-top">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={handleBack}
-            className="text-sm font-semibold text-[#0B5CAB]"
+            className="text-sm font-semibold text-congress-blue-700 dark:text-congress-blue-400"
           >
             Back
           </button>
-          <h1 className="text-[17px] font-semibold text-[#111827] dark:text-white flex-1 truncate">
+          <h1 className="text-[17px] font-semibold text-slate-900 dark:text-white flex-1 truncate">
             Payment Results
           </h1>
         </div>
-        <p className="text-[12px] text-[#667085] mt-1 font-mono">{data.batchRef}</p>
+        <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-1 font-mono">{data.batchRef}</p>
       </header>
 
       <div className="space-y-4 pt-4 px-1">
         <PayCard className="p-4 mx-3">
           <div className="grid grid-cols-2 gap-3 text-center">
             <div>
-              <p className="text-[11px] text-[#667085]">Successful</p>
-              <p className="text-xl font-bold text-[#16A34A]">{data.successfulCount}</p>
-              <p className="text-[11px] text-[#667085] tabular-nums">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Successful</p>
+              <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{data.successfulCount}</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">
                 {formatPaymentCurrency(data.successfulAmount)}
               </p>
             </div>
             <div>
-              <p className="text-[11px] text-[#667085]">Failed</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Failed</p>
               <p className="text-xl font-bold text-[#DC2626]">{data.failedCount}</p>
-              <p className="text-[11px] text-[#667085] tabular-nums">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">
                 {formatPaymentCurrency(data.failedAmount)}
               </p>
             </div>
             <div>
-              <p className="text-[11px] text-[#667085]">Processing</p>
-              <p className="text-xl font-bold text-[#0B5CAB]">{data.processingCount}</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Processing</p>
+              <p className="text-xl font-bold text-congress-blue-700 dark:text-congress-blue-400">{data.processingCount}</p>
             </div>
             <div>
-              <p className="text-[11px] text-[#667085]">Total</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Total</p>
               <p className="text-xl font-bold">{data.totalPayments}</p>
-              <p className="text-[11px] text-[#667085] tabular-nums">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">
                 {formatPaymentCurrency(data.totalAmount)}
               </p>
             </div>
@@ -163,7 +163,7 @@ export const BulkPaymentResults: React.FC = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search beneficiary or payment ID"
-            className="w-full rounded-xl border border-[#E4E7EC] dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm min-h-11"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm min-h-11"
           />
         </div>
 
@@ -175,8 +175,8 @@ export const BulkPaymentResults: React.FC = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold ${
                 activeTab === tab.id
-                  ? 'bg-[#0B5CAB] text-white'
-                  : 'bg-white dark:bg-slate-900 border border-[#E4E7EC] text-[#667085]'
+                  ? 'bg-congress-blue-700 text-white'
+                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400'
               }`}
             >
               {tab.label}
@@ -189,14 +189,14 @@ export const BulkPaymentResults: React.FC = () => {
             <PayCard key={item.id} className="p-4">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#111827] dark:text-white">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">
                     {item.beneficiaryName}
                   </p>
-                  <p className="text-[12px] text-[#667085]">
+                  <p className="text-[12px] text-slate-500 dark:text-slate-400">
                     {item.maskedAccount} · {item.bankName}
                   </p>
                   {item.paymentId && (
-                    <p className="text-[11px] font-mono text-[#667085] mt-1">{item.paymentId}</p>
+                    <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 mt-1">{item.paymentId}</p>
                   )}
                   {item.failureReason && (
                     <p className="text-[12px] text-[#DC2626] mt-1">{item.failureReason}</p>
@@ -227,7 +227,7 @@ export const BulkPaymentResults: React.FC = () => {
                 message: 'Batch payment results saved to your device.',
               })
             }
-            className="flex-1 py-3 rounded-2xl border border-[#E4E7EC] font-semibold text-sm text-[#0B5CAB] min-h-11"
+            className="flex-1 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 font-semibold text-sm text-congress-blue-700 dark:text-congress-blue-400 min-h-11"
           >
             Download Results
           </button>
@@ -236,7 +236,7 @@ export const BulkPaymentResults: React.FC = () => {
             onClick={() =>
               addToast({ type: 'info', title: 'Export', message: 'CSV export ready for download.' })
             }
-            className="flex-1 py-3 rounded-2xl bg-[#0B5CAB] text-white font-semibold text-sm min-h-11"
+            className="flex-1 py-3 rounded-2xl bg-congress-blue-700 text-white font-semibold text-sm min-h-11"
           >
             Export CSV
           </button>

@@ -156,7 +156,7 @@ export const BulkPaymentSubmitted: React.FC = () => {
 
   if (loading && !data) {
     return (
-      <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] -mx-3">
+      <div className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] -mx-3">
         <BatchStatusHeader onBack={handleBack} onMore={() => {}} />
         <BatchStatusSkeleton />
       </div>
@@ -165,7 +165,7 @@ export const BulkPaymentSubmitted: React.FC = () => {
 
   if (error || !data) {
     return (
-      <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto">
+      <div className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto">
         <BatchStatusHeader onBack={handleBack} onMore={() => {}} />
         <BulkPaymentErrorState
           title="Unable to load batch status"
@@ -202,13 +202,13 @@ export const BulkPaymentSubmitted: React.FC = () => {
 
   return (
     <div
-      className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] -mx-3"
+      className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] -mx-3"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {pullDistance > 0 && (
-        <div className="flex justify-center py-2 text-[#667085] text-xs" style={{ height: pullDistance }}>
+        <div className="flex justify-center py-2 text-slate-500 dark:text-slate-400 text-xs" style={{ height: pullDistance }}>
           {pullDistance > 72 ? 'Release to refresh' : 'Pull to refresh'}
         </div>
       )}
@@ -217,7 +217,7 @@ export const BulkPaymentSubmitted: React.FC = () => {
 
       <main className={`space-y-4 pt-4 ${showStickyCta ? 'pb-28' : 'pb-8'}`}>
         {lastUpdated && (
-          <p className="text-center text-[11px] text-[#667085] px-4" aria-live="polite">
+          <p className="text-center text-[11px] text-slate-500 dark:text-slate-400 px-4" aria-live="polite">
             Updated just now
           </p>
         )}
@@ -241,12 +241,12 @@ export const BulkPaymentSubmitted: React.FC = () => {
       </main>
 
       {showStickyCta && (
-        <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-[#F7F9FC]/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-[#E4E7EC] dark:border-slate-800">
+        <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-slate-50/95 dark:bg-slate-950/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
           <div className="max-w-[430px] mx-auto">
             <button
               type="button"
               onClick={stickyAction}
-              className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11"
+              className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11"
             >
               {stickyLabel}
             </button>

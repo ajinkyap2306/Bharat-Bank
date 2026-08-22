@@ -13,8 +13,8 @@ export const ApproverComment: React.FC<ApproverCommentProps> = ({
   onChange,
   disabled = false,
 }) => (
-  <section className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4">
-    <label htmlFor="approver-comment" className="text-[14px] font-semibold text-[#111827] dark:text-white">
+  <section className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4">
+    <label htmlFor="approver-comment" className="text-[14px] font-semibold text-slate-900 dark:text-white">
       Add Comment
     </label>
     <textarea
@@ -24,10 +24,10 @@ export const ApproverComment: React.FC<ApproverCommentProps> = ({
       disabled={disabled}
       placeholder="Add a comment for this approval"
       rows={3}
-      className="mt-2 w-full p-3 rounded-xl border border-[#E4E7EC] dark:border-slate-700 bg-[#F7F9FC] dark:bg-slate-800 text-[14px] resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] disabled:opacity-50"
+      className="mt-2 w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 dark:bg-slate-800 text-[14px] resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 disabled:opacity-50"
       aria-describedby="approver-comment-count"
     />
-    <p id="approver-comment-count" className="text-[11px] text-[#667085] mt-1 text-right">
+    <p id="approver-comment-count" className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 text-right">
       {value.length}/{MAX_LENGTH}
     </p>
   </section>

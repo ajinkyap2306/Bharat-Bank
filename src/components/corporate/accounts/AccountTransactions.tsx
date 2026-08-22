@@ -167,7 +167,7 @@ export const AccountTransactions: React.FC<AccountTransactionsProps> = ({ accoun
 
   if (metaError && !meta) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 font-['Inter',sans-serif]">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 ">
         <TransactionsHeader
           accountLabel="Account"
           onBack={handleBack}
@@ -182,13 +182,13 @@ export const AccountTransactions: React.FC<AccountTransactionsProps> = ({ accoun
 
   return (
     <div
-      className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-6 font-['Inter',sans-serif]"
+      className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-6 "
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {(pullDistance > 0 || isRefreshing) && (
-        <div className="flex justify-center py-2 text-[#0B5CAB]" aria-live="polite">
+        <div className="flex justify-center py-2 text-congress-blue-700 dark:text-congress-blue-400" aria-live="polite">
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
         </div>
       )}
@@ -239,13 +239,13 @@ export const AccountTransactions: React.FC<AccountTransactionsProps> = ({ accoun
                 setDraftFilters(filters);
                 setShowFilters(true);
               }}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-[#E4E7EC] dark:border-slate-800 bg-white dark:bg-slate-900 text-[13px] font-semibold text-[#667085] min-h-9"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-[13px] font-semibold text-slate-500 dark:text-slate-400 min-h-9"
             >
               <Filter className="w-4 h-4" />
               Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
             </button>
           )}
-          <p className="text-[12px] text-[#667085] ml-auto">{countLabel}</p>
+          <p className="text-[12px] text-slate-500 dark:text-slate-400 ml-auto">{countLabel}</p>
         </div>
 
         <DateFilterChips active={filters.date} onChange={handleQuickDate} />

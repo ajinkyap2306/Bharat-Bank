@@ -13,6 +13,7 @@ export type AuthScreen =
 export type RetailTab = 
   | 'home'
   | 'accounts'
+  | 'approvals'
   | 'transfers'
   | 'payments'
   | 'cards'

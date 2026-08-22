@@ -28,6 +28,12 @@ import {
   validateTransferModeForAmount,
 } from '../../../data/retailBankTransferMock';
 import {
+  getJointStatusLabel,
+  requiresJointApproval,
+  verifyRetailJointUserMpin,
+} from '../../../data/retailJointTransferMock';
+import type { JointTransferRequest } from '../../../types/retailJointTransfer';
+import {
   AddMoneyLayout,
   AmountField,
   ProcessingState,
@@ -66,6 +72,8 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
     lookupBanlName,
     transferRepeat,
     clearTransferRepeat,
+    retailActiveUserId,
+    submitJointTransferRequest,
   } = useBanking();
 
   const defaultDebit = getDefaultDebitAccount();
@@ -88,6 +96,8 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
   }));
   const [amountError, setAmountError] = useState('');
   const [authPin, setAuthPin] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [submittedRequest, setSubmittedRequest] = useState<JointTransferRequest | null>(null);
   const [result, setResult] = useState<BankTransferResult | null>(null);
   const [failReason, setFailReason] = useState('We couldn\'t complete this transaction.');
   const [banlLoading, setBanlLoading] = useState(false);
@@ -110,6 +120,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
   const fromAccount = accounts.find((a) => a.id === draft.fromAccountId);
   const toAccount = accounts.find((a) => a.id === draft.toAccountId);
   const selectedBeneficiary = payees.find((b) => b.id === draft.beneficiaryId);
+  const needsApproval = requiresJointApproval(fromAccount);
 
   const receiver = useMemo(() => {
     if (draft.path === 'self' && toAccount) {
@@ -322,9 +333,45 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
 
   const handleAuthConfirm = () => {
     if (authPin.length < 6) {
-      addToast({ type: 'error', title: 'Invalid UPI PIN', message: 'Enter your 6-digit UPI PIN.' });
+      const message = needsApproval ? 'Enter your 6-digit MPIN.' : 'Enter your 6-digit UPI PIN.';
+      addToast({
+        type: 'error',
+        title: needsApproval ? 'Invalid MPIN' : 'Invalid UPI PIN',
+        message,
+      });
       return;
     }
+
+    if (needsApproval) {
+      if (!verifyRetailJointUserMpin(retailActiveUserId, authPin)) {
+        setAuthError('Incorrect MPIN.');
+        setAuthPin('');
+        return;
+      }
+      setAuthError('');
+
+      if (!receiver) return;
+      const req = submitJointTransferRequest({
+        fromAccountId: draft.fromAccountId,
+        beneficiaryId: selectedBeneficiary?.id,
+        beneficiaryName: receiver.name,
+        beneficiaryBank: receiver.bank,
+        beneficiaryAccountMasked: receiver.account,
+        amount: amountNum,
+        mode: draft.path === 'self' ? 'Internal' : draft.transferMode,
+        note: draft.note || undefined,
+        isSelfTransfer: draft.path === 'self',
+        toAccountId: draft.path === 'self' ? draft.toAccountId : undefined,
+      });
+      if (req) {
+        setSubmittedRequest(req);
+        setStep('submitted');
+      } else {
+        setStep('unavailable');
+      }
+      return;
+    }
+
     runProcessing();
   };
 
@@ -365,15 +412,62 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
     }, 700);
   };
 
-  const accountCard = (account: BankAccount, selected: boolean, onSelect: () => void) => (
-    <RadioSelectCard
-      key={account.id}
-      selected={selected}
-      title={`${account.accountType} ${account.maskedNumber}`}
-      subtitle={`Available ₹${account.availableBalance.toLocaleString('en-IN')}`}
-      onSelect={onSelect}
-    />
-  );
+  const accountCard = (account: BankAccount, selected: boolean, onSelect: () => void) => {
+    const isJoint = requiresJointApproval(account);
+    const accountTitle = account.jointAccountLabel ?? `${account.accountType} Account`;
+    return (
+      <RadioSelectCard
+        key={account.id}
+        selected={selected}
+        title={accountTitle}
+        subtitle={account.maskedNumber}
+        meta={`Available ₹${account.availableBalance.toLocaleString('en-IN')}${isJoint ? ' · Jointly Operated' : ''}`}
+        onSelect={onSelect}
+      />
+    );
+  };
+
+  if (step === 'unavailable') {
+    return (
+      <AddMoneyLayout title="Bank Transfer" onBack={onClose}>
+        <div className="flex flex-col items-center text-center px-2 pt-6">
+          <span className="w-16 h-16 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center mb-4">
+            <XCircle className="w-9 h-9" />
+          </span>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Approval Unavailable</h2>
+          <p className="text-sm text-slate-500 mt-2">
+            This jointly operated account requires authorization from another eligible joint holder.
+          </p>
+        </div>
+        <StickyAddMoneyCTA label="Try Again" onClick={() => setStep('review')} />
+      </AddMoneyLayout>
+    );
+  }
+
+  if (step === 'submitted' && submittedRequest && fromAccount) {
+    return (
+      <AddMoneyLayout title="Request Submitted" onBack={onClose}>
+        <div className="flex flex-col items-center text-center px-2 pt-4">
+          <CheckCircle2 className="w-14 h-14 text-emerald-600 mb-3" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Sent for Approval</h2>
+          <p className="text-sm text-slate-500 mt-2 max-w-xs">
+            Your transfer request has been sent to the other joint holder for approval.
+          </p>
+          <div className="w-full mt-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 text-left space-y-2">
+            <ReviewRow label="Amount" value={`₹${submittedRequest.amount.toLocaleString('en-IN')}`} />
+            <ReviewRow label="To" value={submittedRequest.beneficiaryName} />
+            <ReviewRow
+              label="From"
+              value={`${fromAccount.jointAccountLabel ?? fromAccount.accountType} ${fromAccount.maskedNumber}`}
+            />
+            <ReviewRow label="Status" value={getJointStatusLabel(submittedRequest.status)} />
+            <ReviewRow label="Reference" value={submittedRequest.reference} />
+          </div>
+        </div>
+        <StickyAddMoneyCTA label="Done" onClick={onClose} />
+      </AddMoneyLayout>
+    );
+  }
 
   if (step === 'processing') {
     return (
@@ -465,28 +559,40 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
 
   if (step === 'auth') {
     return (
-      <AddMoneyLayout title="Confirm Transfer" onBack={goBack}>
+      <AddMoneyLayout title={needsApproval ? 'Confirm Request' : 'Confirm Transfer'} onBack={goBack}>
         <div className="text-center pt-2">
           <p className="text-3xl font-extrabold text-slate-900 dark:text-white tabular-nums">
             ₹{amountNum.toLocaleString('en-IN')}
           </p>
           <p className="text-sm text-slate-500 mt-1">{receiver?.name}</p>
+          {needsApproval && (
+            <p className="text-xs text-blue-700 mt-2">
+              Joint account — request will be sent for approval.
+            </p>
+          )}
         </div>
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 mt-4">
           <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-3">
-            Enter UPI PIN
+            {needsApproval ? 'Enter MPIN' : 'Enter UPI PIN'}
           </label>
           <input
             type="password"
             inputMode="numeric"
             maxLength={6}
             value={authPin}
-            onChange={(e) => setAuthPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+            onChange={(e) => {
+              setAuthPin(e.target.value.replace(/\D/g, '').slice(0, 6));
+              setAuthError('');
+            }}
             placeholder="• • • • • •"
             className="w-full text-center text-xl tracking-[0.5em] font-bold py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-congress-blue-500"
           />
+          {authError && <p className="text-xs text-red-600 mt-2 text-center">{authError}</p>}
         </div>
-        <StickyAddMoneyCTA label="Confirm" onClick={handleAuthConfirm} />
+        <StickyAddMoneyCTA
+          label={needsApproval ? 'Submit for Approval' : 'Confirm'}
+          onClick={handleAuthConfirm}
+        />
       </AddMoneyLayout>
     );
   }
@@ -523,10 +629,20 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
             bold
           />
         </div>
+        {needsApproval && (
+          <p className="text-xs text-slate-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-100 rounded-xl p-3 mt-3">
+            Joint account selected — transfer will be sent to the other joint holder for approval.
+          </p>
+        )}
         <StickyAddMoneyCTA
-          label={`Transfer ₹${amountNum.toLocaleString('en-IN')}`}
+          label={
+            needsApproval
+              ? `Submit ₹${amountNum.toLocaleString('en-IN')} for Approval`
+              : `Transfer ₹${amountNum.toLocaleString('en-IN')}`
+          }
           onClick={() => {
             setAuthPin('');
+            setAuthError('');
             setStep('auth');
           }}
         />
@@ -599,6 +715,11 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
         </div>
         <div className="space-y-2">
           <p className="text-xs font-bold text-slate-500 px-1">Debit from</p>
+          {needsApproval && (
+            <p className="text-xs text-slate-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-100 rounded-xl p-3">
+              Joint account selected — transfer will be sent to the other joint holder for approval.
+            </p>
+          )}
           {selfAccounts.map((acc) =>
             accountCard(acc, draft.fromAccountId === acc.id, () =>
               setDraft((d) => ({ ...d, fromAccountId: acc.id }))
@@ -791,8 +912,17 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
             className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm outline-none focus:border-congress-blue-500"
           />
         </div>
+        {needsApproval && (
+          <p className="text-xs text-slate-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-100 rounded-xl p-3">
+            Joint account selected — transfer will be sent to the other joint holder for approval.
+          </p>
+        )}
         <StickyAddMoneyCTA
-          label="Continue"
+          label={
+            needsApproval
+              ? `Continue to Submit for Approval`
+              : 'Continue'
+          }
           onClick={() => {
             if (!draft.toAccountId) {
               addToast({ type: 'error', title: 'Select Account', message: 'Choose a destination account.' });

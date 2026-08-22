@@ -7,7 +7,7 @@ export const CompanyInformationScreen: React.FC = () => {
 
   return (
     <div className="py-4">
-      <ProfileCard className="divide-y divide-[#E4E7EC] dark:divide-slate-800">
+      <ProfileCard className="divide-y divide-slate-200 dark:divide-slate-800 dark:divide-slate-800">
         <ProfileDetailRow label="Legal Name" value={company.legalName} />
         <ProfileDetailRow label="Business Type" value={company.businessType} />
         <ProfileDetailRow label="Registered Address" value={company.registeredAddress} />
@@ -19,7 +19,7 @@ export const CompanyInformationScreen: React.FC = () => {
         <ProfileDetailRow label="Contact Phone" value={company.contactPhone} />
         <ProfileDetailRow label="Relationship Manager" value={company.relationshipManager} />
       </ProfileCard>
-      <p className="text-[11px] text-[#667085] px-4 mt-3 text-center">
+      <p className="text-[11px] text-slate-500 dark:text-slate-400 px-4 mt-3 text-center">
         Company information is managed by your corporate administrator.
       </p>
     </div>

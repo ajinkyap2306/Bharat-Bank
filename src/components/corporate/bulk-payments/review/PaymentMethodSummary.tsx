@@ -14,18 +14,18 @@ export const PaymentMethodSummary: React.FC<PaymentMethodSummaryProps> = ({ data
   return (
     <>
       <PayCard className="p-4">
-        <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white mb-3">Payment Method</h3>
+        <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white mb-3">Payment Method</h3>
         {single ? (
-          <p className="text-[15px] font-semibold text-[#111827] dark:text-white">
+          <p className="text-[15px] font-semibold text-slate-900 dark:text-white">
             {data.paymentMethods[0].method}
           </p>
         ) : (
           <>
-            <p className="text-[15px] font-semibold text-[#111827] dark:text-white">Multiple Payment Methods</p>
+            <p className="text-[15px] font-semibold text-slate-900 dark:text-white">Multiple Payment Methods</p>
             <button
               type="button"
               onClick={() => setShowBreakdown(true)}
-              className="mt-3 w-full py-2.5 rounded-xl border border-[#E4E7EC] text-[#0B5CAB] text-[13px] font-semibold min-h-11"
+              className="mt-3 w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-congress-blue-700 dark:text-congress-blue-400 text-[13px] font-semibold min-h-11"
             >
               View Payment Breakdown
             </button>
@@ -38,10 +38,10 @@ export const PaymentMethodSummary: React.FC<PaymentMethodSummaryProps> = ({ data
           {data.paymentMethods.map((m) => (
             <li
               key={m.method}
-              className="flex justify-between py-3 border-b border-[#E4E7EC] dark:border-slate-800 last:border-0"
+              className="flex justify-between py-3 border-b border-slate-200 dark:border-slate-800 last:border-0"
             >
               <span className="font-semibold">{m.method}</span>
-              <span className="text-[#667085]">{m.count} payments</span>
+              <span className="text-slate-500 dark:text-slate-400">{m.count} payments</span>
             </li>
           ))}
         </ul>

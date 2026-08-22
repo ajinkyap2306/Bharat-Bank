@@ -23,7 +23,7 @@ export const ApprovalStatusHero: React.FC<ApprovalStatusHeroProps> = ({
 
   return (
     <section
-      className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-5"
+      className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5"
       aria-labelledby="approval-hero-heading"
     >
       <motion.div
@@ -41,28 +41,28 @@ export const ApprovalStatusHero: React.FC<ApprovalStatusHeroProps> = ({
             {detail.statusLabel}
           </p>
         </div>
-        <p className="text-[12px] font-medium text-[#0B5CAB] mt-3 uppercase tracking-wide">
+        <p className="text-[12px] font-medium text-congress-blue-700 dark:text-congress-blue-400 mt-3 uppercase tracking-wide">
           {detail.typeLabel}
         </p>
         {amountText && (
           <p
-            className="text-[30px] font-bold text-[#111827] dark:text-white tabular-nums mt-1"
+            className="text-[30px] font-bold text-slate-900 dark:text-white tabular-nums mt-1"
             aria-label={`Amount ${detail.amount?.toLocaleString('en-IN')} rupees`}
           >
             {amountText}
           </p>
         )}
         {detail.beneficiary && (
-          <p className="text-[15px] font-semibold text-[#111827] dark:text-white mt-1">
+          <p className="text-[15px] font-semibold text-slate-900 dark:text-white mt-1">
             {detail.beneficiary.name}
           </p>
         )}
         {!detail.beneficiary && (
-          <p className="text-[15px] font-semibold text-[#111827] dark:text-white mt-1">
+          <p className="text-[15px] font-semibold text-slate-900 dark:text-white mt-1">
             {detail.title}
           </p>
         )}
-        <p className="text-[12px] text-[#667085] mt-2">
+        <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-2">
           Approval {detail.currentApprover.completedSteps} of {detail.currentApprover.totalSteps}
         </p>
       </motion.div>

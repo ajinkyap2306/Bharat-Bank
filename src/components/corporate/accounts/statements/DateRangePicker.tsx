@@ -50,30 +50,30 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     <BottomSheet isOpen={isOpen} onClose={onClose} title="Custom Date Range">
       <div className="space-y-4 pb-2">
         <div>
-          <label className="text-[13px] font-medium text-[#667085]">From Date</label>
+          <label className="text-[13px] font-medium text-slate-500 dark:text-slate-400">From Date</label>
           <input
             type="date"
             value={fromISO}
             max="2026-08-18"
             onChange={(e) => setFromISO(e.target.value)}
-            className="w-full mt-1.5 p-3 rounded-xl border border-[#E4E7EC] dark:border-slate-800 bg-white dark:bg-slate-900 text-[14px] min-h-12"
+            className="w-full mt-1.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-[14px] min-h-12"
           />
         </div>
         <div>
-          <label className="text-[13px] font-medium text-[#667085]">To Date</label>
+          <label className="text-[13px] font-medium text-slate-500 dark:text-slate-400">To Date</label>
           <input
             type="date"
             value={toISO}
             max="2026-08-18"
             onChange={(e) => setToISO(e.target.value)}
-            className="w-full mt-1.5 p-3 rounded-xl border border-[#E4E7EC] dark:border-slate-800 bg-white dark:bg-slate-900 text-[14px] min-h-12"
+            className="w-full mt-1.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-[14px] min-h-12"
           />
         </div>
         {error && <p className="text-[13px] text-[#DC2626]">{error}</p>}
         <button
           type="button"
           onClick={handleApply}
-          className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12"
+          className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12"
         >
           Apply
         </button>

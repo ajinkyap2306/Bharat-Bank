@@ -18,11 +18,11 @@ export const ActionRequiredCard: React.FC<ActionRequiredCardProps> = ({
   if (count <= 0) {
     return (
       <section className="px-4" aria-label="Action required">
-        <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm">
-          <p className="text-[14px] font-semibold text-[#111827] dark:text-white">
+        <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
+          <p className="text-[14px] font-semibold text-slate-900 dark:text-white">
             Action Required
           </p>
-          <p className="text-[13px] text-[#667085] mt-1">You&apos;re all caught up</p>
+          <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">You&apos;re all caught up</p>
         </div>
       </section>
     );
@@ -36,19 +36,19 @@ export const ActionRequiredCard: React.FC<ActionRequiredCardProps> = ({
             <AlertCircle className="w-5 h-5 text-[#F59E0B]" aria-hidden />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[14px] font-semibold text-[#111827] dark:text-white">
+            <p className="text-[14px] font-semibold text-slate-900 dark:text-white">
               Action Required
             </p>
-            <p className="text-[13px] text-[#667085] mt-0.5">
+            <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-0.5">
               {count} Payments Pending Approval
             </p>
-            <p className="text-[18px] font-bold text-[#111827] dark:text-white tabular-nums mt-1">
+            <p className="text-[18px] font-bold text-slate-900 dark:text-white tabular-nums mt-1">
               {formatPaymentCurrency(amount, currency)}
             </p>
             <button
               type="button"
               onClick={onReview}
-              className="mt-3 text-[13px] font-semibold text-[#0B5CAB] min-h-11"
+              className="mt-3 text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11"
             >
               Review Approvals
             </button>

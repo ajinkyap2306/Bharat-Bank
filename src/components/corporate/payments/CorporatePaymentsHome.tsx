@@ -147,7 +147,7 @@ export const CorporatePaymentsHome: React.FC = () => {
 
   if (isLoading && !data) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <PaymentsHeader {...headerProps} />
         <PaymentsSkeleton />
       </div>
@@ -156,7 +156,7 @@ export const CorporatePaymentsHome: React.FC = () => {
 
   if (error && !data) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <PaymentsHeader {...headerProps} />
         <PaymentsErrorState onRetry={() => load()} />
       </div>
@@ -165,7 +165,7 @@ export const CorporatePaymentsHome: React.FC = () => {
 
   if (!data) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <PaymentsHeader {...headerProps} />
         <PaymentsErrorState onRetry={() => load()} />
       </div>
@@ -174,13 +174,13 @@ export const CorporatePaymentsHome: React.FC = () => {
 
   return (
     <div
-      className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-4"
+      className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-4"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {(pullDistance > 0 || isRefreshing) && (
-        <div className="flex justify-center py-2 text-[#0B5CAB]" aria-live="polite">
+        <div className="flex justify-center py-2 text-congress-blue-700 dark:text-congress-blue-400" aria-live="polite">
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} aria-hidden />
         </div>
       )}

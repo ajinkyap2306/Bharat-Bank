@@ -69,6 +69,7 @@ export const RetailHome: React.FC = () => {
     getVisibleAccounts,
     getPendingJointApprovalsForUser,
     retailActiveUserId,
+    hasRetailJointApprovalAccess,
   } = useBanking();
 
   const [hiddenAccounts, setHiddenAccounts] = useState<Record<string, boolean>>({});
@@ -205,7 +206,7 @@ export const RetailHome: React.FC = () => {
 
   return (
     <div className="space-y-4 pb-6">
-      {pendingJointApprovals.length > 0 && (
+      {hasRetailJointApprovalAccess && pendingJointApprovals.length > 0 && (
         <button
           type="button"
           onClick={() => navigate('/retail/joint-approvals')}

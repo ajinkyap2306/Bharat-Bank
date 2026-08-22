@@ -23,12 +23,12 @@ export const PaySectionHeader: React.FC<{
   onAction?: () => void;
 }> = ({ title, action, onAction }) => (
   <div className="flex items-center justify-between mb-2">
-    <h2 className="text-sm font-extrabold text-[#111827] dark:text-white tracking-tight">{title}</h2>
+    <h2 className="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">{title}</h2>
     {action && onAction && (
       <button
         type="button"
         onClick={onAction}
-        className="text-[11px] font-semibold text-[#0B5CAB] dark:text-blue-400"
+        className="text-[11px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 dark:text-blue-400"
       >
         {action}
       </button>

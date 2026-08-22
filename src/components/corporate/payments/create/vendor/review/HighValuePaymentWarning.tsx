@@ -13,10 +13,10 @@ export const HighValuePaymentWarning: React.FC<HighValuePaymentWarningProps> = (
       <div className="rounded-2xl bg-[#F59E0B]/10 border border-[#F59E0B]/30 p-4 flex gap-3">
         <TrendingUp className="w-5 h-5 text-[#F59E0B] shrink-0" aria-hidden />
         <div>
-          <h2 id="high-value-warning-title" className="text-[14px] font-semibold text-[#111827] dark:text-white">
+          <h2 id="high-value-warning-title" className="text-[14px] font-semibold text-slate-900 dark:text-white">
             High-value payment
           </h2>
-          <p className="text-[13px] text-[#667085] mt-1">
+          <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">
             Additional approval or verification may be required.
           </p>
         </div>

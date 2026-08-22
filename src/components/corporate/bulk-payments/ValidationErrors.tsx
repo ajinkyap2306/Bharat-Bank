@@ -29,15 +29,15 @@ export const ValidationErrors: React.FC<ValidationErrorsProps> = ({
         </div>
         <ul className="space-y-3" aria-label="Validation errors">
           {preview.map((err) => (
-            <li key={err.row} className="pb-3 border-b border-[#E4E7EC] dark:border-slate-800 last:border-0 last:pb-0">
-              <p className="text-[12px] text-[#667085]">Row {err.row}</p>
-              <p className="text-[14px] font-semibold text-[#111827] dark:text-white">{err.beneficiary}</p>
+            <li key={err.row} className="pb-3 border-b border-slate-200 dark:border-slate-800 last:border-0 last:pb-0">
+              <p className="text-[12px] text-slate-500 dark:text-slate-400">Row {err.row}</p>
+              <p className="text-[14px] font-semibold text-slate-900 dark:text-white">{err.beneficiary}</p>
               <p className="text-[13px] text-[#DC2626] mt-0.5">{err.reason}</p>
               {onRemoveError && (
                 <button
                   type="button"
                   onClick={() => onRemoveError(err.row)}
-                  className="mt-2 w-full py-2 rounded-xl border border-[#E4E7EC] text-[12px] font-semibold text-[#667085] min-h-10"
+                  className="mt-2 w-full py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-[12px] font-semibold text-slate-500 dark:text-slate-400 min-h-10"
                 >
                   Remove from batch
                 </button>
@@ -58,7 +58,7 @@ export const ValidationErrors: React.FC<ValidationErrorsProps> = ({
           <button
             type="button"
             onClick={onClearAll}
-            className="mt-2 w-full py-2.5 rounded-xl bg-[#0B5CAB] text-white text-[13px] font-semibold min-h-11"
+            className="mt-2 w-full py-2.5 rounded-xl bg-congress-blue-700 text-white text-[13px] font-semibold min-h-11"
           >
             Fix all errors
           </button>
@@ -68,8 +68,8 @@ export const ValidationErrors: React.FC<ValidationErrorsProps> = ({
       <BottomSheet isOpen={showAll} onClose={() => setShowAll(false)} title="Validation Errors">
         <ul className="px-4 pb-6 space-y-4 max-h-[60vh] overflow-y-auto">
           {errors.map((err) => (
-            <li key={err.row} className="pb-3 border-b border-[#E4E7EC] dark:border-slate-800">
-              <p className="text-[12px] text-[#667085]">Row {err.row}</p>
+            <li key={err.row} className="pb-3 border-b border-slate-200 dark:border-slate-800">
+              <p className="text-[12px] text-slate-500 dark:text-slate-400">Row {err.row}</p>
               <p className="text-[14px] font-semibold">{err.beneficiary}</p>
               <p className="text-[13px] text-[#DC2626] mt-0.5">{err.reason}</p>
               {onRemoveError && (
@@ -79,7 +79,7 @@ export const ValidationErrors: React.FC<ValidationErrorsProps> = ({
                     onRemoveError(err.row);
                     if (errors.length <= 1) setShowAll(false);
                   }}
-                  className="mt-2 w-full py-2 rounded-xl border border-[#E4E7EC] text-[12px] font-semibold min-h-10"
+                  className="mt-2 w-full py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-[12px] font-semibold min-h-10"
                 >
                   Remove from batch
                 </button>
@@ -95,7 +95,7 @@ export const ValidationErrors: React.FC<ValidationErrorsProps> = ({
                 onClearAll();
                 setShowAll(false);
               }}
-              className="w-full py-3 rounded-xl bg-[#0B5CAB] text-white text-[13px] font-semibold min-h-11"
+              className="w-full py-3 rounded-xl bg-congress-blue-700 text-white text-[13px] font-semibold min-h-11"
             >
               Fix all errors
             </button>

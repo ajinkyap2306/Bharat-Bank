@@ -175,7 +175,7 @@ export const CreateBulkPayment: React.FC = () => {
   };
 
   return (
-    <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto">
+    <div className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto">
       <BulkPaymentsHeader title="New Payment Batch" onBack={handleBack} showMore={false} />
 
       <main className="space-y-4 pt-4 pb-36">
@@ -244,7 +244,7 @@ export const CreateBulkPayment: React.FC = () => {
             <button
               type="button"
               onClick={() => document.getElementById('bulk-file-input-2')?.click()}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11"
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11"
             >
               <Upload className="w-4 h-4" aria-hidden />
               Upload File
@@ -306,7 +306,7 @@ export const CreateBulkPayment: React.FC = () => {
         )}
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-[#F7F9FC]/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-[#E4E7EC] dark:border-slate-800">
+      <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-slate-50/95 dark:bg-slate-950/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
         <div className="max-w-[430px] mx-auto">
           {blockReason && isValidated && (
             <p className="text-[12px] text-[#DC2626] text-center mb-2 font-medium">{blockReason}</p>
@@ -315,7 +315,7 @@ export const CreateBulkPayment: React.FC = () => {
             type="button"
             onClick={handleReview}
             disabled={!canReview}
-            className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm disabled:opacity-50 min-h-11"
+            className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm disabled:opacity-50 min-h-11"
           >
             Review Batch
           </button>
@@ -334,13 +334,13 @@ export const CreateBulkPayment: React.FC = () => {
               }}
               className={`w-full text-left p-4 rounded-xl border min-h-11 ${
                 acc.id === batch.accountId
-                  ? 'border-[#0B5CAB] bg-blue-50/50'
-                  : 'border-[#E4E7EC] dark:border-slate-700'
+                  ? 'border-congress-blue-700 bg-blue-50/50'
+                  : 'border-slate-200 dark:border-slate-800'
               }`}
             >
               <p className="font-semibold text-[14px]">{acc.name}</p>
-              <p className="text-[12px] text-[#667085] font-mono">{acc.maskedNumber}</p>
-              <p className="text-[12px] text-[#667085] mt-1">
+              <p className="text-[12px] text-slate-500 dark:text-slate-400 font-mono">{acc.maskedNumber}</p>
+              <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-1">
                 {hideBalance ? '••••••' : formatPaymentCurrency(acc.availableBalance, acc.currency)}
               </p>
             </button>

@@ -42,16 +42,16 @@ export const AccountNicknameSetting: React.FC<AccountNicknameSettingProps> = ({
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white">
+            <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">
               Account Nickname
             </h2>
-            <p className="text-[12px] text-[#667085] mt-1">Official name: {officialName}</p>
+            <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-1">Official name: {officialName}</p>
           </div>
           {!editing && (
             <button
               type="button"
               onClick={() => setEditing(true)}
-              className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#0B5CAB] min-h-11 px-2"
+              className="inline-flex items-center gap-1 text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11 px-2"
             >
               <Pencil className="w-3.5 h-3.5" aria-hidden />
               Edit
@@ -72,9 +72,9 @@ export const AccountNicknameSetting: React.FC<AccountNicknameSettingProps> = ({
                 maxLength={MAX_LENGTH}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder="Account nickname"
-                className="w-full px-4 py-3 rounded-xl border border-[#E4E7EC] dark:border-slate-700 bg-white dark:bg-slate-900 text-[14px] text-[#111827] dark:text-white min-h-12"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-[14px] text-slate-900 dark:text-white min-h-12"
               />
-              <p className="text-[11px] text-[#667085] mt-1 text-right">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 text-right">
                 {value.length}/{MAX_LENGTH}
               </p>
             </div>
@@ -85,7 +85,7 @@ export const AccountNicknameSetting: React.FC<AccountNicknameSettingProps> = ({
                   setValue(nickname);
                   setEditing(false);
                 }}
-                className="flex-1 py-3 rounded-2xl border border-[#E4E7EC] text-sm font-semibold min-h-12"
+                className="flex-1 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm font-semibold min-h-12"
               >
                 Cancel
               </button>
@@ -93,14 +93,14 @@ export const AccountNicknameSetting: React.FC<AccountNicknameSettingProps> = ({
                 type="button"
                 onClick={handleSave}
                 disabled={isSaving || !value.trim() || value.trim() === nickname.trim()}
-                className="flex-1 py-3 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12 disabled:opacity-50"
+                className="flex-1 py-3 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12 disabled:opacity-50"
               >
                 {isSaving ? 'Saving...' : 'Save'}
               </button>
             </div>
           </div>
         ) : (
-          <p className="mt-3 text-[15px] font-medium text-[#111827] dark:text-white">{nickname}</p>
+          <p className="mt-3 text-[15px] font-medium text-slate-900 dark:text-white">{nickname}</p>
         )}
       </div>
     </PreferencesCard>

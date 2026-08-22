@@ -12,23 +12,23 @@ export const BeneficiaryVerification: React.FC<BeneficiaryVerificationProps> = (
   <section
     className={`mx-4 rounded-2xl border p-4 ${
       beneficiary.verified
-        ? 'bg-white dark:bg-slate-900 border-[#E4E7EC] dark:border-slate-800'
+        ? 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
         : 'bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900'
     }`}
     aria-labelledby="beneficiary-verification-heading"
   >
-    <h2 id="beneficiary-verification-heading" className="text-[14px] font-semibold text-[#111827] dark:text-white">
+    <h2 id="beneficiary-verification-heading" className="text-[14px] font-semibold text-slate-900 dark:text-white">
       Beneficiary Verification
     </h2>
-    <p className="text-[15px] font-semibold text-[#111827] dark:text-white mt-2">
+    <p className="text-[15px] font-semibold text-slate-900 dark:text-white mt-2">
       {beneficiary.name}
     </p>
     <div className="mt-3 space-y-2 text-[13px]">
       <div className="flex justify-between gap-3">
-        <span className="text-[#667085]">Status</span>
+        <span className="text-slate-500 dark:text-slate-400">Status</span>
         <span
           className={`font-semibold flex items-center gap-1 ${
-            beneficiary.verified ? 'text-[#16A34A]' : 'text-[#F59E0B]'
+            beneficiary.verified ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#F59E0B]'
           }`}
           role="status"
         >
@@ -46,16 +46,16 @@ export const BeneficiaryVerification: React.FC<BeneficiaryVerificationProps> = (
         </span>
       </div>
       <div className="flex justify-between gap-3">
-        <span className="text-[#667085]">Bank</span>
-        <span className="font-medium text-[#111827] dark:text-white">{beneficiary.bankName}</span>
+        <span className="text-slate-500 dark:text-slate-400">Bank</span>
+        <span className="font-medium text-slate-900 dark:text-white">{beneficiary.bankName}</span>
       </div>
       <div className="flex justify-between gap-3">
-        <span className="text-[#667085]">Account</span>
-        <span className="font-medium text-[#111827] dark:text-white">{beneficiary.maskedAccount}</span>
+        <span className="text-slate-500 dark:text-slate-400">Account</span>
+        <span className="font-medium text-slate-900 dark:text-white">{beneficiary.maskedAccount}</span>
       </div>
       <div className="flex justify-between gap-3">
-        <span className="text-[#667085]">Beneficiary Type</span>
-        <span className="font-medium text-[#111827] dark:text-white">{beneficiary.type}</span>
+        <span className="text-slate-500 dark:text-slate-400">Beneficiary Type</span>
+        <span className="font-medium text-slate-900 dark:text-white">{beneficiary.type}</span>
       </div>
     </div>
     {!beneficiary.verified && (

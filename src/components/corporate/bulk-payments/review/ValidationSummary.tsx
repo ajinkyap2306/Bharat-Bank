@@ -13,19 +13,19 @@ export const ValidationSummary: React.FC<ValidationSummaryProps> = ({ data, onVi
 
   return (
     <PayCard className="p-4">
-      <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white mb-3">Validation</h3>
+      <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white mb-3">Validation</h3>
       <dl className="space-y-2 text-[13px]">
         <div className="flex justify-between items-center">
-          <dt className="text-[#667085]">Valid Payments</dt>
-          <dd className="flex items-center gap-1 font-semibold text-[#16A34A]">
+          <dt className="text-slate-500 dark:text-slate-400">Valid Payments</dt>
+          <dd className="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
             {data.validCount} <Check className="w-3.5 h-3.5" aria-hidden />
           </dd>
         </div>
         <div className="flex justify-between items-center">
-          <dt className="text-[#667085]">Errors</dt>
+          <dt className="text-slate-500 dark:text-slate-400">Errors</dt>
           <dd
             className={`flex items-center gap-1 font-semibold ${
-              allValid ? 'text-[#16A34A]' : 'text-[#DC2626]'
+              allValid ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#DC2626]'
             }`}
           >
             {data.errorCount}{' '}
@@ -37,10 +37,10 @@ export const ValidationSummary: React.FC<ValidationSummaryProps> = ({ data, onVi
           </dd>
         </div>
         <div className="flex justify-between items-center">
-          <dt className="text-[#667085]">Possible Duplicates</dt>
+          <dt className="text-slate-500 dark:text-slate-400">Possible Duplicates</dt>
           <dd
             className={`flex items-center gap-1 font-semibold ${
-              data.duplicateCount === 0 ? 'text-[#16A34A]' : 'text-[#F59E0B]'
+              data.duplicateCount === 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#F59E0B]'
             }`}
           >
             {data.duplicateCount}{' '}
@@ -52,7 +52,7 @@ export const ValidationSummary: React.FC<ValidationSummaryProps> = ({ data, onVi
           </dd>
         </div>
       </dl>
-      <p className={`mt-3 text-[13px] font-medium ${allValid ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}>
+      <p className={`mt-3 text-[13px] font-medium ${allValid ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#DC2626]'}`}>
         {allValid ? 'All payments validated' : `${data.errorCount} validation errors found`}
       </p>
       {!allValid && onViewErrors && (

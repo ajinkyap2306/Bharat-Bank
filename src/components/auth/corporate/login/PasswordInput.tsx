@@ -24,7 +24,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
   onBlur,
 }) => (
   <div>
-    <label className="text-sm font-medium text-[#111827] dark:text-slate-200 block mb-1.5">
+    <label className="text-sm font-medium text-slate-900 dark:text-slate-200 block mb-1.5">
       Password
     </label>
     <div className="relative">
@@ -36,18 +36,18 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         onBlur={onBlur}
         placeholder="Enter your password"
         autoComplete="current-password"
-        className={`w-full bg-white dark:bg-slate-900 border rounded-2xl py-3.5 pl-4 pr-12 text-[15px] text-[#111827] dark:text-white outline-none transition-all duration-200 min-h-11 shadow-sm ${
+        className={`w-full bg-white dark:bg-slate-900 border rounded-2xl py-3.5 pl-4 pr-12 text-[15px] text-slate-900 dark:text-white outline-none transition-all duration-200 min-h-11 shadow-sm ${
           error
             ? 'border-[#DC2626] ring-2 ring-[#DC2626]/10'
             : isFocused
-              ? 'border-[#0B5CAB] ring-2 ring-[#0B5CAB]/10'
+              ? 'border-congress-blue-700 ring-2 ring-congress-blue-700/10'
               : 'border-[#E4E7EC] dark:border-slate-800'
         }`}
       />
       <button
         type="button"
         onClick={onToggleVisibility}
-        className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-[#667085] hover:text-[#111827] dark:hover:text-white transition-colors"
+        className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
         aria-label={showPassword ? 'Hide password' : 'Show password'}
       >
         {showPassword ? (

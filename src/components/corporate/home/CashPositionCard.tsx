@@ -21,9 +21,9 @@ export const CashPositionCard: React.FC<CashPositionCardProps> = ({
   const mask = (value: string) => (hidden ? '••••••' : value);
 
   return (
-    <CorpCard className="mx-4! p-4 shadow-sm border-[#E4E7EC]">
+    <CorpCard className="mx-4! p-4 shadow-sm border-slate-200 dark:border-slate-800">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[13px] font-medium text-[#667085]">Total Cash Position</p>
+        <p className="text-[13px] font-medium text-slate-500 dark:text-slate-400">Total Cash Position</p>
         <button
           type="button"
           onClick={() => setHidden((v) => !v)}
@@ -35,25 +35,25 @@ export const CashPositionCard: React.FC<CashPositionCardProps> = ({
         </button>
       </div>
 
-      <p className="text-[24px] font-semibold text-[#111827] dark:text-white tracking-tight tabular-nums">
+      <p className="text-[24px] font-semibold text-slate-900 dark:text-white tracking-tight tabular-nums">
         {mask(formatCorpCurrency(data.totalBalance))}
       </p>
 
-      <div className="mt-4 pt-4 border-t border-[#E4E7EC] dark:border-slate-800 space-y-3">
+      <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-[13px] text-[#667085]">Available Balance</span>
-          <span className="text-[15px] font-semibold text-[#111827] dark:text-white tabular-nums">
+          <span className="text-[13px] text-slate-500 dark:text-slate-400">Available Balance</span>
+          <span className="text-[15px] font-semibold text-slate-900 dark:text-white tabular-nums">
             {mask(formatCorpCurrency(data.availableBalance))}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-[13px] text-[#667085]">Today&apos;s Inflow</span>
-          <span className="text-[15px] font-semibold text-[#16A34A] tabular-nums">
+          <span className="text-[13px] text-slate-500 dark:text-slate-400">Today&apos;s Inflow</span>
+          <span className="text-[15px] font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">
             {hidden ? '••••••' : `+ ${formatCorpCurrency(data.todayInflow)}`}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-[13px] text-[#667085]">Today&apos;s Outflow</span>
+          <span className="text-[13px] text-slate-500 dark:text-slate-400">Today&apos;s Outflow</span>
           <span className="text-[15px] font-semibold text-[#DC2626] tabular-nums">
             {hidden ? '••••••' : `− ${formatCorpCurrency(data.todayOutflow)}`}
           </span>

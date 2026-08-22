@@ -53,22 +53,22 @@ export const ManualPaymentEntry: React.FC<ManualPaymentEntryProps> = ({ isOpen, 
           { label: 'Reference', value: reference, set: setReference, placeholder: 'INV-4582' },
         ].map((field) => (
           <label key={field.label} className="block">
-            <span className="text-[12px] text-[#667085]">{field.label}</span>
+            <span className="text-[12px] text-slate-500 dark:text-slate-400">{field.label}</span>
             <input
               type={field.type ?? 'text'}
               value={field.value}
               onChange={(e) => field.set(e.target.value)}
               placeholder={field.placeholder}
-              className="mt-1 w-full px-3 py-3 rounded-xl border border-[#E4E7EC] dark:border-slate-700 text-[14px] min-h-11"
+              className="mt-1 w-full px-3 py-3 rounded-xl border border-slate-200 dark:border-slate-800 text-[14px] min-h-11"
             />
           </label>
         ))}
         <label className="block">
-          <span className="text-[12px] text-[#667085]">Payment Method</span>
+          <span className="text-[12px] text-slate-500 dark:text-slate-400">Payment Method</span>
           <select
             value={method}
             onChange={(e) => setMethod(e.target.value)}
-            className="mt-1 w-full px-3 py-3 rounded-xl border border-[#E4E7EC] dark:border-slate-700 text-[14px] min-h-11"
+            className="mt-1 w-full px-3 py-3 rounded-xl border border-slate-200 dark:border-slate-800 text-[14px] min-h-11"
           >
             <option value="NEFT">NEFT</option>
             <option value="RTGS">RTGS</option>
@@ -78,7 +78,7 @@ export const ManualPaymentEntry: React.FC<ManualPaymentEntryProps> = ({ isOpen, 
         <button
           type="button"
           onClick={handleSave}
-          className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11 mt-2"
+          className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11 mt-2"
         >
           Add to Batch
         </button>

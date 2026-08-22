@@ -11,15 +11,15 @@ export const AuthorizedSignatoriesScreen: React.FC = () => {
         <ProfileCard key={sig.id} className="mx-0! p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[15px] font-semibold text-[#111827] dark:text-white">{sig.name}</p>
-              <p className="text-[13px] text-[#667085] mt-0.5">{sig.role}</p>
-              <p className="text-[12px] text-[#667085] mt-2">{sig.authorizationLevel}</p>
+              <p className="text-[15px] font-semibold text-slate-900 dark:text-white">{sig.name}</p>
+              <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-0.5">{sig.role}</p>
+              <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-2">{sig.authorizationLevel}</p>
             </div>
             <StatusBadge active={sig.status === 'Active'} />
           </div>
         </ProfileCard>
       ))}
-      <p className="text-[11px] text-[#667085] text-center px-2">
+      <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center px-2">
         Signatory details are view-only. Changes require administrator approval.
       </p>
     </div>

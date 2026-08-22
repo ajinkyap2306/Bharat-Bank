@@ -30,22 +30,22 @@ export const BankBeneficiaryPickerSheet: React.FC<BankBeneficiaryPickerSheetProp
             onClick={() => onSelect(beneficiary.id)}
             className={`w-full flex items-start gap-3 p-4 rounded-2xl border text-left min-h-14 ${
               selected
-                ? 'border-[#0B5CAB] bg-[#0B5CAB]/5'
-                : 'border-[#E4E7EC] dark:border-slate-800 bg-white dark:bg-slate-900'
+                ? 'border-congress-blue-700 bg-congress-blue-700/5'
+                : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
             }`}
           >
             <div
-              className="w-11 h-11 rounded-xl bg-[#0B5CAB]/10 flex items-center justify-center text-[#0B5CAB] text-[13px] font-bold shrink-0"
+              className="w-11 h-11 rounded-xl bg-congress-blue-50 dark:bg-congress-blue-950/40 flex items-center justify-center text-congress-blue-700 dark:text-congress-blue-400 text-[13px] font-bold shrink-0"
               aria-hidden
             >
               {getBeneficiaryInitials(beneficiary.name)}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[15px] font-semibold text-[#111827] dark:text-white">
+              <p className="text-[15px] font-semibold text-slate-900 dark:text-white">
                 {beneficiary.name}
               </p>
-              <p className="text-[13px] text-[#667085] tabular-nums">{beneficiary.maskedAccountNumber}</p>
-              <p className="text-[12px] text-[#667085]">{beneficiary.bankName}</p>
+              <p className="text-[13px] text-slate-500 dark:text-slate-400 tabular-nums">{beneficiary.maskedAccountNumber}</p>
+              <p className="text-[12px] text-slate-500 dark:text-slate-400">{beneficiary.bankName}</p>
               <div className="mt-1.5">
                 <BeneficiaryStatusBadge status={beneficiary.status} compact />
               </div>

@@ -12,7 +12,9 @@ export type BankTransferStep =
   | 'auth'
   | 'processing'
   | 'success'
-  | 'failed';
+  | 'failed'
+  | 'submitted'
+  | 'unavailable';
 
 export interface ManualReceiver {
   name: string;

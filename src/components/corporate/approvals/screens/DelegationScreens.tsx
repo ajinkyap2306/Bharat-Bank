@@ -17,23 +17,23 @@ export const DelegationListScreen: React.FC<{
   onCreate: () => void;
   onOpen: (id: string) => void;
 }> = ({ delegations, onBack, onCreate, onOpen }) => (
-  <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-8">
+  <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-8">
     <ScreenHeader title="My Delegations" onBack={onBack} edgeToEdge={false} />
     <div className="px-3">
-      <button type="button" onClick={onCreate} className="w-full py-3 rounded-xl bg-[#0B5CAB] text-white font-bold text-sm mb-3 min-h-11">
+      <button type="button" onClick={onCreate} className="w-full py-3 rounded-xl bg-congress-blue-700 text-white font-bold text-sm mb-3 min-h-11">
         Delegate Approval
       </button>
       {delegations.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-sm font-bold text-[#111827] dark:text-white">No active delegations</p>
+          <p className="text-sm font-bold text-slate-900 dark:text-white">No active delegations</p>
         </div>
       ) : (
         delegations.map((d) => (
           <button key={d.id} type="button" onClick={() => onOpen(d.id)} className="w-full text-left mb-2">
             <ApprovalCard className="p-4">
-              <p className="text-sm font-bold text-[#111827] dark:text-white">Delegated to: {d.delegateTo}</p>
-              <p className="text-xs text-[#667085]">{d.startDate} – {d.endDate}</p>
-              <p className="text-xs text-[#667085] mt-1">{d.categories.join(' + ')}</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-white">Delegated to: {d.delegateTo}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{d.startDate} – {d.endDate}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{d.categories.join(' + ')}</p>
               <span className={`inline-block mt-2 text-[9px] font-bold px-2 py-0.5 rounded-full ${
                 d.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
               }`}>
@@ -61,34 +61,34 @@ export const CreateDelegationScreen: React.FC<{
   };
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Delegate Approval" onBack={onBack} edgeToEdge={false} />
       <div className="px-3 space-y-4">
         <section>
-          <p className="text-xs font-bold text-[#667085] uppercase mb-2">Select User</p>
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Select User</p>
           {DELEGATE_USERS.map((u) => (
             <button
               key={u.id}
               type="button"
               onClick={() => setUserId(u.id)}
               className={`w-full p-3 rounded-xl text-left mb-2 min-h-11 ${
-                userId === u.id ? 'bg-[#0B5CAB]/10 border-2 border-[#0B5CAB]' : 'bg-white border border-slate-200'
+                userId === u.id ? 'bg-congress-blue-50 dark:bg-congress-blue-950/40 border-2 border-congress-blue-700' : 'bg-white border border-slate-200'
               }`}
             >
               <p className="text-sm font-bold">{u.name}</p>
-              <p className="text-xs text-[#667085]">{u.role}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{u.role}</p>
             </button>
           ))}
         </section>
         <section>
-          <p className="text-xs font-bold text-[#667085] uppercase mb-2">Date Range</p>
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Date Range</p>
           <div className="flex gap-2">
             <input value={startDate} onChange={(e) => setStartDate(e.target.value)} className="flex-1 p-3 rounded-xl border text-sm" placeholder="Start" />
             <input value={endDate} onChange={(e) => setEndDate(e.target.value)} className="flex-1 p-3 rounded-xl border text-sm" placeholder="End" />
           </div>
         </section>
         <section>
-          <p className="text-xs font-bold text-[#667085] uppercase mb-2">Approval Types</p>
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Approval Types</p>
           <div className="flex flex-wrap gap-2">
             {DELEGATE_CATEGORIES.map((c) => (
               <button
@@ -96,7 +96,7 @@ export const CreateDelegationScreen: React.FC<{
                 type="button"
                 onClick={() => toggleCat(c)}
                 className={`px-3 py-2 rounded-xl text-xs font-bold min-h-11 ${
-                  categories.includes(c) ? 'bg-[#0B5CAB] text-white' : 'bg-slate-100 text-[#667085]'
+                  categories.includes(c) ? 'bg-congress-blue-700 text-white' : 'bg-slate-100 text-slate-500 dark:text-slate-400'
                 }`}
               >
                 {c}
@@ -121,7 +121,7 @@ export const DelegationDetailScreen: React.FC<{
   onBack: () => void;
   onRevoke: () => void;
 }> = ({ delegation, onBack, onRevoke }) => (
-  <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+  <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
     <ScreenHeader title="Delegation Details" onBack={onBack} edgeToEdge={false} />
     <ApprovalCard className="p-4 mx-3">
       <ReviewRow label="Delegate To" value={delegation.delegateTo} />
@@ -138,8 +138,8 @@ export const DelegationDetailScreen: React.FC<{
 );
 
 export const RevokeSuccessScreen: React.FC<{ onDone: () => void }> = ({ onDone }) => (
-  <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full flex flex-col items-center justify-center p-6 pb-24">
-    <h2 className="text-lg font-bold text-[#111827] dark:text-white">Delegation Revoked</h2>
+  <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full flex flex-col items-center justify-center p-6 pb-24">
+    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Delegation Revoked</h2>
     <StickyApprovalCTA label="Done" onClick={onDone} />
   </div>
 );

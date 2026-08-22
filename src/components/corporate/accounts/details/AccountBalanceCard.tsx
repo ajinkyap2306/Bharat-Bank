@@ -29,8 +29,8 @@ export const AccountBalanceCard: React.FC<AccountBalanceCardProps> = ({
     <div
       className={`mx-4 rounded-3xl p-5 shadow-lg ${
         isPrimary
-          ? 'bg-linear-to-tr from-[#0B5CAB] via-blue-600 to-indigo-700 text-white shadow-[#0B5CAB]/20'
-          : 'bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-[#111827] dark:text-white shadow-xs'
+          ? 'bg-linear-to-tr from-congress-blue-800 via-blue-600 to-indigo-700 text-white shadow-congress-blue-700/20'
+          : 'bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-slate-900 dark:text-white shadow-xs'
       }`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -52,7 +52,7 @@ export const AccountBalanceCard: React.FC<AccountBalanceCardProps> = ({
           >
             {mask(formatCorpCurrencyFull(account.availableBalance))}
           </p>
-          <p className={`text-[12px] font-medium mt-0.5 ${isPrimary ? 'text-blue-100' : 'text-[#667085]'}`}>
+          <p className={`text-[12px] font-medium mt-0.5 ${isPrimary ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'}`}>
             Available Balance
           </p>
         </div>
@@ -69,14 +69,14 @@ export const AccountBalanceCard: React.FC<AccountBalanceCardProps> = ({
         }`}
       >
         <div>
-          <p className={`text-[11px] ${isPrimary ? 'text-blue-100' : 'text-[#667085]'}`}>Current Balance</p>
+          <p className={`text-[11px] ${isPrimary ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'}`}>Current Balance</p>
           <p className={`text-[15px] font-bold tabular-nums mt-0.5 ${isPrimary ? 'text-white' : ''}`}>
             {mask(formatCorpCurrencyFull(account.balance))}
           </p>
         </div>
         {account.holdAmount != null && account.holdAmount > 0 && (
           <div>
-            <p className={`text-[11px] ${isPrimary ? 'text-blue-100' : 'text-[#667085]'}`}>Hold Amount</p>
+            <p className={`text-[11px] ${isPrimary ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'}`}>Hold Amount</p>
             <p className={`text-[15px] font-bold tabular-nums mt-0.5 ${isPrimary ? 'text-white' : ''}`}>
               {mask(formatCorpCurrencyFull(account.holdAmount))}
             </p>
@@ -89,11 +89,11 @@ export const AccountBalanceCard: React.FC<AccountBalanceCardProps> = ({
           isPrimary ? 'border-white/20' : 'border-slate-100 dark:border-slate-800'
         }`}
       >
-        <span className={`text-[13px] font-mono ${isPrimary ? 'text-blue-100' : 'text-[#667085]'}`}>
+        <span className={`text-[13px] font-mono ${isPrimary ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'}`}>
           A/C {account.maskedNumber}
         </span>
         <div className="flex items-center gap-2">
-          <span className={`text-[12px] font-semibold ${isPrimary ? 'text-blue-100' : 'text-[#667085]'}`}>
+          <span className={`text-[12px] font-semibold ${isPrimary ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'}`}>
             {account.currencyCode}
           </span>
           {!isPrimary && <AccountStatusBadge status={account.displayStatus} />}

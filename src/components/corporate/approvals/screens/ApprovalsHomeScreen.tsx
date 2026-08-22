@@ -100,19 +100,19 @@ export const ApprovalsHomeScreen: React.FC<ApprovalsHomeScreenProps> = ({
   const pendingCount = requests.filter((r) => r.status === 'pending').length;
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-28">
-      <header className="sticky top-0 z-20 bg-[#F7F9FC]/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800 px-3 py-3 safe-top">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-28">
+      <header className="sticky top-0 z-20 bg-slate-50/95 dark:bg-slate-950/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800 px-3 py-3 safe-top">
         <div className="flex items-center justify-between">
-          <h1 className="text-base font-bold text-[#111827] dark:text-white">Approvals</h1>
+          <h1 className="text-base font-bold text-slate-900 dark:text-white">Approvals</h1>
           <div className="flex items-center gap-1">
             <button type="button" className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center min-h-11">
-              <Bell className="w-4 h-4 text-[#667085]" />
+              <Bell className="w-4 h-4 text-slate-500 dark:text-slate-400" />
             </button>
             <button type="button" onClick={() => setShowFilters(true)} className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center min-h-11">
-              <Filter className="w-4 h-4 text-[#667085]" />
+              <Filter className="w-4 h-4 text-slate-500 dark:text-slate-400" />
             </button>
             <button type="button" onClick={onDelegate} className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center min-h-11">
-              <UserPlus className="w-4 h-4 text-[#667085]" />
+              <UserPlus className="w-4 h-4 text-slate-500 dark:text-slate-400" />
             </button>
           </div>
         </div>
@@ -130,27 +130,27 @@ export const ApprovalsHomeScreen: React.FC<ApprovalsHomeScreenProps> = ({
       {pendingCount > 0 && tab === 'pending' && (
         <div className="px-3 pt-3">
           <ApprovalCard className="p-4">
-            <p className="text-xs font-bold text-[#667085] uppercase tracking-wide">Action Required</p>
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Action Required</p>
             <div className="grid grid-cols-2 gap-2 mt-3">
               <div className="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3">
-                <p className="text-[10px] text-[#667085]">Payments</p>
-                <p className="text-lg font-bold text-[#111827] dark:text-white">{summary.payments}</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">Payments</p>
+                <p className="text-lg font-bold text-slate-900 dark:text-white">{summary.payments}</p>
               </div>
               <div className="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3">
-                <p className="text-[10px] text-[#667085]">Beneficiaries</p>
-                <p className="text-lg font-bold text-[#111827] dark:text-white">{summary.beneficiaries}</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">Beneficiaries</p>
+                <p className="text-lg font-bold text-slate-900 dark:text-white">{summary.beneficiaries}</p>
               </div>
               <div className="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3">
-                <p className="text-[10px] text-[#667085]">Payroll</p>
-                <p className="text-lg font-bold text-[#111827] dark:text-white">{summary.payroll}</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">Payroll</p>
+                <p className="text-lg font-bold text-slate-900 dark:text-white">{summary.payroll}</p>
               </div>
               <div className="rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3">
-                <p className="text-[10px] text-[#667085]">User Requests</p>
-                <p className="text-lg font-bold text-[#111827] dark:text-white">{summary.userRequests}</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">User Requests</p>
+                <p className="text-lg font-bold text-slate-900 dark:text-white">{summary.userRequests}</p>
               </div>
             </div>
-            <p className="text-sm font-bold text-[#111827] dark:text-white mt-3">{summary.total} items require your attention</p>
-            <button type="button" onClick={onReviewNow} className="w-full mt-3 py-3 rounded-xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11">
+            <p className="text-sm font-bold text-slate-900 dark:text-white mt-3">{summary.total} items require your attention</p>
+            <button type="button" onClick={onReviewNow} className="w-full mt-3 py-3 rounded-xl bg-congress-blue-700 text-white font-bold text-sm min-h-11">
               Review Now
             </button>
           </ApprovalCard>
@@ -165,7 +165,7 @@ export const ApprovalsHomeScreen: React.FC<ApprovalsHomeScreenProps> = ({
               type="button"
               onClick={() => setTab(t.id)}
               className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap min-h-11 ${
-                tab === t.id ? 'bg-[#0B5CAB] text-white' : 'bg-white dark:bg-slate-900 text-[#667085] border border-slate-200 dark:border-slate-800'
+                tab === t.id ? 'bg-congress-blue-700 text-white' : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
               }`}
             >
               {t.label}
@@ -175,11 +175,11 @@ export const ApprovalsHomeScreen: React.FC<ApprovalsHomeScreenProps> = ({
       </div>
 
       <div className="px-3 pt-3 flex items-center justify-between">
-        <p className="text-xs font-bold text-[#667085] uppercase">
+        <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
           {tab === 'pending' ? 'Pending Approvals' : tab === 'history' ? 'Approval History' : `${tab.charAt(0).toUpperCase() + tab.slice(1)}`}
         </p>
         {tab === 'pending' && (
-          <button type="button" onClick={onToggleSelectMode} className="text-xs font-bold text-[#0B5CAB] min-h-11 px-2">
+          <button type="button" onClick={onToggleSelectMode} className="text-xs font-bold text-congress-blue-700 dark:text-congress-blue-400 min-h-11 px-2">
             {selectMode ? 'Cancel' : 'Select'}
           </button>
         )}
@@ -194,10 +194,10 @@ export const ApprovalsHomeScreen: React.FC<ApprovalsHomeScreenProps> = ({
           </>
         ) : filtered.length === 0 ? (
           <div className="px-3 py-12 text-center">
-            <p className="text-sm font-bold text-[#111827] dark:text-white">
+            <p className="text-sm font-bold text-slate-900 dark:text-white">
               {tab === 'pending' ? "You're all caught up" : tab === 'history' ? 'No approval history' : 'No items found'}
             </p>
-            <p className="text-xs text-[#667085] mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               {tab === 'pending' ? 'There are no approvals waiting for you.' : 'Try adjusting your filters.'}
             </p>
           </div>
@@ -216,10 +216,10 @@ export const ApprovalsHomeScreen: React.FC<ApprovalsHomeScreenProps> = ({
       </div>
 
       {selectMode && selectedIds.length > 0 && (
-        <div className="fixed bottom-16 left-0 right-0 z-30 p-3 bg-[#F7F9FC]/95 backdrop-blur-md border-t">
+        <div className="fixed bottom-16 left-0 right-0 z-30 p-3 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-t">
           <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
-            <span className="text-sm font-bold text-[#111827]">{selectedIds.length} selected</span>
-            <button type="button" onClick={onBulkReview} className="px-4 py-2.5 rounded-xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11">
+            <span className="text-sm font-bold text-slate-900 dark:text-white">{selectedIds.length} selected</span>
+            <button type="button" onClick={onBulkReview} className="px-4 py-2.5 rounded-xl bg-congress-blue-700 text-white font-bold text-sm min-h-11">
               Review & Approve
             </button>
           </div>

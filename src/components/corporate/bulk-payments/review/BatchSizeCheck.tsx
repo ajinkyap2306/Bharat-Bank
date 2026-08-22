@@ -12,14 +12,14 @@ export const BatchSizeCheck: React.FC<BatchSizeCheckProps> = ({ data }) => {
 
   return (
     <PayCard className={`p-4 ${exceeded ? 'border-rose-300' : ''}`}>
-      <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white mb-3">Batch Size</h3>
+      <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white mb-3">Batch Size</h3>
       <dl className="space-y-2 text-[13px]">
         <div className="flex justify-between">
-          <dt className="text-[#667085]">Payments</dt>
+          <dt className="text-slate-500 dark:text-slate-400">Payments</dt>
           <dd className="font-semibold">{data.paymentCount}</dd>
         </div>
         <div className="flex justify-between">
-          <dt className="text-[#667085]">Maximum</dt>
+          <dt className="text-slate-500 dark:text-slate-400">Maximum</dt>
           <dd className="font-medium">{data.maxBatchSize}</dd>
         </div>
       </dl>
@@ -31,8 +31,8 @@ export const BatchSizeCheck: React.FC<BatchSizeCheckProps> = ({ data }) => {
           </>
         ) : (
           <>
-            <CheckCircle className="w-4 h-4 text-[#16A34A]" aria-hidden />
-            <span className="text-[#16A34A]">Within Batch Limit</span>
+            <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
+            <span className="text-emerald-600 dark:text-emerald-400">Within Batch Limit</span>
           </>
         )}
       </div>

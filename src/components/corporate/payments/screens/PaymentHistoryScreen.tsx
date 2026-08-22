@@ -52,7 +52,7 @@ export const PaymentHistoryScreen: React.FC<PaymentHistoryScreenProps> = ({
   const tabs: HistoryTab[] = ['All', 'Pending', 'Approved', 'Completed', 'Failed', 'Rejected'];
 
   return (
-    <div className={embedded ? '' : '-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-6'}>
+    <div className={embedded ? '' : '-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-6'}>
       {!embedded && <ScreenHeader title="Payment History" onBack={onBack} edgeToEdge={false} />}
       <div className="px-3 mb-3">
         <div className="relative">
@@ -63,7 +63,7 @@ export const PaymentHistoryScreen: React.FC<PaymentHistoryScreenProps> = ({
             placeholder="Search beneficiary, payment ID, invoice..."
             className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm"
           />
-          <Filter className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#667085]" />
+          <Filter className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400" />
         </div>
         <div className="flex gap-1 mt-2 overflow-x-auto no-scrollbar">
           {tabs.map((t) => (
@@ -72,7 +72,7 @@ export const PaymentHistoryScreen: React.FC<PaymentHistoryScreenProps> = ({
               type="button"
               onClick={() => setTab(t)}
               className={`shrink-0 px-3 py-1.5 rounded-full text-[10px] font-bold ${
-                tab === t ? 'bg-[#0B5CAB] text-white' : 'bg-white dark:bg-slate-900 text-[#667085] border border-slate-200'
+                tab === t ? 'bg-congress-blue-700 text-white' : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200'
               }`}
             >
               {t}
@@ -97,8 +97,8 @@ export const PaymentHistoryScreen: React.FC<PaymentHistoryScreenProps> = ({
                 <div className="min-w-0">
                   <p className="text-sm font-bold truncate">{p.beneficiaryName}</p>
                   <p className="text-sm font-mono font-bold mt-0.5">{formatPaymentCurrency(p.amount)}</p>
-                  <p className="text-[10px] text-[#667085]">{p.typeLabel} • {p.createdAt}</p>
-                  <p className="text-[10px] text-[#667085] font-mono">{p.paymentId}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">{p.typeLabel} • {p.createdAt}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">{p.paymentId}</p>
                 </div>
                 <PaymentStatusBadge status={p.status} />
               </div>

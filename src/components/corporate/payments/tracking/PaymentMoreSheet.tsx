@@ -58,9 +58,9 @@ export const PaymentMoreSheet: React.FC<PaymentMoreSheetProps> = ({
             key={item.label}
             type="button"
             onClick={item.onClick}
-            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-[#E4E7EC] dark:border-slate-700 text-[14px] font-medium text-[#111827] dark:text-white min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB]"
+            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-[14px] font-medium text-slate-900 dark:text-white min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500"
           >
-            <item.icon className="w-5 h-5 text-[#667085]" aria-hidden />
+            <item.icon className="w-5 h-5 text-slate-500 dark:text-slate-400" aria-hidden />
             {item.label}
           </button>
         ))}

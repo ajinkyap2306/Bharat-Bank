@@ -14,7 +14,7 @@ export const RemovePrimaryConfirmation: React.FC<RemovePrimaryConfirmationProps>
 }) => (
   <BottomSheet isOpen={isOpen} onClose={onCancel} title="Remove primary status?">
     <div className="space-y-4 pb-2">
-      <p className="text-[13px] text-[#667085]">
+      <p className="text-[13px] text-slate-500 dark:text-slate-400">
         Another eligible account may need to be selected as the primary account. A primary account
         is required for eligible corporate banking actions.
       </p>
@@ -22,7 +22,7 @@ export const RemovePrimaryConfirmation: React.FC<RemovePrimaryConfirmationProps>
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 py-3.5 rounded-2xl border border-[#E4E7EC] dark:border-slate-700 text-sm font-semibold min-h-12"
+          className="flex-1 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm font-semibold min-h-12"
         >
           Cancel
         </button>

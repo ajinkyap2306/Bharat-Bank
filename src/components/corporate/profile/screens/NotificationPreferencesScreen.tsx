@@ -26,17 +26,17 @@ export const NotificationPreferencesScreen: React.FC = () => {
 
   return (
     <div className="py-4">
-      <p className="text-[12px] text-[#667085] px-4 mb-3">
+      <p className="text-[12px] text-slate-500 dark:text-slate-400 px-4 mb-3">
         {view.role === 'checker'
           ? 'Approval and payment notifications for checker role.'
           : 'Request status and payment notifications for maker role.'}
       </p>
-      <ProfileCard className="divide-y divide-[#E4E7EC] dark:divide-slate-800">
+      <ProfileCard className="divide-y divide-slate-200 dark:divide-slate-800 dark:divide-slate-800">
         {prefs.map((pref) => (
           <div key={pref.id} className="px-4 py-3.5 flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <p className="text-[14px] font-medium text-[#111827] dark:text-white">{pref.label}</p>
-              <p className="text-[12px] text-[#667085] mt-0.5">{pref.description}</p>
+              <p className="text-[14px] font-medium text-slate-900 dark:text-white">{pref.label}</p>
+              <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">{pref.description}</p>
             </div>
             <button
               type="button"
@@ -45,7 +45,7 @@ export const NotificationPreferencesScreen: React.FC = () => {
               aria-label={`${pref.label} notifications`}
               onClick={() => toggle(pref.id)}
               className={`shrink-0 w-11 h-6 rounded-full p-0.5 transition-colors ${
-                pref.enabled ? 'bg-[#0B5CAB]' : 'bg-[#D0D5DD]'
+                pref.enabled ? 'bg-congress-blue-700' : 'bg-slate-300 dark:bg-slate-600'
               }`}
             >
               <span

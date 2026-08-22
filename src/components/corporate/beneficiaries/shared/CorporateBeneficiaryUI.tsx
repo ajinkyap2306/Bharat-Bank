@@ -39,10 +39,10 @@ export const StickyBenCTA: React.FC<{
   onSecondary?: () => void;
   variant?: 'primary' | 'danger';
 }> = ({ label, onClick, disabled, secondaryLabel, onSecondary, variant = 'primary' }) => (
-  <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-[#F7F9FC]/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800">
+  <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-slate-50/95 dark:bg-slate-950/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800">
     <div className="max-w-lg mx-auto flex gap-2">
       {secondaryLabel && onSecondary && (
-        <button type="button" onClick={onSecondary} className="flex-1 py-3.5 rounded-2xl border border-slate-200 font-bold text-sm text-[#667085] min-h-11">
+        <button type="button" onClick={onSecondary} className="flex-1 py-3.5 rounded-2xl border border-slate-200 font-bold text-sm text-slate-500 dark:text-slate-400 min-h-11">
           {secondaryLabel}
         </button>
       )}
@@ -51,7 +51,7 @@ export const StickyBenCTA: React.FC<{
         onClick={onClick}
         disabled={disabled}
         className={`flex-1 py-3.5 rounded-2xl font-bold text-sm disabled:opacity-50 min-h-11 ${
-          variant === 'danger' ? 'bg-[#DC2626] text-white' : 'bg-[#0B5CAB] text-white'
+          variant === 'danger' ? 'bg-[#DC2626] text-white' : 'bg-congress-blue-700 text-white'
         }`}
       >
         {label}
@@ -67,11 +67,11 @@ export const ReviewBenRow: React.FC<{ label: string; value: string; onEdit?: () 
 }) => (
   <div className="flex items-start justify-between gap-3 py-2.5 border-b border-slate-100 dark:border-slate-800 last:border-0">
     <div className="min-w-0">
-      <p className="text-[10px] text-[#667085]">{label}</p>
-      <p className="text-sm font-medium text-[#111827] dark:text-white">{value || '—'}</p>
+      <p className="text-[10px] text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="text-sm font-medium text-slate-900 dark:text-white">{value || '—'}</p>
     </div>
     {onEdit && (
-      <button type="button" onClick={onEdit} className="text-xs font-bold text-[#0B5CAB] shrink-0">Edit</button>
+      <button type="button" onClick={onEdit} className="text-xs font-bold text-congress-blue-700 dark:text-congress-blue-400 shrink-0">Edit</button>
     )}
   </div>
 );

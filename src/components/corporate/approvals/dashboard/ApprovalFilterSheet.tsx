@@ -69,8 +69,8 @@ function Chip({
       onClick={onClick}
       className={`px-3 py-2 rounded-xl text-[12px] font-medium min-h-10 border ${
         active
-          ? 'bg-[#0B5CAB] text-white border-[#0B5CAB]'
-          : 'bg-white dark:bg-slate-900 text-[#667085] border-[#E4E7EC] dark:border-slate-700'
+          ? 'bg-congress-blue-700 text-white border-congress-blue-700'
+          : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-800'
       }`}
     >
       {label}
@@ -127,7 +127,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
     <BottomSheet isOpen={isOpen} onClose={onClose} title="Filter Approvals" maxHeight="max-h-[90vh]">
       <div className="px-4 pb-4 space-y-5 overflow-y-auto">
         <section>
-          <p className="text-[12px] font-semibold text-[#667085] uppercase mb-2">Approval Type</p>
+          <p className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 uppercase mb-2">Approval Type</p>
           <div className="flex flex-wrap gap-2">
             {TYPE_OPTIONS.map((o) => (
               <Chip key={o.id} active={local.types.includes(o.id)} label={o.label} onClick={() => toggleType(o.id)} />
@@ -135,7 +135,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
           </div>
         </section>
         <section>
-          <p className="text-[12px] font-semibold text-[#667085] uppercase mb-2">Status</p>
+          <p className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 uppercase mb-2">Status</p>
           <div className="flex flex-wrap gap-2">
             {STATUS_OPTIONS.map((o) => (
               <Chip key={o.id} active={local.statuses.includes(o.id)} label={o.label} onClick={() => toggleStatus(o.id)} />
@@ -143,7 +143,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
           </div>
         </section>
         <section>
-          <p className="text-[12px] font-semibold text-[#667085] uppercase mb-2">Priority</p>
+          <p className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 uppercase mb-2">Priority</p>
           <div className="flex flex-wrap gap-2">
             {PRIORITY_OPTIONS.map((o) => (
               <Chip key={o.id} active={local.priorities.includes(o.id)} label={o.label} onClick={() => togglePriority(o.id)} />
@@ -151,7 +151,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
           </div>
         </section>
         <section>
-          <p className="text-[12px] font-semibold text-[#667085] uppercase mb-2">Date</p>
+          <p className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 uppercase mb-2">Date</p>
           <div className="flex flex-wrap gap-2">
             {DATE_OPTIONS.map((o) => (
               <Chip
@@ -164,7 +164,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
           </div>
         </section>
         <section>
-          <p className="text-[12px] font-semibold text-[#667085] uppercase mb-2">Amount</p>
+          <p className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 uppercase mb-2">Amount</p>
           <div className="flex flex-wrap gap-2">
             {AMOUNT_OPTIONS.map((o) => (
               <Chip key={o.id} active={local.amountRanges.includes(o.id)} label={o.label} onClick={() => toggleAmount(o.id)} />
@@ -172,23 +172,23 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
           </div>
         </section>
         <section>
-          <p className="text-[12px] font-semibold text-[#667085] uppercase mb-2">Created By</p>
+          <p className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 uppercase mb-2">Created By</p>
           <input
             value={local.createdBy}
             onChange={(e) => setLocal((p) => ({ ...p, createdBy: e.target.value }))}
             placeholder="Search by name"
-            className="w-full p-3 rounded-xl border border-[#E4E7EC] dark:border-slate-700 bg-white dark:bg-slate-900 text-[14px] min-h-11"
+            className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-[14px] min-h-11"
           />
         </section>
       </div>
-      <div className="px-4 pb-6 pt-2 border-t border-[#E4E7EC] dark:border-slate-800 flex gap-2">
+      <div className="px-4 pb-6 pt-2 border-t border-slate-200 dark:border-slate-800 flex gap-2">
         <button
           type="button"
           onClick={() => {
             onReset();
             onClose();
           }}
-          className="flex-1 py-3.5 rounded-2xl border border-[#E4E7EC] dark:border-slate-700 text-[#667085] text-[15px] font-semibold min-h-12"
+          className="flex-1 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-[15px] font-semibold min-h-12"
         >
           Reset
         </button>
@@ -198,7 +198,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
             onApply(local);
             onClose();
           }}
-          className="flex-1 py-3.5 rounded-2xl bg-[#0B5CAB] text-white text-[15px] font-semibold min-h-12"
+          className="flex-1 py-3.5 rounded-2xl bg-congress-blue-700 text-white text-[15px] font-semibold min-h-12"
         >
           Apply Filters
         </button>

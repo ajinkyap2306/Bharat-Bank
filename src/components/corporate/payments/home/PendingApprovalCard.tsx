@@ -28,26 +28,26 @@ export const PendingApprovalCard: React.FC<PendingApprovalCardProps> = ({
         type="button"
         whileTap={{ scale: 0.99 }}
         onClick={onViewPayments}
-        className="w-full flex items-center gap-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-[#0B5CAB]/15 px-3 py-2.5 text-left shadow-xs"
+        className="w-full flex items-center gap-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-congress-blue-700/15 px-3 py-2.5 text-left shadow-xs"
       >
-        <div className="w-8 h-8 rounded-lg bg-[#0B5CAB]/10 flex items-center justify-center shrink-0">
-          <AlertCircle className="w-4 h-4 text-[#0B5CAB]" aria-hidden />
+        <div className="w-8 h-8 rounded-lg bg-congress-blue-50 dark:bg-congress-blue-950/40 flex items-center justify-center shrink-0">
+          <AlertCircle className="w-4 h-4 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-bold text-[#111827] dark:text-white">{title}</p>
-          <p className="text-[11px] text-[#667085] mt-0.5">
+          <p className="text-[13px] font-bold text-slate-900 dark:text-white">{title}</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
             {subtitle ?? (
               <>
-                <span className="font-semibold text-[#0B5CAB] tabular-nums">{count} payments</span>
+                <span className="font-semibold text-congress-blue-700 dark:text-congress-blue-400 tabular-nums">{count} payments</span>
                 {' · '}
-                <span className="font-semibold text-[#0B5CAB] tabular-nums">
+                <span className="font-semibold text-congress-blue-700 dark:text-congress-blue-400 tabular-nums">
                   {formatPaymentCurrency(amount, currency)}
                 </span>
               </>
             )}
           </p>
         </div>
-        <ChevronRight className="w-4 h-4 text-[#667085] shrink-0" aria-hidden />
+        <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" aria-hidden />
       </motion.button>
     </section>
   );

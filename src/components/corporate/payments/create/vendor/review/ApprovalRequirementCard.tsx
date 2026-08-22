@@ -13,22 +13,22 @@ export const ApprovalRequirementCard: React.FC<ApprovalRequirementCardProps> = (
   levels,
 }) => (
   <section className="px-4" aria-labelledby="approval-required-heading">
-    <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm">
+    <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
       <div className="flex gap-3">
         <div className="w-10 h-10 rounded-xl bg-[#F59E0B]/10 flex items-center justify-center shrink-0">
           <Shield className="w-5 h-5 text-[#F59E0B]" aria-hidden />
         </div>
         <div>
-          <h2 id="approval-required-heading" className="text-[15px] font-semibold text-[#111827] dark:text-white">
+          <h2 id="approval-required-heading" className="text-[15px] font-semibold text-slate-900 dark:text-white">
             Approval Required
           </h2>
-          <p className="text-[14px] font-medium text-[#0B5CAB] mt-1">{approvalLabel}</p>
+          <p className="text-[14px] font-medium text-congress-blue-700 dark:text-congress-blue-400 mt-1">{approvalLabel}</p>
           {levels > 1 && (
-            <p className="text-[12px] text-[#667085] mt-1">
+            <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-1">
               Payment above ₹5,00,000 requires additional approval.
             </p>
           )}
-          <p className="text-[12px] text-[#667085] mt-2 leading-relaxed">{description}</p>
+          <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">{description}</p>
         </div>
       </div>
     </div>

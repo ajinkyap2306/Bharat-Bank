@@ -30,10 +30,10 @@ export const ScheduledTabBar: React.FC<ScheduledTabBarProps> = ({ active, onChan
           role="tab"
           aria-selected={isActive}
           onClick={() => onChange(tab.id)}
-          className={`shrink-0 px-3.5 py-2 rounded-full text-[12px] font-semibold min-h-10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] ${
+          className={`shrink-0 px-3.5 py-2 rounded-full text-[12px] font-semibold min-h-10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 ${
             isActive
-              ? 'bg-[#0B5CAB] text-white'
-              : 'bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 text-[#667085]'
+              ? 'bg-congress-blue-700 text-white'
+              : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400'
           }`}
         >
           {tab.label}

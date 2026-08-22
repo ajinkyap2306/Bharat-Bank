@@ -25,8 +25,8 @@ export const AccountCategoryTabs: React.FC<AccountCategoryTabsProps> = ({
         onClick={() => onChange(tab.id)}
         className={`shrink-0 px-3.5 py-2 rounded-full text-[13px] font-semibold min-h-9 transition-colors ${
           active === tab.id
-            ? 'bg-[#0B5CAB] text-white'
-            : 'bg-white dark:bg-slate-900 text-[#667085] border border-[#E4E7EC] dark:border-slate-800'
+            ? 'bg-congress-blue-700 text-white'
+            : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
         }`}
       >
         {tab.label}

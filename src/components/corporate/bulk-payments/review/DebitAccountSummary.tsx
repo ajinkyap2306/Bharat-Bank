@@ -13,12 +13,12 @@ export const DebitAccountSummary: React.FC<DebitAccountSummaryProps> = ({ data, 
 
   return (
     <PayCard className={`p-4 ${!sufficient ? 'border-rose-300' : ''}`}>
-      <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white mb-3">Debit Account</h3>
-      <p className="text-[15px] font-semibold text-[#111827] dark:text-white">{data.account.name}</p>
-      <p className="text-[13px] text-[#667085] font-mono mt-0.5">{data.account.maskedNumber}</p>
+      <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white mb-3">Debit Account</h3>
+      <p className="text-[15px] font-semibold text-slate-900 dark:text-white">{data.account.name}</p>
+      <p className="text-[13px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">{data.account.maskedNumber}</p>
       <dl className="mt-3 space-y-2 text-[13px]">
         <div className="flex justify-between">
-          <dt className="text-[#667085]">Available Balance</dt>
+          <dt className="text-slate-500 dark:text-slate-400">Available Balance</dt>
           <dd className="font-medium">
             {hideBalance
               ? '••••••'
@@ -26,12 +26,12 @@ export const DebitAccountSummary: React.FC<DebitAccountSummaryProps> = ({ data, 
           </dd>
         </div>
         <div className="flex justify-between">
-          <dt className="text-[#667085]">Total Debit</dt>
+          <dt className="text-slate-500 dark:text-slate-400">Total Debit</dt>
           <dd className="font-bold">{formatPaymentCurrency(data.totalDebit, data.account.currency)}</dd>
         </div>
         <div className="flex justify-between">
-          <dt className="text-[#667085]">Balance After</dt>
-          <dd className={`font-semibold ${sufficient ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}>
+          <dt className="text-slate-500 dark:text-slate-400">Balance After</dt>
+          <dd className={`font-semibold ${sufficient ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#DC2626]'}`}>
             {hideBalance
               ? '••••••'
               : formatPaymentCurrency(Math.max(0, data.balanceAfter), data.account.currency)}
@@ -41,8 +41,8 @@ export const DebitAccountSummary: React.FC<DebitAccountSummaryProps> = ({ data, 
       <div className="flex items-center gap-2 mt-3 text-[13px] font-semibold">
         {sufficient ? (
           <>
-            <CheckCircle className="w-4 h-4 text-[#16A34A]" aria-hidden />
-            <span className="text-[#16A34A]">Sufficient Balance</span>
+            <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
+            <span className="text-emerald-600 dark:text-emerald-400">Sufficient Balance</span>
           </>
         ) : (
           <>

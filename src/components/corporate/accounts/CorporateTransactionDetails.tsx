@@ -99,7 +99,7 @@ export const CorporateTransactionDetailsScreen: React.FC<
 
   if (error && !details) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 font-['Inter',sans-serif]">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 ">
         <TransactionDetailsHeader onBack={handleBack} onMore={() => setShowMore(true)} />
         <TransactionDetailsError onRetry={load} />
       </div>
@@ -107,7 +107,7 @@ export const CorporateTransactionDetailsScreen: React.FC<
   }
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-6 font-['Inter',sans-serif]">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-6 ">
       <TransactionDetailsHeader onBack={handleBack} onMore={() => setShowMore(true)} />
 
       {isLoading && !details ? (
@@ -120,7 +120,7 @@ export const CorporateTransactionDetailsScreen: React.FC<
             <button
               type="button"
               onClick={() => setShowBalances((v) => !v)}
-              className="text-[12px] font-semibold text-[#0B5CAB] min-h-11 px-2"
+              className="text-[12px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11 px-2"
             >
               {showBalances ? 'Hide Balance' : 'Show Balance'}
             </button>
@@ -158,10 +158,10 @@ export const CorporateTransactionDetailsScreen: React.FC<
             <div className="mx-4 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/40 p-4">
               <p className="text-[14px] font-semibold text-[#DC2626]">Payment Failed</p>
               {details.failureReason && (
-                <p className="text-[13px] text-[#667085] mt-1.5">{details.failureReason}</p>
+                <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1.5">{details.failureReason}</p>
               )}
               {details.failureDate && (
-                <p className="text-[12px] text-[#667085] mt-1">
+                <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-1">
                   {details.failureDate}
                   {details.failureTime ? ` • ${details.failureTime}` : ''}
                 </p>
@@ -169,7 +169,7 @@ export const CorporateTransactionDetailsScreen: React.FC<
               <button
                 type="button"
                 onClick={handleCreateNewPayment}
-                className="mt-4 w-full py-3 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12"
+                className="mt-4 w-full py-3 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12"
               >
                 Create New Payment
               </button>
@@ -180,17 +180,17 @@ export const CorporateTransactionDetailsScreen: React.FC<
             <div className="mx-4 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/40 p-4">
               <p className="text-[14px] font-semibold text-[#DC2626]">Payment Rejected</p>
               {details.rejectedBy && (
-                <p className="text-[13px] text-[#667085] mt-1">
+                <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">
                   Rejected by {details.rejectedBy.name}
                 </p>
               )}
               {details.rejectionReason && (
-                <p className="text-[13px] text-[#667085] mt-1">{details.rejectionReason}</p>
+                <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">{details.rejectionReason}</p>
               )}
               <button
                 type="button"
                 onClick={handleCreateNewPayment}
-                className="mt-4 w-full py-3 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12"
+                className="mt-4 w-full py-3 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12"
               >
                 Create New Payment
               </button>
@@ -199,17 +199,17 @@ export const CorporateTransactionDetailsScreen: React.FC<
 
           {details.status === 'Pending Approval' && (
             <div className="mx-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 p-4">
-              <p className="text-[14px] font-semibold text-[#111827] dark:text-white">
+              <p className="text-[14px] font-semibold text-slate-900 dark:text-white">
                 Pending Approval
               </p>
-              <p className="text-[13px] text-[#667085] mt-1.5">
+              <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1.5">
                 {details.pendingApproval?.message ??
                   'This transaction is waiting for the required corporate approval.'}
               </p>
               <button
                 type="button"
                 onClick={handleViewApproval}
-                className="mt-4 w-full py-3 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12"
+                className="mt-4 w-full py-3 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12"
               >
                 View Approval
               </button>
@@ -217,14 +217,14 @@ export const CorporateTransactionDetailsScreen: React.FC<
           )}
 
           {details.balanceAfter !== undefined && (
-            <section className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm">
-              <p className="text-[13px] text-[#667085]">Balance After Transaction</p>
-              <p className="text-[22px] font-semibold text-[#111827] dark:text-white tabular-nums mt-1">
+            <section className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
+              <p className="text-[13px] text-slate-500 dark:text-slate-400">Balance After Transaction</p>
+              <p className="text-[22px] font-semibold text-slate-900 dark:text-white tabular-nums mt-1">
                 {showBalances
                   ? formatAccountCurrency(details.balanceAfter, details.currency)
                   : '••••••••'}
               </p>
-              <p className="text-[12px] text-[#667085] mt-1">
+              <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-1">
                 Available balance after this transaction
               </p>
             </section>

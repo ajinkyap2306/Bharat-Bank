@@ -10,11 +10,11 @@ interface BatchInformationProps {
 export const BatchInformation: React.FC<BatchInformationProps> = ({ data, onEdit }) => (
   <PayCard className="p-4">
     <div className="flex items-center justify-between mb-3">
-      <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white">Batch Information</h3>
+      <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white">Batch Information</h3>
       <button
         type="button"
         onClick={onEdit}
-        className="text-[13px] font-semibold text-[#0B5CAB] min-h-8 px-2"
+        className="text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-8 px-2"
       >
         Edit
       </button>
@@ -29,9 +29,9 @@ export const BatchInformation: React.FC<BatchInformationProps> = ({ data, onEdit
         { label: 'Created', value: data.createdAt },
       ].map((row) => (
         <div key={row.label} className="flex justify-between gap-4">
-          <dt className="text-[#667085] shrink-0">{row.label}</dt>
+          <dt className="text-slate-500 dark:text-slate-400 shrink-0">{row.label}</dt>
           <dd
-            className={`font-medium text-[#111827] dark:text-white text-right ${
+            className={`font-medium text-slate-900 dark:text-white text-right ${
               row.mono ? 'font-mono' : ''
             }`}
           >

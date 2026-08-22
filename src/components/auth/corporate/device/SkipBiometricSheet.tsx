@@ -24,14 +24,14 @@ export const SkipBiometricSheet: React.FC<SkipBiometricSheetProps> = ({
       <button
         type="button"
         onClick={onSkip}
-        className="w-full py-3.5 rounded-2xl border border-[#E4E7EC] dark:border-slate-700 text-sm font-semibold text-[#667085] dark:text-slate-300 min-h-12 active:scale-[0.99] transition-transform"
+        className="w-full py-3.5 rounded-2xl border border-[#E4E7EC] dark:border-slate-700 text-sm font-semibold text-slate-500 dark:text-slate-300 min-h-12 active:scale-[0.99] transition-transform"
       >
         Skip for Now
       </button>
       <button
         type="button"
         onClick={onEnable}
-        className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12 active:scale-[0.99] transition-transform"
+        className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12 active:scale-[0.99] transition-transform"
       >
         Enable Biometrics
       </button>

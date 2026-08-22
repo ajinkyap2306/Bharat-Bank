@@ -134,7 +134,7 @@ export const VendorPaymentReview: React.FC = () => {
 
   if (loading || !review || !draft) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <ReviewHeader onBack={() => navigate(VENDOR_BASE_PATH)} />
         <PaymentReviewSkeleton />
       </div>
@@ -142,7 +142,7 @@ export const VendorPaymentReview: React.FC = () => {
   }
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-36">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-36">
       <ReviewHeader onBack={handleBack} />
 
       <motion.div

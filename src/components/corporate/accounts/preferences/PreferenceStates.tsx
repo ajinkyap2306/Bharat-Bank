@@ -25,14 +25,14 @@ export const PreferencesErrorState: React.FC<PreferencesErrorStateProps> = ({
     <div className="w-14 h-14 rounded-full bg-[#DC2626]/10 flex items-center justify-center mb-4">
       <AlertCircle className="w-7 h-7 text-[#DC2626]" aria-hidden />
     </div>
-    <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white">
+    <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">
       Unable to load preferences
     </h2>
-    <p className="text-[13px] text-[#667085] mt-2">{message}</p>
+    <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-2">{message}</p>
     <button
       type="button"
       onClick={onRetry}
-      className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12"
+      className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12"
     >
       <RefreshCw className="w-4 h-4" aria-hidden />
       Try Again
@@ -50,11 +50,11 @@ export const PreferenceUpdateError: React.FC<PreferenceUpdateErrorProps> = ({ on
     role="alert"
   >
     <p className="text-[14px] font-semibold text-[#DC2626]">Unable to update preference</p>
-    <p className="text-[12px] text-[#667085] mt-1">Your previous setting is still active.</p>
+    <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-1">Your previous setting is still active.</p>
     <button
       type="button"
       onClick={onRetry}
-      className="mt-3 text-[13px] font-semibold text-[#0B5CAB] min-h-11"
+      className="mt-3 text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11"
     >
       Try Again
     </button>

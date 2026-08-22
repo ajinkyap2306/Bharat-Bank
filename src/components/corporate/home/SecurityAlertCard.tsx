@@ -17,8 +17,8 @@ export const SecurityAlertCard: React.FC<SecurityAlertCardProps> = ({ alert, onR
         <div className="flex items-start gap-2.5">
           <ShieldAlert className="w-4.5 h-4.5 text-[#F59E0B] shrink-0 mt-0.5" aria-hidden />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-[#111827] dark:text-white">{alert.title}</p>
-            <p className="text-[12px] text-[#667085] mt-0.5 leading-relaxed">{alert.message}</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">{alert.title}</p>
+            <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{alert.message}</p>
             <button
               type="button"
               onClick={onReview}

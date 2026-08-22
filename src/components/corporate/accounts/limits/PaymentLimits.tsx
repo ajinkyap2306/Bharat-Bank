@@ -14,13 +14,13 @@ export const PaymentLimits: React.FC<PaymentLimitsProps> = ({
   showBalances,
 }) => (
   <section className="px-4" aria-label="Payment limits">
-    <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white mb-2">
+    <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white mb-2">
       Payment Limits
     </h2>
-    <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 divide-y divide-[#E4E7EC]/80 dark:divide-slate-800 shadow-sm">
+    <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-200 dark:divide-slate-800/80 dark:divide-slate-800 shadow-sm">
       {items.map((item) => (
         <div key={item.id} className="p-4">
-          <p className="text-[14px] font-semibold text-[#111827] dark:text-white mb-2">
+          <p className="text-[14px] font-semibold text-slate-900 dark:text-white mb-2">
             {item.label}
           </p>
           <LimitsRow

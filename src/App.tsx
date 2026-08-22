@@ -88,15 +88,18 @@ const BankingAppContent: React.FC = () => {
     closeScanner,
     isBottomNavHidden,
     activeDetailFlow,
+    hasRetailJointApprovalAccess,
   } = useBanking();
 
   const isRetailAccountsRoute =
     bankingType === 'retail' && location.pathname.startsWith('/retail/accounts');
-  const isRetailJointRoute =
+  const isRetailApprovalsRoute =
+    bankingType === 'retail' && location.pathname.startsWith('/retail/joint-approvals');
+  const isRetailJointAccountRoute =
     bankingType === 'retail' &&
     (location.pathname.startsWith('/retail/joint-account') ||
-      location.pathname.startsWith('/retail/joint-transfer') ||
-      location.pathname.startsWith('/retail/joint-approvals'));
+      location.pathname.startsWith('/retail/joint-transfer'));
+  const isRetailJointRoute = isRetailJointAccountRoute || isRetailApprovalsRoute;
   const isRetailHome =
     bankingType === 'retail' &&
     !isRetailJointRoute &&
@@ -113,7 +116,7 @@ const BankingAppContent: React.FC = () => {
 
   const hideRetailAccountsBottomNav =
     bankingType === 'retail' &&
-    (isRetailJointRoute ||
+    (isRetailJointAccountRoute ||
       (location.pathname.startsWith('/retail/accounts') &&
         parseRetailAccountsRoute(location.pathname).screen !== 'overview'));
 
@@ -189,10 +192,24 @@ const BankingAppContent: React.FC = () => {
     if (!isAuthenticated || bankingType !== 'retail') return;
     if (location.pathname.startsWith('/retail/accounts')) {
       if (retailTab !== 'accounts') setRetailTab('accounts');
-    } else if (retailTab === 'accounts') {
+    } else if (location.pathname.startsWith('/retail/joint-approvals')) {
+      if (!hasRetailJointApprovalAccess) {
+        navigate('/', { replace: true });
+        return;
+      }
+      if (retailTab !== 'approvals') setRetailTab('approvals');
+    } else if (retailTab === 'accounts' || retailTab === 'approvals') {
       setRetailTab('home');
     }
-  }, [isAuthenticated, bankingType, location.pathname, retailTab, setRetailTab]);
+  }, [
+    isAuthenticated,
+    bankingType,
+    location.pathname,
+    retailTab,
+    setRetailTab,
+    hasRetailJointApprovalAccess,
+    navigate,
+  ]);
 
   const renderCorporateScreen = () => {
     const path = location.pathname;
@@ -343,7 +360,7 @@ const UnauthenticatedRoutes: React.FC = () => {
   const isCorporateAuthRoute = location.pathname.startsWith('/corporate/');
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] dark:bg-slate-950 text-slate-900 dark:text-white flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white flex flex-col">
       <OfflineBanner />
       <PwaLifecycle />
       <Routes>

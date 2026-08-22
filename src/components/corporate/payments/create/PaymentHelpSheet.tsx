@@ -23,12 +23,12 @@ export const PaymentHelpSheet: React.FC<PaymentHelpSheetProps> = ({
           onPaymentGuide();
           onClose();
         }}
-        className="w-full flex items-center gap-3 p-4 rounded-2xl border border-[#E4E7EC] dark:border-slate-800 min-h-14 text-left active:bg-slate-50 dark:active:bg-slate-800/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB]"
+        className="w-full flex items-center gap-3 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 min-h-14 text-left active:bg-slate-50 dark:active:bg-slate-800/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500"
       >
-        <div className="w-10 h-10 rounded-xl bg-[#0B5CAB]/10 flex items-center justify-center shrink-0">
-          <BookOpen className="w-5 h-5 text-[#0B5CAB]" aria-hidden />
+        <div className="w-10 h-10 rounded-xl bg-congress-blue-50 dark:bg-congress-blue-950/40 flex items-center justify-center shrink-0">
+          <BookOpen className="w-5 h-5 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />
         </div>
-        <span className="text-[15px] font-semibold text-[#111827] dark:text-white">
+        <span className="text-[15px] font-semibold text-slate-900 dark:text-white">
           Payment Guide
         </span>
       </button>
@@ -39,12 +39,12 @@ export const PaymentHelpSheet: React.FC<PaymentHelpSheetProps> = ({
           onContactSupport();
           onClose();
         }}
-        className="w-full flex items-center gap-3 p-4 rounded-2xl border border-[#E4E7EC] dark:border-slate-800 min-h-14 text-left active:bg-slate-50 dark:active:bg-slate-800/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB]"
+        className="w-full flex items-center gap-3 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 min-h-14 text-left active:bg-slate-50 dark:active:bg-slate-800/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500"
       >
-        <div className="w-10 h-10 rounded-xl bg-[#0B5CAB]/10 flex items-center justify-center shrink-0">
-          <Headphones className="w-5 h-5 text-[#0B5CAB]" aria-hidden />
+        <div className="w-10 h-10 rounded-xl bg-congress-blue-50 dark:bg-congress-blue-950/40 flex items-center justify-center shrink-0">
+          <Headphones className="w-5 h-5 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />
         </div>
-        <span className="text-[15px] font-semibold text-[#111827] dark:text-white">
+        <span className="text-[15px] font-semibold text-slate-900 dark:text-white">
           Contact Support
         </span>
       </button>
@@ -52,7 +52,7 @@ export const PaymentHelpSheet: React.FC<PaymentHelpSheetProps> = ({
       <button
         type="button"
         onClick={onClose}
-        className="w-full flex items-center justify-center gap-2 p-4 rounded-2xl border border-[#E4E7EC] dark:border-slate-800 min-h-14 text-[15px] font-semibold text-[#667085] active:bg-slate-50 dark:active:bg-slate-800/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] mt-2"
+        className="w-full flex items-center justify-center gap-2 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 min-h-14 text-[15px] font-semibold text-slate-500 dark:text-slate-400 active:bg-slate-50 dark:active:bg-slate-800/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 mt-2"
       >
         <X className="w-4 h-4" aria-hidden />
         Close

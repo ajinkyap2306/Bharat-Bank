@@ -33,7 +33,7 @@ export const SecureInput: React.FC<SecureInputProps> = ({
     <div>
       <label
         htmlFor={inputId}
-        className="text-sm font-medium text-[#111827] dark:text-slate-200 block mb-1.5"
+        className="text-sm font-medium text-slate-900 dark:text-slate-200 block mb-1.5"
       >
         {label}
       </label>
@@ -48,13 +48,13 @@ export const SecureInput: React.FC<SecureInputProps> = ({
           placeholder={placeholder}
           autoComplete={autoComplete}
           inputMode={inputMode}
-          className={`w-full bg-white dark:bg-slate-900 border rounded-2xl py-3.5 px-4 text-[15px] text-[#111827] dark:text-white outline-none transition-all duration-200 min-h-11 shadow-sm ${
+          className={`w-full bg-white dark:bg-slate-900 border rounded-2xl py-3.5 px-4 text-[15px] text-slate-900 dark:text-white outline-none transition-all duration-200 min-h-11 shadow-sm ${
             rightElement ? 'pr-12' : ''
           } ${
             error
               ? 'border-[#DC2626] ring-2 ring-[#DC2626]/10'
               : isFocused
-                ? 'border-[#0B5CAB] ring-2 ring-[#0B5CAB]/10'
+                ? 'border-congress-blue-700 ring-2 ring-congress-blue-700/10'
                 : 'border-[#E4E7EC] dark:border-slate-800'
           }`}
         />

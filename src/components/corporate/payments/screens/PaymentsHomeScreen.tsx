@@ -13,19 +13,19 @@ export const PaymentsHomeScreen: React.FC<PaymentsHomeScreenProps> = ({
   onStartPayment,
   pendingCount,
 }) => (
-  <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-4">
-    <header className="sticky top-0 z-20 bg-[#F7F9FC]/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800 px-3 py-3 safe-top">
+  <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-4">
+    <header className="sticky top-0 z-20 bg-slate-50/95 dark:bg-slate-950/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800 px-3 py-3 safe-top">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base font-bold text-[#111827] dark:text-white">Payments & Transfers</h1>
-          <p className="text-xs text-[#667085]">Corporate treasury operations</p>
+          <h1 className="text-base font-bold text-slate-900 dark:text-white">Payments & Transfers</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Corporate treasury operations</p>
         </div>
         <div className="flex items-center gap-1">
           <button type="button" onClick={() => onNavigate('history')} className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center">
-            <Search className="w-4 h-4 text-[#667085]" />
+            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400" />
           </button>
           <button type="button" className="relative w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center">
-            <Bell className="w-4 h-4 text-[#667085]" />
+            <Bell className="w-4 h-4 text-slate-500 dark:text-slate-400" />
             {pendingCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#DC2626] text-white text-[9px] font-bold flex items-center justify-center">
                 {pendingCount}
@@ -39,9 +39,9 @@ export const PaymentsHomeScreen: React.FC<PaymentsHomeScreenProps> = ({
     <div className="pt-3 space-y-4">
       {pendingCount > 0 && (
         <div className="mx-3 p-3 rounded-2xl bg-amber-50/80 dark:bg-amber-950/20 border border-amber-200/80">
-          <p className="text-xs font-bold text-[#111827] dark:text-white">Approval Required</p>
-          <p className="text-[11px] text-[#667085]">{pendingCount} payments require your attention.</p>
-          <button type="button" onClick={() => onNavigate('history')} className="mt-2 text-xs font-bold text-[#0B5CAB]">
+          <p className="text-xs font-bold text-slate-900 dark:text-white">Approval Required</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">{pendingCount} payments require your attention.</p>
+          <button type="button" onClick={() => onNavigate('history')} className="mt-2 text-xs font-bold text-congress-blue-700 dark:text-congress-blue-400">
             Review payments →
           </button>
         </div>
@@ -56,25 +56,25 @@ export const PaymentsHomeScreen: React.FC<PaymentsHomeScreenProps> = ({
 
       <div className="mx-3 grid grid-cols-2 gap-2">
         <button type="button" onClick={() => onNavigate('history')} className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-left min-h-11">
-          <p className="text-xs font-bold text-[#111827] dark:text-white">Payment History</p>
-          <p className="text-[10px] text-[#667085] mt-0.5">Track all payments</p>
+          <p className="text-xs font-bold text-slate-900 dark:text-white">Payment History</p>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Track all payments</p>
         </button>
         <button type="button" onClick={() => onNavigate('drafts')} className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-left min-h-11">
-          <p className="text-xs font-bold text-[#111827] dark:text-white">Draft Payments</p>
-          <p className="text-[10px] text-[#667085] mt-0.5">Continue editing</p>
+          <p className="text-xs font-bold text-slate-900 dark:text-white">Draft Payments</p>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Continue editing</p>
         </button>
       </div>
 
       <div className="mx-3 p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
-        <p className="text-[10px] font-bold text-[#667085] uppercase tracking-wider mb-2">Daily Payment Limit</p>
+        <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Daily Payment Limit</p>
         <div className="flex justify-between text-xs mb-1">
-          <span className="text-[#667085]">Used Today</span>
-          <span className="font-bold text-[#111827] dark:text-white">₹1,25,00,000 / ₹5,00,00,000</span>
+          <span className="text-slate-500 dark:text-slate-400">Used Today</span>
+          <span className="font-bold text-slate-900 dark:text-white">₹1,25,00,000 / ₹5,00,00,000</span>
         </div>
         <div className="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-          <div className="h-full bg-[#0B5CAB] rounded-full" style={{ width: '25%' }} />
+          <div className="h-full bg-congress-blue-700 rounded-full" style={{ width: '25%' }} />
         </div>
-        <p className="text-[10px] text-[#667085] mt-1">Remaining: ₹3,75,00,000</p>
+        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Remaining: ₹3,75,00,000</p>
       </div>
     </div>
   </div>

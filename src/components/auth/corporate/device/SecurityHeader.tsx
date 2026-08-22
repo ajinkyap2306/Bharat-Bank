@@ -12,12 +12,12 @@ export const SecurityHeader: React.FC<SecurityHeaderProps> = ({ title, onBack })
       <button
         type="button"
         onClick={onBack}
-        className="w-11 h-11 -ml-2 flex items-center justify-center rounded-xl text-[#111827] dark:text-white active:scale-95 transition-transform motion-reduce:transition-none"
+        className="w-11 h-11 -ml-2 flex items-center justify-center rounded-xl text-slate-900 dark:text-white active:scale-95 transition-transform motion-reduce:transition-none"
         aria-label="Go back"
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
-      <h1 className="text-[15px] font-semibold text-[#111827] dark:text-white tracking-tight">
+      <h1 className="text-[15px] font-semibold text-slate-900 dark:text-white tracking-tight">
         {title}
       </h1>
     </div>

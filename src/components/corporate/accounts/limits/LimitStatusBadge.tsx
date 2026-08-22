@@ -38,7 +38,7 @@ export const LimitStatusBadge: React.FC<LimitStatusBadgeProps> = ({ status, mess
         {config.label}
       </span>
       {message && (
-        <span className="text-[11px] text-[#667085] text-right max-w-45">{message}</span>
+        <span className="text-[11px] text-slate-500 dark:text-slate-400 text-right max-w-45">{message}</span>
       )}
     </div>
   );

@@ -41,10 +41,10 @@ export const CancelScheduledSheet: React.FC<CancelScheduledSheetProps> = ({
       subtitle={title}
     >
       <div className="px-4 pb-6 space-y-4">
-        <div className="rounded-xl border border-[#E4E7EC] dark:border-slate-800 p-3 text-sm space-y-1">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-3 text-sm space-y-1">
           <p className="font-semibold">{beneficiaryName}</p>
           <p className="font-bold">{amount}</p>
-          <p className="text-xs text-[#667085]">Next Payment: {nextPayment}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Next Payment: {nextPayment}</p>
         </div>
 
         <div>
@@ -64,7 +64,7 @@ export const CancelScheduledSheet: React.FC<CancelScheduledSheetProps> = ({
           </div>
         </div>
 
-        <p className="text-[11px] text-[#667085]">Cancellation requires Checker approval per corporate policy.</p>
+        <p className="text-[11px] text-slate-500 dark:text-slate-400">Cancellation requires Checker approval per corporate policy.</p>
 
         <button
           type="button"

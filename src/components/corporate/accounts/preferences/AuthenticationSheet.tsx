@@ -42,8 +42,8 @@ export const AuthenticationSheet: React.FC<AuthenticationSheetProps> = ({
               onClick={() => setMethod(m)}
               className={`flex-1 py-2.5 rounded-xl text-xs font-bold capitalize min-h-11 ${
                 method === m
-                  ? 'bg-[#0B5CAB] text-white'
-                  : 'bg-[#F7F9FC] dark:bg-slate-800 text-[#667085]'
+                  ? 'bg-congress-blue-700 text-white'
+                  : 'bg-slate-50 dark:bg-slate-950 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
               }`}
             >
               {m === 'mpin' ? 'MPIN' : 'Biometric'}
@@ -64,24 +64,24 @@ export const AuthenticationSheet: React.FC<AuthenticationSheetProps> = ({
               value={mpin}
               onChange={(e) => setMpin(e.target.value.replace(/\D/g, ''))}
               placeholder="Enter MPIN"
-              className="w-full p-3 rounded-xl border border-[#E4E7EC] dark:border-slate-700 text-center text-lg tracking-widest font-mono min-h-12"
+              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-center text-lg tracking-widest font-mono min-h-12"
               autoComplete="off"
             />
-            <p className="text-[11px] text-[#667085] text-center mt-2">Demo MPIN: 1234</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center mt-2">Demo MPIN: 1234</p>
           </div>
         ) : (
           <button
             type="button"
             onClick={() => onVerify('biometric')}
             disabled={isVerifying}
-            className="w-full py-4 rounded-2xl border border-dashed border-[#0B5CAB]/40 flex flex-col items-center gap-2 min-h-22"
+            className="w-full py-4 rounded-2xl border border-dashed border-congress-blue-700/40 flex flex-col items-center gap-2 min-h-22"
           >
             {isVerifying ? (
-              <Loader2 className="w-8 h-8 text-[#0B5CAB] animate-spin" aria-hidden />
+              <Loader2 className="w-8 h-8 text-congress-blue-700 dark:text-congress-blue-400 animate-spin" aria-hidden />
             ) : (
-              <Fingerprint className="w-8 h-8 text-[#0B5CAB]" aria-hidden />
+              <Fingerprint className="w-8 h-8 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />
             )}
-            <span className="text-sm font-semibold text-[#0B5CAB]">
+            <span className="text-sm font-semibold text-congress-blue-700 dark:text-congress-blue-400">
               {isVerifying ? 'Verifying...' : 'Use Biometric Authentication'}
             </span>
           </button>
@@ -92,7 +92,7 @@ export const AuthenticationSheet: React.FC<AuthenticationSheetProps> = ({
             type="button"
             onClick={() => onVerify('mpin', mpin)}
             disabled={!canSubmit || isVerifying}
-            className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isVerifying && <Loader2 className="w-4 h-4 animate-spin" aria-hidden />}
             {isVerifying ? 'Verifying...' : 'Authenticate'}

@@ -61,10 +61,10 @@ interface PaymentServicesProps {
 
 export const PaymentServices: React.FC<PaymentServicesProps> = ({ onNavigate }) => (
   <section className="px-4" aria-label="Payment services">
-    <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white mb-2">
+    <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white mb-2">
       Money Movement
     </h2>
-    <PayHomeCard className="divide-y divide-[#E4E7EC]/80 dark:divide-slate-800">
+    <PayHomeCard className="divide-y divide-slate-200 dark:divide-slate-800/80 dark:divide-slate-800">
       {SERVICES.map((service) => (
         <button
           key={service.id}
@@ -72,16 +72,16 @@ export const PaymentServices: React.FC<PaymentServicesProps> = ({ onNavigate }) 
           onClick={() => onNavigate(service.route)}
           className="w-full flex items-center gap-3 p-4 text-left min-h-18 active:bg-slate-50 dark:active:bg-slate-800/40"
         >
-          <div className="w-10 h-10 rounded-xl bg-[#0B5CAB]/10 flex items-center justify-center shrink-0">
-            <service.icon className="w-5 h-5 text-[#0B5CAB]" aria-hidden />
+          <div className="w-10 h-10 rounded-xl bg-congress-blue-50 dark:bg-congress-blue-950/40 flex items-center justify-center shrink-0">
+            <service.icon className="w-5 h-5 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[14px] font-semibold text-[#111827] dark:text-white">
+            <p className="text-[14px] font-semibold text-slate-900 dark:text-white">
               {service.title}
             </p>
-            <p className="text-[12px] text-[#667085] mt-0.5">{service.description}</p>
+            <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">{service.description}</p>
           </div>
-          <ChevronRight className="w-4 h-4 text-[#667085] shrink-0" aria-hidden />
+          <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" aria-hidden />
         </button>
       ))}
     </PayHomeCard>

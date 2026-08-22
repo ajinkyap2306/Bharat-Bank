@@ -92,7 +92,7 @@ export const AccountsOverviewScreen: React.FC = () => {
 
   if (error && !data) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 font-['Inter',sans-serif] pb-4">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950  pb-4">
         <AccountsHeader onSearch={() => setShowSearch(true)} />
         <AccountsErrorState onRetry={() => load()} />
       </div>
@@ -101,13 +101,13 @@ export const AccountsOverviewScreen: React.FC = () => {
 
   return (
     <div
-      className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-24 font-['Inter',sans-serif]"
+      className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-24 "
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {(pullDistance > 0 || isRefreshing) && (
-        <div className="flex justify-center py-2 text-[#0B5CAB]" aria-live="polite">
+        <div className="flex justify-center py-2 text-congress-blue-700 dark:text-congress-blue-400" aria-live="polite">
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
         </div>
       )}

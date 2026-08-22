@@ -23,20 +23,20 @@ export const PrimaryAccountSetting: React.FC<PrimaryAccountSettingProps> = ({
 }) => (
   <PreferencesCard ariaLabel="Primary account">
     <div className="p-4">
-      <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white">Primary Account</h2>
-      <p className="text-[13px] text-[#667085] mt-1">
+      <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">Primary Account</h2>
+      <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">
         Use this account as the default account for eligible corporate banking actions.
       </p>
 
       {isPrimary ? (
-        <div className="mt-4 rounded-xl bg-[#16A34A]/10 border border-[#16A34A]/20 p-3">
+        <div className="mt-4 rounded-xl bg-emerald-600/10 border border-[#16A34A]/20 p-3">
           <div className="flex items-start gap-2">
-            <CheckCircle2 className="w-5 h-5 text-[#16A34A] shrink-0 mt-0.5" aria-hidden />
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" aria-hidden />
             <div>
-              <p className="text-[14px] font-semibold text-[#111827] dark:text-white">
+              <p className="text-[14px] font-semibold text-slate-900 dark:text-white">
                 Primary Account
               </p>
-              <p className="text-[12px] text-[#667085] mt-0.5">
+              <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">
                 This is currently your primary operating account.
               </p>
             </div>
@@ -53,24 +53,24 @@ export const PrimaryAccountSetting: React.FC<PrimaryAccountSettingProps> = ({
       ) : (
         <div className="mt-4">
           {currentPrimaryLabel && (
-            <div className="mb-3 rounded-xl bg-[#F7F9FC] dark:bg-slate-800/50 border border-[#E4E7EC] dark:border-slate-800 p-3">
-              <p className="text-[11px] font-semibold text-[#667085] uppercase tracking-wide">
+            <div className="mb-3 rounded-xl bg-slate-50 dark:bg-slate-950 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 p-3">
+              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                 Current Primary Account
               </p>
-              <p className="text-[14px] font-medium text-[#111827] dark:text-white mt-1">
+              <p className="text-[14px] font-medium text-slate-900 dark:text-white mt-1">
                 {currentPrimaryLabel}
               </p>
             </div>
           )}
-          <p className="text-[14px] font-medium text-[#111827] dark:text-white">Set as Primary Account</p>
-          <p className="text-[12px] text-[#667085] mt-1 tabular-nums">
+          <p className="text-[14px] font-medium text-slate-900 dark:text-white">Set as Primary Account</p>
+          <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-1 tabular-nums">
             {accountType} {maskedNumber}
           </p>
           <button
             type="button"
             onClick={onSetPrimary}
             disabled={isUpdating}
-            className="mt-3 w-full py-3 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12 disabled:opacity-50"
+            className="mt-3 w-full py-3 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12 disabled:opacity-50"
           >
             {isUpdating ? 'Updating...' : 'Set as Primary'}
           </button>

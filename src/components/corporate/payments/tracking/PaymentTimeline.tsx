@@ -10,9 +10,9 @@ interface PaymentTimelineProps {
 function getNodeStyles(state: PaymentTimelineStep['state']) {
   switch (state) {
     case 'completed':
-      return 'bg-[#16A34A] border-[#16A34A] text-white';
+      return 'bg-emerald-600 border-[#16A34A] text-white';
     case 'current':
-      return 'bg-[#0B5CAB] border-[#0B5CAB] text-white ring-4 ring-[#0B5CAB]/20';
+      return 'bg-congress-blue-700 border-congress-blue-700 text-white ring-4 ring-congress-blue-500/20';
     case 'failed':
     case 'rejected':
       return 'bg-[#DC2626] border-[#DC2626] text-white';
@@ -20,7 +20,7 @@ function getNodeStyles(state: PaymentTimelineStep['state']) {
     case 'returned':
       return 'bg-[#F59E0B] border-[#F59E0B] text-white';
     default:
-      return 'bg-white dark:bg-slate-900 border-[#E4E7EC] dark:border-slate-700 text-[#667085]';
+      return 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400';
   }
 }
 
@@ -30,7 +30,7 @@ function isLineCompleted(state: PaymentTimelineStep['state']): boolean {
 
 export const PaymentTimeline: React.FC<PaymentTimelineProps> = ({ steps }) => (
   <PayCard className="p-4">
-    <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white mb-4">Payment Timeline</h3>
+    <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white mb-4">Payment Timeline</h3>
     <ol className="space-y-0" aria-label="Payment lifecycle timeline">
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
@@ -49,7 +49,7 @@ export const PaymentTimeline: React.FC<PaymentTimelineProps> = ({ steps }) => (
                 ) : isCurrent ? (
                   <span className="w-2 h-2 rounded-full bg-white" />
                 ) : step.state === 'upcoming' ? (
-                  <span className="w-2 h-2 rounded-full bg-[#E4E7EC] dark:bg-slate-600" />
+                  <span className="w-2 h-2 rounded-full bg-slate-200 dark:bg-slate-600" />
                 ) : (
                   <span className="w-2 h-2 rounded-full bg-white" />
                 )}
@@ -57,7 +57,7 @@ export const PaymentTimeline: React.FC<PaymentTimelineProps> = ({ steps }) => (
               {!isLast && (
                 <span
                   className={`w-0.5 flex-1 min-h-[28px] ${
-                    isLineCompleted(step.state) ? 'bg-[#16A34A]' : 'bg-[#E4E7EC] dark:bg-slate-700'
+                    isLineCompleted(step.state) ? 'bg-emerald-600' : 'bg-slate-200 dark:bg-slate-700'
                   }`}
                   aria-hidden
                 />
@@ -67,13 +67,13 @@ export const PaymentTimeline: React.FC<PaymentTimelineProps> = ({ steps }) => (
               <p
                 className={`text-[14px] font-medium ${
                   isCurrent || isCompleted || step.state === 'failed' || step.state === 'rejected'
-                    ? 'text-[#111827] dark:text-white'
-                    : 'text-[#667085]'
+                    ? 'text-slate-900 dark:text-white'
+                    : 'text-slate-500 dark:text-slate-400'
                 } ${isCurrent ? 'font-semibold' : ''}`}
               >
                 {step.label}
               </p>
-              <p className="text-[12px] text-[#667085] mt-0.5">
+              <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">
                 {step.timestamp ?? (step.state === 'upcoming' ? 'Pending' : '')}
               </p>
             </div>

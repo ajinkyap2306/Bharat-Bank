@@ -23,8 +23,8 @@ export const PaymentDateSelector: React.FC<PaymentDateSelectorProps> = ({
 
   return (
     <section className="px-4" aria-labelledby="payment-date-label">
-      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm">
-        <p id="payment-date-label" className="text-[14px] font-semibold text-[#111827] dark:text-white mb-3">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
+        <p id="payment-date-label" className="text-[14px] font-semibold text-slate-900 dark:text-white mb-3">
           Payment Date
         </p>
 
@@ -34,8 +34,8 @@ export const PaymentDateSelector: React.FC<PaymentDateSelectorProps> = ({
             onClick={() => onPaymentDateChange(todayIso)}
             className={`flex-1 py-2.5 rounded-xl text-[13px] font-semibold min-h-11 border ${
               isToday
-                ? 'bg-[#0B5CAB] text-white border-[#0B5CAB]'
-                : 'border-[#E4E7EC] dark:border-slate-800 text-[#667085]'
+                ? 'bg-congress-blue-700 text-white border-congress-blue-700'
+                : 'border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400'
             }`}
           >
             Today
@@ -49,8 +49,8 @@ export const PaymentDateSelector: React.FC<PaymentDateSelectorProps> = ({
             }}
             className={`flex-1 py-2.5 rounded-xl text-[13px] font-semibold min-h-11 border ${
               !isToday
-                ? 'bg-[#0B5CAB] text-white border-[#0B5CAB]'
-                : 'border-[#E4E7EC] dark:border-slate-800 text-[#667085]'
+                ? 'bg-congress-blue-700 text-white border-congress-blue-700'
+                : 'border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400'
             }`}
           >
             Future Date
@@ -58,7 +58,7 @@ export const PaymentDateSelector: React.FC<PaymentDateSelectorProps> = ({
         </div>
 
         <label className="flex items-center justify-between gap-3 min-h-11">
-          <span className="text-[14px] text-[#111827] dark:text-white">{displayLabel}</span>
+          <span className="text-[14px] text-slate-900 dark:text-white">{displayLabel}</span>
           <input
             type="date"
             value={paymentDate}
@@ -69,7 +69,7 @@ export const PaymentDateSelector: React.FC<PaymentDateSelectorProps> = ({
           />
           <label
             htmlFor="payment-date-picker"
-            className="flex items-center gap-1 text-[13px] font-semibold text-[#0B5CAB] cursor-pointer min-h-11 px-2"
+            className="flex items-center gap-1 text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 cursor-pointer min-h-11 px-2"
           >
             Change
             <ChevronRight className="w-4 h-4" aria-hidden />

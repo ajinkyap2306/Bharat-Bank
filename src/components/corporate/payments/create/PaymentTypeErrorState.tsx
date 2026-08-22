@@ -22,7 +22,7 @@ export const PaymentTypeErrorState: React.FC<PaymentTypeErrorStateProps> = ({
       aria-live="polite"
       aria-labelledby="payment-type-error-title"
     >
-      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-5 text-center shadow-sm">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 text-center shadow-sm">
         <div
           className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center ${
             isAccountUnavailable ? 'bg-[#F59E0B]/10' : 'bg-[#DC2626]/10'
@@ -37,11 +37,11 @@ export const PaymentTypeErrorState: React.FC<PaymentTypeErrorStateProps> = ({
 
         <h2
           id="payment-type-error-title"
-          className="text-[16px] font-semibold text-[#111827] dark:text-white"
+          className="text-[16px] font-semibold text-slate-900 dark:text-white"
         >
           {isAccountUnavailable ? 'Account unavailable' : 'No eligible account'}
         </h2>
-        <p className="text-[13px] text-[#667085] mt-2 leading-relaxed">
+        <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
           {isAccountUnavailable
             ? 'This account cannot be used for this type of payment.'
             : 'There is no account available for this payment type.'}
@@ -50,7 +50,7 @@ export const PaymentTypeErrorState: React.FC<PaymentTypeErrorStateProps> = ({
         <button
           type="button"
           onClick={onPrimaryAction}
-          className="mt-5 w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white text-[14px] font-semibold min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] focus-visible:ring-offset-2"
+          className="mt-5 w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white text-[14px] font-semibold min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 focus-visible:ring-offset-2"
         >
           {isAccountUnavailable ? 'Select Another Account' : 'Choose Another Payment'}
         </button>
@@ -59,7 +59,7 @@ export const PaymentTypeErrorState: React.FC<PaymentTypeErrorStateProps> = ({
           <button
             type="button"
             onClick={onSecondaryAction}
-            className="mt-2 w-full py-3 rounded-2xl text-[#667085] text-[14px] font-semibold min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] focus-visible:ring-offset-2"
+            className="mt-2 w-full py-3 rounded-2xl text-slate-500 dark:text-slate-400 text-[14px] font-semibold min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 focus-visible:ring-offset-2"
           >
             Cancel
           </button>

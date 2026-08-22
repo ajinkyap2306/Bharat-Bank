@@ -19,14 +19,14 @@ export const BulkPaymentsSnapshot: React.FC<BulkPaymentsSnapshotProps> = ({
     {isLoading ? (
       <CorpSkeleton className="h-24 mx-4" />
     ) : (
-      <CorpCard className="mx-4! p-4 border-[#E4E7EC]">
+      <CorpCard className="mx-4! p-4 border-slate-200 dark:border-slate-800">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl bg-congress-blue-50 dark:bg-congress-blue-950/60 flex items-center justify-center shrink-0">
             <Layers className="w-4.5 h-4.5 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[13px] text-[#667085]">Manage vendor and batch payments</p>
-            <p className="text-sm font-semibold text-[#111827] dark:text-white mt-1">
+            <p className="text-[13px] text-slate-500 dark:text-slate-400">Manage vendor and batch payments</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-white mt-1">
               {data.pendingBatches} batches pending
             </p>
             <button

@@ -136,7 +136,7 @@ export const ApprovalResult: React.FC = () => {
 
   if (loading || !data) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <ResultHeader onBack={handleBack} onMore={() => {}} />
         <ApprovalResultSkeleton />
       </div>
@@ -154,7 +154,7 @@ export const ApprovalResult: React.FC = () => {
     data.status === 'rejected' || data.status === 'returned';
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-32">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-32">
       <ResultHeader onBack={handleBack} onMore={() => setShowMore(true)} />
 
       <motion.div
@@ -201,19 +201,19 @@ export const ApprovalResult: React.FC = () => {
       </motion.div>
 
       {showStickyCta && (
-        <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-[#F7F9FC]/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-[#E4E7EC] dark:border-slate-800">
+        <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-slate-50/95 dark:bg-slate-950/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
           <div className="max-w-[430px] mx-auto space-y-2">
             <button
               type="button"
               onClick={data.status === 'returned' ? handleViewPayment : handleViewPayment}
-              className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white text-[15px] font-semibold min-h-12"
+              className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white text-[15px] font-semibold min-h-12"
             >
               {data.status === 'returned' ? 'View Request' : 'View Payment'}
             </button>
             <button
               type="button"
               onClick={handleBack}
-              className="w-full py-3.5 rounded-2xl border border-[#E4E7EC] dark:border-slate-700 text-[#667085] text-[15px] font-semibold min-h-12"
+              className="w-full py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-[15px] font-semibold min-h-12"
             >
               Back to Approvals
             </button>

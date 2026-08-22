@@ -141,9 +141,9 @@ export const CorporateHome: React.FC = () => {
 
   if (error && !data) {
     return (
-      <div className="-mx-3 min-h-[60vh] flex flex-col items-center justify-center bg-[#F7F9FC] dark:bg-slate-950 px-6 font-['Inter',sans-serif]">
-        <p className="text-base font-semibold text-[#111827] dark:text-white">Unable to load dashboard</p>
-        <p className="text-sm text-[#667085] mt-2 text-center">Please try again.</p>
+      <div className="-mx-3 min-h-[60vh] flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 px-6">
+        <p className="text-base font-semibold text-slate-900 dark:text-white">Unable to load dashboard</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 text-center">Please try again.</p>
         <button
           type="button"
           onClick={retry}
@@ -157,7 +157,7 @@ export const CorporateHome: React.FC = () => {
 
   return (
     <div
-      className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-4 font-['Inter',sans-serif]"
+      className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-4"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

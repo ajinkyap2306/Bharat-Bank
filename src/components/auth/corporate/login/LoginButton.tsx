@@ -17,7 +17,7 @@ export const LoginButton: React.FC<LoginButtonProps> = ({
   <button
     type="submit"
     disabled={disabled || isLoading}
-    className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] hover:bg-[#094d91] text-white font-semibold text-base disabled:opacity-60 flex items-center justify-center gap-2.5 min-h-12 active:scale-[0.99] transition-all shadow-sm"
+    className="w-full py-3.5 rounded-2xl bg-congress-blue-700 hover:bg-congress-blue-800 text-white font-semibold text-base disabled:opacity-60 flex items-center justify-center gap-2.5 min-h-12 active:scale-[0.99] transition-all shadow-sm"
   >
     {isLoading ? (
       <>

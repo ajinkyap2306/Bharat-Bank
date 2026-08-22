@@ -21,7 +21,7 @@ const ACTIONS = [
 export const AccountQuickActions: React.FC<AccountQuickActionsProps> = (props) => (
   <section className="px-3" aria-label="Quick actions">
     <div className="flex items-center gap-2 px-1 mb-3">
-      <h3 className="text-sm font-extrabold text-[#111827] dark:text-white tracking-tight">
+      <h3 className="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">
         Quick Actions
       </h3>
     </div>

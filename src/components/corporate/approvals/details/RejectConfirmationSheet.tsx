@@ -27,7 +27,7 @@ export const RejectConfirmationSheet: React.FC<RejectConfirmationSheetProps> = (
     <BottomSheet isOpen={isOpen} onClose={handleClose} title="Reject Payment?">
       <div className="space-y-4">
         <div>
-          <label htmlFor="reject-reason" className="text-[13px] font-medium text-[#111827] dark:text-white">
+          <label htmlFor="reject-reason" className="text-[13px] font-medium text-slate-900 dark:text-white">
             Reason for rejection <span className="text-[#DC2626]">*</span>
           </label>
           <textarea
@@ -36,7 +36,7 @@ export const RejectConfirmationSheet: React.FC<RejectConfirmationSheetProps> = (
             onChange={(e) => setReason(e.target.value)}
             placeholder="Enter rejection reason"
             rows={4}
-            className="mt-2 w-full p-3 rounded-xl border border-[#E4E7EC] dark:border-slate-700 text-[14px] resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626]"
+            className="mt-2 w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-[14px] resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626]"
             aria-required
           />
         </div>
@@ -45,7 +45,7 @@ export const RejectConfirmationSheet: React.FC<RejectConfirmationSheetProps> = (
             type="button"
             onClick={handleClose}
             disabled={loading}
-            className="flex-1 py-3.5 rounded-2xl border border-[#E4E7EC] text-[#667085] font-semibold min-h-12"
+            className="flex-1 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold min-h-12"
           >
             Cancel
           </button>

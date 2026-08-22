@@ -45,7 +45,7 @@ export const AccountCarousel: React.FC<AccountCarouselProps> = ({
   if (accounts.length === 0) {
     return (
       <section aria-label="Account balances" className="px-4">
-        <p className="text-sm text-[#667085]">No accounts available</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">No accounts available</p>
       </section>
     );
   }
@@ -103,7 +103,7 @@ export const AccountCarousel: React.FC<AccountCarouselProps> = ({
                 setActiveIndex(index);
               }}
               className={`rounded-full transition-all ${
-                index === activeIndex ? 'w-2 h-2 bg-congress-blue-700' : 'w-2 h-2 bg-[#D0D5DD]'
+                index === activeIndex ? 'w-2 h-2 bg-congress-blue-700' : 'w-2 h-2 bg-slate-300 dark:bg-slate-600'
               }`}
             />
           ))}

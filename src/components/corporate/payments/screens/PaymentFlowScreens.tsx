@@ -50,7 +50,7 @@ export const PaymentTypeScreen: React.FC<FlowProps> = ({
   };
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-6">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-6">
       <ScreenHeader title="Payment Type" onBack={onBack} edgeToEdge={false} />
       <div className="space-y-2">
         {options.map((opt) => (
@@ -60,8 +60,8 @@ export const PaymentTypeScreen: React.FC<FlowProps> = ({
             onClick={() => select(opt.id)}
             className="mx-3 w-[calc(100%-1.5rem)] p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-left min-h-11"
           >
-            <p className="text-sm font-bold text-[#111827] dark:text-white">{opt.label}</p>
-            <p className="text-xs text-[#667085] mt-0.5">{opt.description}</p>
+            <p className="text-sm font-bold text-slate-900 dark:text-white">{opt.label}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{opt.description}</p>
           </button>
         ))}
       </div>
@@ -74,7 +74,7 @@ export const DebitAccountScreen: React.FC<FlowProps> = ({ form, setForm, onBack,
   const accounts = CORPORATE_ACCOUNTS_LIST.filter((a) => a.currencyCode === 'INR' && a.displayStatus === 'Active');
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Pay From" onBack={onBack} edgeToEdge={false} />
       <div className="space-y-2">
         {accounts.map((acc) => (
@@ -84,19 +84,19 @@ export const DebitAccountScreen: React.FC<FlowProps> = ({ form, setForm, onBack,
             onClick={() => setForm((f) => ({ ...f, fromAccountId: acc.id }))}
             className={`mx-3 w-[calc(100%-1.5rem)] p-4 rounded-2xl border text-left ${
               form.fromAccountId === acc.id
-                ? 'bg-[#0B5CAB]/5 border-[#0B5CAB]/40 ring-2 ring-[#0B5CAB]/20'
+                ? 'bg-congress-blue-700/5 border-congress-blue-700/40 ring-2 ring-congress-blue-500/20'
                 : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800'
             }`}
           >
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm font-bold text-[#111827] dark:text-white">{acc.nickname}</p>
-                <p className="text-xs font-mono text-[#667085]">{acc.maskedNumber}</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white">{acc.nickname}</p>
+                <p className="text-xs font-mono text-slate-500 dark:text-slate-400">{acc.maskedNumber}</p>
                 <p className="text-sm font-mono font-bold mt-1">{formatPaymentCurrency(acc.availableBalance, acc.currency)}</p>
-                <p className="text-[10px] text-[#667085]">Available</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">Available</p>
               </div>
               {acc.id === primaryCorporateAccountId && (
-                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-[#0B5CAB]/10 text-[#0B5CAB]">Primary</span>
+                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-congress-blue-50 dark:bg-congress-blue-950/40 text-congress-blue-700 dark:text-congress-blue-400">Primary</span>
               )}
             </div>
           </button>
@@ -113,7 +113,7 @@ export const ToAccountScreen: React.FC<FlowProps> = ({ form, setForm, onBack, on
   );
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Transfer To" onBack={onBack} edgeToEdge={false} />
       <div className="space-y-2">
         {accounts.map((acc) => (
@@ -123,12 +123,12 @@ export const ToAccountScreen: React.FC<FlowProps> = ({ form, setForm, onBack, on
             onClick={() => setForm((f) => ({ ...f, toAccountId: acc.id }))}
             className={`mx-3 w-[calc(100%-1.5rem)] p-4 rounded-2xl border text-left ${
               form.toAccountId === acc.id
-                ? 'bg-[#0B5CAB]/5 border-[#0B5CAB]/40'
+                ? 'bg-congress-blue-700/5 border-congress-blue-700/40'
                 : 'bg-white dark:bg-slate-900 border-slate-200/80'
             }`}
           >
             <p className="text-sm font-bold">{acc.nickname}</p>
-            <p className="text-xs font-mono text-[#667085]">{acc.maskedNumber}</p>
+            <p className="text-xs font-mono text-slate-500 dark:text-slate-400">{acc.maskedNumber}</p>
           </button>
         ))}
       </div>
@@ -145,22 +145,22 @@ export const AmountScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNex
   const exceedsLimit = numericAmount > remaining;
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Payment Amount" onBack={onBack} edgeToEdge={false} />
       <PayCard className="p-4 mx-3">
-        <p className="text-[10px] text-[#667085] uppercase font-bold mb-2">Payment Amount</p>
+        <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold mb-2">Payment Amount</p>
         <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold text-[#667085]">₹</span>
+          <span className="text-2xl font-bold text-slate-500 dark:text-slate-400">₹</span>
           <input
             type="number"
             inputMode="decimal"
             value={form.amount}
             onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
             placeholder="0.00"
-            className="text-3xl font-bold font-mono bg-transparent outline-none w-full text-[#111827] dark:text-white"
+            className="text-3xl font-bold font-mono bg-transparent outline-none w-full text-slate-900 dark:text-white"
           />
         </div>
-        <p className="text-xs text-[#667085] mt-3">
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">
           Available Balance: {formatPaymentCurrency(fromAcc?.availableBalance || 0)}
         </p>
         {insufficient && <p className="text-xs text-[#DC2626] font-bold mt-2">Insufficient available balance</p>}
@@ -181,11 +181,11 @@ export const DetailsScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNe
   const [showMore, setShowMore] = useState(false);
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Payment Details" onBack={onBack} edgeToEdge={false} />
       <PayCard className="p-4 space-y-3">
         <div>
-          <label className="text-xs font-bold text-[#667085]">Payment Purpose</label>
+          <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Payment Purpose</label>
           <input
             value={form.purpose}
             onChange={(e) => setForm((f) => ({ ...f, purpose: e.target.value }))}
@@ -194,7 +194,7 @@ export const DetailsScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNe
           />
         </div>
         <div>
-          <label className="text-xs font-bold text-[#667085]">Invoice Number</label>
+          <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Invoice Number</label>
           <input
             value={form.invoiceNumber}
             onChange={(e) => setForm((f) => ({ ...f, invoiceNumber: e.target.value }))}
@@ -203,7 +203,7 @@ export const DetailsScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNe
           />
         </div>
         <div>
-          <label className="text-xs font-bold text-[#667085]">Remarks</label>
+          <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Remarks</label>
           <input
             value={form.remarks}
             onChange={(e) => setForm((f) => ({ ...f, remarks: e.target.value }))}
@@ -211,12 +211,12 @@ export const DetailsScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNe
             className="w-full mt-1 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm"
           />
         </div>
-        <button type="button" onClick={() => setShowMore(!showMore)} className="text-xs font-bold text-[#0B5CAB]">
+        <button type="button" onClick={() => setShowMore(!showMore)} className="text-xs font-bold text-congress-blue-700 dark:text-congress-blue-400">
           {showMore ? 'Hide' : 'Add More Details'}
         </button>
         {showMore && (
           <div>
-            <label className="text-xs font-bold text-[#667085]">Reference</label>
+            <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Reference</label>
             <input
               value={form.reference}
               onChange={(e) => setForm((f) => ({ ...f, reference: e.target.value }))}
@@ -232,7 +232,7 @@ export const DetailsScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNe
 
 export const ScheduleScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNext }) => {
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Schedule Payment" onBack={onBack} edgeToEdge={false} />
       <PayCard className="p-4 space-y-3">
         <div className="grid grid-cols-2 gap-2">
@@ -242,7 +242,7 @@ export const ScheduleScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onN
               type="button"
               onClick={() => setForm((f) => ({ ...f, scheduleType: t }))}
               className={`py-3 rounded-xl text-sm font-bold ${
-                form.scheduleType === t ? 'bg-[#0B5CAB] text-white' : 'bg-slate-100 dark:bg-slate-800 text-[#667085]'
+                form.scheduleType === t ? 'bg-congress-blue-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
               }`}
             >
               {t === 'now' ? 'Pay Now' : 'Schedule Payment'}
@@ -252,7 +252,7 @@ export const ScheduleScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onN
         {form.scheduleType === 'scheduled' && (
           <>
             <div>
-              <label className="text-xs font-bold text-[#667085]">Payment Date</label>
+              <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Payment Date</label>
               <input
                 type="date"
                 value={form.scheduleDate}
@@ -261,7 +261,7 @@ export const ScheduleScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onN
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-[#667085]">Frequency</label>
+              <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Frequency</label>
               <select
                 value={form.frequency}
                 onChange={(e) => setForm((f) => ({ ...f, frequency: e.target.value as CorporatePaymentForm['frequency'] }))}
@@ -294,7 +294,7 @@ export const ReviewScreen: React.FC<FlowProps & {
   const typeLabel = PAYMENT_TYPE_OPTIONS.find((o) => o.id === form.paymentType)?.label || 'Payment';
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-28">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-28">
       <ScreenHeader title="Review Payment" onBack={onBack} edgeToEdge={false} />
       <PayCard className="p-4">
         <ReviewRow label="Payment Type" value={typeLabel} onEdit={() => onNext('payment-type')} />

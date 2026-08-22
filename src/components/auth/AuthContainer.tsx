@@ -197,9 +197,12 @@ export const AuthContainer: React.FC = () => {
   useEffect(() => {
     if (authScreen !== 'login') return;
     const previousOverflow = document.body.style.overflow;
+    const previousHeight = document.body.style.height;
     document.body.style.overflow = 'hidden';
+    document.body.style.height = '100%';
     return () => {
       document.body.style.overflow = previousOverflow;
+      document.body.style.height = previousHeight;
     };
   }, [authScreen]);
 
@@ -211,7 +214,7 @@ export const AuthContainer: React.FC = () => {
     <div
       className={`bg-slate-50 dark:bg-slate-950 flex flex-col text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] transition-colors duration-200 ${
         authScreen === 'login'
-          ? 'h-dvh overflow-hidden p-3 sm:p-4 flex flex-col'
+          ? 'h-dvh max-h-dvh overflow-hidden p-3 sm:p-4 flex flex-col'
           : 'min-h-screen overflow-y-auto p-4 sm:p-6'
       }`}
     >
@@ -220,22 +223,23 @@ export const AuthContainer: React.FC = () => {
         <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-teal-500/10 dark:bg-teal-600/20 rounded-full blur-3xl" />
       </div>
 
-      <AnimatePresence mode="wait">
+      <div className="flex flex-col flex-1 min-h-0 w-full">
+        <AnimatePresence mode="wait">
         {authScreen === 'splash' && (
           <AuthSplashScreen onComplete={completeSplash} />
         )}
 
         {authScreen === 'login' && (
-          <div className="flex flex-col flex-1 min-h-0">
+          <div className="flex flex-col flex-1 min-h-0 w-full">
             <PreLoginTicker fixed />
             <motion.div
               key="login"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
-              className="flex flex-col flex-1 justify-evenly gap-2 max-w-md mx-auto w-full z-10 pt-9 pb-2 safe-bottom overflow-hidden"
+              className="flex flex-col flex-1 min-h-0 max-w-md mx-auto w-full z-10 pt-9 pb-24 safe-bottom overflow-y-auto overscroll-y-contain touch-pan-y [-webkit-overflow-scrolling:touch]"
             >
-            <div className="shrink-0">
+            <div className="flex flex-col gap-3">
               <div className="flex items-center mb-2">
                 <BharatBankLogo variant="full" size="md" />
               </div>
@@ -377,12 +381,10 @@ export const AuthContainer: React.FC = () => {
                   Register for Mobile Banking
                 </button>
               </p>
-            </div>
 
             <LoginPromoBanner onExplore={() => navigate('/prelogin/offers')} />
 
-            <div className="shrink-0">
-              <PreLoginQuickLinks />
+            <PreLoginQuickLinks />
             </div>
           </motion.div>
           </div>
@@ -486,7 +488,8 @@ export const AuthContainer: React.FC = () => {
             </button>
           </motion.div>
         )}
-      </AnimatePresence>
+        </AnimatePresence>
+      </div>
 
       {authScreen === 'login' && (
         <>

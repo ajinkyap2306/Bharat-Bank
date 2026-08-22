@@ -197,8 +197,8 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
               <div className="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center mx-auto mb-4">
                 <ShieldCheck className="w-7 h-7 text-amber-600" />
               </div>
-              <h2 className="text-lg font-bold text-[#111827] dark:text-white">Your session has expired</h2>
-              <p className="text-sm text-[#667085] mt-2">For your security, please sign in again.</p>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Your session has expired</h2>
+              <p className="text-sm text-slate-500 mt-2">For your security, please sign in again.</p>
               <div className="mt-6">
                 <CorpPrimaryButton label="Login Again" onClick={goToLogin} />
               </div>
@@ -230,7 +230,7 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
                 placeholder="••••••••"
                 error={fieldError === 'password' ? 'Enter your password.' : undefined}
                 rightElement={
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="p-1 text-[#667085]">
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="p-1 text-slate-500">
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 }
@@ -245,11 +245,11 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
       case 'processing':
         return (
           <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col items-center justify-center px-3">
-            <div className="w-14 h-14 rounded-2xl bg-[#0B5CAB]/10 flex items-center justify-center mb-4">
-              <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="w-6 h-6 border-2 border-[#0B5CAB] border-t-transparent rounded-full" />
+            <div className="w-14 h-14 rounded-2xl bg-congress-blue-700/10 flex items-center justify-center mb-4">
+              <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="w-6 h-6 border-2 border-congress-blue-700 border-t-transparent rounded-full" />
             </div>
-            <p className="text-sm font-bold text-[#111827] dark:text-white">Signing you in...</p>
-            <p className="text-xs text-[#667085] mt-1">Verifying your credentials securely</p>
+            <p className="text-sm font-bold text-slate-900 dark:text-white">Signing you in...</p>
+            <p className="text-xs text-slate-500 mt-1">Verifying your credentials securely</p>
           </motion.div>
         );
 
@@ -261,7 +261,7 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
               title="Verify Your Identity"
               subtitle={`Enter the verification code sent to your registered mobile number.`}
             />
-            <p className="text-xs font-mono font-bold text-[#111827] dark:text-white px-3 mb-4">+91 {CORPORATE_MASKED_MOBILE}</p>
+            <p className="text-xs font-mono font-bold text-slate-900 dark:text-white px-3 mb-4">+91 {CORPORATE_MASKED_MOBILE}</p>
             {otpError === 'invalid' && (
               <CorpErrorCard title="Verification failed" message="The verification code is incorrect." />
             )}
@@ -272,7 +272,7 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
               <CorpErrorCard title="Maximum attempts reached" message="Verification is temporarily restricted. Please try again later." />
             )}
             <CorpOtpInput key={otpGeneration} value={otp} onChange={setOtp} />
-            <div className="px-3 mt-4 flex items-center justify-between text-xs text-[#667085]">
+            <div className="px-3 mt-4 flex items-center justify-between text-xs text-slate-500">
               <span>
                 {resendSeconds > 0 ? `Resend in ${resendSeconds}s` : 'You can resend now'}
               </span>
@@ -280,7 +280,7 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
                 type="button"
                 disabled={resendSeconds > 0 || otpError === 'max_attempts'}
                 onClick={handleResendOtp}
-                className="font-semibold text-[#0B5CAB] disabled:opacity-40"
+                className="font-semibold text-congress-blue-700 disabled:opacity-40"
               >
                 Resend OTP
               </button>
@@ -306,13 +306,13 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
           <motion.div key="device" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} className="flex-1 flex flex-col px-3">
             <CorpAuthTitle title="Verify This Device" subtitle="Review device details before continuing." />
             <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-[#0B5CAB]/10 flex items-center justify-center text-[#0B5CAB]">
+              <div className="w-12 h-12 rounded-xl bg-congress-blue-700/10 flex items-center justify-center text-congress-blue-700">
                 <Smartphone className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-sm font-bold text-[#111827] dark:text-white">Android Device</p>
-                <p className="text-xs text-[#667085]">This device</p>
-                <p className="text-[10px] text-[#667085] mt-1">Last login: Today, 11:15 AM</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white">Android Device</p>
+                <p className="text-xs text-slate-500">This device</p>
+                <p className="text-[10px] text-slate-500 mt-1">Last login: Today, 11:15 AM</p>
               </div>
             </div>
             <CorpPrimaryButton label="Trust This Device" onClick={() => setStep('biometric')} />
@@ -328,18 +328,18 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
               type="button"
               onClick={handleBiometric}
               disabled={isBiometricScanning}
-              className="relative w-28 h-28 rounded-full bg-white dark:bg-slate-900 border-2 border-[#0B5CAB]/30 flex items-center justify-center my-6 active:scale-95 transition-transform"
+              className="relative w-28 h-28 rounded-full bg-white dark:bg-slate-900 border-2 border-congress-blue-700/30 flex items-center justify-center my-6 active:scale-95 transition-transform"
             >
               {isBiometricScanning && (
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
-                  className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#0B5CAB]"
+                  className="absolute inset-0 rounded-full border-2 border-transparent border-t-congress-blue-700"
                 />
               )}
-              <Fingerprint className={`w-14 h-14 ${isBiometricScanning ? 'text-emerald-600' : 'text-[#0B5CAB]'}`} />
+              <Fingerprint className={`w-14 h-14 ${isBiometricScanning ? 'text-emerald-600' : 'text-congress-blue-700'}`} />
             </button>
-            <p className="text-xs font-semibold text-[#667085] mb-6">
+            <p className="text-xs font-semibold text-slate-500 mb-6">
               {isBiometricScanning ? 'Authenticating...' : 'Tap to use biometric'}
             </p>
             <div className="w-full max-w-sm">
@@ -369,7 +369,7 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
                   }`}>
                     {progressStep > i ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-xs">{i + 1}</span>}
                   </div>
-                  <span className={`text-sm font-semibold ${progressStep > i ? 'text-[#111827] dark:text-white' : 'text-[#667085]'}`}>
+                  <span className={`text-sm font-semibold ${progressStep > i ? 'text-slate-900 dark:text-white' : 'text-slate-500'}`}>
                     {label}
                   </span>
                 </div>
@@ -385,9 +385,9 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
             <div className="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center mb-4">
               <CheckCircle2 className="w-8 h-8 text-emerald-600" />
             </div>
-            <h2 className="text-xl font-bold text-[#111827] dark:text-white">Welcome back</h2>
-            <p className="text-sm text-[#667085] mt-1">Corporate Banking</p>
-            <span className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0B5CAB]/10 text-[#0B5CAB] text-xs font-bold">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Welcome back</h2>
+            <p className="text-sm text-slate-500 mt-1">Corporate Banking</p>
+            <span className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-congress-blue-700/10 text-congress-blue-700 text-xs font-bold">
               <Building2 className="w-3.5 h-3.5" /> {CORPORATE_DEMO_ROLE}
             </span>
           </motion.div>
@@ -447,7 +447,7 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
                 value={newPassword}
                 onChange={setNewPassword}
                 rightElement={
-                  <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="p-1 text-[#667085]">
+                  <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="p-1 text-slate-500">
                     {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 }
@@ -463,7 +463,7 @@ export const CorporateAuthModule: React.FC<CorporateAuthModuleProps> = ({ onBack
           <motion.div key="pwok" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col items-center justify-center px-3 text-center">
             <CheckCircle2 className="w-12 h-12 text-emerald-600 mb-4" />
             <h2 className="text-lg font-bold">Password Updated</h2>
-            <p className="text-sm text-[#667085] mt-2">Your password has been updated successfully.</p>
+            <p className="text-sm text-slate-500 mt-2">Your password has been updated successfully.</p>
             <div className="w-full mt-6">
               <CorpPrimaryButton label="Back to Login" onClick={goToLogin} />
             </div>

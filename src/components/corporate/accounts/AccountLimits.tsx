@@ -101,7 +101,7 @@ export const AccountLimits: React.FC<AccountLimitsProps> = ({ accountId }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="min-h-full bg-slate-50 dark:bg-slate-950">
         <AccountLimitsHeader accountLabel="" onBack={handleBack} onInfo={() => {}} />
         <LimitsScreenSkeleton />
       </div>
@@ -110,7 +110,7 @@ export const AccountLimits: React.FC<AccountLimitsProps> = ({ accountId }) => {
 
   if (error || !data) {
     return (
-      <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="min-h-full bg-slate-50 dark:bg-slate-950">
         <AccountLimitsHeader accountLabel="" onBack={handleBack} onInfo={() => {}} />
         <LimitsErrorState message={error ?? undefined} onRetry={load} />
       </div>
@@ -130,7 +130,7 @@ export const AccountLimits: React.FC<AccountLimitsProps> = ({ accountId }) => {
   );
 
   return (
-    <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-8">
+    <div className="min-h-full bg-slate-50 dark:bg-slate-950 pb-8">
       <AccountLimitsHeader
         accountLabel={accountLabel}
         onBack={handleBack}

@@ -14,7 +14,7 @@ export const BalanceVisibilitySetting: React.FC<BalanceVisibilitySettingProps> =
 }) => (
   <PreferencesCard ariaLabel="Balance visibility">
     <div className="p-4 pb-0">
-      <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white px-0">
+      <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white px-0">
         Balance Visibility
       </h2>
     </div>

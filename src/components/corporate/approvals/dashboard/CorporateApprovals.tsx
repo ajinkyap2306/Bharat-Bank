@@ -146,7 +146,7 @@ export const CorporateApprovals: React.FC = () => {
 
   if (loading && !data) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <ApprovalsHeader onSearch={() => {}} onFilter={() => {}} />
         <ApprovalsSkeleton />
       </div>
@@ -155,7 +155,7 @@ export const CorporateApprovals: React.FC = () => {
 
   if (error || !data) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-28">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-28">
         <ApprovalsHeader onSearch={() => {}} onFilter={() => {}} />
         <ApprovalsErrorState onRetry={() => load()} />
       </div>
@@ -168,14 +168,14 @@ export const CorporateApprovals: React.FC = () => {
 
   return (
     <div
-      className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-28"
+      className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-28"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {(pullDistance > 0 || isRefreshing) && (
         <div
-          className="flex items-center justify-center text-[#667085] text-[12px] gap-2 py-2"
+          className="flex items-center justify-center text-slate-500 dark:text-slate-400 text-[12px] gap-2 py-2"
           style={{ height: isRefreshing ? 32 : pullDistance * 0.4 }}
           aria-live="polite"
         >

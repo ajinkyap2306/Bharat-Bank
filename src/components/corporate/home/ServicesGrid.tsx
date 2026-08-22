@@ -90,7 +90,7 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
     <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs">
       <div className="flex items-center justify-between pb-3.5 mb-2 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-extrabold text-[#111827] dark:text-white tracking-tight">
+          <h3 className="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">
             Corporate Services
           </h3>
           <span className="text-[10px] font-bold px-2 py-0.5 bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 rounded-full">

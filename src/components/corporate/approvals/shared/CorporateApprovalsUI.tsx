@@ -41,10 +41,10 @@ export const StickyApprovalCTA: React.FC<{
   onSecondary?: () => void;
   variant?: 'primary' | 'danger';
 }> = ({ label, onClick, disabled, secondaryLabel, onSecondary, variant = 'primary' }) => (
-  <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-[#F7F9FC]/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200/80">
+  <div className="fixed bottom-0 left-0 right-0 z-30 p-3 pb-safe bg-slate-50/95 dark:bg-slate-950/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-200/80">
     <div className="max-w-lg mx-auto flex gap-2">
       {secondaryLabel && onSecondary && (
-        <button type="button" onClick={onSecondary} className="flex-1 py-3.5 rounded-2xl border font-bold text-sm text-[#667085] min-h-11">
+        <button type="button" onClick={onSecondary} className="flex-1 py-3.5 rounded-2xl border font-bold text-sm text-slate-500 dark:text-slate-400 min-h-11">
           {secondaryLabel}
         </button>
       )}
@@ -53,7 +53,7 @@ export const StickyApprovalCTA: React.FC<{
         onClick={onClick}
         disabled={disabled}
         className={`flex-1 py-3.5 rounded-2xl font-bold text-sm disabled:opacity-50 min-h-11 ${
-          variant === 'danger' ? 'bg-[#DC2626] text-white' : 'bg-[#0B5CAB] text-white'
+          variant === 'danger' ? 'bg-[#DC2626] text-white' : 'bg-congress-blue-700 text-white'
         }`}
       >
         {label}
@@ -64,8 +64,8 @@ export const StickyApprovalCTA: React.FC<{
 
 export const ReviewRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div className="flex justify-between gap-3 py-2 border-b border-slate-100 dark:border-slate-800 last:border-0 text-sm">
-    <span className="text-[#667085] shrink-0">{label}</span>
-    <span className="font-medium text-[#111827] dark:text-white text-right">{value}</span>
+    <span className="text-slate-500 dark:text-slate-400 shrink-0">{label}</span>
+    <span className="font-medium text-slate-900 dark:text-white text-right">{value}</span>
   </div>
 );
 
@@ -76,7 +76,7 @@ export const ApprovalListCard: React.FC<{
   onSelect?: () => void;
   selectMode?: boolean;
 }> = ({ item, onClick, selected, onSelect, selectMode }) => (
-  <ApprovalCard className={`p-4 ${selected ? 'ring-2 ring-[#0B5CAB]/30' : ''}`}>
+  <ApprovalCard className={`p-4 ${selected ? 'ring-2 ring-congress-blue-500/30' : ''}`}>
     <div className="flex items-start gap-3">
       {selectMode && (
         <input type="checkbox" checked={selected} onChange={onSelect} className="mt-1 rounded" />
@@ -85,22 +85,22 @@ export const ApprovalListCard: React.FC<{
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-[#0B5CAB] uppercase">{item.categoryLabel}</span>
+              <span className="text-[10px] font-bold text-congress-blue-700 dark:text-congress-blue-400 uppercase">{item.categoryLabel}</span>
               {item.priority === 'high' && <span className="text-[8px] font-bold text-[#F59E0B]">HIGH</span>}
               {item.priority === 'urgent' && <span className="text-[8px] font-bold text-[#DC2626]">URGENT</span>}
             </div>
-            <p className="text-sm font-bold text-[#111827] dark:text-white truncate mt-0.5">{item.title}</p>
+            <p className="text-sm font-bold text-slate-900 dark:text-white truncate mt-0.5">{item.title}</p>
             {item.amount !== undefined && item.amount > 0 && (
-              <p className="text-sm font-mono font-bold text-[#111827] dark:text-white mt-0.5">
+              <p className="text-sm font-mono font-bold text-slate-900 dark:text-white mt-0.5">
                 {formatApprovalCurrency(item.amount)}
               </p>
             )}
-            <p className="text-[10px] text-[#667085] mt-1">Created by {item.createdBy}</p>
-            <p className="text-[10px] text-[#667085]">{item.createdAt}</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Created by {item.createdBy}</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400">{item.createdAt}</p>
           </div>
           <div className="flex flex-col items-end gap-1 shrink-0">
             <ApprovalStatusBadge status={item.status} />
-            <ChevronRight className="w-4 h-4 text-[#667085]" />
+            <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400" />
           </div>
         </div>
         {item.expiresAt && (

@@ -78,7 +78,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
   return (
     <section aria-label="Quick Actions">
       <div className="flex items-center gap-2 px-4 mb-3">
-        <h3 className="text-sm font-extrabold text-[#111827] dark:text-white tracking-tight">
+        <h3 className="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">
           Quick Actions
         </h3>
         <span className={CORP_ACCENT_BADGE}>

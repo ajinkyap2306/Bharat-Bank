@@ -27,7 +27,7 @@ export const BeneficiaryFilterSheet: React.FC<BeneficiaryFilterSheetProps> = ({
     <BottomSheet isOpen={isOpen} onClose={onClose} title="Filter Beneficiaries">
       <div className="px-4 pb-6 space-y-4">
         <div>
-          <p className="text-xs font-bold text-[#667085] mb-2">Beneficiary Type</p>
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">Beneficiary Type</p>
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm">
               <input
@@ -62,7 +62,7 @@ export const BeneficiaryFilterSheet: React.FC<BeneficiaryFilterSheetProps> = ({
         <button
           type="button"
           onClick={() => onApply(draft)}
-          className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11"
+          className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11"
         >
           Apply Filters
         </button>

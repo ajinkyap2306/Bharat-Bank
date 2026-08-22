@@ -19,11 +19,11 @@ export const ActionRequiredCard: React.FC<ActionRequiredCardProps> = ({
     {isLoading ? (
       <CorpSkeleton className="h-36 mx-4" />
     ) : summary.total === 0 ? (
-      <CorpCard className="mx-4! p-4 text-center border-[#E4E7EC]">
-        <p className="text-sm font-semibold text-[#111827] dark:text-white">
+      <CorpCard className="mx-4! p-4 text-center border-slate-200 dark:border-slate-800">
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">
           You&apos;re all caught up
         </p>
-        <p className="text-[13px] text-[#667085] mt-1">
+        <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">
           No approvals require your attention.
         </p>
       </CorpCard>
@@ -34,10 +34,10 @@ export const ActionRequiredCard: React.FC<ActionRequiredCardProps> = ({
             <AlertCircle className="w-4.5 h-4.5 text-[#F59E0B]" aria-hidden />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[15px] font-semibold text-[#111827] dark:text-white">
+            <p className="text-[15px] font-semibold text-slate-900 dark:text-white">
               {summary.total} items need your attention
             </p>
-            <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[13px] text-[#667085]">
+            <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[13px] text-slate-500 dark:text-slate-400">
               {summary.payments > 0 && <span>{summary.payments} Payments</span>}
               {summary.beneficiaries > 0 && <span>{summary.beneficiaries} Beneficiaries</span>}
               {summary.payroll > 0 && <span>{summary.payroll} Payroll</span>}

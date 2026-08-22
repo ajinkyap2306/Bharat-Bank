@@ -41,13 +41,13 @@ export const PaymentsMoreSheet: React.FC<PaymentsMoreSheetProps> = ({
             }}
             className="w-full flex items-center gap-3 p-4 rounded-xl min-h-14 active:bg-slate-50 dark:active:bg-slate-800/40"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#0B5CAB]/10 flex items-center justify-center">
-              <item.icon className="w-4 h-4 text-[#0B5CAB]" aria-hidden />
+            <div className="w-9 h-9 rounded-xl bg-congress-blue-50 dark:bg-congress-blue-950/40 flex items-center justify-center">
+              <item.icon className="w-4 h-4 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />
             </div>
-            <span className="flex-1 text-left text-[14px] font-medium text-[#111827] dark:text-white">
+            <span className="flex-1 text-left text-[14px] font-medium text-slate-900 dark:text-white">
               {item.label}
             </span>
-            <ChevronRight className="w-4 h-4 text-[#667085]" aria-hidden />
+            <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400" aria-hidden />
           </button>
         ))}
       </div>

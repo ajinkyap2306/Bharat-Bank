@@ -23,12 +23,12 @@ export const BatchStatusHero: React.FC<BatchStatusHeroProps> = ({ data, showSucc
             transition={{ duration: 0.35, ease: 'easeOut' }}
             className="flex justify-center mb-3"
           >
-            <CheckCircle className="w-12 h-12 text-[#16A34A]" aria-hidden />
+            <CheckCircle className="w-12 h-12 text-emerald-600 dark:text-emerald-400" aria-hidden />
           </motion.div>
-          <h2 className="text-[17px] font-semibold text-[#111827] dark:text-white">
+          <h2 className="text-[17px] font-semibold text-slate-900 dark:text-white">
             {isCompleted ? 'Bulk Payment Completed' : 'Batch Submitted Successfully'}
           </h2>
-          <p className="text-[13px] text-[#667085] mt-2">
+          <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-2">
             {isCompleted
               ? 'All payments in this batch have been processed.'
               : 'Your bulk payment batch has been submitted for corporate approval.'}
@@ -36,10 +36,10 @@ export const BatchStatusHero: React.FC<BatchStatusHeroProps> = ({ data, showSucc
         </div>
       )}
 
-      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 text-center">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 text-center">
         <BatchStatusBadge status={data.status} />
-        <p className="text-[18px] font-semibold text-[#111827] dark:text-white mt-3">{data.statusLabel}</p>
-        <p className="text-[13px] text-[#667085] mt-1">{data.statusSupporting}</p>
+        <p className="text-[18px] font-semibold text-slate-900 dark:text-white mt-3">{data.statusLabel}</p>
+        <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">{data.statusSupporting}</p>
       </div>
 
       <span className="sr-only">

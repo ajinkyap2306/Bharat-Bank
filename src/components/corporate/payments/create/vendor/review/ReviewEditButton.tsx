@@ -15,7 +15,7 @@ export const ReviewEditButton: React.FC<ReviewEditButtonProps> = ({
     type="button"
     onClick={onClick}
     disabled={disabled}
-    className="text-[13px] font-semibold text-[#0B5CAB] min-h-11 px-2 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] rounded-lg"
+    className="text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11 px-2 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 rounded-lg"
   >
     {label === 'Edit' ? 'Edit' : label}
   </button>

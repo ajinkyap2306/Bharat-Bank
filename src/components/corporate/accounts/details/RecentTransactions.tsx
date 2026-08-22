@@ -42,20 +42,20 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
 
       {hasError ? (
         <CorpListCard className="p-4 text-center">
-          <p className="text-[14px] font-medium text-[#111827] dark:text-white">
+          <p className="text-[14px] font-medium text-slate-900 dark:text-white">
             Unable to load recent transactions
           </p>
           <button
             type="button"
             onClick={onRetry}
-            className="mt-3 text-[13px] font-semibold text-[#0B5CAB] min-h-11"
+            className="mt-3 text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11"
           >
             Retry
           </button>
         </CorpListCard>
       ) : preview.length === 0 ? (
         <CorpListCard className="p-6 text-center">
-          <p className="text-[14px] text-[#667085]">No recent transactions</p>
+          <p className="text-[14px] text-slate-500 dark:text-slate-400">No recent transactions</p>
         </CorpListCard>
       ) : (
         <CorpListCard>
@@ -73,12 +73,12 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <p className="text-[14px] font-bold text-[#111827] dark:text-white truncate">
+                      <p className="text-[14px] font-bold text-slate-900 dark:text-white truncate">
                         {txn.counterpartyName}
                       </p>
                       <p
                         className={`text-[14px] font-extrabold tabular-nums shrink-0 ${
-                          isCredit ? 'text-[#16A34A]' : 'text-[#111827] dark:text-white'
+                          isCredit ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'
                         }`}
                       >
                         {showBalances
@@ -87,11 +87,11 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
                       </p>
                     </div>
                     <div className="flex items-center justify-between gap-2 mt-0.5">
-                      <p className="text-[12px] text-[#667085] truncate">{txn.txnType}</p>
-                      <p className="text-[11px] text-[#667085] shrink-0">{txn.dateGroup}</p>
+                      <p className="text-[12px] text-slate-500 dark:text-slate-400 truncate">{txn.txnType}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 shrink-0">{txn.dateGroup}</p>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-[#667085] shrink-0" aria-hidden />
+                  <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" aria-hidden />
                 </button>
               </React.Fragment>
             );

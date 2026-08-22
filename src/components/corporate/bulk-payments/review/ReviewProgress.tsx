@@ -12,10 +12,10 @@ export const ReviewProgress: React.FC = () => (
           <span
             className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
               isCurrent
-                ? 'bg-[#0B5CAB] text-white ring-4 ring-[#0B5CAB]/20'
+                ? 'bg-congress-blue-700 text-white ring-4 ring-congress-blue-500/20'
                 : isPast
-                  ? 'bg-[#16A34A] text-white'
-                  : 'bg-[#E4E7EC] dark:bg-slate-700 text-[#667085]'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
             }`}
             aria-current={isCurrent ? 'step' : undefined}
           >
@@ -23,7 +23,7 @@ export const ReviewProgress: React.FC = () => (
           </span>
           <span
             className={`text-[9px] mt-1 font-medium truncate w-full text-center ${
-              isCurrent ? 'text-[#0B5CAB]' : 'text-[#667085]'
+              isCurrent ? 'text-congress-blue-700 dark:text-congress-blue-400' : 'text-slate-500 dark:text-slate-400'
             }`}
           >
             {step}

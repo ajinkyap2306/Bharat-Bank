@@ -4,7 +4,9 @@ export type QrPaymentStep =
   | 'success'
   | 'failed'
   | 'pending'
-  | 'my-qr';
+  | 'my-qr'
+  | 'submitted'
+  | 'unavailable';
 
 export type QrErrorType = 'invalid' | 'expired' | 'unsupported' | 'duplicate';
 

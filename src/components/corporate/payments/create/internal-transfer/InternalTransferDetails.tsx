@@ -89,7 +89,7 @@ export const InternalTransferDetails: React.FC = () => {
   };
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-36">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-36">
       <CreatePaymentHeader
         title="Transfer Details"
         subtitle="Internal Transfer"
@@ -110,27 +110,27 @@ export const InternalTransferDetails: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowToSheet(true)}
-            className="w-full rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 text-left shadow-sm min-h-[76px] active:bg-slate-50 dark:active:bg-slate-800/40"
+            className="w-full rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 text-left shadow-sm min-h-[76px] active:bg-slate-50 dark:active:bg-slate-800/40"
           >
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-[12px] font-medium text-[#667085] uppercase tracking-wide">
+                <p className="text-[12px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                   Transfer To
                 </p>
-                <p className="text-[15px] font-semibold text-[#111827] dark:text-white mt-1">
+                <p className="text-[15px] font-semibold text-slate-900 dark:text-white mt-1">
                   {toAccount.name}
                 </p>
-                <p className="text-[13px] text-[#667085] tabular-nums">{toAccount.maskedNumber}</p>
+                <p className="text-[13px] text-slate-500 dark:text-slate-400 tabular-nums">{toAccount.maskedNumber}</p>
                 <div className="mt-2">
-                  <p className="text-[12px] text-[#667085]">Available Balance</p>
-                  <p className="text-[16px] font-bold text-[#111827] dark:text-white tabular-nums">
+                  <p className="text-[12px] text-slate-500 dark:text-slate-400">Available Balance</p>
+                  <p className="text-[16px] font-bold text-slate-900 dark:text-white tabular-nums">
                     {showBalances
                       ? formatAccountCurrency(toAccount.availableBalance, toAccount.currency)
                       : '••••••'}
                   </p>
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-[#667085] shrink-0" aria-hidden />
+              <ChevronRight className="w-5 h-5 text-slate-500 dark:text-slate-400 shrink-0" aria-hidden />
             </div>
           </button>
         </section>
@@ -144,8 +144,8 @@ export const InternalTransferDetails: React.FC = () => {
         />
 
         <section className="px-4">
-          <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm">
-            <label htmlFor="internal-ref" className="text-[14px] font-semibold text-[#111827] dark:text-white">
+          <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
+            <label htmlFor="internal-ref" className="text-[14px] font-semibold text-slate-900 dark:text-white">
               Reference (optional)
             </label>
             <input
@@ -154,7 +154,7 @@ export const InternalTransferDetails: React.FC = () => {
               value={draft.reference}
               onChange={(e) => setDraft((prev) => ({ ...prev, reference: e.target.value }))}
               placeholder="e.g. Payroll funding"
-              className="mt-2 w-full text-[15px] text-[#111827] dark:text-white bg-transparent outline-none min-h-11"
+              className="mt-2 w-full text-[15px] text-slate-900 dark:text-white bg-transparent outline-none min-h-11"
             />
           </div>
         </section>

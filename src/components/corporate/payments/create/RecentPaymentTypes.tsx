@@ -22,7 +22,7 @@ export const RecentPaymentTypes: React.FC<RecentPaymentTypesProps> = ({
     <section className="px-4" aria-labelledby="recent-payment-types-heading">
       <h2
         id="recent-payment-types-heading"
-        className="text-[15px] font-semibold text-[#111827] dark:text-white mb-2"
+        className="text-[15px] font-semibold text-slate-900 dark:text-white mb-2"
       >
         Recent Payment Types
       </h2>
@@ -32,7 +32,7 @@ export const RecentPaymentTypes: React.FC<RecentPaymentTypesProps> = ({
             key={type.id}
             type="button"
             onClick={() => onSelect(type)}
-            className="px-4 py-2.5 rounded-full bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 text-[13px] font-semibold text-[#0B5CAB] min-h-11 active:bg-slate-50 dark:active:bg-slate-800/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] focus-visible:ring-offset-2"
+            className="px-4 py-2.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11 active:bg-slate-50 dark:active:bg-slate-800/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 focus-visible:ring-offset-2"
           >
             {type.name}
           </button>

@@ -36,15 +36,15 @@ export const ApprovalCategoryTabs: React.FC<ApprovalCategoryTabsProps> = ({
             onClick={() => onChange(tab.id)}
             className={`px-3.5 py-2 rounded-full text-[12px] font-bold whitespace-nowrap min-h-9 border transition-colors ${
               isActive
-                ? 'bg-[#0B5CAB] text-white border-[#0B5CAB] shadow-sm shadow-[#0B5CAB]/20'
-                : 'bg-white dark:bg-slate-900 text-[#667085] border-slate-200/90 dark:border-slate-800'
+                ? 'bg-congress-blue-700 text-white border-congress-blue-700 shadow-sm shadow-congress-blue-700/20'
+                : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200/90 dark:border-slate-800'
             }`}
           >
             {tab.label}
             {count > 0 && tab.id !== 'all' && (
               <span
                 className={`ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                  isActive ? 'bg-white/20 text-white' : 'bg-[#0B5CAB]/10 text-[#0B5CAB]'
+                  isActive ? 'bg-white/20 text-white' : 'bg-congress-blue-50 dark:bg-congress-blue-950/40 text-congress-blue-700 dark:text-congress-blue-400'
                 }`}
               >
                 {count}

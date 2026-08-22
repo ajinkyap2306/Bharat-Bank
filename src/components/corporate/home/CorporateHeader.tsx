@@ -45,19 +45,19 @@ export const CorporateHeader: React.FC<CorporateHeaderProps> = ({
               alt=""
               className="w-10 h-10 rounded-full object-cover ring-2 ring-congress-blue-200 dark:ring-congress-blue-700/40 shadow-xs"
             />
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#F7F9FC] dark:border-slate-950" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-50 dark:border-slate-950" />
           </div>
 
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 min-w-0">
-              <h1 className="text-sm font-bold text-[#111827] dark:text-white leading-tight truncate">
+              <h1 className="text-sm font-bold text-slate-900 dark:text-white leading-tight truncate">
                 {userName}
               </h1>
               <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase tracking-wider bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 shrink-0">
                 Corporate
               </span>
             </div>
-            <p className="text-[11px] text-[#667085] dark:text-slate-400 truncate">{companyName}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{companyName}</p>
           </div>
         </button>
 
@@ -73,12 +73,12 @@ export const CorporateHeader: React.FC<CorporateHeaderProps> = ({
           <button
             type="button"
             onClick={onNotificationsClick}
-            className="relative w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 flex items-center justify-center text-[#667085] shadow-xs"
+            className="relative w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 shadow-xs"
             aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ''}`}
           >
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 min-w-4 h-4 px-0.5 rounded-full bg-[#DC2626] text-white text-[9px] font-bold flex items-center justify-center ring-2 ring-[#F7F9FC] dark:ring-slate-950">
+              <span className="absolute top-1 right-1 min-w-4 h-4 px-0.5 rounded-full bg-[#DC2626] text-white text-[9px] font-bold flex items-center justify-center ring-2 ring-slate-50 dark:ring-slate-950">
                 {unreadCount}
               </span>
             )}

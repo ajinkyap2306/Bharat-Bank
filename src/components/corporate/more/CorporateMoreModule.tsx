@@ -86,16 +86,16 @@ export const CorporateMoreModule: React.FC = () => {
 
   if (isReports) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
-        <header className="sticky top-0 z-10 bg-[#F7F9FC]/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-[#E4E7EC] dark:border-slate-800 px-4 py-3 safe-top flex items-center gap-3">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
+        <header className="sticky top-0 z-10 bg-slate-50/95 dark:bg-slate-950/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 safe-top flex items-center gap-3">
           <button
             type="button"
             onClick={() => navigate(MORE_HOME)}
-            className="text-sm font-semibold text-[#0B5CAB]"
+            className="text-sm font-semibold text-congress-blue-700 dark:text-congress-blue-400"
           >
             Back
           </button>
-          <h1 className="text-[17px] font-semibold text-[#111827] dark:text-white">Reports</h1>
+          <h1 className="text-[17px] font-semibold text-slate-900 dark:text-white">Reports</h1>
         </header>
         <CorporateReports />
       </div>

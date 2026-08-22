@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { ArrowLeftRight, CalendarClock, Layers, Smartphone, UserPlus, Wallet } from 'lucide-react';
 
 const QUICK_ICON =
-  'w-11 h-11 rounded-2xl bg-linear-to-tr from-[#0B5CAB] to-indigo-700 text-white flex items-center justify-center shadow-md shadow-[#0B5CAB]/20 mb-1.5 group-hover:scale-105 transition-transform';
+  'w-11 h-11 rounded-2xl bg-linear-to-tr from-congress-blue-800 to-indigo-700 text-white flex items-center justify-center shadow-md shadow-congress-blue-700/20 mb-1.5 group-hover:scale-105 transition-transform';
 
 interface PaymentQuickActionsProps {
   onTransfer: () => void;

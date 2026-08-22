@@ -73,7 +73,7 @@ export const BeneficiarySelectScreen: React.FC<BeneficiarySelectScreenProps> = (
   ];
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Select Beneficiary" onBack={onBack} edgeToEdge={false} />
       <div className="px-3 mb-3">
         <div className="relative">
@@ -92,7 +92,7 @@ export const BeneficiarySelectScreen: React.FC<BeneficiarySelectScreenProps> = (
               type="button"
               onClick={() => setTab(t.id)}
               className={`shrink-0 px-3 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-1 ${
-                tab === t.id ? 'bg-[#0B5CAB] text-white' : 'bg-white dark:bg-slate-900 text-[#667085] border border-slate-200 dark:border-slate-800'
+                tab === t.id ? 'bg-congress-blue-700 text-white' : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
               }`}
             >
               {t.icon}{t.label}
@@ -108,12 +108,12 @@ export const BeneficiarySelectScreen: React.FC<BeneficiarySelectScreenProps> = (
           </PayCard>
         ) : (
           filtered.map((ben) => (
-            <PayCard key={ben.id} className={`p-4 ${selectedId === ben.id ? 'ring-2 ring-[#0B5CAB]/30' : ''}`}>
+            <PayCard key={ben.id} className={`p-4 ${selectedId === ben.id ? 'ring-2 ring-congress-blue-500/30' : ''}`}>
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-[#111827] dark:text-white">{ben.name}</p>
-                  <p className="text-xs text-[#667085]">{ben.bankName}</p>
-                  <p className="text-xs font-mono text-[#111827] dark:text-white mt-0.5">{ben.maskedAccount}</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">{ben.name}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{ben.bankName}</p>
+                  <p className="text-xs font-mono text-slate-900 dark:text-white mt-0.5">{ben.maskedAccount}</p>
                 </div>
                 <PaymentStatusBadge status={ben.status === 'active' ? 'Completed' : 'Pending Approval'} />
               </div>
@@ -122,11 +122,11 @@ export const BeneficiarySelectScreen: React.FC<BeneficiarySelectScreenProps> = (
                   type="button"
                   disabled={ben.status === 'pending_approval'}
                   onClick={() => onSelect(ben.id)}
-                  className="flex-1 py-2 rounded-xl bg-[#0B5CAB] text-white text-xs font-bold disabled:opacity-50 min-h-11"
+                  className="flex-1 py-2 rounded-xl bg-congress-blue-700 text-white text-xs font-bold disabled:opacity-50 min-h-11"
                 >
                   Select
                 </button>
-                <button type="button" className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-[#667085] min-h-11">
+                <button type="button" className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-500 dark:text-slate-400 min-h-11">
                   View Details
                 </button>
               </div>
@@ -136,8 +136,8 @@ export const BeneficiarySelectScreen: React.FC<BeneficiarySelectScreenProps> = (
       </div>
 
       <div className="mx-3 mt-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 text-center">
-        <p className="text-sm text-[#667085]">Don&apos;t see the beneficiary?</p>
-        <button type="button" onClick={onAddBeneficiary} className="mt-2 text-sm font-bold text-[#0B5CAB] min-h-11">
+        <p className="text-sm text-slate-500 dark:text-slate-400">Don&apos;t see the beneficiary?</p>
+        <button type="button" onClick={onAddBeneficiary} className="mt-2 text-sm font-bold text-congress-blue-700 dark:text-congress-blue-400 min-h-11">
           Add New Beneficiary
         </button>
       </div>

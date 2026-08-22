@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import {
   ChevronRight,
+  CheckCircle2,
   Flashlight,
   Image as ImageIcon,
   Loader2,
@@ -29,6 +30,12 @@ import {
   markQrPaymentPending,
   validateQrAmount,
 } from '../../../data/retailQrPaymentMock';
+import {
+  getJointStatusLabel,
+  requiresJointApproval,
+  verifyRetailJointUserMpin,
+} from '../../../data/retailJointTransferMock';
+import type { JointTransferRequest } from '../../../types/retailJointTransfer';
 import { resetPaymentSuccessSound } from '../../../utils/paymentSuccessFeedback';
 import { PaymentSuccessHero } from './PaymentSuccessHero';
 import {
@@ -38,6 +45,7 @@ import {
   UpiPinSheet,
   VerifiedBadge,
 } from './shared/QrPayUI';
+import { ReviewRow } from '../add-money/shared/AddMoneyUI';
 
 const INITIAL_DRAFT: QrPaymentDraft = {
   merchant: null,
@@ -52,21 +60,32 @@ interface QrPaymentFlowProps {
 }
 
 export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
-  const { executeTransfer, getPrimaryAccount, accounts, addToast, user } = useBanking();
+  const {
+    executeTransfer,
+    getPrimaryAccount,
+    accounts,
+    addToast,
+    user,
+    retailActiveUserId,
+    submitJointTransferRequest,
+  } = useBanking();
 
   const [step, setStep] = useState<QrPaymentStep>('scanner');
   const [draft, setDraft] = useState<QrPaymentDraft>(INITIAL_DRAFT);
   const [qrError, setQrError] = useState<QrErrorType | null>(null);
   const [torchOn, setTorchOn] = useState(false);
   const [authPin, setAuthPin] = useState('');
+  const [authError, setAuthError] = useState('');
   const [amountError, setAmountError] = useState('');
   const [showPinSheet, setShowPinSheet] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [result, setResult] = useState<QrPaymentResult | null>(null);
   const [lastResult, setLastResult] = useState<QrPaymentResult | null>(null);
+  const [submittedRequest, setSubmittedRequest] = useState<JointTransferRequest | null>(null);
 
   const primaryAccount = getPrimaryAccount();
   const payAccount = accounts.find((a) => a.id === draft.accountId) || primaryAccount;
+  const needsApproval = requiresJointApproval(payAccount);
   const fromLabel = payAccount
     ? `${payAccount.accountType} ${payAccount.maskedNumber}`
     : 'Savings Account';
@@ -95,10 +114,12 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
     setDraft(INITIAL_DRAFT);
     setQrError(null);
     setAuthPin('');
+    setAuthError('');
     setAmountError('');
     setShowPinSheet(false);
     setIsPaying(false);
     setResult(null);
+    setSubmittedRequest(null);
   }, []);
 
   const resetAndClose = useCallback(() => {
@@ -169,10 +190,40 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
     if (isPaying) return;
     setShowPinSheet(false);
     setAuthPin('');
+    setAuthError('');
   };
 
   const runPayment = () => {
     if (!draft.merchant || !payAccount || authPin.length < 6) return;
+
+    if (needsApproval) {
+      if (!verifyRetailJointUserMpin(retailActiveUserId, authPin)) {
+        setAuthError('Incorrect MPIN.');
+        setAuthPin('');
+        return;
+      }
+      setAuthError('');
+
+      const req = submitJointTransferRequest({
+        fromAccountId: payAccount.id,
+        beneficiaryName: draft.merchant.name,
+        beneficiaryBank: 'UPI',
+        beneficiaryAccountMasked: draft.merchant.upiId,
+        amount: amountNum,
+        mode: 'UPI',
+        note: `QR payment to ${draft.merchant.name}`,
+      });
+      setIsPaying(false);
+      setShowPinSheet(false);
+      setAuthPin('');
+      if (req) {
+        setSubmittedRequest(req);
+        setStep('submitted');
+      } else {
+        setStep('unavailable');
+      }
+      return;
+    }
 
     markQrPaymentPending(draft.merchant.id);
     setIsPaying(true);
@@ -239,7 +290,55 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
   };
 
   const payCtaLabel =
-    amountNum > 0 ? `Pay ₹${amountNum.toLocaleString('en-IN')}` : 'Pay';
+    amountNum > 0
+      ? needsApproval
+        ? `Submit ₹${amountNum.toLocaleString('en-IN')} for Approval`
+        : `Pay ₹${amountNum.toLocaleString('en-IN')}`
+      : needsApproval
+        ? 'Submit for Approval'
+        : 'Pay';
+
+  if (step === 'unavailable') {
+    return (
+      <QrShell title="" onClose={resetAndClose}>
+        <div className="flex flex-col items-center text-center px-6 pt-10">
+          <span className="w-16 h-16 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center mb-4">
+            <XCircle className="w-9 h-9" />
+          </span>
+          <h2 className="text-lg font-bold">Approval Unavailable</h2>
+          <p className="text-sm text-slate-500 mt-3">
+            This jointly operated account requires authorization from another eligible joint holder.
+          </p>
+        </div>
+        <QrStickyCTA label="Try Again" onClick={() => setStep('payment')} secondaryLabel="Done" onSecondary={resetAndClose} />
+      </QrShell>
+    );
+  }
+
+  if (step === 'submitted' && submittedRequest && payAccount) {
+    return (
+      <QrShell title="" onClose={resetAndClose}>
+        <div className="flex flex-col items-center text-center px-4 pt-8">
+          <CheckCircle2 className="w-14 h-14 text-emerald-600 mb-3" />
+          <h2 className="text-lg font-bold">Sent for Approval</h2>
+          <p className="text-sm text-slate-500 mt-2 max-w-xs">
+            Your QR payment request has been sent to the other joint holder for approval.
+          </p>
+          <div className="w-full mt-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 text-left space-y-2">
+            <ReviewRow label="Amount" value={`₹${submittedRequest.amount.toLocaleString('en-IN')}`} />
+            <ReviewRow label="To" value={submittedRequest.beneficiaryName} />
+            <ReviewRow
+              label="From"
+              value={`${payAccount.jointAccountLabel ?? payAccount.accountType} ${payAccount.maskedNumber}`}
+            />
+            <ReviewRow label="Status" value={getJointStatusLabel(submittedRequest.status)} />
+            <ReviewRow label="Reference" value={submittedRequest.reference} />
+          </div>
+        </div>
+        <QrStickyCTA label="Done" onClick={resetAndClose} />
+      </QrShell>
+    );
+  }
 
   if (qrError) {
     const copy: Record<QrErrorType, { title: string; message: string; primary: string }> = {
@@ -422,10 +521,19 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
               <div className="text-left">
                 <p className="text-xs text-slate-500">Pay from</p>
                 <p className="text-sm font-bold mt-0.5">{fromLabel}</p>
+                {needsApproval && (
+                  <p className="text-[11px] text-blue-700 font-semibold mt-1">Jointly Operated · Approval required</p>
+                )}
               </div>
               {accounts.length > 1 && <ChevronRight className="w-5 h-5 text-slate-400 shrink-0" />}
             </button>
           </div>
+
+          {needsApproval && (
+            <p className="mx-4 text-xs text-slate-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-100 rounded-xl p-3">
+              Joint account selected — payment will be sent to the other joint holder for approval.
+            </p>
+          )}
 
           <QrStickyCTA label={payCtaLabel} onClick={handlePayTap} />
         </QrShell>
@@ -436,7 +544,13 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
           amount={amountNum}
           pin={authPin}
           isPaying={isPaying}
-          onPinChange={setAuthPin}
+          pinLabel={needsApproval ? 'Enter MPIN' : undefined}
+          confirmLabel={needsApproval ? 'Submit for Approval' : undefined}
+          pinError={authError}
+          onPinChange={(value) => {
+            setAuthPin(value);
+            setAuthError('');
+          }}
           onConfirm={runPayment}
           onClose={closePinSheet}
         />

@@ -35,7 +35,7 @@ export const ApprovalPriorityBadge: React.FC<ApprovalPriorityBadgeProps> = ({
   }
 
   if (dueLabel) {
-    return <span className="text-[11px] text-[#667085]">{dueLabel}</span>;
+    return <span className="text-[11px] text-slate-500 dark:text-slate-400">{dueLabel}</span>;
   }
 
   return null;

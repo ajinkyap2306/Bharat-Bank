@@ -29,7 +29,7 @@ export const UpcomingPayments: React.FC<UpcomingPaymentsProps> = ({
       <CorpSkeleton className="h-28 mx-4" />
     ) : payments.length === 0 ? (
       <CorpListCard className="px-3 py-4 text-center">
-        <p className="text-xs font-medium text-[#667085]">No upcoming payments</p>
+        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">No upcoming payments</p>
       </CorpListCard>
     ) : (
       <CorpListCard>
@@ -47,15 +47,15 @@ export const UpcomingPayments: React.FC<UpcomingPaymentsProps> = ({
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-[13px] font-semibold text-[#111827] dark:text-white truncate">
+                  <p className="text-[13px] font-semibold text-slate-900 dark:text-white truncate">
                     {payment.title}
                   </p>
-                  <p className="text-[13px] font-bold text-[#111827] dark:text-white tabular-nums shrink-0">
+                  <p className="text-[13px] font-bold text-slate-900 dark:text-white tabular-nums shrink-0">
                     {formatCorpCurrency(payment.amount)}
                   </p>
                 </div>
                 <div className="flex items-center justify-between gap-2 mt-0.5">
-                  <p className="text-[11px] text-[#667085] truncate">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                     {payment.dueDate}
                     {payment.sourceAccount ? ` · ${payment.sourceAccount}` : ''}
                   </p>

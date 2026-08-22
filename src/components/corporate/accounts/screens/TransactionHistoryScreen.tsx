@@ -83,7 +83,7 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
   }, [txns]);
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-6">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-6">
       <ScreenHeader title="Transaction History" subtitle={account?.nickname} onBack={onBack} edgeToEdge={false} />
       <div className="px-3 mb-3 flex gap-2">
         <div className="relative flex-1">
@@ -96,7 +96,7 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
           />
         </div>
         <button type="button" onClick={() => setShowFilters(true)} className="w-11 h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center shrink-0">
-          <Filter className="w-4 h-4 text-[#667085]" />
+          <Filter className="w-4 h-4 text-slate-500 dark:text-slate-400" />
         </button>
       </div>
 
@@ -104,8 +104,8 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
         <div className="mx-3 h-40 rounded-2xl bg-slate-200/60 animate-pulse" />
       ) : txns.length === 0 ? (
         <AccountsCard className="p-6 text-center mx-3">
-          <p className="text-sm font-bold text-[#111827] dark:text-white">No transactions found</p>
-          <button type="button" onClick={() => { setQuery(''); setFilters(DEFAULT_TXN_FILTERS); }} className="mt-3 text-xs font-bold text-[#0B5CAB]">
+          <p className="text-sm font-bold text-slate-900 dark:text-white">No transactions found</p>
+          <button type="button" onClick={() => { setQuery(''); setFilters(DEFAULT_TXN_FILTERS); }} className="mt-3 text-xs font-bold text-congress-blue-700 dark:text-congress-blue-400">
             Clear filters
           </button>
         </AccountsCard>
@@ -113,7 +113,7 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
         <div className="space-y-4">
           {Array.from(grouped.entries()).map(([group, items]) => (
             <div key={group}>
-              <p className="px-3 text-[10px] font-bold text-[#667085] uppercase tracking-wider mb-2">{group}</p>
+              <p className="px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{group}</p>
               <AccountsCard className="divide-y divide-slate-100 dark:divide-slate-800">
                 {items.map((txn) => (
                   <button
@@ -124,12 +124,12 @@ export const TransactionHistoryScreen: React.FC<TransactionHistoryScreenProps> =
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-sm font-bold text-[#111827] dark:text-white truncate">{txn.counterpartyName}</p>
-                        <p className={`text-sm font-mono font-bold mt-0.5 ${txn.type === 'credit' ? 'text-[#16A34A]' : 'text-[#111827] dark:text-white'}`}>
+                        <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{txn.counterpartyName}</p>
+                        <p className={`text-sm font-mono font-bold mt-0.5 ${txn.type === 'credit' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}`}>
                           {txn.type === 'credit' ? '+' : '-'} {formatAccountCurrency(txn.amount, account?.currency || '₹')}
                         </p>
-                        <p className="text-[10px] text-[#667085] mt-0.5">{txn.date} • {txn.time}</p>
-                        <p className="text-[10px] text-[#667085]">{txn.txnType}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{txn.date} • {txn.time}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400">{txn.txnType}</p>
                       </div>
                       <TxnStatusBadge status={txn.status} />
                     </div>

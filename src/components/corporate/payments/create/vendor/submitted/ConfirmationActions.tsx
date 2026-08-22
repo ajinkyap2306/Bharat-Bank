@@ -27,11 +27,11 @@ const ActionButton: React.FC<{
   <button
     type="button"
     onClick={onClick}
-    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl min-h-11 text-left active:bg-slate-50 dark:active:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] focus-visible:ring-offset-2 ${
-      destructive ? 'text-[#DC2626]' : 'text-[#111827] dark:text-white'
+    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl min-h-11 text-left active:bg-slate-50 dark:active:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 focus-visible:ring-offset-2 ${
+      destructive ? 'text-[#DC2626]' : 'text-slate-900 dark:text-white'
     }`}
   >
-    <span className="w-9 h-9 rounded-lg bg-[#F7F9FC] dark:bg-slate-800 flex items-center justify-center shrink-0">
+    <span className="w-9 h-9 rounded-lg bg-slate-50 dark:bg-slate-950 dark:bg-slate-800 flex items-center justify-center shrink-0">
       {icon}
     </span>
     <span className="text-[15px] font-medium">{label}</span>
@@ -59,7 +59,7 @@ export const ConfirmationActions: React.FC<ConfirmationActionsProps> = ({
         <button
           type="button"
           onClick={onViewTransaction}
-          className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white text-[15px] font-semibold min-h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] focus-visible:ring-offset-2"
+          className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white text-[15px] font-semibold min-h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 focus-visible:ring-offset-2"
         >
           View Transaction
         </button>
@@ -68,10 +68,10 @@ export const ConfirmationActions: React.FC<ConfirmationActionsProps> = ({
         <button
           type="button"
           onClick={onViewPaymentDetailsSecondary}
-          className={`w-full py-3.5 rounded-2xl text-[15px] font-semibold min-h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] focus-visible:ring-offset-2 ${
+          className={`w-full py-3.5 rounded-2xl text-[15px] font-semibold min-h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 focus-visible:ring-offset-2 ${
             showViewTransaction
-              ? 'bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-700 text-[#0B5CAB]'
-              : 'bg-[#0B5CAB] text-white'
+              ? 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-congress-blue-700 dark:text-congress-blue-400'
+              : 'bg-congress-blue-700 text-white'
           }`}
         >
           View Payment Details
@@ -81,7 +81,7 @@ export const ConfirmationActions: React.FC<ConfirmationActionsProps> = ({
         <button
           type="button"
           onClick={onViewPaymentDetails}
-          className="w-full py-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-700 text-[#0B5CAB] text-[15px] font-semibold min-h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] focus-visible:ring-offset-2"
+          className="w-full py-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-congress-blue-700 dark:text-congress-blue-400 text-[15px] font-semibold min-h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 focus-visible:ring-offset-2"
         >
           View Payment Details
         </button>
@@ -90,7 +90,7 @@ export const ConfirmationActions: React.FC<ConfirmationActionsProps> = ({
         <button
           type="button"
           onClick={onCreateNewPayment}
-          className="w-full py-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-700 text-[#0B5CAB] text-[15px] font-semibold min-h-12"
+          className="w-full py-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-congress-blue-700 dark:text-congress-blue-400 text-[15px] font-semibold min-h-12"
         >
           Create New Payment
         </button>
@@ -99,7 +99,7 @@ export const ConfirmationActions: React.FC<ConfirmationActionsProps> = ({
         <button
           type="button"
           onClick={onDownload}
-          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-700 text-[#111827] dark:text-white text-[14px] font-medium min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] focus-visible:ring-offset-2"
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-[14px] font-medium min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 focus-visible:ring-offset-2"
         >
           <Download className="w-4 h-4" aria-hidden />
           {showViewTransaction ? 'Download Receipt' : 'Download Confirmation'}
@@ -107,7 +107,7 @@ export const ConfirmationActions: React.FC<ConfirmationActionsProps> = ({
         <button
           type="button"
           onClick={onShare}
-          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-700 text-[#111827] dark:text-white text-[14px] font-medium min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] focus-visible:ring-offset-2"
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-[14px] font-medium min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 focus-visible:ring-offset-2"
         >
           <Share2 className="w-4 h-4" aria-hidden />
           Share
@@ -127,7 +127,7 @@ export const ConfirmationActions: React.FC<ConfirmationActionsProps> = ({
     <BottomSheet isOpen={showMoreSheet} onClose={onCloseMore} title="More options">
       <div className="px-2 pb-6">
         <ActionButton
-          icon={<Download className="w-4 h-4 text-[#0B5CAB]" />}
+          icon={<Download className="w-4 h-4 text-congress-blue-700 dark:text-congress-blue-400" />}
           label={showViewTransaction ? 'Download Receipt' : 'Download Confirmation'}
           onClick={() => {
             onCloseMore();
@@ -139,7 +139,7 @@ export const ConfirmationActions: React.FC<ConfirmationActionsProps> = ({
           }}
         />
         <ActionButton
-          icon={<Share2 className="w-4 h-4 text-[#0B5CAB]" />}
+          icon={<Share2 className="w-4 h-4 text-congress-blue-700 dark:text-congress-blue-400" />}
           label="Share Confirmation"
           onClick={() => {
             onCloseMore();
@@ -147,7 +147,7 @@ export const ConfirmationActions: React.FC<ConfirmationActionsProps> = ({
           }}
         />
         <ActionButton
-          icon={<FileText className="w-4 h-4 text-[#0B5CAB]" />}
+          icon={<FileText className="w-4 h-4 text-congress-blue-700 dark:text-congress-blue-400" />}
           label="View Payment Details"
           onClick={() => {
             onCloseMore();

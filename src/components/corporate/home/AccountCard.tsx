@@ -24,7 +24,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({
     className={`shrink-0 min-w-[calc(100vw-2.5rem)] max-w-[22rem] p-4.5 rounded-3xl snap-center shadow-lg transition-all ${
       isPrimary
         ? 'bg-linear-to-tr from-blue-700 via-blue-600 to-indigo-600 text-white shadow-blue-500/20'
-        : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[#111827] dark:text-white'
+        : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white'
     }`}
   >
     <div className="flex items-center justify-between mb-3">

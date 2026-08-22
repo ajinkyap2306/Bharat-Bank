@@ -27,7 +27,7 @@ export const BeneficiaryLimit: React.FC<BeneficiaryLimitProps> = ({
     <LimitsCard ariaLabel="Beneficiary transfer limit">
       <div className="p-4">
         <div className="flex items-start justify-between gap-3 mb-3">
-          <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white">
+          <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">
             Beneficiary Transfer Limit
           </h2>
           <LimitStatusBadge
@@ -41,7 +41,7 @@ export const BeneficiaryLimit: React.FC<BeneficiaryLimitProps> = ({
         <LimitsRow
           label="Remaining"
           value={maskAmount(remaining, currency, showBalances)}
-          valueClassName="text-[#16A34A]"
+          valueClassName="text-emerald-600 dark:text-emerald-400"
         />
 
         <div className="mt-3">
@@ -53,7 +53,7 @@ export const BeneficiaryLimit: React.FC<BeneficiaryLimitProps> = ({
           />
         </div>
 
-        <p className="text-[12px] text-[#667085] mt-3 font-medium">Resets daily</p>
+        <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-3 font-medium">Resets daily</p>
       </div>
     </LimitsCard>
   );

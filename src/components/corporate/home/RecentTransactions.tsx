@@ -26,7 +26,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
       <CorpSkeleton className="h-36 mx-4" />
     ) : transactions.length === 0 ? (
       <CorpListCard className="px-3 py-4 text-center">
-        <p className="text-xs font-medium text-[#667085]">No recent activity</p>
+        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">No recent activity</p>
       </CorpListCard>
     ) : (
       <CorpListCard>
@@ -39,8 +39,8 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
                 <div
                   className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                     isCredit
-                      ? 'bg-emerald-50 dark:bg-emerald-950/40 text-[#16A34A]'
-                      : 'bg-slate-100 dark:bg-slate-800 text-[#667085]'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                   }`}
                 >
                   {isCredit ? (
@@ -52,19 +52,19 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-[13px] font-semibold text-[#111827] dark:text-white truncate">
+                    <p className="text-[13px] font-semibold text-slate-900 dark:text-white truncate">
                       {txn.title}
                     </p>
                     <p
                       className={`text-[13px] font-bold tabular-nums shrink-0 ${
-                        isCredit ? 'text-[#16A34A]' : 'text-[#111827] dark:text-white'
+                        isCredit ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'
                       }`}
                     >
                       {isCredit ? '+' : '−'}
                       {formatCorpCurrency(txn.amount)}
                     </p>
                   </div>
-                  <p className="text-[11px] text-[#667085] mt-0.5 truncate">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                     {txn.subtitle} · {txn.date}
                   </p>
                 </div>

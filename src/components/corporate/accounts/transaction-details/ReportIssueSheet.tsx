@@ -33,8 +33,8 @@ export const ReportIssueSheet: React.FC<ReportIssueSheetProps> = ({
               onClick={() => setSelected(option)}
               className={`px-3 py-2 rounded-full text-[13px] font-medium min-h-9 ${
                 selected === option
-                  ? 'bg-[#0B5CAB] text-white'
-                  : 'bg-[#F7F9FC] dark:bg-slate-800 text-[#667085] border border-[#E4E7EC] dark:border-slate-700'
+                  ? 'bg-congress-blue-700 text-white'
+                  : 'bg-slate-50 dark:bg-slate-950 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
               }`}
             >
               {option}
@@ -51,7 +51,7 @@ export const ReportIssueSheet: React.FC<ReportIssueSheetProps> = ({
               onClose();
             }
           }}
-          className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12 disabled:opacity-50"
+          className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12 disabled:opacity-50"
         >
           Submit Issue
         </button>

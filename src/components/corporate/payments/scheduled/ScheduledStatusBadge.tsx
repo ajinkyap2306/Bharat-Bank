@@ -4,7 +4,7 @@ import type { ScheduledPaymentStatus } from '../../../../types/corporateSchedule
 const config: Record<ScheduledPaymentStatus, { label: string; className: string }> = {
   upcoming: {
     label: 'Scheduled',
-    className: 'bg-blue-50 text-[#0B5CAB] dark:bg-blue-950/40 dark:text-blue-400',
+    className: 'bg-blue-50 text-congress-blue-700 dark:text-congress-blue-400 dark:bg-blue-950/40 dark:text-blue-400',
   },
   pending_approval: {
     label: 'Pending Approval',

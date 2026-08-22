@@ -38,8 +38,8 @@ export const CompanySwitcher: React.FC<CompanySwitcherProps> = ({
           role="dialog"
           aria-label="Your Companies"
         >
-          <div className="w-12 h-1.5 bg-[#E4E7EC] dark:bg-slate-700 rounded-full mx-auto mb-4" />
-          <p className="text-base font-semibold text-[#111827] dark:text-white mb-3">
+          <div className="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-4" />
+          <p className="text-base font-semibold text-slate-900 dark:text-white mb-3">
             Your Companies
           </p>
           <div className="space-y-1">
@@ -53,11 +53,11 @@ export const CompanySwitcher: React.FC<CompanySwitcherProps> = ({
                   className={`w-full flex items-center justify-between gap-3 p-3.5 rounded-2xl text-left min-h-12 transition-colors ${
                     isSelected
                       ? 'bg-congress-blue-50 dark:bg-congress-blue-950/60 border border-congress-blue-200 dark:border-congress-blue-800'
-                      : 'hover:bg-[#F7F9FC] dark:hover:bg-slate-800 border border-transparent'
+                      : 'hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 border border-transparent'
                   }`}
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#111827] dark:text-white truncate">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
                       {entity.name}
                     </p>
                   </div>

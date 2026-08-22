@@ -158,7 +158,7 @@ export const CorporateLogin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-dvh bg-[#F7F9FC] dark:bg-slate-950 text-[#111827] dark:text-white flex flex-col font-['Inter',sans-serif] safe-top safe-bottom max-w-107.5 mx-auto w-full">
+    <div className="min-h-dvh bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white flex flex-col safe-top safe-bottom max-w-107.5 mx-auto w-full">
       <CorporateLoginHeader
         onHelpClick={() => dispatch({ type: 'SET_SHOW_HELP', show: true })}
       />
@@ -176,10 +176,10 @@ export const CorporateLogin: React.FC = () => {
               <div className="w-14 h-14 rounded-2xl bg-[#16A34A]/10 flex items-center justify-center mb-4">
                 <CheckCircle2 className="w-7 h-7 text-[#16A34A]" />
               </div>
-              <p className="text-lg font-semibold text-[#111827] dark:text-white">
+              <p className="text-lg font-semibold text-slate-900 dark:text-white">
                 Credentials verified
               </p>
-              <p className="text-[13px] text-[#667085] mt-1">
+              <p className="text-[13px] text-slate-500 mt-1">
                 Redirecting to verification...
               </p>
             </motion.div>
@@ -191,17 +191,17 @@ export const CorporateLogin: React.FC = () => {
               exit={{ opacity: 0 }}
               className="flex-1 flex flex-col items-center justify-center px-6 text-center"
             >
-              <div className="w-14 h-14 rounded-2xl bg-[#0B5CAB]/10 flex items-center justify-center mb-4">
+              <div className="w-14 h-14 rounded-2xl bg-congress-blue-700/10 flex items-center justify-center mb-4">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 0.9, ease: 'linear' }}
-                  className="w-6 h-6 border-2 border-[#0B5CAB]/30 border-t-[#0B5CAB] rounded-full"
+                  className="w-6 h-6 border-2 border-congress-blue-700/30 border-t-congress-blue-700 rounded-full"
                 />
               </div>
-              <p className="text-[15px] font-semibold text-[#111827] dark:text-white">
+              <p className="text-[15px] font-semibold text-slate-900 dark:text-white">
                 Signing you in...
               </p>
-              <p className="text-[12px] text-[#667085] mt-1">
+              <p className="text-[12px] text-slate-500 mt-1">
                 Verifying your credentials securely
               </p>
             </motion.div>
@@ -217,10 +217,10 @@ export const CorporateLogin: React.FC = () => {
                 <div className="mx-4 mb-4 p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 flex items-start gap-2.5">
                   <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-[#111827] dark:text-white">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
                       Session expired
                     </p>
-                    <p className="text-[12px] text-[#667085] mt-0.5">
+                    <p className="text-[12px] text-slate-500 mt-0.5">
                       For your security, please sign in again.
                     </p>
                   </div>
@@ -228,13 +228,13 @@ export const CorporateLogin: React.FC = () => {
               )}
 
               <section className="px-4 mb-5">
-                <h2 className="text-[22px] font-semibold text-[#111827] dark:text-white tracking-tight leading-tight">
+                <h2 className="text-[22px] font-semibold text-slate-900 dark:text-white tracking-tight leading-tight">
                   Welcome to Corporate Banking
                 </h2>
-                <p className="text-[14px] text-[#667085] dark:text-slate-400 mt-1.5 leading-relaxed">
+                <p className="text-[14px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
                   Securely access your business accounts, payments and approvals.
                 </p>
-                <p className="mt-3 text-[11px] font-medium text-[#0B5CAB] dark:text-blue-400 bg-[#0B5CAB]/8 dark:bg-[#0B5CAB]/15 rounded-xl px-3 py-2">
+                <p className="mt-3 text-[11px] font-medium text-congress-blue-700 dark:text-blue-400 bg-congress-blue-700/8 dark:bg-congress-blue-700/15 rounded-xl px-3 py-2">
                   {CORPORATE_DEMO_HINT}
                 </p>
               </section>
@@ -249,7 +249,7 @@ export const CorporateLogin: React.FC = () => {
                   <p className="text-sm font-semibold text-[#DC2626]">
                     Unable to sign in
                   </p>
-                  <p className="text-[12px] text-[#667085] dark:text-slate-400 mt-0.5">
+                  <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">
                     Please check your credentials and try again.
                   </p>
                 </motion.div>
@@ -341,7 +341,7 @@ export const CorporateLogin: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => navigate('/corporate/forgot-password')}
-                  className="w-full py-3 text-sm font-medium text-[#0B5CAB] dark:text-blue-400 min-h-11"
+                  className="w-full py-3 text-sm font-medium text-congress-blue-700 dark:text-blue-400 min-h-11"
                 >
                   Forgot Password?
                 </button>

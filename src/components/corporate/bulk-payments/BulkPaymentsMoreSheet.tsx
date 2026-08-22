@@ -34,9 +34,9 @@ export const BulkPaymentsMoreSheet: React.FC<BulkPaymentsMoreSheetProps> = ({
               item.onClick();
               onClose();
             }}
-            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-[#E4E7EC] dark:border-slate-700 text-[14px] font-medium min-h-11"
+            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-[14px] font-medium min-h-11"
           >
-            <item.icon className="w-5 h-5 text-[#667085]" aria-hidden />
+            <item.icon className="w-5 h-5 text-slate-500 dark:text-slate-400" aria-hidden />
             {item.label}
           </button>
         ))}

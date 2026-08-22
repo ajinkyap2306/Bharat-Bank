@@ -13,12 +13,12 @@ export const DuplicateCheck: React.FC<DuplicateCheckProps> = ({ data, onReviewDu
 
   return (
     <PayCard className="p-4">
-      <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white mb-3">Duplicate Check</h3>
+      <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white mb-3">Duplicate Check</h3>
       <div className="flex items-center gap-2 text-[13px] font-semibold">
         {clear ? (
           <>
-            <CheckCircle className="w-4 h-4 text-[#16A34A]" aria-hidden />
-            <span className="text-[#16A34A]">No duplicate payments detected</span>
+            <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
+            <span className="text-emerald-600 dark:text-emerald-400">No duplicate payments detected</span>
           </>
         ) : (
           <>

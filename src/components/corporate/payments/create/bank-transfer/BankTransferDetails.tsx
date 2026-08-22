@@ -96,7 +96,7 @@ export const BankTransferDetails: React.FC = () => {
   }, [canContinue, draft, parsedAmount, activeMethod, navigate]);
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-36">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-36">
       <CreatePaymentHeader
         title="Transfer Details"
         subtitle="Bank Transfer"
@@ -117,31 +117,31 @@ export const BankTransferDetails: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowBeneficiarySheet(true)}
-            className="w-full rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 text-left shadow-sm active:bg-slate-50 dark:active:bg-slate-800/40"
+            className="w-full rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 text-left shadow-sm active:bg-slate-50 dark:active:bg-slate-800/40"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3 min-w-0">
                 <div
-                  className="w-11 h-11 rounded-xl bg-[#0B5CAB]/10 flex items-center justify-center text-[#0B5CAB] text-[13px] font-bold shrink-0"
+                  className="w-11 h-11 rounded-xl bg-congress-blue-50 dark:bg-congress-blue-950/40 flex items-center justify-center text-congress-blue-700 dark:text-congress-blue-400 text-[13px] font-bold shrink-0"
                   aria-hidden
                 >
                   {getBeneficiaryInitials(beneficiary.name)}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[12px] font-medium text-[#667085] uppercase tracking-wide">
+                  <p className="text-[12px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                     Transfer To
                   </p>
-                  <p className="text-[15px] font-semibold text-[#111827] dark:text-white mt-1">
+                  <p className="text-[15px] font-semibold text-slate-900 dark:text-white mt-1">
                     {beneficiary.name}
                   </p>
-                  <p className="text-[13px] text-[#667085] tabular-nums">{beneficiary.maskedAccountNumber}</p>
-                  <p className="text-[13px] text-[#667085]">{beneficiary.bankName}</p>
+                  <p className="text-[13px] text-slate-500 dark:text-slate-400 tabular-nums">{beneficiary.maskedAccountNumber}</p>
+                  <p className="text-[13px] text-slate-500 dark:text-slate-400">{beneficiary.bankName}</p>
                   <div className="mt-2">
                     <BeneficiaryStatusBadge status={beneficiary.status} compact />
                   </div>
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-[#667085] shrink-0 mt-1" aria-hidden />
+              <ChevronRight className="w-5 h-5 text-slate-500 dark:text-slate-400 shrink-0 mt-1" aria-hidden />
             </div>
           </button>
         </section>
@@ -164,8 +164,8 @@ export const BankTransferDetails: React.FC = () => {
         />
 
         <section className="px-4">
-          <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm">
-            <label htmlFor="bank-ref" className="text-[14px] font-semibold text-[#111827] dark:text-white">
+          <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
+            <label htmlFor="bank-ref" className="text-[14px] font-semibold text-slate-900 dark:text-white">
               Reference (optional)
             </label>
             <input
@@ -174,21 +174,21 @@ export const BankTransferDetails: React.FC = () => {
               value={draft.reference}
               onChange={(e) => setDraft((prev) => ({ ...prev, reference: e.target.value }))}
               placeholder="e.g. Invoice settlement"
-              className="mt-2 w-full text-[15px] text-[#111827] dark:text-white bg-transparent outline-none min-h-11"
+              className="mt-2 w-full text-[15px] text-slate-900 dark:text-white bg-transparent outline-none min-h-11"
             />
           </div>
         </section>
 
         {parsedAmount > 0 && (
           <section className="px-4">
-            <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm">
-              <div className="flex justify-between text-[13px] text-[#667085]">
+            <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
+              <div className="flex justify-between text-[13px] text-slate-500 dark:text-slate-400">
                 <span>Transfer fee ({activeMethod})</span>
-                <span className="font-medium text-[#111827] dark:text-white tabular-nums">
+                <span className="font-medium text-slate-900 dark:text-white tabular-nums">
                   {formatPaymentCurrency(fee)}
                 </span>
               </div>
-              <div className="flex justify-between text-[15px] font-bold text-[#111827] dark:text-white mt-2">
+              <div className="flex justify-between text-[15px] font-bold text-slate-900 dark:text-white mt-2">
                 <span>Total debit</span>
                 <span className="tabular-nums">{formatPaymentCurrency(parsedAmount + fee)}</span>
               </div>

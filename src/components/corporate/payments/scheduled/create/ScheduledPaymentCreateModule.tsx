@@ -118,7 +118,7 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
 
   if (step === 'submitted' && submittedMeta) {
     return (
-      <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto pb-8">
+      <div className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto pb-8">
         <main className="px-4 pt-12 text-center">
           <div className="w-16 h-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950/40 flex items-center justify-center text-2xl text-emerald-600 mb-4">
             ✓
@@ -126,18 +126,18 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
           <h1 className="text-xl font-bold">Submitted for Approval</h1>
           <p className="text-2xl font-bold mt-4">{formatPaymentCurrency(draft.amount)}</p>
           <p className="text-sm font-semibold mt-1">{draft.beneficiaryName}</p>
-          <p className="text-xs text-[#667085] mt-1">{formatScheduleLabel(draft)}</p>
-          <div className="mt-6 rounded-2xl border border-[#E4E7EC] dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-left space-y-2">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{formatScheduleLabel(draft)}</p>
+          <div className="mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-left space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-[#667085]">Status</span>
+              <span className="text-slate-500 dark:text-slate-400">Status</span>
               <span className="font-semibold text-amber-600">Pending Approval</span>
             </div>
-            <p className="text-xs text-[#667085]">Awaiting Checker approval</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Awaiting Checker approval</p>
           </div>
           <button
             type="button"
             onClick={() => navigate(`/corporate/payments/scheduled/${submittedMeta.scheduleId}`)}
-            className="w-full mt-6 py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11"
+            className="w-full mt-6 py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11"
           >
             View Status
           </button>
@@ -157,7 +157,7 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
   }
 
   return (
-    <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto pb-28">
+    <div className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto pb-28">
       <ScheduledPaymentsHeader
         title={
           step === 'type'
@@ -176,7 +176,7 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
       <main className="px-4 pt-4 space-y-4">
         {step === 'type' && (
           <>
-            <p className="text-sm font-semibold text-[#111827] dark:text-white">Payment Type</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">Payment Type</p>
             {[
               {
                 id: 'vendor' as const,
@@ -199,15 +199,15 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
                 type="button"
                 onClick={() => updateDraft({ paymentType: opt.id })}
                 className={`w-full text-left p-4 rounded-2xl border-2 flex items-start gap-3 ${
-                  draft.paymentType === opt.id ? 'border-[#0B5CAB] bg-blue-50/50' : 'border-[#E4E7EC] dark:border-slate-800'
+                  draft.paymentType === opt.id ? 'border-congress-blue-700 bg-blue-50/50' : 'border-slate-200 dark:border-slate-800'
                 }`}
               >
-                <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${draft.paymentType === opt.id ? 'border-[#0B5CAB]' : ''}`}>
-                  {draft.paymentType === opt.id && <span className="w-2.5 h-2.5 rounded-full bg-[#0B5CAB]" />}
+                <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${draft.paymentType === opt.id ? 'border-congress-blue-700' : ''}`}>
+                  {draft.paymentType === opt.id && <span className="w-2.5 h-2.5 rounded-full bg-congress-blue-700" />}
                 </span>
                 <div>
                   <span className="font-semibold text-sm block">{opt.label}</span>
-                  <span className="text-xs text-[#667085] mt-0.5 block">{opt.desc}</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 block">{opt.desc}</span>
                 </div>
               </button>
             ))}
@@ -218,15 +218,15 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
         {step === 'beneficiary' && (
           <>
             <div className="relative">
-              <Search className="absolute left-3 top-3.5 w-4 h-4 text-[#667085]" />
+              <Search className="absolute left-3 top-3.5 w-4 h-4 text-slate-500 dark:text-slate-400" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search beneficiary"
-                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-[#E4E7EC] dark:border-slate-800 bg-white dark:bg-slate-900 text-sm"
+                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm"
               />
             </div>
-            <PayCard className="divide-y divide-[#E4E7EC]/80 dark:divide-slate-800">
+            <PayCard className="divide-y divide-slate-200 dark:divide-slate-800/80 dark:divide-slate-800">
               {beneficiaries.map((b) => (
                 <button
                   key={b.id}
@@ -243,12 +243,12 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
                   className="w-full p-4 text-left min-h-[4.5rem] active:bg-slate-50 dark:active:bg-slate-800/40"
                 >
                   <p className="font-semibold text-sm">{b.name}</p>
-                  <p className="text-xs text-[#667085] mt-0.5">{b.bankName}</p>
-                  <p className="text-xs text-[#667085] font-mono">{b.maskedAccount}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{b.bankName}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">{b.maskedAccount}</p>
                 </button>
               ))}
             </PayCard>
-            <button type="button" className="w-full flex items-center justify-center gap-2 py-3 text-sm font-semibold text-[#0B5CAB]">
+            <button type="button" className="w-full flex items-center justify-center gap-2 py-3 text-sm font-semibold text-congress-blue-700 dark:text-congress-blue-400">
               <UserPlus className="w-4 h-4" /> Add New Beneficiary
             </button>
           </>
@@ -258,11 +258,11 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
           <>
             <PayCard className="p-4 space-y-3">
               <div>
-                <p className="text-xs text-[#667085]">Pay From</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Pay From</p>
                 <select
                   value={draft.accountId}
                   onChange={(e) => updateDraft({ accountId: e.target.value })}
-                  className="w-full mt-1 py-2.5 rounded-xl border border-[#E4E7EC] dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-semibold"
+                  className="w-full mt-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-semibold"
                 >
                   {getScheduledSourceAccounts().map((a) => (
                     <option key={a.id} value={a.id}>
@@ -270,14 +270,14 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
                     </option>
                   ))}
                 </select>
-                <p className="text-xs text-[#667085] mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Available {formatPaymentCurrency(getScheduledSourceAccounts().find((a) => a.id === draft.accountId)?.availableBalance ?? 0)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-[#667085]">Pay To</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Pay To</p>
                 <p className="font-semibold text-sm mt-1">{draft.beneficiaryName}</p>
-                <p className="text-xs font-mono text-[#667085]">{draft.beneficiaryMaskedAccount}</p>
+                <p className="text-xs font-mono text-slate-500 dark:text-slate-400">{draft.beneficiaryMaskedAccount}</p>
               </div>
               <div>
                 <label className="text-xs font-bold">Amount</label>
@@ -323,7 +323,7 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
                     type="button"
                     onClick={() => updateDraft({ frequency: f.id })}
                     className={`px-3 py-2 rounded-full text-xs font-semibold border ${
-                      draft.frequency === f.id ? 'bg-[#0B5CAB] text-white border-[#0B5CAB]' : 'border-[#E4E7EC]'
+                      draft.frequency === f.id ? 'bg-congress-blue-700 text-white border-congress-blue-700' : 'border-slate-200 dark:border-slate-800'
                     }`}
                   >
                     {f.label}
@@ -410,7 +410,7 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
 
             {occurrences && (
               <PayCard className="p-4">
-                <p className="text-xs font-bold text-[#667085] mb-2">Schedule Summary</p>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">Schedule Summary</p>
                 <Row label="Frequency" value={preview.frequency ?? ''} />
                 <Row label="Occurrences" value={String(occurrences)} />
                 <Row label="Estimated Total" value={formatPaymentCurrency(draft.amount * occurrences)} bold />
@@ -419,7 +419,7 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
 
             <PayCard className="p-4">
               <p className="text-sm font-semibold text-amber-700">Approval Required</p>
-              <p className="text-xs text-[#667085] mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 This payment will be sent to the Checker for approval.
               </p>
             </PayCard>
@@ -433,11 +433,11 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
         <div className="px-4 pb-6 space-y-4">
           <p className="text-sm font-semibold">{draft.beneficiaryName}</p>
           <p className="text-xl font-bold">{formatPaymentCurrency(draft.amount)}</p>
-          <p className="text-xs text-[#667085]">{formatScheduleLabel(draft)}</p>
-          <p className="text-xs text-[#667085]">Next Payment: {preview.scheduledDate}</p>
-          <p className="text-xs text-[#667085]">This schedule will become active after Checker approval.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{formatScheduleLabel(draft)}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Next Payment: {preview.scheduledDate}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">This schedule will become active after Checker approval.</p>
           <button type="button" onClick={() => setConfirmMpin(false)} className="w-full py-3 rounded-2xl border font-semibold text-sm">Cancel</button>
-          <button type="button" onClick={handleSubmit} disabled={submitting} className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm disabled:opacity-50">
+          <button type="button" onClick={handleSubmit} disabled={submitting} className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm disabled:opacity-50">
             {submitting ? 'Submitting…' : 'Submit for Approval'}
           </button>
         </div>
@@ -448,7 +448,7 @@ export const ScheduledPaymentCreateModule: React.FC<Props> = ({ step }) => {
 
 const Row: React.FC<{ label: string; value: string; bold?: boolean }> = ({ label, value, bold }) => (
   <div className="flex justify-between gap-3">
-    <span className="text-[#667085] shrink-0">{label}</span>
+    <span className="text-slate-500 dark:text-slate-400 shrink-0">{label}</span>
     <span className={`text-right ${bold ? 'font-bold' : 'font-medium'}`}>{value}</span>
   </div>
 );

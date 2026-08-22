@@ -107,10 +107,10 @@ export const VerificationStatus: React.FC<VerificationStatusProps> = ({
         >
           <ShieldCheck className="w-8 h-8 text-[#16A34A]" />
         </motion.div>
-        <h2 className="text-xl font-semibold text-[#111827] dark:text-white">
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
           {config.title}
         </h2>
-        <p className="text-[14px] text-[#667085] mt-1.5">{config.message}</p>
+        <p className="text-[14px] text-slate-500 mt-1.5">{config.message}</p>
       </motion.div>
     );
   }
@@ -124,10 +124,10 @@ export const VerificationStatus: React.FC<VerificationStatusProps> = ({
     >
       <Icon className={`w-4 h-4 shrink-0 mt-0.5 ${config.iconClass}`} aria-hidden />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-[#111827] dark:text-white">
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">
           {config.title}
         </p>
-        <p className="text-[12px] text-[#667085] dark:text-slate-400 mt-0.5 leading-relaxed">
+        <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
           {config.message}
         </p>
 
@@ -135,7 +135,7 @@ export const VerificationStatus: React.FC<VerificationStatusProps> = ({
           <button
             type="button"
             onClick={onResend}
-            className="mt-2 text-[13px] font-semibold text-[#0B5CAB] min-h-11"
+            className="mt-2 text-[13px] font-semibold text-congress-blue-700 min-h-11"
           >
             Resend OTP
           </button>
@@ -145,7 +145,7 @@ export const VerificationStatus: React.FC<VerificationStatusProps> = ({
           <button
             type="button"
             onClick={onTryAgain}
-            className="mt-2 text-[13px] font-semibold text-[#0B5CAB] min-h-11"
+            className="mt-2 text-[13px] font-semibold text-congress-blue-700 min-h-11"
           >
             Try Again
           </button>
@@ -155,7 +155,7 @@ export const VerificationStatus: React.FC<VerificationStatusProps> = ({
           <button
             type="button"
             onClick={onBackToLogin}
-            className="mt-2 text-[13px] font-semibold text-[#0B5CAB] min-h-11"
+            className="mt-2 text-[13px] font-semibold text-congress-blue-700 min-h-11"
           >
             Back to Login
           </button>

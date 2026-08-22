@@ -6,11 +6,11 @@ interface OtpValidityTimerProps {
 }
 
 export const OtpValidityTimer: React.FC<OtpValidityTimerProps> = ({ secondsRemaining }) => (
-  <p className="text-[12px] text-[#667085] dark:text-slate-400" aria-live="polite">
+  <p className="text-[12px] text-slate-500 dark:text-slate-400" aria-live="polite">
     {secondsRemaining > 0 ? (
       <>
         Code valid for{' '}
-        <span className="font-semibold text-[#111827] dark:text-white tabular-nums">
+        <span className="font-semibold text-slate-900 dark:text-white tabular-nums">
           {formatOtpCountdown(secondsRemaining)}
         </span>
       </>

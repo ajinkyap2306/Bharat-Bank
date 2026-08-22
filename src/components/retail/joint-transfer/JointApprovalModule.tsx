@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
-import type { JointApprovalStep } from '../../../types/retailJointTransfer';
+import type { BankAccount } from '../../../types/banking';
+import type { JointApprovalStep, JointTransferRequest } from '../../../types/retailJointTransfer';
 import {
   canUserApproveJointRequest,
   getJointRequestListAmount,
@@ -25,6 +26,43 @@ import {
   StickyAddMoneyCTA,
 } from '../add-money/shared/AddMoneyUI';
 
+function JointRequestCard({
+  req,
+  accounts,
+  onSelect,
+  subtitle,
+  statusLabel,
+  statusClassName = 'text-amber-700',
+}: {
+  req: JointTransferRequest;
+  accounts: BankAccount[];
+  onSelect: () => void;
+  subtitle?: string;
+  statusLabel: string;
+  statusClassName?: string;
+}) {
+  const reqAccount = accounts.find((a) => a.id === req.fromAccountId);
+  return (
+    <button
+      key={req.id}
+      type="button"
+      onClick={onSelect}
+      className="w-full text-left p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
+    >
+      <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wide">
+        {getJointRequestTypeLabel(getJointRequestType(req))}
+      </p>
+      <p className="text-sm font-bold">{getJointRequestListTitle(req)}</p>
+      <p className="text-lg font-extrabold tabular-nums">{getJointRequestListAmount(req)}</p>
+      <p className="text-xs text-slate-500 mt-1">
+        {reqAccount?.maskedNumber ?? 'Joint Savings ••••4582'}
+      </p>
+      {subtitle && <p className="text-xs text-slate-500">{subtitle}</p>}
+      <p className={`text-[10px] font-semibold mt-2 ${statusClassName}`}>● {statusLabel}</p>
+    </button>
+  );
+}
+
 export const JointApprovalModule: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,6 +75,7 @@ export const JointApprovalModule: React.FC = () => {
     retailActiveUserId,
     setBottomNavHidden,
     getPendingJointApprovalsForUser,
+    getPendingJointRequestsInitiatedByUser,
     getJointRequestById,
     approveJointTransferRequest,
     rejectJointTransferRequest,
@@ -56,7 +95,9 @@ export const JointApprovalModule: React.FC = () => {
     setStep(requestId ? 'detail' : 'list');
   }, [requestId]);
 
-  const pending = getPendingJointApprovalsForUser(retailActiveUserId);
+  const pendingToApprove = getPendingJointApprovalsForUser(retailActiveUserId);
+  const pendingSubmitted = getPendingJointRequestsInitiatedByUser(retailActiveUserId);
+  const hasAnyRequests = pendingToApprove.length > 0 || pendingSubmitted.length > 0;
   const activeRequest = requestId ? getJointRequestById(requestId) : undefined;
   const fromAccount = activeRequest
     ? accounts.find((a) => a.id === activeRequest.fromAccountId)
@@ -66,11 +107,12 @@ export const JointApprovalModule: React.FC = () => {
   const detailTitle = isTransfer ? 'Transfer Details' : 'Request Details';
   const approveSheetTitle = isTransfer ? 'Approve Transfer?' : 'Approve Request?';
   const rejectSheetTitle = isTransfer ? 'Reject Transfer?' : 'Reject Request?';
+  const isDetailFlow = Boolean(requestId) || !['list'].includes(step);
 
   useEffect(() => {
-    setBottomNavHidden(true);
+    setBottomNavHidden(isDetailFlow);
     return () => setBottomNavHidden(false);
-  }, [setBottomNavHidden]);
+  }, [isDetailFlow, setBottomNavHidden]);
 
   useEffect(() => {
     if (step === 'success' && !chimePlayed.current) {
@@ -113,40 +155,58 @@ export const JointApprovalModule: React.FC = () => {
 
   if (step === 'list') {
     return (
-      <AddMoneyLayout title="Pending Approvals" onBack={goHome}>
-        {pending.length === 0 ? (
-          <p className="text-sm text-slate-500 text-center py-8">No pending approval requests.</p>
+      <AddMoneyLayout title="Approvals" onBack={goHome}>
+        {!hasAnyRequests ? (
+          <div className="text-center py-8 px-4">
+            <p className="text-sm text-slate-500">No approval activity right now.</p>
+            <p className="text-xs text-slate-400 mt-2">
+              Submitted requests and items awaiting your approval will appear here.
+            </p>
+          </div>
         ) : (
-          <>
-            <p className="text-xs text-slate-500 mb-3">{pending.length} pending request(s)</p>
-            <div className="space-y-2">
-              {pending.map((req) => {
-                const reqAccount = accounts.find((a) => a.id === req.fromAccountId);
-                return (
-                <button
-                  key={req.id}
-                  type="button"
-                  onClick={() => navigate(`/retail/joint-approvals/${req.id}`)}
-                  className="w-full text-left p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
-                >
-                  <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wide">
-                    {getJointRequestTypeLabel(getJointRequestType(req))}
-                  </p>
-                  <p className="text-sm font-bold">{getJointRequestListTitle(req)}</p>
-                  <p className="text-lg font-extrabold tabular-nums">
-                    {getJointRequestListAmount(req)}
-                  </p>
-                  <p className="text-xs text-slate-500 mt-1">
-                    {reqAccount?.maskedNumber ?? 'Joint Savings ••••4582'}
-                  </p>
-                  <p className="text-xs text-slate-500">Initiated by: {req.initiatedByName}</p>
-                  <p className="text-[10px] text-amber-700 font-semibold mt-2">
-                    ● Pending Approval
-                  </p>
-                </button>
-              );})}
-            </div>
-          </>
+          <div className="space-y-6">
+            {pendingToApprove.length > 0 && (
+              <section>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  Awaiting your approval
+                </p>
+                <p className="text-xs text-slate-500 mb-3">{pendingToApprove.length} request(s)</p>
+                <div className="space-y-2">
+                  {pendingToApprove.map((req) => (
+                    <JointRequestCard
+                      key={req.id}
+                      req={req}
+                      accounts={accounts}
+                      onSelect={() => navigate(`/retail/joint-approvals/${req.id}`)}
+                      subtitle={`Initiated by: ${req.initiatedByName}`}
+                      statusLabel="Pending Approval"
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {pendingSubmitted.length > 0 && (
+              <section>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  Your submitted requests
+                </p>
+                <p className="text-xs text-slate-500 mb-3">{pendingSubmitted.length} request(s)</p>
+                <div className="space-y-2">
+                  {pendingSubmitted.map((req) => (
+                    <JointRequestCard
+                      key={req.id}
+                      req={req}
+                      accounts={accounts}
+                      onSelect={() => navigate(`/retail/joint-approvals/${req.id}`)}
+                      subtitle={`Awaiting approval from ${req.approverName}`}
+                      statusLabel={getJointStatusLabel(req.status)}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
         )}
       </AddMoneyLayout>
     );
@@ -161,6 +221,7 @@ export const JointApprovalModule: React.FC = () => {
   }
 
   const canApprove = canUserApproveJointRequest(activeRequest, retailActiveUserId);
+  const isInitiator = activeRequest.initiatedByUserId === retailActiveUserId;
 
   if (step === 'approved') {
     return (
@@ -330,15 +391,20 @@ export const JointApprovalModule: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowApproveSheet(true)}
-              className="py-3 rounded-2xl bg-[#005DD4] text-white text-sm font-bold"
+              className="py-3 rounded-2xl bg-congress-blue-700 text-white text-sm font-bold"
             >
               Approve
             </button>
           </div>
         ) : (
-          <p className="text-xs text-slate-500 text-center mt-4">
-            ● {getJointStatusLabel(activeRequest.status)}
-          </p>
+          <div className="text-center mt-4 space-y-2">
+            <p className="text-xs text-slate-500">● {getJointStatusLabel(activeRequest.status)}</p>
+            {isInitiator && activeRequest.status === 'pending_joint_approval' && (
+              <p className="text-xs text-slate-500">
+                Awaiting approval from {activeRequest.approverName}.
+              </p>
+            )}
+          </div>
         )}
       </AddMoneyLayout>
 

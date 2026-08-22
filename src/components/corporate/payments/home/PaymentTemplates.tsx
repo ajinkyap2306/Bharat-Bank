@@ -32,14 +32,14 @@ export const PaymentTemplates: React.FC<PaymentTemplatesProps> = ({
               onClick={() => onSelect(tpl.id)}
               className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left active:bg-slate-50 dark:active:bg-slate-800/40"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#0B5CAB]/8 flex items-center justify-center shrink-0">
-                <FileStack className="w-4 h-4 text-[#0B5CAB]" aria-hidden />
+              <div className="w-8 h-8 rounded-lg bg-congress-blue-50 dark:bg-congress-blue-950/40 flex items-center justify-center shrink-0">
+                <FileStack className="w-4 h-4 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-semibold text-[#111827] dark:text-white">{tpl.name}</p>
-                <p className="text-[11px] text-[#667085] truncate">{tpl.beneficiary}</p>
+                <p className="text-[13px] font-semibold text-slate-900 dark:text-white">{tpl.name}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{tpl.beneficiary}</p>
               </div>
-              <p className="text-[12px] font-bold text-[#111827] dark:text-white tabular-nums shrink-0">
+              <p className="text-[12px] font-bold text-slate-900 dark:text-white tabular-nums shrink-0">
                 {tpl.defaultAmount != null && showBalances
                   ? formatPaymentCurrency(tpl.defaultAmount, tpl.currency)
                   : 'Variable'}

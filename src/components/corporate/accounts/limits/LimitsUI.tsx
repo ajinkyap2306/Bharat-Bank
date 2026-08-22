@@ -7,7 +7,7 @@ export const LimitsCard: React.FC<{
   ariaLabel?: string;
 }> = ({ children, className = '', ariaLabel }) => (
   <section
-    className={`mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 shadow-sm ${className}`}
+    className={`mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm ${className}`}
     aria-label={ariaLabel}
   >
     {children}
@@ -20,9 +20,9 @@ export const LimitsRow: React.FC<{
   valueClassName?: string;
 }> = ({ label, value, valueClassName = '' }) => (
   <div className="flex items-start justify-between gap-3 py-2">
-    <span className="text-[13px] text-[#667085] shrink-0">{label}</span>
+    <span className="text-[13px] text-slate-500 dark:text-slate-400 shrink-0">{label}</span>
     <span
-      className={`text-[13px] font-semibold text-[#111827] dark:text-white text-right tabular-nums ${valueClassName}`}
+      className={`text-[13px] font-semibold text-slate-900 dark:text-white text-right tabular-nums ${valueClassName}`}
     >
       {value}
     </span>
@@ -43,8 +43,8 @@ interface AccessibleProgressBarProps {
 }
 
 const BAR_COLORS = {
-  primary: 'bg-[#0B5CAB]',
-  success: 'bg-[#16A34A]',
+  primary: 'bg-congress-blue-700',
+  success: 'bg-emerald-600',
   warning: 'bg-[#F59E0B]',
   error: 'bg-[#DC2626]',
 };
@@ -60,13 +60,13 @@ export const AccessibleProgressBar: React.FC<AccessibleProgressBarProps> = ({
   return (
     <div>
       <div className="flex items-center justify-between gap-2 mb-1.5">
-        <span className="text-[12px] text-[#667085]">{label}</span>
-        <span className="text-[12px] font-semibold text-[#111827] dark:text-white tabular-nums">
+        <span className="text-[12px] text-slate-500 dark:text-slate-400">{label}</span>
+        <span className="text-[12px] font-semibold text-slate-900 dark:text-white tabular-nums">
           {clamped}% used
         </span>
       </div>
       <div
-        className="h-2.5 rounded-full bg-[#F7F9FC] dark:bg-slate-800 overflow-hidden"
+        className="h-2.5 rounded-full bg-slate-50 dark:bg-slate-950 dark:bg-slate-800 overflow-hidden"
         role="progressbar"
         aria-valuenow={clamped}
         aria-valuemin={0}

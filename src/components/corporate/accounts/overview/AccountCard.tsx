@@ -13,13 +13,13 @@ interface AccountCardProps {
 }
 
 const GRADIENT: Record<CorporateAccountCategory | 'default', string> = {
-  operating: 'bg-linear-to-br from-[#0B5CAB] to-indigo-700',
+  operating: 'bg-linear-to-br from-congress-blue-800 to-indigo-700',
   payroll: 'bg-linear-to-br from-emerald-600 to-teal-700',
   collections: 'bg-linear-to-br from-violet-600 to-purple-700',
   savings: 'bg-linear-to-br from-amber-500 to-orange-600',
   loan: 'bg-linear-to-br from-slate-600 to-slate-800',
-  all: 'bg-linear-to-br from-[#0B5CAB] to-indigo-700',
-  default: 'bg-linear-to-br from-[#0B5CAB] to-indigo-700',
+  all: 'bg-linear-to-br from-congress-blue-800 to-indigo-700',
+  default: 'bg-linear-to-br from-congress-blue-800 to-indigo-700',
 };
 
 export const AccountCard: React.FC<AccountCardProps> = ({

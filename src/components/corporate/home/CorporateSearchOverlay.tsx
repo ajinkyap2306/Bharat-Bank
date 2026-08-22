@@ -63,7 +63,7 @@ export const CorporateSearchOverlay: React.FC<CorporateSearchOverlayProps> = ({ 
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
-      className="fixed inset-0 z-50 bg-[#F7F9FC] dark:bg-slate-950 flex flex-col"
+      className="fixed inset-0 z-50 bg-slate-50 dark:bg-slate-950 flex flex-col"
     >
       <div className="px-3 pt-3 pb-2 safe-top border-b border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
         <div className="flex items-center gap-2">
@@ -81,7 +81,7 @@ export const CorporateSearchOverlay: React.FC<CorporateSearchOverlayProps> = ({ 
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search accounts, transactions, beneficiaries..."
               autoFocus
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm text-[#111827] dark:text-white"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white"
             />
           </div>
         </div>
@@ -89,18 +89,18 @@ export const CorporateSearchOverlay: React.FC<CorporateSearchOverlayProps> = ({ 
 
       <div className="flex-1 overflow-y-auto px-3 py-3">
         {query.trim() === '' ? (
-          <p className="text-sm text-[#667085] text-center py-12">
+          <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-12">
             Search accounts, transactions, beneficiaries, payments, reports, and services
           </p>
         ) : results.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-base font-bold text-[#111827] dark:text-white">No results found</p>
-            <p className="text-sm text-[#667085] mt-2">Try another keyword.</p>
+            <p className="text-base font-bold text-slate-900 dark:text-white">No results found</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Try another keyword.</p>
           </div>
         ) : (
           Array.from(grouped.entries()).map(([category, items]) => (
             <div key={category} className="mb-4">
-              <p className="text-[10px] font-bold text-[#667085] uppercase tracking-wider mb-2 px-1">{category}</p>
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 px-1">{category}</p>
               <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
                 {items.map((item) => {
                   const Icon = categoryIcon(item.category);
@@ -115,9 +115,9 @@ export const CorporateSearchOverlay: React.FC<CorporateSearchOverlayProps> = ({ 
                         <Icon className="w-4 h-4" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-bold text-[#111827] dark:text-white truncate">{item.title}</p>
+                        <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{item.title}</p>
                         {item.subtitle && (
-                          <p className="text-xs text-[#667085] truncate">{item.subtitle}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{item.subtitle}</p>
                         )}
                       </div>
                     </button>

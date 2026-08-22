@@ -23,10 +23,10 @@ export const NearLimitWarning: React.FC<NearLimitWarningProps> = ({
       <div className="flex items-start gap-3">
         <AlertTriangle className="w-5 h-5 text-[#F59E0B] shrink-0 mt-0.5" aria-hidden />
         <div>
-          <p className="text-[14px] font-semibold text-[#111827] dark:text-white">
+          <p className="text-[14px] font-semibold text-slate-900 dark:text-white">
             Approaching Daily Limit
           </p>
-          <p className="text-[12px] text-[#667085] mt-1">
+          <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-1">
             {showBalances
               ? `${formatPaymentCurrency(remaining, currency)} remaining from today's transfer limit.`
               : 'You are approaching your daily payment limit.'}
@@ -34,7 +34,7 @@ export const NearLimitWarning: React.FC<NearLimitWarningProps> = ({
           <button
             type="button"
             onClick={onViewTransactions}
-            className="mt-2 text-[13px] font-semibold text-[#0B5CAB] min-h-11"
+            className="mt-2 text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11"
           >
             View Transactions
           </button>

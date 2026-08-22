@@ -13,10 +13,10 @@ const Row: React.FC<{ label: string; value: string; mono?: boolean }> = ({
   value,
   mono,
 }) => (
-  <div className="flex justify-between gap-4 py-2 border-b border-[#E4E7EC]/80 dark:border-slate-800 last:border-0">
-    <dt className="text-[13px] text-[#667085]">{label}</dt>
+  <div className="flex justify-between gap-4 py-2 border-b border-slate-200 dark:border-slate-800/80 dark:border-slate-800 last:border-0">
+    <dt className="text-[13px] text-slate-500 dark:text-slate-400">{label}</dt>
     <dd
-      className={`text-[13px] font-medium text-[#111827] dark:text-white text-right ${
+      className={`text-[13px] font-medium text-slate-900 dark:text-white text-right ${
         mono ? 'font-mono' : ''
       }`}
     >
@@ -44,8 +44,8 @@ export const RequestSummary: React.FC<RequestSummaryProps> = ({
   }, [data.paymentId, onPaymentIdCopied]);
 
   return (
-    <section className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4">
-      <h2 className="text-[14px] font-semibold text-[#111827] dark:text-white mb-2">
+    <section className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4">
+      <h2 className="text-[14px] font-semibold text-slate-900 dark:text-white mb-2">
         Request Summary
       </h2>
       <dl>
@@ -58,20 +58,20 @@ export const RequestSummary: React.FC<RequestSummaryProps> = ({
           />
         )}
         {data.paymentId && (
-          <div className="flex items-center justify-between gap-3 py-2 border-b border-[#E4E7EC]/80 dark:border-slate-800">
-            <dt className="text-[13px] text-[#667085]">Payment ID</dt>
+          <div className="flex items-center justify-between gap-3 py-2 border-b border-slate-200 dark:border-slate-800/80 dark:border-slate-800">
+            <dt className="text-[13px] text-slate-500 dark:text-slate-400">Payment ID</dt>
             <dd className="flex items-center gap-2">
-              <span className="text-[13px] font-mono font-medium text-[#111827] dark:text-white">
+              <span className="text-[13px] font-mono font-medium text-slate-900 dark:text-white">
                 {data.paymentId}
               </span>
               <button
                 type="button"
                 onClick={handleCopy}
-                className="w-9 h-9 rounded-lg border border-[#E4E7EC] flex items-center justify-center text-[#0B5CAB]"
+                className="w-9 h-9 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center text-congress-blue-700 dark:text-congress-blue-400"
                 aria-label="Copy payment ID"
               >
                 {copied ? (
-                  <Check className="w-4 h-4 text-[#16A34A]" />
+                  <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 ) : (
                   <Copy className="w-4 h-4" />
                 )}

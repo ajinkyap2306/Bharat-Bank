@@ -92,14 +92,14 @@ export const InternalTransferReview: React.FC = () => {
 
   if (!review || !draft) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <ReviewHeader onBack={handleBack} />
       </div>
     );
   }
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-36">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-36">
       <ReviewHeader onBack={handleBack} />
 
       <motion.div

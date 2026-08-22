@@ -150,7 +150,7 @@ export const CorporateDeviceVerification: React.FC = () => {
 
   if (isTransitioning) {
     return (
-      <div className="min-h-dvh bg-[#F7F9FC] dark:bg-slate-950 font-['Inter',sans-serif] safe-top safe-bottom max-w-107.5 mx-auto w-full">
+      <div className="min-h-dvh bg-slate-50 dark:bg-slate-950 safe-top safe-bottom max-w-107.5 mx-auto w-full">
         <VerificationStatus
           status={isDeviceVerified ? 'device_verified' : 'biometric_success'}
         />
@@ -160,14 +160,14 @@ export const CorporateDeviceVerification: React.FC = () => {
 
   if (isVerifying) {
     return (
-      <div className="min-h-dvh bg-[#F7F9FC] dark:bg-slate-950 font-['Inter',sans-serif] safe-top safe-bottom max-w-107.5 mx-auto w-full">
+      <div className="min-h-dvh bg-slate-50 dark:bg-slate-950 safe-top safe-bottom max-w-107.5 mx-auto w-full">
         <VerificationStatus status="verifying" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-dvh bg-[#F7F9FC] dark:bg-slate-950 text-[#111827] dark:text-white flex flex-col font-['Inter',sans-serif] safe-top safe-bottom max-w-107.5 mx-auto w-full">
+    <div className="min-h-dvh bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white flex flex-col safe-top safe-bottom max-w-107.5 mx-auto w-full">
       <SecurityHeader title="Secure Your Device" onBack={handleBack} />
 
       <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-4">
@@ -185,7 +185,7 @@ export const CorporateDeviceVerification: React.FC = () => {
               <h2 className="text-[22px] font-semibold tracking-tight leading-tight">
                 Secure this device
               </h2>
-              <p className="text-[14px] text-[#667085] dark:text-slate-400 mt-2 leading-relaxed max-w-xs mx-auto">
+              <p className="text-[14px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed max-w-xs mx-auto">
                 Use biometric authentication for faster and more secure access to
                 Corporate Banking.
               </p>
@@ -213,7 +213,7 @@ export const CorporateDeviceVerification: React.FC = () => {
               </div>
             )}
 
-            <div className="px-4 mt-auto pt-6 sticky bottom-0 bg-[#F7F9FC] dark:bg-slate-950 safe-bottom">
+            <div className="px-4 mt-auto pt-6 sticky bottom-0 bg-slate-50 dark:bg-slate-950 safe-bottom">
               {state.biometricEnabled ? (
                 <form
                   onSubmit={(e) => {
@@ -233,7 +233,7 @@ export const CorporateDeviceVerification: React.FC = () => {
                   type="button"
                   onClick={handleContinueWithoutBiometric}
                   disabled={actionsDisabled}
-                  className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] hover:bg-[#094d91] text-white font-semibold text-base disabled:opacity-60 min-h-12 active:scale-[0.99] transition-all shadow-sm"
+                  className="w-full py-3.5 rounded-2xl bg-congress-blue-700 hover:bg-congress-blue-800 text-white font-semibold text-base disabled:opacity-60 min-h-12 active:scale-[0.99] transition-all shadow-sm"
                 >
                   Continue
                 </button>
@@ -243,7 +243,7 @@ export const CorporateDeviceVerification: React.FC = () => {
                 type="button"
                 onClick={() => dispatch({ type: 'SET_SKIP_SHEET', open: true })}
                 disabled={actionsDisabled}
-                className="w-full py-3 mt-2 text-sm font-medium text-[#667085] dark:text-slate-400 min-h-11 disabled:opacity-50"
+                className="w-full py-3 mt-2 text-sm font-medium text-slate-500 dark:text-slate-400 min-h-11 disabled:opacity-50"
               >
                 Skip for now
               </button>

@@ -24,7 +24,7 @@ export const RemovePaymentSheet: React.FC<RemovePaymentSheetProps> = ({
       <button
         type="button"
         onClick={onClose}
-        className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-semibold min-h-12"
+        className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white font-semibold min-h-12"
       >
         Cancel
       </button>

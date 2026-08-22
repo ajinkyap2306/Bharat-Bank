@@ -30,7 +30,7 @@ export const ApprovalTypeIcon: React.FC<ApprovalTypeIconProps> = ({
   className = '',
 }) => (
   <span
-    className={`w-10 h-10 rounded-2xl bg-linear-to-tr from-[#0B5CAB] to-indigo-700 text-white flex items-center justify-center shadow-sm shadow-[#0B5CAB]/20 shrink-0 ${className}`}
+    className={`w-10 h-10 rounded-2xl bg-linear-to-tr from-congress-blue-800 to-indigo-700 text-white flex items-center justify-center shadow-sm shadow-congress-blue-700/20 shrink-0 ${className}`}
     aria-hidden
   >
     {iconMap[type]}

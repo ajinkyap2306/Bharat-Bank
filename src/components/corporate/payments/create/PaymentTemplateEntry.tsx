@@ -15,18 +15,18 @@ export const PaymentTemplateEntry: React.FC<PaymentTemplateEntryProps> = ({
 
   return (
     <section className="px-4" aria-labelledby="payment-templates-heading">
-      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
         <div className="flex items-center justify-between gap-3 mb-3">
           <h2
             id="payment-templates-heading"
-            className="text-[15px] font-semibold text-[#111827] dark:text-white"
+            className="text-[15px] font-semibold text-slate-900 dark:text-white"
           >
             Use a Payment Template
           </h2>
           <button
             type="button"
             onClick={onViewTemplates}
-            className="text-[13px] font-semibold text-[#0B5CAB] min-h-11 px-2 flex items-center gap-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] rounded-lg"
+            className="text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11 px-2 flex items-center gap-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 rounded-lg"
           >
             View Templates
             <ChevronRight className="w-4 h-4" aria-hidden />
@@ -37,15 +37,15 @@ export const PaymentTemplateEntry: React.FC<PaymentTemplateEntryProps> = ({
           {templates.map((template) => (
             <li
               key={template.id}
-              className="flex items-center gap-3 p-3 rounded-xl bg-[#F7F9FC] dark:bg-slate-800/50 min-h-11"
+              className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 dark:bg-slate-800/50 min-h-11"
             >
               <div
-                className="w-9 h-9 rounded-lg bg-[#0B5CAB]/10 flex items-center justify-center shrink-0"
+                className="w-9 h-9 rounded-lg bg-congress-blue-50 dark:bg-congress-blue-950/40 flex items-center justify-center shrink-0"
                 aria-hidden
               >
-                <FileText className="w-4 h-4 text-[#0B5CAB]" />
+                <FileText className="w-4 h-4 text-congress-blue-700 dark:text-congress-blue-400" />
               </div>
-              <p className="text-[14px] font-medium text-[#111827] dark:text-white">
+              <p className="text-[14px] font-medium text-slate-900 dark:text-white">
                 {template.name}
               </p>
             </li>

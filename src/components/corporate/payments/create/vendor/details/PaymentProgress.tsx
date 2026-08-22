@@ -23,10 +23,10 @@ export const PaymentProgress: React.FC<PaymentProgressProps> = ({ currentStep = 
             <div
               className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 ${
                 isActive
-                  ? 'bg-[#0B5CAB] text-white'
+                  ? 'bg-congress-blue-700 text-white'
                   : isComplete
-                    ? 'bg-[#16A34A]/15 text-[#16A34A]'
-                    : 'bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 text-[#667085]'
+                    ? 'bg-emerald-600/15 text-emerald-600 dark:text-emerald-400'
+                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400'
               }`}
               aria-current={isActive ? 'step' : undefined}
             >
@@ -34,7 +34,7 @@ export const PaymentProgress: React.FC<PaymentProgressProps> = ({ currentStep = 
             </div>
             <span
               className={`text-[10px] mt-1 truncate w-full text-center ${
-                isActive ? 'text-[#0B5CAB] font-semibold' : 'text-[#667085]'
+                isActive ? 'text-congress-blue-700 dark:text-congress-blue-400 font-semibold' : 'text-slate-500 dark:text-slate-400'
               }`}
             >
               {step.label}
@@ -43,9 +43,9 @@ export const PaymentProgress: React.FC<PaymentProgressProps> = ({ currentStep = 
         );
       })}
     </ol>
-    <div className="mt-2 h-1 rounded-full bg-[#E4E7EC] dark:bg-slate-800 overflow-hidden">
+    <div className="mt-2 h-1 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
       <div
-        className="h-full bg-[#0B5CAB] rounded-full transition-all duration-300 motion-reduce:transition-none"
+        className="h-full bg-congress-blue-700 rounded-full transition-all duration-300 motion-reduce:transition-none"
         style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
         aria-hidden
       />

@@ -27,7 +27,7 @@ export const BeneficiaryList: React.FC<BeneficiaryListProps> = ({
       {showHeading && (
         <h2
           id="all-beneficiaries-heading"
-          className="text-[15px] font-semibold text-[#111827] dark:text-white mb-3"
+          className="text-[15px] font-semibold text-slate-900 dark:text-white mb-3"
         >
           All Beneficiaries
         </h2>
@@ -36,7 +36,7 @@ export const BeneficiaryList: React.FC<BeneficiaryListProps> = ({
         {groups.map((group) => (
           <div key={group.letter}>
             <p
-              className="text-[12px] font-bold text-[#667085] uppercase tracking-wide mb-2 px-1"
+              className="text-[12px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2 px-1"
               aria-hidden
             >
               {group.letter}

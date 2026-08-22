@@ -43,13 +43,13 @@ export const OtpDigit = forwardRef<HTMLInputElement, OtpDigitProps>(
       onKeyDown={(e) => onKeyDown(index, e)}
       onFocus={() => onFocus(index)}
       onPaste={onPaste}
-      className={`w-full h-[50px] bg-white dark:bg-slate-900 border-2 rounded-[13px] text-center text-xl font-semibold text-[#111827] dark:text-white outline-none transition-all duration-200 motion-reduce:transition-none ${
+      className={`w-full h-[50px] bg-white dark:bg-slate-900 border-2 rounded-[13px] text-center text-xl font-semibold text-slate-900 dark:text-white outline-none transition-all duration-200 motion-reduce:transition-none ${
         hasError
           ? 'border-[#DC2626] ring-2 ring-[#DC2626]/10'
           : isActive
-            ? 'border-[#0B5CAB] ring-2 ring-[#0B5CAB]/15 scale-[1.02]'
+            ? 'border-congress-blue-700 ring-2 ring-congress-blue-700/15 scale-[1.02]'
             : value
-              ? 'border-[#0B5CAB]/40'
+              ? 'border-congress-blue-700/40'
               : 'border-[#E4E7EC] dark:border-slate-800'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
     />

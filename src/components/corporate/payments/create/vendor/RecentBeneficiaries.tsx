@@ -28,7 +28,7 @@ export const RecentBeneficiaries: React.FC<RecentBeneficiariesProps> = ({
     <section className="px-4" aria-labelledby="recent-beneficiaries-heading">
       <h2
         id="recent-beneficiaries-heading"
-        className="text-[15px] font-semibold text-[#111827] dark:text-white mb-3"
+        className="text-[15px] font-semibold text-slate-900 dark:text-white mb-3"
       >
         Recent
       </h2>

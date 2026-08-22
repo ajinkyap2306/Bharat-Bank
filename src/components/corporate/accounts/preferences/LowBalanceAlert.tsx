@@ -33,7 +33,7 @@ export const LowBalanceAlert: React.FC<LowBalanceAlertProps> = ({
   return (
     <PreferencesCard ariaLabel="Low balance alert">
       <div className="p-4 pb-0">
-        <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white">
+        <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">
           Low Balance Alert
         </h2>
       </div>
@@ -47,11 +47,11 @@ export const LowBalanceAlert: React.FC<LowBalanceAlertProps> = ({
       />
       {enabled && (
         <div className="px-4 pb-4 space-y-3">
-          <p className="text-[13px] text-[#667085]">
+          <p className="text-[13px] text-slate-500 dark:text-slate-400">
             Alert me when available balance falls below
           </p>
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#667085] text-sm">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 text-sm">
               {currency}
             </span>
             <input
@@ -59,12 +59,12 @@ export const LowBalanceAlert: React.FC<LowBalanceAlertProps> = ({
               inputMode="numeric"
               value={draft}
               onChange={(e) => setDraft(e.target.value.replace(/[^\d]/g, ''))}
-              className="w-full pl-8 pr-4 py-3 rounded-xl border border-[#E4E7EC] dark:border-slate-700 bg-white dark:bg-slate-900 text-[14px] font-medium tabular-nums min-h-12"
+              className="w-full pl-8 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-[14px] font-medium tabular-nums min-h-12"
               aria-label="Low balance threshold amount"
             />
           </div>
           {isValid && (
-            <p className="text-[12px] text-[#667085]">
+            <p className="text-[12px] text-slate-500 dark:text-slate-400">
               Threshold: {formatAccountCurrency(parsed, currency)}
             </p>
           )}
@@ -72,7 +72,7 @@ export const LowBalanceAlert: React.FC<LowBalanceAlertProps> = ({
             type="button"
             onClick={() => isValid && onSaveThreshold(parsed)}
             disabled={disabled || isSaving || !isValid || parsed === threshold}
-            className="w-full py-3 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12 disabled:opacity-50"
+            className="w-full py-3 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12 disabled:opacity-50"
           >
             {isSaving ? 'Saving...' : 'Save Threshold'}
           </button>

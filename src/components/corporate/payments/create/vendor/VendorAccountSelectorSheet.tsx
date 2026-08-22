@@ -41,34 +41,34 @@ export const VendorAccountSelectorSheet: React.FC<VendorAccountSelectorSheetProp
               onSelect(account.id);
               onClose();
             }}
-            className={`w-full flex items-center justify-between gap-3 p-4 rounded-2xl border min-h-16 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B5CAB] ${
+            className={`w-full flex items-center justify-between gap-3 p-4 rounded-2xl border min-h-16 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-congress-blue-500 ${
               !eligible
-                ? 'border-[#E4E7EC] dark:border-slate-800 opacity-60 cursor-not-allowed'
+                ? 'border-slate-200 dark:border-slate-800 opacity-60 cursor-not-allowed'
                 : selected
-                  ? 'border-[#0B5CAB] bg-[#0B5CAB]/5'
-                  : 'border-[#E4E7EC] dark:border-slate-800 active:bg-slate-50 dark:active:bg-slate-800/40'
+                  ? 'border-congress-blue-700 bg-congress-blue-700/5'
+                  : 'border-slate-200 dark:border-slate-800 active:bg-slate-50 dark:active:bg-slate-800/40'
             }`}
           >
             <div>
-              <p className="text-[14px] font-semibold text-[#111827] dark:text-white">
+              <p className="text-[14px] font-semibold text-slate-900 dark:text-white">
                 {account.name}
               </p>
-              <p className="text-[13px] text-[#667085] tabular-nums">{account.maskedNumber}</p>
-              <p className="text-[12px] font-medium text-[#111827] dark:text-white tabular-nums mt-1">
+              <p className="text-[13px] text-slate-500 dark:text-slate-400 tabular-nums">{account.maskedNumber}</p>
+              <p className="text-[12px] font-medium text-slate-900 dark:text-white tabular-nums mt-1">
                 {showBalances
                   ? formatAccountCurrency(account.availableBalance, account.currency)
                   : '••••••'}
               </p>
               <p
                 className={`text-[11px] font-semibold mt-1 ${
-                  eligible ? 'text-[#16A34A]' : 'text-[#DC2626]'
+                  eligible ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#DC2626]'
                 }`}
               >
                 {eligible ? 'Eligible' : 'Not available for vendor payments'}
               </p>
             </div>
             {selected && eligible && (
-              <Check className="w-5 h-5 text-[#0B5CAB] shrink-0" aria-hidden />
+              <Check className="w-5 h-5 text-congress-blue-700 dark:text-congress-blue-400 shrink-0" aria-hidden />
             )}
           </button>
         );

@@ -35,8 +35,8 @@ export const ApprovalSortSheet: React.FC<ApprovalSortSheetProps> = ({
           }}
           className={`w-full text-left px-4 py-3.5 rounded-xl text-[15px] min-h-11 ${
             value === o.id
-              ? 'bg-[#0B5CAB]/10 text-[#0B5CAB] font-semibold'
-              : 'text-[#111827] dark:text-white'
+              ? 'bg-congress-blue-50 dark:bg-congress-blue-950/40 text-congress-blue-700 dark:text-congress-blue-400 font-semibold'
+              : 'text-slate-900 dark:text-white'
           }`}
         >
           {o.label}

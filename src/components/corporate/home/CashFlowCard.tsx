@@ -26,7 +26,7 @@ export const CashFlowCard: React.FC<CashFlowCardProps> = ({
       {isLoading ? (
         <CorpSkeleton className="h-44 mx-4" />
       ) : (
-        <CorpCard className="mx-4! p-4 border-[#E4E7EC]">
+        <CorpCard className="mx-4! p-4 border-slate-200 dark:border-slate-800">
           <div className="flex gap-1.5 mb-4" role="tablist" aria-label="Cash flow period">
             {(['7D', '30D', '90D'] as CorporateCashFlowPeriod[]).map((p) => (
               <button
@@ -38,7 +38,7 @@ export const CashFlowCard: React.FC<CashFlowCardProps> = ({
                 className={`px-3 py-1.5 rounded-full text-[12px] font-semibold min-h-8 transition-colors ${
                   period === p
                     ? 'bg-congress-blue-700 text-white'
-                    : 'bg-[#F7F9FC] dark:bg-slate-800 text-[#667085]'
+                    : 'bg-slate-50 dark:bg-slate-950 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                 }`}
               >
                 {p}
@@ -51,7 +51,7 @@ export const CashFlowCard: React.FC<CashFlowCardProps> = ({
               <div key={point.label} className="flex-1 flex flex-col items-center gap-1">
                 <div className="w-full flex items-end justify-center gap-0.5 h-16">
                   <div
-                    className="w-[42%] rounded-t-md bg-[#16A34A]/75 min-h-1"
+                    className="w-[42%] rounded-t-md bg-emerald-600/75 min-h-1"
                     style={{ height: `${(point.inflow / max) * 100}%` }}
                   />
                   <div
@@ -59,23 +59,23 @@ export const CashFlowCard: React.FC<CashFlowCardProps> = ({
                     style={{ height: `${(point.outflow / max) * 100}%` }}
                   />
                 </div>
-                <span className="text-[9px] text-[#667085]">{point.label}</span>
+                <span className="text-[9px] text-slate-500 dark:text-slate-400">{point.label}</span>
               </div>
             ))}
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-center">
             <div>
-              <p className="text-[11px] text-[#667085]">Inflow</p>
-              <p className="text-sm font-semibold text-[#16A34A] tabular-nums">₹{netInflow.toFixed(2)}L</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Inflow</p>
+              <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">₹{netInflow.toFixed(2)}L</p>
             </div>
             <div>
-              <p className="text-[11px] text-[#667085]">Outflow</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Outflow</p>
               <p className="text-sm font-semibold text-[#DC2626] tabular-nums">₹{netOutflow.toFixed(2)}L</p>
             </div>
             <div>
-              <p className="text-[11px] text-[#667085]">Net Flow</p>
-              <p className={`text-sm font-semibold tabular-nums ${netFlow >= 0 ? 'text-[#16A34A]' : 'text-[#DC2626]'}`}>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Net Flow</p>
+              <p className={`text-sm font-semibold tabular-nums ${netFlow >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#DC2626]'}`}>
                 {netFlow >= 0 ? '+' : ''}₹{netFlow.toFixed(2)}L
               </p>
             </div>

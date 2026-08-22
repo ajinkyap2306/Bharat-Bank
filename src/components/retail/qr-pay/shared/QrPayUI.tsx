@@ -110,10 +110,25 @@ export const UpiPinSheet: React.FC<{
   amount: number;
   pin: string;
   isPaying: boolean;
+  pinLabel?: string;
+  confirmLabel?: string;
+  pinError?: string;
   onPinChange: (value: string) => void;
   onConfirm: () => void;
   onClose: () => void;
-}> = ({ open, merchantName, amount, pin, isPaying, onPinChange, onConfirm, onClose }) => (
+}> = ({
+  open,
+  merchantName,
+  amount,
+  pin,
+  isPaying,
+  pinLabel = 'Enter UPI PIN',
+  confirmLabel = 'Confirm Payment',
+  pinError,
+  onPinChange,
+  onConfirm,
+  onClose,
+}) => (
   <AnimatePresence>
     {open && (
       <>
@@ -134,7 +149,7 @@ export const UpiPinSheet: React.FC<{
           className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-[430px] rounded-t-3xl bg-white dark:bg-slate-900 px-5 pt-5 pb-8 safe-bottom shadow-2xl"
           role="dialog"
           aria-modal="true"
-          aria-label="Enter UPI PIN"
+          aria-label={pinLabel}
         >
           {isPaying ? (
             <div className="flex flex-col items-center text-center py-10">
@@ -150,7 +165,7 @@ export const UpiPinSheet: React.FC<{
                 ₹{amount.toLocaleString('en-IN')}
               </p>
               <p className="text-center text-xs font-bold text-slate-600 dark:text-slate-400 mt-6 mb-3">
-                Enter UPI PIN
+                {pinLabel}
               </p>
               <NumericPinInput
                 value={pin}
@@ -158,15 +173,16 @@ export const UpiPinSheet: React.FC<{
                 masked
                 autoFocus
                 autoComplete="off"
-                ariaLabel="UPI PIN"
+                ariaLabel={pinLabel}
               />
+              {pinError && <p className="text-xs text-red-600 mt-2 text-center">{pinError}</p>}
               <button
                 type="button"
                 disabled={pin.length < 6}
                 onClick={onConfirm}
                 className="w-full mt-6 py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm disabled:opacity-50 min-h-11"
               >
-                Confirm Payment
+                {confirmLabel}
               </button>
             </>
           )}

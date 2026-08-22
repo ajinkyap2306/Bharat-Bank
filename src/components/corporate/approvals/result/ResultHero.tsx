@@ -18,16 +18,16 @@ const heroConfig: Record<
   { icon: React.ReactNode; title: string; description: string; tone: string }
 > = {
   approved_next: {
-    icon: <CheckCircle className="w-12 h-12 text-[#16A34A]" aria-hidden />,
+    icon: <CheckCircle className="w-12 h-12 text-emerald-600 dark:text-emerald-400" aria-hidden />,
     title: 'Approval Successful',
     description: 'The request has been approved by you.',
-    tone: 'text-[#16A34A]',
+    tone: 'text-emerald-600 dark:text-emerald-400',
   },
   approved_final: {
-    icon: <CheckCircle className="w-12 h-12 text-[#16A34A]" aria-hidden />,
+    icon: <CheckCircle className="w-12 h-12 text-emerald-600 dark:text-emerald-400" aria-hidden />,
     title: 'Approval Successful',
     description: 'The request has been approved by you.',
-    tone: 'text-[#16A34A]',
+    tone: 'text-emerald-600 dark:text-emerald-400',
   },
   rejected: {
     icon: <XCircle className="w-12 h-12 text-[#DC2626]" aria-hidden />,
@@ -42,10 +42,10 @@ const heroConfig: Record<
     tone: 'text-[#F59E0B]',
   },
   already_processed: {
-    icon: <Info className="w-12 h-12 text-[#0B5CAB]" aria-hidden />,
+    icon: <Info className="w-12 h-12 text-congress-blue-700 dark:text-congress-blue-400" aria-hidden />,
     title: 'Request Already Processed',
     description: 'This request was already handled by another authorized user.',
-    tone: 'text-[#0B5CAB]',
+    tone: 'text-congress-blue-700 dark:text-congress-blue-400',
   },
   failed: {
     icon: <AlertCircle className="w-12 h-12 text-[#DC2626]" aria-hidden />,
@@ -61,7 +61,7 @@ export const ResultHero: React.FC<ResultHeroProps> = ({ status }) => {
 
   return (
     <section
-      className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-5 text-center"
+      className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 text-center"
       aria-live="polite"
     >
       <motion.div
@@ -71,7 +71,7 @@ export const ResultHero: React.FC<ResultHeroProps> = ({ status }) => {
       >
         <div className="flex justify-center mb-3">{hero.icon}</div>
         <h2 className={`text-[18px] font-semibold ${hero.tone}`}>{hero.title}</h2>
-        <p className="text-[13px] text-[#667085] mt-2">{hero.description}</p>
+        <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-2">{hero.description}</p>
       </motion.div>
     </section>
   );

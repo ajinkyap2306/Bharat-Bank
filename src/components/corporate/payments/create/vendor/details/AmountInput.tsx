@@ -26,13 +26,13 @@ export const AmountInput: React.FC<AmountInputProps> = ({
 
   return (
     <section className="px-4" aria-labelledby="payment-amount-label">
-      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm">
-        <label id="payment-amount-label" htmlFor="payment-amount" className="text-[14px] font-semibold text-[#111827] dark:text-white">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
+        <label id="payment-amount-label" htmlFor="payment-amount" className="text-[14px] font-semibold text-slate-900 dark:text-white">
           Payment Amount
         </label>
 
-        <div className="mt-3 flex items-center gap-2 border-b border-[#E4E7EC] dark:border-slate-800 pb-3">
-          <span className="text-[24px] font-bold text-[#111827] dark:text-white" aria-hidden>
+        <div className="mt-3 flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+          <span className="text-[24px] font-bold text-slate-900 dark:text-white" aria-hidden>
             ₹
           </span>
           <input
@@ -43,17 +43,17 @@ export const AmountInput: React.FC<AmountInputProps> = ({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="0.00"
-            className="flex-1 text-[28px] font-bold text-[#111827] dark:text-white bg-transparent outline-none tabular-nums placeholder:text-[#667085]/50 min-h-11"
+            className="flex-1 text-[28px] font-bold text-slate-900 dark:text-white bg-transparent outline-none tabular-nums placeholder:text-slate-500 dark:text-slate-400/50 min-h-11"
             aria-describedby="payment-amount-hint payment-amount-validation"
             aria-invalid={hasError}
           />
-          <span className="text-[12px] font-semibold text-[#667085] shrink-0">INR</span>
+          <span className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 shrink-0">INR</span>
         </div>
 
-        <div id="payment-amount-hint" className="mt-3 space-y-1.5 text-[12px] text-[#667085]">
+        <div id="payment-amount-hint" className="mt-3 space-y-1.5 text-[12px] text-slate-500 dark:text-slate-400">
           <div className="flex justify-between gap-2">
             <span>Available Balance</span>
-            <span className="font-medium text-[#111827] dark:text-white tabular-nums">
+            <span className="font-medium text-slate-900 dark:text-white tabular-nums">
               {showBalances
                 ? formatPaymentCurrency(limits.availableBalance, limits.currency)
                 : '••••••'}
@@ -78,14 +78,14 @@ export const AmountInput: React.FC<AmountInputProps> = ({
             id="payment-amount-validation"
             role={hasError ? 'alert' : 'status'}
             className={`mt-3 text-[13px] font-medium ${
-              isValid ? 'text-[#16A34A]' : hasError ? 'text-[#DC2626]' : 'text-[#667085]'
+              isValid ? 'text-emerald-600 dark:text-emerald-400' : hasError ? 'text-[#DC2626]' : 'text-slate-500 dark:text-slate-400'
             }`}
           >
             {message}
           </p>
         )}
         {validationState === 'empty' && value === '' && (
-          <p id="payment-amount-validation" className="mt-3 text-[13px] text-[#667085]">
+          <p id="payment-amount-validation" className="mt-3 text-[13px] text-slate-500 dark:text-slate-400">
             Enter a payment amount.
           </p>
         )}

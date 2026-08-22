@@ -14,21 +14,21 @@ export const DiscardChangesSheet: React.FC<DiscardChangesSheetProps> = ({
 }) => (
   <BottomSheet isOpen={isOpen} onClose={onKeepEditing} title="Discard changes?">
     <div className="space-y-4 pb-2">
-      <p className="text-[13px] text-[#667085]">
+      <p className="text-[13px] text-slate-500 dark:text-slate-400">
         You have unsaved changes to your account nickname. Do you want to discard them?
       </p>
       <div className="flex gap-2">
         <button
           type="button"
           onClick={onKeepEditing}
-          className="flex-1 py-3.5 rounded-2xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-12"
+          className="flex-1 py-3.5 rounded-2xl bg-congress-blue-700 text-white text-sm font-semibold min-h-12"
         >
           Keep Editing
         </button>
         <button
           type="button"
           onClick={onDiscard}
-          className="flex-1 py-3.5 rounded-2xl border border-[#E4E7EC] dark:border-slate-700 text-sm font-semibold text-[#DC2626] min-h-12"
+          className="flex-1 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm font-semibold text-[#DC2626] min-h-12"
         >
           Discard
         </button>

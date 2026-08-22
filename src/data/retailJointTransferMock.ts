@@ -58,6 +58,17 @@ export function requiresJointApproval(account: BankAccount | undefined): boolean
   return account?.operatingInstruction === 'jointly_operated';
 }
 
+/** True when the logged-in retail user holds a jointly operated account (maker-checker applies). */
+export function userHasJointMakerCheckerAccess(
+  accounts: BankAccount[],
+  userId: string
+): boolean {
+  return accounts.some(
+    (account) =>
+      canUserAccessJointAccount(account, userId) && requiresJointApproval(account)
+  );
+}
+
 export function getOperatingInstructionLabel(instruction?: JointOperatingInstruction): string {
   if (instruction === 'jointly_operated') return 'Jointly Operated';
   if (instruction === 'either_or_survivor') return 'Either or Survivor';
@@ -125,6 +136,15 @@ export function canUserApproveJointRequest(
     request.status === 'pending_joint_approval' &&
     request.approverUserId === userId &&
     request.initiatedByUserId !== userId
+  );
+}
+
+export function getPendingJointRequestsInitiatedByUser(
+  requests: JointTransferRequest[],
+  userId: string
+): JointTransferRequest[] {
+  return requests.filter(
+    (r) => r.initiatedByUserId === userId && r.status === 'pending_joint_approval'
   );
 }
 

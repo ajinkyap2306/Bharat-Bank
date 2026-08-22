@@ -22,11 +22,11 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
 
   if (!txn) {
     return (
-      <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full">
+      <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full">
         <ScreenHeader title="Transaction Details" onBack={onBack} edgeToEdge={false} />
         <div className="p-6 text-center">
           <p className="text-sm font-bold">Unable to load transaction</p>
-          <button type="button" onClick={onBack} className="mt-4 px-5 py-2.5 rounded-xl bg-[#0B5CAB] text-white text-sm font-bold">Retry</button>
+          <button type="button" onClick={onBack} className="mt-4 px-5 py-2.5 rounded-xl bg-congress-blue-700 text-white text-sm font-bold">Retry</button>
         </div>
       </div>
     );
@@ -36,12 +36,12 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
   const isFailed = txn.status === 'Failed';
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-6">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-6">
       <ScreenHeader title="Transaction Details" onBack={onBack} edgeToEdge={false} />
 
       <div className="space-y-4">
         <AccountsCard className="p-4 text-center">
-          <p className={`text-2xl font-bold font-mono ${txn.type === 'credit' ? 'text-[#16A34A]' : 'text-[#111827] dark:text-white'}`}>
+          <p className={`text-2xl font-bold font-mono ${txn.type === 'credit' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}`}>
             {txn.type === 'credit' ? '+' : '-'} {formatAccountCurrency(txn.amount, account?.currency || '₹')}
           </p>
           <div className="mt-2 flex justify-center">
@@ -51,10 +51,10 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
 
         {isPending && (
           <AccountsCard className="p-4 border-amber-200/80 bg-amber-50/50 dark:bg-amber-950/20">
-            <p className="text-sm font-bold text-[#111827] dark:text-white">Pending Approval</p>
-            <p className="text-xs text-[#667085] mt-1">Initiated by {txn.initiatedBy}</p>
-            <p className="text-xs text-[#667085]">Created {txn.date} • {txn.time}</p>
-            <button type="button" onClick={onViewApproval} className="mt-3 w-full py-2.5 rounded-xl bg-[#0B5CAB] text-white text-xs font-bold">
+            <p className="text-sm font-bold text-slate-900 dark:text-white">Pending Approval</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Initiated by {txn.initiatedBy}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Created {txn.date} • {txn.time}</p>
+            <button type="button" onClick={onViewApproval} className="mt-3 w-full py-2.5 rounded-xl bg-congress-blue-700 text-white text-xs font-bold">
               View Approval
             </button>
           </AccountsCard>
@@ -63,15 +63,15 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
         {isFailed && (
           <AccountsCard className="p-4 border-rose-200/80 bg-rose-50/50 dark:bg-rose-950/20">
             <p className="text-sm font-bold text-[#DC2626]">Transaction Failed</p>
-            {txn.failureReason && <p className="text-xs text-[#667085] mt-1">{txn.failureReason}</p>}
-            <button type="button" onClick={onBack} className="mt-3 w-full py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-[#667085]">
+            {txn.failureReason && <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{txn.failureReason}</p>}
+            <button type="button" onClick={onBack} className="mt-3 w-full py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-500 dark:text-slate-400">
               View Details
             </button>
           </AccountsCard>
         )}
 
         <AccountsCard className="p-4">
-          <p className="text-[10px] font-bold text-[#667085] uppercase mb-2">Transaction Information</p>
+          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Transaction Information</p>
           <InfoRow label="Beneficiary" value={txn.counterpartyName} />
           <InfoRow label="Account" value={account?.maskedNumber || '—'} />
           <InfoRow label="Transaction type" value={txn.txnType} />
@@ -83,7 +83,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
 
         {(txn.initiatedBy || txn.approvedBy) && (
           <AccountsCard className="p-4">
-            <p className="text-[10px] font-bold text-[#667085] uppercase mb-2">Corporate Information</p>
+            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Corporate Information</p>
             {txn.initiatedBy && <InfoRow label="Initiated by" value={txn.initiatedBy} />}
             {txn.approvedBy && <InfoRow label="Approved by" value={txn.approvedBy} />}
             {txn.approvalDate && <InfoRow label="Approval date" value={txn.approvalDate} />}
@@ -106,7 +106,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
             <button
               type="button"
               onClick={() => addToast({ type: 'info', title: 'Share', message: 'Receipt link copied.' })}
-              className="flex-1 py-3 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm flex items-center justify-center gap-2"
+              className="flex-1 py-3 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm flex items-center justify-center gap-2"
             >
               <Share2 className="w-4 h-4" /> Share Receipt
             </button>

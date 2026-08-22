@@ -130,7 +130,7 @@ export const PaymentTypeSelection: React.FC = () => {
 
   if (!selectedAccount) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-safe">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-safe">
         <PaymentHeader onBack={handleBack} onHelp={() => setShowHelpSheet(true)} />
         <RouteLoadingState label="Loading payment options…" />
       </div>
@@ -138,7 +138,7 @@ export const PaymentTypeSelection: React.FC = () => {
   }
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-safe">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-safe">
       <PaymentHeader onBack={handleBack} onHelp={() => setShowHelpSheet(true)} />
 
       <div className="space-y-5 pt-4 pb-8 max-w-[430px] mx-auto">

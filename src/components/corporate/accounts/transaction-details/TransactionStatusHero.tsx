@@ -21,13 +21,13 @@ export function getStatusConfig(status: CorporateTxnDisplayStatus, direction: 'c
       label: creditCompleted,
       message: direction === 'credit' ? 'Funds credited to your account.' : 'Payment completed successfully.',
       icon: CheckCircle2,
-      tone: 'text-[#16A34A] bg-emerald-50 dark:bg-emerald-950/30',
+      tone: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30',
     },
     Processing: {
       label: 'Payment Processing',
       message: 'The bank is processing this transaction.',
       icon: RefreshCw,
-      tone: 'text-[#667085] bg-slate-100 dark:bg-slate-800',
+      tone: 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800',
     },
     'Pending Approval': {
       label: 'Pending Approval',
@@ -51,7 +51,7 @@ export function getStatusConfig(status: CorporateTxnDisplayStatus, direction: 'c
       label: 'Payment Scheduled',
       message: 'This transaction is scheduled for processing.',
       icon: Clock,
-      tone: 'text-[#667085] bg-slate-100 dark:bg-slate-800',
+      tone: 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800',
     },
   };
   return map[status];
@@ -74,7 +74,7 @@ export const TransactionStatusHero: React.FC<TransactionStatusHeroProps> = ({
     : '••••••';
 
   return (
-    <div className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-5 shadow-sm text-center">
+    <div className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm text-center">
       <div
         className={`w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 ${config.tone}`}
       >
@@ -83,20 +83,20 @@ export const TransactionStatusHero: React.FC<TransactionStatusHeroProps> = ({
           aria-hidden
         />
       </div>
-      <p className="text-[15px] font-semibold text-[#111827] dark:text-white">{config.label}</p>
+      <p className="text-[15px] font-semibold text-slate-900 dark:text-white">{config.label}</p>
       <p
         className={`text-[28px] font-semibold tabular-nums tracking-tight mt-2 ${
-          details.direction === 'credit' ? 'text-[#16A34A]' : 'text-[#111827] dark:text-white'
+          details.direction === 'credit' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'
         }`}
         aria-label={`${details.direction} ${details.amount} rupees`}
       >
         {amountStr}
       </p>
-      <p className="text-[14px] text-[#667085] mt-1">{details.txnType}</p>
-      <p className="text-[13px] text-[#667085] mt-1">
+      <p className="text-[14px] text-slate-500 dark:text-slate-400 mt-1">{details.txnType}</p>
+      <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">
         {details.date} • {details.time}
       </p>
-      <p className="text-[12px] text-[#667085] mt-3 leading-relaxed">{config.message}</p>
+      <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-3 leading-relaxed">{config.message}</p>
     </div>
   );
 };

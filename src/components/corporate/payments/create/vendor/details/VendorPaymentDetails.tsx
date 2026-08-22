@@ -177,7 +177,7 @@ export const VendorPaymentDetails: React.FC = () => {
 
   if (!beneficiary || !selectedAccount) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-32">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-32">
         <PaymentDetailsHeader onBack={handleBack} onHelp={() => setShowHelpSheet(true)} />
         <RouteLoadingState label="Loading payment details…" />
       </div>
@@ -188,7 +188,7 @@ export const VendorPaymentDetails: React.FC = () => {
   const displayDate = form.scheduled ? form.executionDate : form.paymentDate;
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-32">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-32">
       <PaymentDetailsHeader onBack={handleBack} onHelp={() => setShowHelpSheet(true)} />
 
       <div className="space-y-4 pt-4 pb-4 max-w-[430px] mx-auto">

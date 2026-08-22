@@ -79,6 +79,7 @@ import {
   getJointApproverUserId,
   getRetailJointUser,
   getRetailJointUserByCustomerNumber,
+  userHasJointMakerCheckerAccess,
 } from '../data/retailJointTransferMock';
 import { BillPaymentRecord, FetchedBill, BillProvider } from '../types/bills';
 import {
@@ -220,6 +221,8 @@ interface BankingContextType {
   retailRegistration: RetailRegistrationResult | null;
   completeRetailRegistration: (result: RetailRegistrationResult) => void;
   retailActiveUserId: string;
+  /** True when retail user holds a jointly operated account (maker-checker flows apply). */
+  hasRetailJointApprovalAccess: boolean;
   setRetailSessionFromLogin: (customerNumber: string) => void;
   jointTransferRequests: JointTransferRequest[];
   submitJointTransferRequest: (params: {
@@ -248,6 +251,7 @@ interface BankingContextType {
   rejectJointTransferRequest: (requestId: string, reason?: string) => boolean;
   executeApprovedJointTransfer: (requestId: string) => Promise<boolean>;
   getPendingJointApprovalsForUser: (userId: string) => JointTransferRequest[];
+  getPendingJointRequestsInitiatedByUser: (userId: string) => JointTransferRequest[];
   getJointRequestsForUser: (userId: string) => JointTransferRequest[];
   getJointRequestById: (requestId: string) => JointTransferRequest | undefined;
   canApproveCorporate: boolean;
@@ -814,6 +818,9 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     bankingType === 'retail'
       ? retailAccounts.filter((a) => canUserAccessJointAccount(a, retailActiveUserId))
       : corporateAccounts;
+  const hasRetailJointApprovalAccess =
+    bankingType === 'retail' &&
+    userHasJointMakerCheckerAccess(retailAccounts, retailActiveUserId);
   const transactions = bankingType === 'retail' ? retailTransactions : corporateTransactions;
   const beneficiaries = bankingType === 'retail' ? retailBeneficiaries : corporateBeneficiaries;
   const cards = bankingType === 'retail' ? retailCards : corporateCards;
@@ -922,6 +929,11 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const getPendingJointApprovalsForUser = (userId: string) =>
     jointTransferRequests.filter(
       (r) => r.status === 'pending_joint_approval' && canUserApproveJointRequest(r, userId)
+    );
+
+  const getPendingJointRequestsInitiatedByUser = (userId: string) =>
+    jointTransferRequests.filter(
+      (r) => r.initiatedByUserId === userId && r.status === 'pending_joint_approval'
     );
 
   const getJointRequestsForUser = (userId: string) =>
@@ -3459,6 +3471,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       retailRegistration,
       completeRetailRegistration,
       retailActiveUserId,
+      hasRetailJointApprovalAccess,
       setRetailSessionFromLogin,
       jointTransferRequests,
       submitJointTransferRequest,
@@ -3467,6 +3480,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       rejectJointTransferRequest,
       executeApprovedJointTransfer,
       getPendingJointApprovalsForUser,
+      getPendingJointRequestsInitiatedByUser,
       getJointRequestsForUser,
       getJointRequestById,
       canApproveCorporate,

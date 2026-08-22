@@ -12,7 +12,7 @@ export const MakePaymentCTA: React.FC<MakePaymentCTAProps> = ({ onClick }) => (
       type="button"
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className="w-full rounded-2xl bg-linear-to-tr from-[#0B5CAB] to-indigo-700 text-white p-4 shadow-md shadow-[#0B5CAB]/20 flex items-center gap-3"
+      className="w-full rounded-2xl bg-linear-to-tr from-congress-blue-800 to-indigo-700 text-white p-4 shadow-md shadow-congress-blue-700/20 flex items-center gap-3"
     >
       <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
         <SendHorizontal className="w-5 h-5" aria-hidden />

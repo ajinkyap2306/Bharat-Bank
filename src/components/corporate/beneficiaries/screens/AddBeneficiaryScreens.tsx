@@ -14,7 +14,7 @@ interface FlowProps {
 }
 
 export const AddTypeScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNext }) => (
-  <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+  <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
     <ScreenHeader title="Beneficiary Type" subtitle="Add Corporate Beneficiary" onBack={onBack} edgeToEdge={false} />
     <div className="space-y-2">
       {BENEFICIARY_TYPE_OPTIONS.map((opt) => (
@@ -23,11 +23,11 @@ export const AddTypeScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNe
           type="button"
           onClick={() => { setForm((f) => ({ ...f, type: opt.id })); onNext('add-business'); }}
           className={`mx-3 w-[calc(100%-1.5rem)] p-4 rounded-2xl border text-left min-h-11 ${
-            form.type === opt.id ? 'border-[#0B5CAB] bg-[#0B5CAB]/5' : 'bg-white dark:bg-slate-900 border-slate-200/80'
+            form.type === opt.id ? 'border-congress-blue-700 bg-congress-blue-700/5' : 'bg-white dark:bg-slate-900 border-slate-200/80'
           }`}
         >
-          <p className="text-sm font-bold text-[#111827] dark:text-white">{opt.label}</p>
-          <p className="text-xs text-[#667085] mt-0.5">{opt.description}</p>
+          <p className="text-sm font-bold text-slate-900 dark:text-white">{opt.label}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{opt.description}</p>
         </button>
       ))}
     </div>
@@ -45,12 +45,12 @@ export const AddBusinessScreen: React.FC<FlowProps> = ({ form, setForm, onBack, 
     { key: 'nickname', label: 'Beneficiary Nickname', placeholder: 'Office Supplies Vendor' },
   ];
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Business Information" onBack={onBack} edgeToEdge={false} />
       <BenCard className="p-4 space-y-3">
         {fields.map(({ key, label, placeholder }) => (
           <div key={key}>
-            <label className="text-xs font-bold text-[#667085]">{label}</label>
+            <label className="text-xs font-bold text-slate-500 dark:text-slate-400">{label}</label>
             <input
               value={form[key] as string}
               onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
@@ -81,11 +81,11 @@ export const AddBankScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNe
   };
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Bank Details" onBack={onBack} edgeToEdge={false} />
       <BenCard className="p-4 space-y-3">
         <div>
-          <label className="text-xs font-bold text-[#667085]">IFSC</label>
+          <label className="text-xs font-bold text-slate-500 dark:text-slate-400">IFSC</label>
           <input
             value={form.ifsc}
             onChange={(e) => {
@@ -111,7 +111,7 @@ export const AddBankScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNe
                   className="w-full text-left px-3 py-2.5 border-b border-slate-100 dark:border-slate-800 last:border-0"
                 >
                   <p className="text-xs font-bold font-mono">{item.ifsc}</p>
-                  <p className="text-[11px] text-[#667085]">{item.bankName} — {item.branch}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">{item.bankName} — {item.branch}</p>
                 </button>
               ))}
             </div>
@@ -123,7 +123,7 @@ export const AddBankScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNe
           { key: 'confirmAccountNumber' as const, label: 'Confirm Account Number', placeholder: '50200045829101' },
         ].map(({ key, label, placeholder }) => (
           <div key={key}>
-            <label className="text-xs font-bold text-[#667085]">{label}</label>
+            <label className="text-xs font-bold text-slate-500 dark:text-slate-400">{label}</label>
             <input
               value={form[key]}
               onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
@@ -136,7 +136,7 @@ export const AddBankScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNe
           type="button"
           onClick={handleBanlLookup}
           disabled={!form.accountNumber || form.ifsc.length < 11}
-          className="w-full py-2.5 rounded-xl border border-[#0B5CAB] text-[#0B5CAB] text-xs font-bold disabled:opacity-40"
+          className="w-full py-2.5 rounded-xl border border-congress-blue-700 text-congress-blue-700 dark:text-congress-blue-400 text-xs font-bold disabled:opacity-40"
         >
           Verify via BANL (Name Lookup)
         </button>
@@ -153,7 +153,7 @@ export const AddBankScreen: React.FC<FlowProps> = ({ form, setForm, onBack, onNe
           </div>
         )}
         <div>
-          <label className="text-xs font-bold text-[#667085]">Account Type</label>
+          <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Account Type</label>
           <select
             value={form.accountType}
             onChange={(e) => setForm((f) => ({ ...f, accountType: e.target.value }))}
@@ -184,7 +184,7 @@ export const VerifyScreen: React.FC<FlowProps & { onVerified: () => void }> = ({
   }, [form.accountNumber]);
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24 flex flex-col items-center justify-center p-6">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24 flex flex-col items-center justify-center p-6">
       <ScreenHeader title="Verify Beneficiary" onBack={onBack} edgeToEdge={false} />
       <BenCard className="p-4 w-full mt-4">
         <ReviewBenRow label="Beneficiary name" value={form.name} />
@@ -195,14 +195,14 @@ export const VerifyScreen: React.FC<FlowProps & { onVerified: () => void }> = ({
       </BenCard>
       {state === 'loading' && (
         <div className="mt-6 text-center">
-          <div className="w-10 h-10 border-2 border-[#0B5CAB] border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm font-bold text-[#111827] dark:text-white mt-3">Verifying Bank Details...</p>
+          <div className="w-10 h-10 border-2 border-congress-blue-700 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm font-bold text-slate-900 dark:text-white mt-3">Verifying Bank Details...</p>
         </div>
       )}
       {state === 'success' && (
         <div className="mt-6 text-center w-full">
-          <p className="text-base font-bold text-[#16A34A]">Beneficiary Details Verified</p>
-          <button type="button" onClick={onVerified} className="mt-4 w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11">Continue</button>
+          <p className="text-base font-bold text-emerald-600 dark:text-emerald-400">Beneficiary Details Verified</p>
+          <button type="button" onClick={onVerified} className="mt-4 w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11">Continue</button>
         </div>
       )}
       {state === 'failed' && (
@@ -210,7 +210,7 @@ export const VerifyScreen: React.FC<FlowProps & { onVerified: () => void }> = ({
           <p className="text-base font-bold text-[#DC2626]">Unable to verify beneficiary</p>
           <div className="flex gap-2 mt-4">
             <button type="button" onClick={onBack} className="flex-1 py-3 rounded-2xl border font-bold text-sm min-h-11">Edit Details</button>
-            <button type="button" onClick={() => setState('loading')} className="flex-1 py-3 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11">Try Again</button>
+            <button type="button" onClick={() => setState('loading')} className="flex-1 py-3 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11">Try Again</button>
           </div>
         </div>
       )}
@@ -230,12 +230,12 @@ export const DuplicateScreen: React.FC<FlowProps & { onViewExisting: (id: string
     return null;
   }
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Possible Duplicate" onBack={onBack} edgeToEdge={false} />
       <BenCard className="p-4">
-        <p className="text-sm font-bold text-[#111827] dark:text-white">Possible Duplicate Beneficiary</p>
-        <p className="text-sm text-[#667085] mt-2">{dup.name}</p>
-        <p className="text-xs text-[#667085]">Already exists with A/C {dup.maskedAccount}</p>
+        <p className="text-sm font-bold text-slate-900 dark:text-white">Possible Duplicate Beneficiary</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">{dup.name}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">Already exists with A/C {dup.maskedAccount}</p>
       </BenCard>
       <StickyBenCTA
         label="Continue Anyway"
@@ -251,17 +251,17 @@ export const ReviewScreen: React.FC<FlowProps & { onSubmit: () => void }> = ({ f
   const masked = form.accountNumber.length > 4 ? `••••${form.accountNumber.slice(-4)}` : form.accountNumber;
   const typeLabel = BENEFICIARY_TYPE_OPTIONS.find((o) => o.id === form.type)?.label || form.type;
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Review Beneficiary" onBack={onBack} edgeToEdge={false} />
       <BenCard className="p-4">
-        <p className="text-[10px] font-bold text-[#667085] uppercase mb-2">Business Details</p>
+        <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Business Details</p>
         <ReviewBenRow label="Name" value={form.name} onEdit={() => onNext('add-business')} />
         <ReviewBenRow label="Type" value={typeLabel} />
         <ReviewBenRow label="Company" value={form.companyName} />
         <ReviewBenRow label="Contact" value={`${form.contactPerson} • ${form.mobile}`} />
       </BenCard>
       <BenCard className="p-4 mt-4">
-        <p className="text-[10px] font-bold text-[#667085] uppercase mb-2">Bank Details</p>
+        <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Bank Details</p>
         <ReviewBenRow label="Bank" value={form.bankName} onEdit={() => onNext('add-bank')} />
         <ReviewBenRow label="Account" value={masked} />
         <ReviewBenRow label="IFSC" value={form.ifsc} />
@@ -283,10 +283,10 @@ export const AuthScreen: React.FC<{ title: string; onBack: () => void; onConfirm
 }) => {
   const [mpin, setMpin] = useState('');
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title={title} onBack={onBack} edgeToEdge={false} />
       <BenCard className="p-4">
-        <p className="text-sm text-[#667085] mb-3">Enter MPIN to confirm this action.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Enter MPIN to confirm this action.</p>
         <input
           type="password"
           maxLength={6}
@@ -307,7 +307,7 @@ export const SubmittedScreen: React.FC<{
   submittedBy: string;
   onDone: () => void;
 }> = ({ beneficiaryId, name, submittedBy, onDone }) => (
-  <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full flex flex-col items-center p-6 text-center pb-24">
+  <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full flex flex-col items-center p-6 text-center pb-24">
     <div className="w-16 h-16 rounded-full bg-amber-100 text-[#F59E0B] flex items-center justify-center text-2xl mb-4">✓</div>
     <h2 className="text-lg font-bold">Beneficiary Submitted for Approval</h2>
     <BenCard className="p-4 mt-4 w-full text-left">
@@ -325,17 +325,17 @@ export const ActivatedScreen: React.FC<{ beneficiaryId: string; onMakePayment: (
   onMakePayment,
   onDone,
 }) => (
-  <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full flex flex-col items-center p-6 text-center pb-28">
-    <div className="w-16 h-16 rounded-full bg-emerald-100 text-[#16A34A] flex items-center justify-center text-2xl mb-4">✓</div>
+  <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full flex flex-col items-center p-6 text-center pb-28">
+    <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-2xl mb-4">✓</div>
     <h2 className="text-lg font-bold">Beneficiary Activated</h2>
     <BenCard className="p-4 mt-4 w-full text-left">
       <ReviewBenRow label="Beneficiary ID" value={beneficiaryId} />
       <ReviewBenRow label="Activation date" value="18 Aug 2026" />
       <ReviewBenRow label="Status" value="Active" />
     </BenCard>
-    <div className="fixed bottom-0 left-0 right-0 p-3 flex gap-2 bg-[#F7F9FC]/95 backdrop-blur-md border-t">
+    <div className="fixed bottom-0 left-0 right-0 p-3 flex gap-2 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-t">
       <button type="button" onClick={onDone} className="flex-1 py-3.5 rounded-2xl border font-bold text-sm min-h-11">Done</button>
-      <button type="button" onClick={onMakePayment} className="flex-1 py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11">Make Payment</button>
+      <button type="button" onClick={onMakePayment} className="flex-1 py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11">Make Payment</button>
     </div>
   </div>
 );

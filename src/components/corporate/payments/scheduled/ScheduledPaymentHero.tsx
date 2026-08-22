@@ -49,8 +49,8 @@ export const ScheduledPaymentHero: React.FC<ScheduledPaymentHeroProps> = ({ data
           isHighlight
             ? isPending
               ? 'bg-linear-to-tr from-amber-500 via-amber-600 to-orange-600 text-white shadow-amber-500/20'
-              : 'bg-linear-to-tr from-[#0B5CAB] via-blue-600 to-indigo-700 text-white shadow-[#0B5CAB]/20'
-            : 'bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs text-[#111827] dark:text-white'
+              : 'bg-linear-to-tr from-congress-blue-800 via-blue-600 to-indigo-700 text-white shadow-congress-blue-700/20'
+            : 'bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs text-slate-900 dark:text-white'
         }`}
       >
         <div className="flex items-start justify-between gap-3">
@@ -72,10 +72,10 @@ export const ScheduledPaymentHero: React.FC<ScheduledPaymentHeroProps> = ({ data
               isHighlight ? 'border-white/20' : 'border-slate-100 dark:border-slate-800'
             }`}
           >
-            <p className={`text-[11px] font-semibold uppercase tracking-wide ${isHighlight ? 'text-white/70' : 'text-[#667085]'}`}>
+            <p className={`text-[11px] font-semibold uppercase tracking-wide ${isHighlight ? 'text-white/70' : 'text-slate-500 dark:text-slate-400'}`}>
               {data.status === 'completed' ? 'Executed' : 'Next Payment'}
             </p>
-            <p className={`text-[15px] font-bold mt-1 ${isHighlight ? 'text-white' : 'text-[#111827] dark:text-white'}`}>
+            <p className={`text-[15px] font-bold mt-1 ${isHighlight ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
               {data.status === 'completed' && data.lastExecutedAt
                 ? data.lastExecutedAt
                 : `${nextDate} • ${nextTime}`}

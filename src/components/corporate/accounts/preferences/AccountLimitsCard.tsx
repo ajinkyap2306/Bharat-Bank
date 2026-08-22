@@ -22,20 +22,20 @@ export const AccountLimitsCard: React.FC<AccountLimitsCardProps> = ({
   return (
     <PreferencesCard ariaLabel="Account limits">
       <div className="p-4">
-        <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white">Account Limits</h2>
-        <p className="text-[13px] text-[#667085] mt-1">
+        <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">Account Limits</h2>
+        <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">
           View configured transaction and transfer limits.
         </p>
         <div className="mt-3 space-y-2.5">
           <div className="flex items-start justify-between gap-3">
-            <span className="text-[13px] text-[#667085]">Daily Transfer Limit</span>
-            <span className="text-[13px] font-semibold text-[#111827] dark:text-white tabular-nums">
+            <span className="text-[13px] text-slate-500 dark:text-slate-400">Daily Transfer Limit</span>
+            <span className="text-[13px] font-semibold text-slate-900 dark:text-white tabular-nums">
               {mask(formatAccountCurrency(limits.dailyLimit, currency))}
             </span>
           </div>
           <div className="flex items-start justify-between gap-3">
-            <span className="text-[13px] text-[#667085]">Used Today</span>
-            <span className="text-[13px] font-semibold text-[#111827] dark:text-white tabular-nums">
+            <span className="text-[13px] text-slate-500 dark:text-slate-400">Used Today</span>
+            <span className="text-[13px] font-semibold text-slate-900 dark:text-white tabular-nums">
               {mask(formatAccountCurrency(limits.usedToday, currency))}
             </span>
           </div>
@@ -43,7 +43,7 @@ export const AccountLimitsCard: React.FC<AccountLimitsCardProps> = ({
         <button
           type="button"
           onClick={onViewLimits}
-          className="w-full mt-4 flex items-center justify-center gap-1 text-[13px] font-semibold text-[#0B5CAB] min-h-11"
+          className="w-full mt-4 flex items-center justify-center gap-1 text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11"
         >
           View Limits
           <ChevronRight className="w-4 h-4" aria-hidden />

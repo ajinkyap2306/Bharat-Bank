@@ -3,8 +3,8 @@ import type { BulkBatchTrackingStatus } from '../../../../types/corporateBulkBat
 
 const config: Record<BulkBatchTrackingStatus, { label: string; className: string }> = {
   pending_approval: { label: 'Pending Approval', className: 'bg-amber-50 text-amber-700' },
-  processing: { label: 'Processing', className: 'bg-blue-50 text-[#0B5CAB]' },
-  completed: { label: 'Completed', className: 'bg-emerald-50 text-[#16A34A]' },
+  processing: { label: 'Processing', className: 'bg-blue-50 text-congress-blue-700 dark:text-congress-blue-400' },
+  completed: { label: 'Completed', className: 'bg-emerald-50 text-emerald-600 dark:text-emerald-400' },
   partially_completed: { label: 'Partially Completed', className: 'bg-amber-50 text-amber-700' },
   rejected: { label: 'Batch Rejected', className: 'bg-rose-50 text-[#DC2626]' },
   returned: { label: 'Returned for Changes', className: 'bg-amber-50 text-amber-700' },

@@ -30,7 +30,7 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
 
   if (!view) {
     return (
-      <div className="px-4 py-8 text-center text-[13px] text-[#667085]">
+      <div className="px-4 py-8 text-center text-[13px] text-slate-500 dark:text-slate-400">
         Sign in to view your corporate profile.
       </div>
     );
@@ -50,27 +50,27 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
 
   return (
     <>
-      <div className="pb-8 font-['Inter',sans-serif]">
+      <div className="pb-8 ">
         {/* Profile Header */}
         <ProfileCard className="mx-4! mt-4 p-5 text-center">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0B5CAB]/10 border border-[#0B5CAB]/20 flex items-center justify-center">
-            <span className="text-[20px] font-bold text-[#0B5CAB]">{personal.initials}</span>
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-congress-blue-50 dark:bg-congress-blue-950/40 border border-congress-blue-700/20 flex items-center justify-center">
+            <span className="text-[20px] font-bold text-congress-blue-700 dark:text-congress-blue-400">{personal.initials}</span>
           </div>
-          <h2 className="text-[17px] font-semibold text-[#111827] dark:text-white mt-3">
+          <h2 className="text-[17px] font-semibold text-slate-900 dark:text-white mt-3">
             {personal.name}
           </h2>
-          <p className="text-[13px] text-[#667085]">{personal.role}</p>
+          <p className="text-[13px] text-slate-500 dark:text-slate-400">{personal.role}</p>
           {personal.authorized && (
-            <p className="inline-flex items-center gap-1 text-[12px] font-semibold text-[#16A34A] mt-2">
+            <p className="inline-flex items-center gap-1 text-[12px] font-semibold text-emerald-600 dark:text-emerald-400 mt-2">
               <CheckCircle2 className="w-3.5 h-3.5" aria-hidden />
               Authorized User
             </p>
           )}
-          <div className="mt-3 pt-3 border-t border-[#E4E7EC] dark:border-slate-800 space-y-1 text-[12px] text-[#667085]">
-            <p className="font-medium text-[#111827] dark:text-white">{company.name}</p>
+          <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 space-y-1 text-[12px] text-slate-500 dark:text-slate-400">
+            <p className="font-medium text-slate-900 dark:text-white">{company.name}</p>
             <p>
               Corporate ID:{' '}
-              <span className="font-mono font-semibold text-[#111827] dark:text-white">
+              <span className="font-mono font-semibold text-slate-900 dark:text-white">
                 {company.corporateId}
               </span>
             </p>
@@ -93,11 +93,11 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
         <div className="mt-5">
           <ProfileSection title="Company">
             <div className="px-4 py-3.5">
-              <p className="text-[14px] font-semibold text-[#111827] dark:text-white">
+              <p className="text-[14px] font-semibold text-slate-900 dark:text-white">
                 {company.name}
               </p>
               {company.verified && (
-                <p className="inline-flex items-center gap-1 text-[12px] font-semibold text-[#16A34A] mt-1">
+                <p className="inline-flex items-center gap-1 text-[12px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
                   <CheckCircle2 className="w-3.5 h-3.5" aria-hidden />
                   Verified Business
                 </p>
@@ -115,25 +115,25 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
         <div className="mt-5">
           <ProfileSection title="Role & Permissions">
             <div className="px-4 py-3.5">
-              <p className="text-[11px] font-semibold text-[#667085] uppercase tracking-wide">
+              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                 Your Role
               </p>
-              <p className="text-[15px] font-semibold text-[#111827] dark:text-white mt-1">
+              <p className="text-[15px] font-semibold text-slate-900 dark:text-white mt-1">
                 {permissions.roleTitle}
               </p>
-              <p className="text-[12px] text-[#667085] mt-3 mb-2">You can:</p>
+              <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-3 mb-2">You can:</p>
               <ul className="space-y-2">
                 {permissions.capabilities.map((cap) => (
                   <li key={cap.label} className="flex items-center gap-2 text-[13px]">
                     {cap.allowed ? (
-                      <Check className="w-4 h-4 text-[#16A34A] shrink-0" aria-hidden />
+                      <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden />
                     ) : (
                       <X className="w-4 h-4 text-[#98A2B3] shrink-0" aria-hidden />
                     )}
                     <span
                       className={
                         cap.allowed
-                          ? 'text-[#111827] dark:text-white font-medium'
+                          ? 'text-slate-900 dark:text-white font-medium'
                           : 'text-[#98A2B3]'
                       }
                     >
@@ -143,13 +143,13 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
                 ))}
               </ul>
             </div>
-            <div className="px-4 py-3.5 border-t border-[#E4E7EC] dark:border-slate-800">
-              <p className="text-[11px] font-semibold text-[#667085] uppercase tracking-wide">
+            <div className="px-4 py-3.5 border-t border-slate-200 dark:border-slate-800">
+              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                 Approval Authority
               </p>
               <p
                 className={`text-[14px] font-semibold mt-1 ${
-                  permissions.approvalAuthorityEnabled ? 'text-[#16A34A]' : 'text-[#667085]'
+                  permissions.approvalAuthorityEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'
                 }`}
               >
                 {permissions.approvalAuthorityLabel}
@@ -160,18 +160,18 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
 
         {/* Role-specific: My Requests / Approval Center */}
         <div className="mt-5 px-4">
-          <div className="rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm">
-            <p className="text-[14px] font-semibold text-[#111827] dark:text-white">
+          <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
+            <p className="text-[14px] font-semibold text-slate-900 dark:text-white">
               {approvalSummary.sectionTitle}
             </p>
             <div className="mt-3 grid grid-cols-2 gap-3">
               {approvalSummary.stats.map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-xl bg-[#F7F9FC] dark:bg-slate-800/50 px-3 py-2.5"
+                  className="rounded-xl bg-slate-50 dark:bg-slate-950 dark:bg-slate-800/50 px-3 py-2.5"
                 >
-                  <p className="text-[11px] text-[#667085]">{stat.label}</p>
-                  <p className="text-[18px] font-bold text-[#111827] dark:text-white tabular-nums mt-0.5">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">{stat.label}</p>
+                  <p className="text-[18px] font-bold text-slate-900 dark:text-white tabular-nums mt-0.5">
                     {stat.value}
                   </p>
                 </div>
@@ -180,7 +180,7 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
             <button
               type="button"
               onClick={handleApprovalCta}
-              className="mt-4 w-full flex items-center justify-center gap-1 py-2.5 rounded-xl bg-[#0B5CAB]/8 text-[#0B5CAB] text-[13px] font-semibold min-h-10 active:scale-[0.99] transition-transform"
+              className="mt-4 w-full flex items-center justify-center gap-1 py-2.5 rounded-xl bg-congress-blue-50 dark:bg-congress-blue-950/40 text-congress-blue-700 dark:text-congress-blue-400 text-[13px] font-semibold min-h-10 active:scale-[0.99] transition-transform"
             >
               {approvalSummary.ctaLabel}
               <ChevronRight className="w-4 h-4" aria-hidden />
@@ -193,19 +193,19 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
           <button
             type="button"
             onClick={() => onNavigate('limits')}
-            className="w-full rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 text-left active:scale-[0.99] transition-transform shadow-sm"
+            className="w-full rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 text-left active:scale-[0.99] transition-transform shadow-sm"
           >
             <div className="flex items-center justify-between gap-2">
-              <p className="text-[14px] font-semibold text-[#111827] dark:text-white">
+              <p className="text-[14px] font-semibold text-slate-900 dark:text-white">
                 {limits.sectionTitle}
               </p>
-              <span className="text-[11px] font-semibold text-[#0B5CAB]">View</span>
+              <span className="text-[11px] font-semibold text-congress-blue-700 dark:text-congress-blue-400">View</span>
             </div>
             <div className="mt-3 space-y-2">
               {limits.items.slice(0, 3).map((item) => (
                 <div key={item.label} className="flex items-center justify-between gap-3 text-[12px]">
-                  <span className="text-[#667085]">{item.label}</span>
-                  <span className="font-medium text-[#111827] dark:text-white text-right">
+                  <span className="text-slate-500 dark:text-slate-400">{item.label}</span>
+                  <span className="font-medium text-slate-900 dark:text-white text-right">
                     {item.value}
                   </span>
                 </div>
@@ -219,13 +219,13 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
           <button
             type="button"
             onClick={() => onNavigate('accounts')}
-            className="w-full rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 text-left active:scale-[0.99] transition-transform shadow-sm"
+            className="w-full rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 text-left active:scale-[0.99] transition-transform shadow-sm"
           >
             <div className="flex items-center justify-between gap-2">
-              <p className="text-[14px] font-semibold text-[#111827] dark:text-white">
+              <p className="text-[14px] font-semibold text-slate-900 dark:text-white">
                 Linked Accounts
               </p>
-              <span className="text-[11px] font-semibold text-[#0B5CAB]">View All</span>
+              <span className="text-[11px] font-semibold text-congress-blue-700 dark:text-congress-blue-400">View All</span>
             </div>
             <div className="mt-2 space-y-2.5">
               {linkedAccounts.map((acc) => (
@@ -236,12 +236,12 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
                         ★
                       </span>
                     )}
-                    <span className="text-[#667085] truncate">{acc.name}</span>
+                    <span className="text-slate-500 dark:text-slate-400 truncate">{acc.name}</span>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="font-mono text-[#111827] dark:text-white">{acc.maskedNumber}</p>
+                    <p className="font-mono text-slate-900 dark:text-white">{acc.maskedNumber}</p>
                     {acc.balance != null && (
-                      <p className="font-semibold text-[#111827] dark:text-white tabular-nums mt-0.5">
+                      <p className="font-semibold text-slate-900 dark:text-white tabular-nums mt-0.5">
                         {formatProfileCurrency(acc.balance)}
                       </p>
                     )}
@@ -269,9 +269,9 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
             <ProfileMenuRow label="Manage Devices" onClick={() => onNavigate('security')} />
             <ProfileMenuRow label="Active Sessions" onClick={() => onNavigate('security')} />
             <ProfileMenuRow label="Login & Security" onClick={() => onNavigate('security')} />
-            <div className="px-4 py-3 border-t border-[#E4E7EC] dark:border-slate-800">
-              <p className="text-[12px] text-[#667085]">Last Login</p>
-              <p className="text-[13px] font-medium text-[#111827] dark:text-white mt-0.5">
+            <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-800">
+              <p className="text-[12px] text-slate-500 dark:text-slate-400">Last Login</p>
+              <p className="text-[13px] font-medium text-slate-900 dark:text-white mt-0.5">
                 {view.security.lastLogin}
               </p>
             </div>
@@ -325,14 +325,14 @@ export const CorporateProfileHome: React.FC<CorporateProfileHomeProps> = ({ onNa
         onClose={() => setShowSignOut(false)}
         title="Sign Out?"
       >
-        <p className="text-sm text-[#667085] mb-5">
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-5">
           Are you sure you want to sign out?
         </p>
         <div className="flex gap-3">
           <button
             type="button"
             onClick={() => setShowSignOut(false)}
-            className="flex-1 py-3 rounded-2xl border border-[#E4E7EC] dark:border-slate-700 text-sm font-semibold text-[#111827] dark:text-white min-h-11"
+            className="flex-1 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm font-semibold text-slate-900 dark:text-white min-h-11"
           >
             Cancel
           </button>

@@ -24,7 +24,7 @@ export const StatementPeriodSelector: React.FC<StatementPeriodSelectorProps> = (
   customLabel,
 }) => (
   <section className="px-4" aria-label="Statement Period">
-    <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white mb-3">Statement Period</h2>
+    <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white mb-3">Statement Period</h2>
     <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
       {PERIODS.map((p) => (
         <button
@@ -33,8 +33,8 @@ export const StatementPeriodSelector: React.FC<StatementPeriodSelectorProps> = (
           onClick={() => onChange(p.id)}
           className={`shrink-0 px-3.5 py-2 rounded-full text-[13px] font-semibold min-h-9 transition-colors ${
             selected === p.id
-              ? 'bg-[#0B5CAB] text-white'
-              : 'bg-white dark:bg-slate-900 text-[#667085] border border-[#E4E7EC] dark:border-slate-800'
+              ? 'bg-congress-blue-700 text-white'
+              : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
           }`}
         >
           {p.label}
@@ -46,8 +46,8 @@ export const StatementPeriodSelector: React.FC<StatementPeriodSelectorProps> = (
       onClick={onCustom}
       className={`mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-2xl border text-[14px] font-semibold min-h-12 ${
         selected === 'custom'
-          ? 'border-[#0B5CAB] bg-[#0B5CAB]/10 text-[#0B5CAB]'
-          : 'border-[#E4E7EC] dark:border-slate-800 bg-white dark:bg-slate-900 text-[#667085]'
+          ? 'border-congress-blue-700 bg-congress-blue-50 dark:bg-congress-blue-950/40 text-congress-blue-700 dark:text-congress-blue-400'
+          : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400'
       }`}
     >
       <Calendar className="w-4 h-4" aria-hidden />

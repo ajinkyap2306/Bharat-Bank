@@ -24,10 +24,10 @@ export const TransactionGroup: React.FC<TransactionGroupProps> = ({
   return (
     <section aria-label={`${title} transactions`}>
       <div className="px-4 mb-2">
-        <p className="text-[12px] font-semibold text-[#667085] uppercase tracking-wide">{title}</p>
-        {subtitle && <p className="text-[11px] text-[#667085] mt-0.5">{subtitle}</p>}
+        <p className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{title}</p>
+        {subtitle && <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{subtitle}</p>}
       </div>
-      <div className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 shadow-sm overflow-hidden">
+      <div className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
         {transactions.map((txn) => (
           <TransactionItem
             key={txn.id}

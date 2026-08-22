@@ -19,10 +19,10 @@ export const RiskWarning: React.FC<RiskWarningProps> = ({ warnings }) => {
         >
           <AlertTriangle className="w-5 h-5 text-[#F59E0B] shrink-0 mt-0.5" aria-hidden />
           <div>
-            <p className="text-[14px] font-semibold text-[#111827] dark:text-white">
+            <p className="text-[14px] font-semibold text-slate-900 dark:text-white">
               {warning.title}
             </p>
-            <p className="text-[13px] text-[#667085] mt-1">{warning.message}</p>
+            <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">{warning.message}</p>
           </div>
         </div>
       ))}

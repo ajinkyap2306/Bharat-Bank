@@ -28,7 +28,7 @@ export const CorporateLimitsScreen: React.FC = () => {
 
   return (
     <div className="py-4 space-y-4 px-4">
-      <ProfileCard className="divide-y divide-[#E4E7EC] dark:divide-slate-800">
+      <ProfileCard className="divide-y divide-slate-200 dark:divide-slate-800 dark:divide-slate-800">
         {view.limits.items.map((item) => (
           <ProfileDetailRow key={item.label} label={item.label} value={item.value} />
         ))}
@@ -37,11 +37,11 @@ export const CorporateLimitsScreen: React.FC = () => {
       {!isChecker && (
         <ProfileCard className="p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-[#111827] dark:text-white">Update Limits</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">Update Limits</p>
             <button
               type="button"
               onClick={() => setEditing((v) => !v)}
-              className="text-xs font-bold text-[#0B5CAB]"
+              className="text-xs font-bold text-congress-blue-700 dark:text-congress-blue-400"
             >
               {editing ? 'Cancel' : 'Edit'}
             </button>
@@ -50,7 +50,7 @@ export const CorporateLimitsScreen: React.FC = () => {
           {editing ? (
             <>
               <div>
-                <label className="text-xs font-bold text-[#667085]">Daily payment limit (₹)</label>
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Daily payment limit (₹)</label>
                 <input
                   type="number"
                   value={limits.dailyPaymentLimit}
@@ -59,7 +59,7 @@ export const CorporateLimitsScreen: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="text-xs font-bold text-[#667085]">Single transaction limit (₹)</label>
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Single transaction limit (₹)</label>
                 <input
                   type="number"
                   value={limits.singleTransactionLimit}
@@ -68,7 +68,7 @@ export const CorporateLimitsScreen: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="text-xs font-bold text-[#667085]">Bulk payment limit (₹)</label>
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400">Bulk payment limit (₹)</label>
                 <input
                   type="number"
                   value={limits.bulkPaymentLimit}
@@ -79,23 +79,23 @@ export const CorporateLimitsScreen: React.FC = () => {
               <button
                 type="button"
                 onClick={handleSave}
-                className="w-full py-3 rounded-2xl bg-[#0B5CAB] text-white text-sm font-bold"
+                className="w-full py-3 rounded-2xl bg-congress-blue-700 text-white text-sm font-bold"
               >
                 Save Limits
               </button>
             </>
           ) : (
             <div className="space-y-2 text-[12px]">
-              <div className="flex justify-between"><span className="text-[#667085]">Daily limit</span><span className="font-semibold">₹{limits.dailyPaymentLimit.toLocaleString('en-IN')}</span></div>
-              <div className="flex justify-between"><span className="text-[#667085]">Per transaction</span><span className="font-semibold">₹{limits.singleTransactionLimit.toLocaleString('en-IN')}</span></div>
-              <div className="flex justify-between"><span className="text-[#667085]">Bulk limit</span><span className="font-semibold">₹{limits.bulkPaymentLimit.toLocaleString('en-IN')}</span></div>
-              <div className="flex justify-between"><span className="text-[#667085]">Used today</span><span className="font-semibold">₹{limits.usedToday.toLocaleString('en-IN')}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Daily limit</span><span className="font-semibold">₹{limits.dailyPaymentLimit.toLocaleString('en-IN')}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Per transaction</span><span className="font-semibold">₹{limits.singleTransactionLimit.toLocaleString('en-IN')}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Bulk limit</span><span className="font-semibold">₹{limits.bulkPaymentLimit.toLocaleString('en-IN')}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Used today</span><span className="font-semibold">₹{limits.usedToday.toLocaleString('en-IN')}</span></div>
             </div>
           )}
         </ProfileCard>
       )}
 
-      <p className="text-[11px] text-[#667085] px-1 text-center">
+      <p className="text-[11px] text-slate-500 dark:text-slate-400 px-1 text-center">
         {isChecker
           ? 'Approval limits are read-only. Contact your relationship manager to request changes.'
           : 'Channel-wise and account-wise limits are applied per your corporate banking agreement.'}

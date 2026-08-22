@@ -39,21 +39,21 @@ export const ApprovalCard: React.FC<ApprovalCardProps> = ({
       <div className="flex items-start gap-3">
         <ApprovalTypeIcon type={item.type} />
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-bold text-[#0B5CAB] dark:text-blue-400">{item.typeLabel}</p>
+          <p className="text-[11px] font-bold text-congress-blue-700 dark:text-congress-blue-400 dark:text-blue-400">{item.typeLabel}</p>
           <div className="flex items-start justify-between gap-2 mt-0.5">
-            <p className="text-[14px] font-bold text-[#111827] dark:text-white truncate">
+            <p className="text-[14px] font-bold text-slate-900 dark:text-white truncate">
               {item.title}
             </p>
             {amountText && (
-              <p className="text-[14px] font-extrabold text-[#111827] dark:text-white tabular-nums shrink-0">
+              <p className="text-[14px] font-extrabold text-slate-900 dark:text-white tabular-nums shrink-0">
                 {amountText}
               </p>
             )}
           </div>
           {item.description && (
-            <p className="text-[12px] text-[#667085] mt-0.5 truncate">{item.description}</p>
+            <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">{item.description}</p>
           )}
-          <p className="text-[11px] text-[#667085] mt-1.5">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
             {item.createdBy} · {item.createdAt}
           </p>
           {item.totalSteps > 0 && (
@@ -74,7 +74,7 @@ export const ApprovalCard: React.FC<ApprovalCardProps> = ({
             />
           </div>
         </div>
-        <ChevronRight className="w-4 h-4 text-[#667085] shrink-0 mt-1" aria-hidden />
+        <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0 mt-1" aria-hidden />
       </div>
     </button>
   );

@@ -43,7 +43,7 @@ export const AccountMoreSheet: React.FC<AccountMoreSheetProps> = ({
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title="Account Options">
-      <div className="divide-y divide-[#E4E7EC] dark:divide-slate-800">
+      <div className="divide-y divide-slate-200 dark:divide-slate-800 dark:divide-slate-800">
         {items.map((item) => (
           <button
             key={item.id}
@@ -54,10 +54,10 @@ export const AccountMoreSheet: React.FC<AccountMoreSheetProps> = ({
             }}
             className="w-full flex items-center justify-between gap-3 py-4 text-left min-h-13"
           >
-            <span className="text-[15px] font-medium text-[#111827] dark:text-white">
+            <span className="text-[15px] font-medium text-slate-900 dark:text-white">
               {item.label}
             </span>
-            <ChevronRight className="w-4 h-4 text-[#667085]" />
+            <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400" />
           </button>
         ))}
       </div>

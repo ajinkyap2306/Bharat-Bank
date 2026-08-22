@@ -33,10 +33,10 @@ export const ResultMoreSheet: React.FC<ResultMoreSheetProps> = ({
           }}
           className="w-full flex items-center gap-3 px-2 py-3.5 rounded-xl min-h-11 text-left"
         >
-          <span className="w-9 h-9 rounded-lg bg-[#F7F9FC] dark:bg-slate-800 flex items-center justify-center text-[#0B5CAB]">
+          <span className="w-9 h-9 rounded-lg bg-slate-50 dark:bg-slate-950 dark:bg-slate-800 flex items-center justify-center text-congress-blue-700 dark:text-congress-blue-400">
             {item.icon}
           </span>
-          <span className="text-[15px] font-medium text-[#111827] dark:text-white">{item.label}</span>
+          <span className="text-[15px] font-medium text-slate-900 dark:text-white">{item.label}</span>
         </button>
       ))}
     </div>

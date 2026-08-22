@@ -52,7 +52,7 @@ export const BeneficiaryFilterSheet: React.FC<BeneficiaryFilterSheetProps> = ({
     <BottomSheet isOpen={isOpen} onClose={onClose} title="Filter Beneficiaries">
       <div className="space-y-5 pb-2">
         <div>
-          <p className="text-[13px] font-semibold text-[#111827] dark:text-white mb-2">Status</p>
+          <p className="text-[13px] font-semibold text-slate-900 dark:text-white mb-2">Status</p>
           <div className="flex flex-wrap gap-2">
             {STATUS_OPTIONS.map((opt) => (
               <button
@@ -63,8 +63,8 @@ export const BeneficiaryFilterSheet: React.FC<BeneficiaryFilterSheetProps> = ({
                 }
                 className={`px-3 py-2 rounded-full text-[12px] font-semibold min-h-9 border ${
                   draft.statuses.includes(opt.id)
-                    ? 'bg-[#0B5CAB] text-white border-[#0B5CAB]'
-                    : 'bg-white dark:bg-slate-900 text-[#667085] border-[#E4E7EC] dark:border-slate-800'
+                    ? 'bg-congress-blue-700 text-white border-congress-blue-700'
+                    : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-800'
                 }`}
               >
                 {opt.label}
@@ -74,7 +74,7 @@ export const BeneficiaryFilterSheet: React.FC<BeneficiaryFilterSheetProps> = ({
         </div>
 
         <div>
-          <p className="text-[13px] font-semibold text-[#111827] dark:text-white mb-2">Bank</p>
+          <p className="text-[13px] font-semibold text-slate-900 dark:text-white mb-2">Bank</p>
           <div className="flex flex-wrap gap-2">
             {VENDOR_BENEFICIARY_BANKS.map((bank) => (
               <button
@@ -83,8 +83,8 @@ export const BeneficiaryFilterSheet: React.FC<BeneficiaryFilterSheetProps> = ({
                 onClick={() => setDraft((d) => ({ ...d, banks: toggleItem(d.banks, bank) }))}
                 className={`px-3 py-2 rounded-full text-[12px] font-semibold min-h-9 border ${
                   draft.banks.includes(bank)
-                    ? 'bg-[#0B5CAB] text-white border-[#0B5CAB]'
-                    : 'bg-white dark:bg-slate-900 text-[#667085] border-[#E4E7EC] dark:border-slate-800'
+                    ? 'bg-congress-blue-700 text-white border-congress-blue-700'
+                    : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-800'
                 }`}
               >
                 {bank}
@@ -94,7 +94,7 @@ export const BeneficiaryFilterSheet: React.FC<BeneficiaryFilterSheetProps> = ({
         </div>
 
         <div>
-          <p className="text-[13px] font-semibold text-[#111827] dark:text-white mb-2">Type</p>
+          <p className="text-[13px] font-semibold text-slate-900 dark:text-white mb-2">Type</p>
           <div className="flex flex-wrap gap-2">
             {TYPE_OPTIONS.map((opt) => (
               <button
@@ -103,8 +103,8 @@ export const BeneficiaryFilterSheet: React.FC<BeneficiaryFilterSheetProps> = ({
                 onClick={() => setDraft((d) => ({ ...d, types: toggleItem(d.types, opt.id) }))}
                 className={`px-3 py-2 rounded-full text-[12px] font-semibold min-h-9 border ${
                   draft.types.includes(opt.id)
-                    ? 'bg-[#0B5CAB] text-white border-[#0B5CAB]'
-                    : 'bg-white dark:bg-slate-900 text-[#667085] border-[#E4E7EC] dark:border-slate-800'
+                    ? 'bg-congress-blue-700 text-white border-congress-blue-700'
+                    : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-800'
                 }`}
               >
                 {opt.label}
@@ -113,14 +113,14 @@ export const BeneficiaryFilterSheet: React.FC<BeneficiaryFilterSheetProps> = ({
           </div>
         </div>
 
-        <label className="flex items-center gap-3 p-4 rounded-2xl border border-[#E4E7EC] dark:border-slate-800 min-h-14">
+        <label className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 min-h-14">
           <input
             type="checkbox"
             checked={draft.favoritesOnly}
             onChange={(e) => setDraft((d) => ({ ...d, favoritesOnly: e.target.checked }))}
-            className="w-4 h-4 accent-[#0B5CAB]"
+            className="w-4 h-4 accent-congress-blue-700"
           />
-          <span className="text-[14px] font-medium text-[#111827] dark:text-white">
+          <span className="text-[14px] font-medium text-slate-900 dark:text-white">
             Favorites only
           </span>
         </label>
@@ -129,7 +129,7 @@ export const BeneficiaryFilterSheet: React.FC<BeneficiaryFilterSheetProps> = ({
           <button
             type="button"
             onClick={handleReset}
-            className="flex-1 py-3.5 rounded-2xl border border-[#E4E7EC] dark:border-slate-800 text-[14px] font-semibold text-[#667085] min-h-11"
+            className="flex-1 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-[14px] font-semibold text-slate-500 dark:text-slate-400 min-h-11"
           >
             Reset
           </button>
@@ -139,7 +139,7 @@ export const BeneficiaryFilterSheet: React.FC<BeneficiaryFilterSheetProps> = ({
               onApply(draft);
               onClose();
             }}
-            className="flex-1 py-3.5 rounded-2xl bg-[#0B5CAB] text-white text-[14px] font-semibold min-h-11"
+            className="flex-1 py-3.5 rounded-2xl bg-congress-blue-700 text-white text-[14px] font-semibold min-h-11"
           >
             Apply Filters
           </button>

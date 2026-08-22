@@ -89,14 +89,14 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
             className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 rounded-t-3xl max-h-[85vh] overflow-y-auto"
           >
             <div className="sticky top-0 bg-white dark:bg-slate-900 px-4 py-3 border-b flex items-center justify-between">
-              <h3 className="font-bold text-[#111827] dark:text-white">Filter Approvals</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white">Filter Approvals</h3>
               <button type="button" onClick={onClose} className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                 <X className="w-4 h-4" />
               </button>
             </div>
             <div className="p-4 space-y-5">
               <section>
-                <p className="text-xs font-bold text-[#667085] uppercase mb-2">Request Type</p>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Request Type</p>
                 <div className="flex flex-wrap gap-2">
                   {CATEGORY_OPTIONS.map((o) => (
                     <button
@@ -104,7 +104,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
                       type="button"
                       onClick={() => toggle('categories', o.id)}
                       className={`px-3 py-2 rounded-xl text-xs font-bold min-h-11 ${
-                        local.categories.includes(o.id) ? 'bg-[#0B5CAB] text-white' : 'bg-slate-100 text-[#667085]'
+                        local.categories.includes(o.id) ? 'bg-congress-blue-700 text-white' : 'bg-slate-100 text-slate-500 dark:text-slate-400'
                       }`}
                     >
                       {o.label}
@@ -113,7 +113,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
                 </div>
               </section>
               <section>
-                <p className="text-xs font-bold text-[#667085] uppercase mb-2">Status</p>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Status</p>
                 <div className="flex flex-wrap gap-2">
                   {STATUS_OPTIONS.map((o) => (
                     <button
@@ -121,7 +121,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
                       type="button"
                       onClick={() => toggle('statuses', o.id)}
                       className={`px-3 py-2 rounded-xl text-xs font-bold min-h-11 ${
-                        local.statuses.includes(o.id) ? 'bg-[#0B5CAB] text-white' : 'bg-slate-100 text-[#667085]'
+                        local.statuses.includes(o.id) ? 'bg-congress-blue-700 text-white' : 'bg-slate-100 text-slate-500 dark:text-slate-400'
                       }`}
                     >
                       {o.label}
@@ -130,7 +130,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
                 </div>
               </section>
               <section>
-                <p className="text-xs font-bold text-[#667085] uppercase mb-2">Amount</p>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Amount</p>
                 <div className="flex flex-wrap gap-2">
                   {AMOUNT_OPTIONS.map((o) => (
                     <button
@@ -138,7 +138,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
                       type="button"
                       onClick={() => toggle('amountRanges', o.id)}
                       className={`px-3 py-2 rounded-xl text-xs font-bold min-h-11 ${
-                        local.amountRanges.includes(o.id) ? 'bg-[#0B5CAB] text-white' : 'bg-slate-100 text-[#667085]'
+                        local.amountRanges.includes(o.id) ? 'bg-congress-blue-700 text-white' : 'bg-slate-100 text-slate-500 dark:text-slate-400'
                       }`}
                     >
                       {o.label}
@@ -147,7 +147,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
                 </div>
               </section>
               <section>
-                <p className="text-xs font-bold text-[#667085] uppercase mb-2">Created By</p>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Created By</p>
                 <input
                   value={local.createdBy}
                   onChange={(e) => setLocal({ ...local, createdBy: e.target.value })}
@@ -156,7 +156,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
                 />
               </section>
               <section>
-                <p className="text-xs font-bold text-[#667085] uppercase mb-2">Date</p>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Date</p>
                 <div className="flex flex-wrap gap-2">
                   {DATE_OPTIONS.map((o) => (
                     <button
@@ -164,7 +164,7 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
                       type="button"
                       onClick={() => setLocal({ ...local, dateRange: o.id })}
                       className={`px-3 py-2 rounded-xl text-xs font-bold min-h-11 ${
-                        local.dateRange === o.id ? 'bg-[#0B5CAB] text-white' : 'bg-slate-100 text-[#667085]'
+                        local.dateRange === o.id ? 'bg-congress-blue-700 text-white' : 'bg-slate-100 text-slate-500 dark:text-slate-400'
                       }`}
                     >
                       {o.label}
@@ -174,10 +174,10 @@ export const ApprovalFilterSheet: React.FC<ApprovalFilterSheetProps> = ({
               </section>
             </div>
             <div className="sticky bottom-0 p-4 bg-white dark:bg-slate-900 border-t flex gap-2">
-              <button type="button" onClick={onReset} className="flex-1 py-3.5 rounded-2xl border font-bold text-sm text-[#667085] min-h-11">
+              <button type="button" onClick={onReset} className="flex-1 py-3.5 rounded-2xl border font-bold text-sm text-slate-500 dark:text-slate-400 min-h-11">
                 Reset
               </button>
-              <button type="button" onClick={() => onApply(local)} className="flex-1 py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11">
+              <button type="button" onClick={() => onApply(local)} className="flex-1 py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11">
                 Apply Filters
               </button>
             </div>

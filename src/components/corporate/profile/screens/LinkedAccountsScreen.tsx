@@ -16,18 +16,18 @@ export const LinkedAccountsScreen: React.FC = () => {
 
   return (
     <div className="py-4">
-      <ProfileCard className="divide-y divide-[#E4E7EC] dark:divide-slate-800">
+      <ProfileCard className="divide-y divide-slate-200 dark:divide-slate-800 dark:divide-slate-800">
         {view.linkedAccounts.map((acc) => (
           <div key={acc.id} className="px-4 py-3.5 flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[14px] font-medium text-[#111827] dark:text-white flex items-center gap-1.5">
+              <p className="text-[14px] font-medium text-slate-900 dark:text-white flex items-center gap-1.5">
                 {acc.isPrimary && <span className="text-[#F59E0B] text-[12px]">★</span>}
                 {acc.name}
               </p>
-              <p className="font-mono text-[12px] text-[#667085] mt-0.5">{acc.maskedNumber}</p>
+              <p className="font-mono text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">{acc.maskedNumber}</p>
             </div>
             {acc.balance != null && (
-              <span className="text-[14px] font-semibold text-[#111827] dark:text-white tabular-nums shrink-0">
+              <span className="text-[14px] font-semibold text-slate-900 dark:text-white tabular-nums shrink-0">
                 {formatProfileCurrency(acc.balance)}
               </span>
             )}
@@ -41,13 +41,13 @@ export const LinkedAccountsScreen: React.FC = () => {
             setCorporateTab('accounts');
             navigate('/corporate/accounts');
           }}
-          className="w-full py-3 rounded-xl bg-[#0B5CAB] text-white text-sm font-semibold min-h-11"
+          className="w-full py-3 rounded-xl bg-congress-blue-700 text-white text-sm font-semibold min-h-11"
         >
           View All Accounts
         </button>
       </div>
       {view.role === 'maker' && (
-        <p className="text-[11px] text-[#667085] px-4 mt-3 text-center">
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 px-4 mt-3 text-center">
           Showing payment-enabled accounts for your role.
         </p>
       )}

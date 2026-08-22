@@ -92,7 +92,7 @@ export const CorporateBulkPaymentsModule: React.FC = () => {
 
   if (isInvalidRoute) {
     return (
-      <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto">
+      <div className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto">
         <RouteLoadingState label="Redirecting…" />
       </div>
     );

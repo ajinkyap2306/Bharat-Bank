@@ -7,8 +7,8 @@ interface TransactionTimelineProps {
 }
 
 export const TransactionTimeline: React.FC<TransactionTimelineProps> = ({ events }) => (
-  <section className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm" aria-label="Transaction Timeline">
-    <h2 className="text-[15px] font-semibold text-[#111827] dark:text-white mb-4">
+  <section className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm" aria-label="Transaction Timeline">
+    <h2 className="text-[15px] font-semibold text-slate-900 dark:text-white mb-4">
       Transaction Timeline
     </h2>
     <ol className="space-y-0">
@@ -26,10 +26,10 @@ export const TransactionTimeline: React.FC<TransactionTimelineProps> = ({ events
                   isFailed
                     ? 'bg-rose-100 text-[#DC2626] dark:bg-rose-950/40'
                     : isCompleted
-                      ? 'bg-emerald-100 text-[#16A34A] dark:bg-emerald-950/40'
+                      ? 'bg-emerald-100 text-emerald-600 dark:text-emerald-400 dark:bg-emerald-950/40'
                       : isCurrent
-                        ? 'bg-[#0B5CAB]/10 text-[#0B5CAB]'
-                        : 'bg-slate-100 text-[#667085] dark:bg-slate-800'
+                        ? 'bg-congress-blue-50 dark:bg-congress-blue-950/40 text-congress-blue-700 dark:text-congress-blue-400'
+                        : 'bg-slate-100 text-slate-500 dark:text-slate-400 dark:bg-slate-800'
                 }`}
               >
                 {isCompleted ? (
@@ -41,7 +41,7 @@ export const TransactionTimeline: React.FC<TransactionTimelineProps> = ({ events
               {!isLast && (
                 <div
                   className={`w-0.5 flex-1 min-h-6 my-1 ${
-                    isCompleted ? 'bg-[#16A34A]/40' : 'bg-[#E4E7EC] dark:bg-slate-700'
+                    isCompleted ? 'bg-emerald-600/40' : 'bg-slate-200 dark:bg-slate-700'
                   }`}
                   aria-hidden
                 />
@@ -50,12 +50,12 @@ export const TransactionTimeline: React.FC<TransactionTimelineProps> = ({ events
             <div className={`pb-4 ${isLast ? 'pb-0' : ''}`}>
               <p
                 className={`text-[14px] font-semibold ${
-                  isCurrent ? 'text-[#0B5CAB]' : 'text-[#111827] dark:text-white'
+                  isCurrent ? 'text-congress-blue-700 dark:text-congress-blue-400' : 'text-slate-900 dark:text-white'
                 }`}
               >
                 {event.label}
               </p>
-              <p className="text-[12px] text-[#667085] mt-0.5">
+              <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">
                 {event.date} • {event.time}
               </p>
             </div>

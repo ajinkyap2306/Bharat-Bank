@@ -58,8 +58,8 @@ export const AccountsSkeleton: React.FC<{ className?: string }> = ({ className =
 
 export const InfoRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div className="flex items-start justify-between gap-3 py-2 text-sm border-b border-slate-100 dark:border-slate-800 last:border-0">
-    <span className="text-[#667085] shrink-0">{label}</span>
-    <span className="font-medium text-[#111827] dark:text-white text-right">{value}</span>
+    <span className="text-slate-500 dark:text-slate-400 shrink-0">{label}</span>
+    <span className="font-medium text-slate-900 dark:text-white text-right">{value}</span>
   </div>
 );
 
@@ -74,10 +74,10 @@ export const MenuRow: React.FC<{
     className="w-full flex items-center justify-between gap-3 p-3 text-left hover:bg-slate-50 dark:hover:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 last:border-0"
   >
     <div className="min-w-0">
-      <p className="text-sm font-bold text-[#111827] dark:text-white">{label}</p>
-      {description && <p className="text-xs text-[#667085] mt-0.5">{description}</p>}
+      <p className="text-sm font-bold text-slate-900 dark:text-white">{label}</p>
+      {description && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{description}</p>}
     </div>
-    <ChevronRight className="w-4 h-4 text-[#667085] shrink-0" />
+    <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" />
   </button>
 );
 

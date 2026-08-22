@@ -278,7 +278,7 @@ export const AccountPreferences: React.FC<AccountPreferencesProps> = ({ accountI
 
   if (isLoading) {
     return (
-      <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="min-h-full bg-slate-50 dark:bg-slate-950">
         <AccountPreferencesHeader accountLabel="" onBack={handleBack} />
         <PreferencesScreenSkeleton />
       </div>
@@ -287,7 +287,7 @@ export const AccountPreferences: React.FC<AccountPreferencesProps> = ({ accountI
 
   if (loadError || !data || !preferences) {
     return (
-      <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="min-h-full bg-slate-50 dark:bg-slate-950">
         <AccountPreferencesHeader accountLabel="" onBack={() => navigate(-1)} />
         <PreferencesErrorState onRetry={load} />
       </div>
@@ -295,7 +295,7 @@ export const AccountPreferences: React.FC<AccountPreferencesProps> = ({ accountI
   }
 
   return (
-    <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-8">
+    <div className="min-h-full bg-slate-50 dark:bg-slate-950 pb-8">
       <AccountPreferencesHeader accountLabel={accountLabel} onBack={handleBack} />
 
       {updateError && lastFailedAction && (

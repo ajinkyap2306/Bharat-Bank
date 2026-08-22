@@ -82,7 +82,7 @@ export const ScheduledPaymentEditModule: React.FC = () => {
   if (loading) return null;
 
   return (
-    <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto pb-28">
+    <div className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto pb-28">
       <ScheduledPaymentsHeader
         title="Edit Schedule"
         onBack={() => navigate(`/corporate/payments/scheduled/${scheduleId}`)}
@@ -136,7 +136,7 @@ export const ScheduledPaymentEditModule: React.FC = () => {
             </div>
           )}
         </PayCard>
-        <p className="text-xs text-[#667085] text-center">
+        <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
           Changes require Checker approval before taking effect.
         </p>
         <StickyPayCTA label="Review Changes" onClick={() => setShowReview(true)} />
@@ -145,14 +145,14 @@ export const ScheduledPaymentEditModule: React.FC = () => {
       <BottomSheet isOpen={showReview} onClose={() => setShowReview(false)} title="Review Changes">
         <div className="px-4 pb-6 space-y-4 text-sm">
           <div className="rounded-xl border p-3 space-y-2">
-            <div className="flex justify-between"><span className="text-[#667085]">Amount</span><span className="font-bold">{formatPaymentCurrency(draft.amount)}</span></div>
-            <div className="flex justify-between"><span className="text-[#667085]">Frequency</span><span className="font-medium">{formatScheduleLabel(draft)}</span></div>
-            {preview.scheduledDate && <div className="flex justify-between"><span className="text-[#667085]">Next Payment</span><span className="font-medium">{preview.scheduledDate}</span></div>}
-            {preview.endDate && <div className="flex justify-between"><span className="text-[#667085]">End Date</span><span className="font-medium">{preview.endDate}</span></div>}
+            <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Amount</span><span className="font-bold">{formatPaymentCurrency(draft.amount)}</span></div>
+            <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Frequency</span><span className="font-medium">{formatScheduleLabel(draft)}</span></div>
+            {preview.scheduledDate && <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Next Payment</span><span className="font-medium">{preview.scheduledDate}</span></div>}
+            {preview.endDate && <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">End Date</span><span className="font-medium">{preview.endDate}</span></div>}
           </div>
-          <p className="text-xs text-[#667085]">Submit for Checker approval to update this schedule.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Submit for Checker approval to update this schedule.</p>
           <button type="button" onClick={() => setShowReview(false)} className="w-full py-3 rounded-2xl border font-semibold text-sm">Cancel</button>
-          <button type="button" onClick={handleSubmit} disabled={submitting} className="w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm disabled:opacity-50">
+          <button type="button" onClick={handleSubmit} disabled={submitting} className="w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm disabled:opacity-50">
             {submitting ? 'Submitting…' : 'Submit for Approval'}
           </button>
         </div>

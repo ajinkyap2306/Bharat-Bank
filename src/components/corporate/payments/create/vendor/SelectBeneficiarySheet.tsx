@@ -24,21 +24,21 @@ export const SelectBeneficiarySheet: React.FC<SelectBeneficiarySheetProps> = ({
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Beneficiary?">
       <div className="pb-2">
-        <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#F7F9FC] dark:bg-slate-800/50 border border-[#E4E7EC] dark:border-slate-800">
+        <div className="flex items-start gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
           <div
-            className="w-12 h-12 rounded-xl bg-[#0B5CAB]/10 flex items-center justify-center text-[#0B5CAB] text-[14px] font-bold shrink-0"
+            className="w-12 h-12 rounded-xl bg-congress-blue-50 dark:bg-congress-blue-950/40 flex items-center justify-center text-congress-blue-700 dark:text-congress-blue-400 text-[14px] font-bold shrink-0"
             aria-hidden
           >
             {initials}
           </div>
           <div className="min-w-0">
-            <p className="text-[16px] font-semibold text-[#111827] dark:text-white">
+            <p className="text-[16px] font-semibold text-slate-900 dark:text-white">
               {beneficiary.name}
             </p>
-            <p className="text-[13px] text-[#667085] tabular-nums mt-1">
+            <p className="text-[13px] text-slate-500 dark:text-slate-400 tabular-nums mt-1">
               {beneficiary.maskedAccountNumber}
             </p>
-            <p className="text-[13px] text-[#667085] mt-0.5">{beneficiary.bankName}</p>
+            <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-0.5">{beneficiary.bankName}</p>
             <div className="mt-2">
               <BeneficiaryStatusBadge status={beneficiary.status} />
             </div>
@@ -49,14 +49,14 @@ export const SelectBeneficiarySheet: React.FC<SelectBeneficiarySheetProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-3.5 rounded-2xl border border-[#E4E7EC] dark:border-slate-800 text-[14px] font-semibold text-[#667085] min-h-11"
+            className="flex-1 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-[14px] font-semibold text-slate-500 dark:text-slate-400 min-h-11"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={onContinue}
-            className="flex-1 py-3.5 rounded-2xl bg-[#0B5CAB] text-white text-[14px] font-semibold min-h-11"
+            className="flex-1 py-3.5 rounded-2xl bg-congress-blue-700 text-white text-[14px] font-semibold min-h-11"
           >
             Continue
           </button>

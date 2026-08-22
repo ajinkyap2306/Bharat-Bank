@@ -180,7 +180,7 @@ export const PaymentSubmitted: React.FC = () => {
 
   if (loading || !data) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <SubmissionSuccessHeader onBack={handleBack} onMore={() => {}} />
         <PaymentSubmittedSkeleton />
       </div>
@@ -191,7 +191,7 @@ export const PaymentSubmitted: React.FC = () => {
   const isRejected = data.status === 'rejected';
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-8">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-8">
       <SubmissionSuccessHeader onBack={handleBack} onMore={() => setShowMore(true)} />
 
       <motion.div

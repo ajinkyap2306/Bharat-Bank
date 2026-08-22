@@ -221,7 +221,7 @@ export const ApprovalDetails: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <ApprovalDetailsHeader onBack={handleBack} onMore={() => {}} />
         <ApprovalDetailsSkeleton />
       </div>
@@ -230,7 +230,7 @@ export const ApprovalDetails: React.FC = () => {
 
   if (error) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <ApprovalDetailsHeader onBack={handleBack} onMore={() => {}} />
         <ApprovalErrorState onRetry={load} onBack={handleBack} />
       </div>
@@ -239,7 +239,7 @@ export const ApprovalDetails: React.FC = () => {
 
   if (viewMode === 'not_found' || !detail) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <ApprovalDetailsHeader onBack={handleBack} onMore={() => {}} />
         <ApprovalErrorState
           message="Approval request not found."
@@ -252,16 +252,16 @@ export const ApprovalDetails: React.FC = () => {
 
   if (viewMode === 'session_expired') {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <ApprovalDetailsHeader onBack={handleBack} onMore={() => {}} />
         <div className="max-w-[430px] mx-auto px-4 py-12 text-center">
-          <h2 className="text-[18px] font-semibold text-[#111827] dark:text-white">
+          <h2 className="text-[18px] font-semibold text-slate-900 dark:text-white">
             Your session has expired
           </h2>
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="mt-6 w-full py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-semibold min-h-12"
+            className="mt-6 w-full py-3.5 rounded-2xl bg-congress-blue-700 text-white font-semibold min-h-12"
           >
             Sign In Again
           </button>
@@ -272,7 +272,7 @@ export const ApprovalDetails: React.FC = () => {
 
   if (viewMode === 'already_processed') {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950">
         <ApprovalDetailsHeader onBack={handleBack} onMore={() => {}} />
         <AlreadyProcessedState onRefresh={load} onBack={handleBack} />
       </div>
@@ -282,7 +282,7 @@ export const ApprovalDetails: React.FC = () => {
   const showActions = detail.canAct && detail.status === 'pending_yours';
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-44">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-44">
       <ApprovalDetailsHeader onBack={handleBack} onMore={() => setShowMore(true)} />
 
       <motion.div

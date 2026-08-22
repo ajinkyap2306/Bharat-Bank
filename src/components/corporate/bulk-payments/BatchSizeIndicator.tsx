@@ -14,19 +14,19 @@ export const BatchSizeIndicator: React.FC<BatchSizeIndicatorProps> = ({ batch })
 
   return (
     <PayCard className={`p-4 ${exceeded ? 'border-rose-300' : ''}`}>
-      <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white mb-3">Batch Size</h3>
+      <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white mb-3">Batch Size</h3>
       <dl className="space-y-2 text-[13px]">
         <div className="flex justify-between">
-          <dt className="text-[#667085]">Current</dt>
+          <dt className="text-slate-500 dark:text-slate-400">Current</dt>
           <dd className="font-semibold">{current} payments</dd>
         </div>
         <div className="flex justify-between">
-          <dt className="text-[#667085]">Maximum</dt>
+          <dt className="text-slate-500 dark:text-slate-400">Maximum</dt>
           <dd className="font-medium">{maxBatchSize} payments</dd>
         </div>
         <div className="flex justify-between">
-          <dt className="text-[#667085]">Remaining</dt>
-          <dd className={`font-semibold ${exceeded ? 'text-[#DC2626]' : 'text-[#16A34A]'}`}>
+          <dt className="text-slate-500 dark:text-slate-400">Remaining</dt>
+          <dd className={`font-semibold ${exceeded ? 'text-[#DC2626]' : 'text-emerald-600 dark:text-emerald-400'}`}>
             {Math.max(0, remaining)}
           </dd>
         </div>

@@ -22,7 +22,7 @@ export const AccountPreferencesScreen: React.FC<AccountPreferencesScreenProps> =
   const isDefaultPayment = accountId === corporateDefaultPaymentAccountId;
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-6">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-6">
       <ScreenHeader title="Account Preferences" subtitle={account?.nickname} onBack={onBack} edgeToEdge={false} />
       <AccountsCard>
         <MenuRow
@@ -55,17 +55,17 @@ export const SetPrimaryScreen: React.FC<SetPrimaryScreenProps> = ({ accountId, o
   const isPrimary = accountId === primaryCorporateAccountId;
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-6">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-6">
       <ScreenHeader title="Primary Operating Account" onBack={onBack} edgeToEdge={false} />
       <AccountsCard className="p-4">
-        <p className="text-sm text-[#667085]">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Set <strong>{account?.nickname}</strong> as your primary operating account? This will be the default debit account in eligible payment flows.
         </p>
         <button
           type="button"
           onClick={onConfirm}
           disabled={isPrimary}
-          className="mt-4 w-full py-3 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm disabled:opacity-50"
+          className="mt-4 w-full py-3 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm disabled:opacity-50"
         >
           {isPrimary ? 'Already Primary' : 'Continue'}
         </button>
@@ -87,7 +87,7 @@ export const NicknameScreen: React.FC<NicknameScreenProps> = ({ accountId, onBac
   const [nickname, setNickname] = useState(ctx?.nickname || base?.nickname || '');
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-6">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-6">
       <ScreenHeader title="Account Nickname" onBack={onBack} edgeToEdge={false} />
       <AccountsCard className="p-4 space-y-3">
         <input
@@ -96,7 +96,7 @@ export const NicknameScreen: React.FC<NicknameScreenProps> = ({ accountId, onBac
           placeholder="Enter nickname"
           className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm"
         />
-        <button type="button" onClick={() => onSave(nickname)} className="w-full py-3 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm">
+        <button type="button" onClick={() => onSave(nickname)} className="w-full py-3 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm">
           Save
         </button>
       </AccountsCard>
@@ -113,13 +113,13 @@ interface HideAccountScreenProps {
 export const HideAccountScreen: React.FC<HideAccountScreenProps> = ({ accountId, onBack, onConfirm }) => {
   const account = getAccountById(accountId);
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-6">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-6">
       <ScreenHeader title="Hide Account" onBack={onBack} edgeToEdge={false} />
       <AccountsCard className="p-4">
-        <p className="text-sm text-[#667085]">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Hide <strong>{account?.nickname}</strong> from the accounts overview? The account will remain accessible through account management.
         </p>
-        <button type="button" onClick={onConfirm} className="mt-4 w-full py-3 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm">
+        <button type="button" onClick={onConfirm} className="mt-4 w-full py-3 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm">
           Continue
         </button>
       </AccountsCard>
@@ -156,12 +156,12 @@ export const NotificationsPrefsScreen: React.FC<NotificationsPrefsScreenProps> =
   ];
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-6">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-6">
       <ScreenHeader title="Notification Preferences" onBack={onBack} edgeToEdge={false} />
       <AccountsCard className="divide-y divide-slate-100 dark:divide-slate-800">
         {items.map(({ key, label, locked }) => (
           <label key={key} className="flex items-center justify-between p-3">
-            <span className="text-sm font-medium text-[#111827] dark:text-white">{label}</span>
+            <span className="text-sm font-medium text-slate-900 dark:text-white">{label}</span>
             <input type="checkbox" checked={prefs[key]} disabled={locked} onChange={() => !locked && toggle(key)} className="rounded" />
           </label>
         ))}
@@ -186,10 +186,10 @@ export const AuthConfirmScreen: React.FC<AuthConfirmScreenProps> = ({
   const [mpin, setMpin] = useState('');
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-6">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-6">
       <ScreenHeader title={title} onBack={onBack} edgeToEdge={false} />
       <AccountsCard className="p-4 space-y-3">
-        <p className="text-sm text-[#667085]">{subtitle}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>
         <input
           type="password"
           maxLength={6}
@@ -202,7 +202,7 @@ export const AuthConfirmScreen: React.FC<AuthConfirmScreenProps> = ({
           type="button"
           onClick={onConfirm}
           disabled={mpin.length < 4}
-          className="w-full py-3 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm disabled:opacity-50"
+          className="w-full py-3 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm disabled:opacity-50"
         >
           Authenticate
         </button>
@@ -218,11 +218,11 @@ interface SuccessScreenProps {
 }
 
 export const SuccessScreen: React.FC<SuccessScreenProps> = ({ title, message, onDone }) => (
-  <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full flex flex-col items-center justify-center p-6 text-center">
-    <div className="w-14 h-14 rounded-full bg-emerald-100 text-[#16A34A] flex items-center justify-center text-2xl mb-4">✓</div>
-    <h2 className="text-lg font-bold text-[#111827] dark:text-white">{title}</h2>
-    <p className="text-sm text-[#667085] mt-2">{message}</p>
-    <button type="button" onClick={onDone} className="mt-6 px-8 py-3 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm">
+  <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full flex flex-col items-center justify-center p-6 text-center">
+    <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-2xl mb-4">✓</div>
+    <h2 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h2>
+    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">{message}</p>
+    <button type="button" onClick={onDone} className="mt-6 px-8 py-3 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm">
       Done
     </button>
   </div>

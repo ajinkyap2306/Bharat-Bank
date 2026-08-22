@@ -20,7 +20,7 @@ export const FavoriteBeneficiaries: React.FC<FavoriteBeneficiariesProps> = ({
     <section className="px-4" aria-labelledby="favorite-beneficiaries-heading">
       <h2
         id="favorite-beneficiaries-heading"
-        className="text-[15px] font-semibold text-[#111827] dark:text-white mb-3"
+        className="text-[15px] font-semibold text-slate-900 dark:text-white mb-3"
       >
         Favorites
       </h2>

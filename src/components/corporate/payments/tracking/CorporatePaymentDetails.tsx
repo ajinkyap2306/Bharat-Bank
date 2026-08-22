@@ -165,7 +165,7 @@ export const CorporatePaymentDetails: React.FC = () => {
 
   if (loading && !data) {
     return (
-      <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto">
+      <div className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto">
         <PaymentDetailsHeader onBack={handleBack} onMore={() => {}} />
         <PaymentSkeleton />
       </div>
@@ -174,7 +174,7 @@ export const CorporatePaymentDetails: React.FC = () => {
 
   if (error && !data) {
     return (
-      <div className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto">
+      <div className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto">
         <PaymentDetailsHeader onBack={() => navigate(PAYMENTS_HOME)} onMore={() => {}} />
         <PaymentErrorState onRetry={() => load()} />
       </div>
@@ -185,14 +185,14 @@ export const CorporatePaymentDetails: React.FC = () => {
 
   return (
     <div
-      className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto"
+      className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {pullDistance > 0 && (
         <div
-          className="flex justify-center py-2 text-[#667085] text-xs"
+          className="flex justify-center py-2 text-slate-500 dark:text-slate-400 text-xs"
           style={{ height: pullDistance }}
           aria-hidden
         >
@@ -201,7 +201,7 @@ export const CorporatePaymentDetails: React.FC = () => {
       )}
 
       {refreshing && (
-        <div className="flex items-center justify-center gap-2 py-2 text-[#667085] text-xs" aria-live="polite">
+        <div className="flex items-center justify-center gap-2 py-2 text-slate-500 dark:text-slate-400 text-xs" aria-live="polite">
           <Loader2 className="w-3.5 h-3.5 animate-spin motion-reduce:animate-none" aria-hidden />
           Updating…
         </div>

@@ -42,7 +42,7 @@ export const CorporateMobilePayModule: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full -mx-3 px-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-8">
+    <div className="flex flex-col h-full -mx-3 px-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-8">
       <ScreenHeader
         title="Pay via Mobile"
         subtitle="Send money using registered mobile number"
@@ -57,7 +57,7 @@ export const CorporateMobilePayModule: React.FC = () => {
             value={mobile}
             onChange={(e) => setMobile(e.target.value)}
             placeholder="Enter 10-digit mobile number"
-            className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm outline-none focus:border-[#0B5CAB]"
+            className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm outline-none focus:border-congress-blue-700"
           />
         </div>
 

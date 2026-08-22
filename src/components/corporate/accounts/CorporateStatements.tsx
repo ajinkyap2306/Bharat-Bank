@@ -215,7 +215,7 @@ export const CorporateStatements: React.FC<CorporateStatementsProps> = ({ accoun
 
   if (error && !statement) {
     return (
-      <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 font-['Inter',sans-serif]">
+      <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 ">
         <StatementHeader
           accountLabel={accountLabel}
           onBack={handleBack}
@@ -228,13 +228,13 @@ export const CorporateStatements: React.FC<CorporateStatementsProps> = ({ accoun
 
   return (
     <div
-      className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-36 font-['Inter',sans-serif]"
+      className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-36 "
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {(pullDistance > 0 || isRefreshing) && (
-        <div className="flex justify-center py-2 text-[#0B5CAB]" aria-live="polite">
+        <div className="flex justify-center py-2 text-congress-blue-700 dark:text-congress-blue-400" aria-live="polite">
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
         </div>
       )}
@@ -254,14 +254,14 @@ export const CorporateStatements: React.FC<CorporateStatementsProps> = ({ accoun
             <button
               type="button"
               onClick={() => setShowAccountPicker(true)}
-              className="w-full flex items-center justify-between gap-3 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 shadow-sm min-h-14 text-left"
+              className="w-full flex items-center justify-between gap-3 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm min-h-14 text-left"
             >
               <div>
-                <p className="text-[12px] text-[#667085]">Account</p>
-                <p className="text-[15px] font-semibold text-[#111827] dark:text-white">{statement.accountName}</p>
-                <p className="text-[13px] font-mono text-[#667085]">{statement.accountNumber}</p>
+                <p className="text-[12px] text-slate-500 dark:text-slate-400">Account</p>
+                <p className="text-[15px] font-semibold text-slate-900 dark:text-white">{statement.accountName}</p>
+                <p className="text-[13px] font-mono text-slate-500 dark:text-slate-400">{statement.accountNumber}</p>
               </div>
-              <span className="text-[13px] font-semibold text-[#0B5CAB]">Change</span>
+              <span className="text-[13px] font-semibold text-congress-blue-700 dark:text-congress-blue-400">Change</span>
             </button>
           </div>
 
@@ -277,9 +277,9 @@ export const CorporateStatements: React.FC<CorporateStatementsProps> = ({ accoun
           />
 
           {statement.status === 'preparing' ? (
-            <div className="mx-4 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] text-center">
-              <RefreshCw className="w-8 h-8 text-[#0B5CAB] animate-spin mx-auto motion-reduce:animate-none" />
-              <p className="text-[14px] font-medium text-[#111827] dark:text-white mt-3">
+            <div className="mx-4 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+              <RefreshCw className="w-8 h-8 text-congress-blue-700 dark:text-congress-blue-400 animate-spin mx-auto motion-reduce:animate-none" />
+              <p className="text-[14px] font-medium text-slate-900 dark:text-white mt-3">
                 Preparing your statement...
               </p>
             </div>
@@ -294,7 +294,7 @@ export const CorporateStatements: React.FC<CorporateStatementsProps> = ({ accoun
                 <button
                   type="button"
                   onClick={() => setShowBalances((v) => !v)}
-                  className="text-[12px] font-semibold text-[#0B5CAB] min-h-11 px-2"
+                  className="text-[12px] font-semibold text-congress-blue-700 dark:text-congress-blue-400 min-h-11 px-2"
                 >
                   {showBalances ? 'Hide Balance' : 'Show Balance'}
                 </button>
@@ -329,7 +329,7 @@ export const CorporateStatements: React.FC<CorporateStatementsProps> = ({ accoun
               <button
                 type="button"
                 onClick={() => setShowPreview(true)}
-                className="mx-4 w-[calc(100%-2rem)] py-3 rounded-2xl border border-[#0B5CAB]/30 text-[#0B5CAB] text-[14px] font-semibold min-h-12"
+                className="mx-4 w-[calc(100%-2rem)] py-3 rounded-2xl border border-congress-blue-700/30 text-congress-blue-700 dark:text-congress-blue-400 text-[14px] font-semibold min-h-12"
               >
                 Preview Statement
               </button>

@@ -35,7 +35,7 @@ export const CorporateFreezeAccountScreen: React.FC<CorporateFreezeAccountScreen
 
   if (!account) {
     return (
-      <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full p-4">
+      <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full p-4">
         <p className="text-sm text-slate-500">Account not found.</p>
       </div>
     );
@@ -43,7 +43,7 @@ export const CorporateFreezeAccountScreen: React.FC<CorporateFreezeAccountScreen
 
   if (done) {
     return (
-      <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full flex flex-col items-center text-center px-4 pt-16">
+      <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full flex flex-col items-center text-center px-4 pt-16">
         <Snowflake className="w-14 h-14 text-blue-600 mb-4" />
         <h2 className="text-xl font-extrabold">
           {completedAction === 'freeze' ? 'Account Frozen' : 'Account Unfrozen'}
@@ -56,7 +56,7 @@ export const CorporateFreezeAccountScreen: React.FC<CorporateFreezeAccountScreen
         <button
           type="button"
           onClick={() => navigate(`/corporate/accounts/${accountId}`)}
-          className="mt-8 w-full max-w-sm py-3.5 bg-[#0B5CAB] text-white font-bold rounded-2xl"
+          className="mt-8 w-full max-w-sm py-3.5 bg-congress-blue-700 text-white font-bold rounded-2xl"
         >
           Done
         </button>
@@ -65,7 +65,7 @@ export const CorporateFreezeAccountScreen: React.FC<CorporateFreezeAccountScreen
   }
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-8">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-8">
       <ScreenHeader
         title={isFrozen ? 'Unfreeze Account' : 'Freeze Account'}
         subtitle={account.nickname}
@@ -85,7 +85,7 @@ export const CorporateFreezeAccountScreen: React.FC<CorporateFreezeAccountScreen
         <button
           type="button"
           onClick={() => setShowAuth(true)}
-          className="w-full py-3.5 bg-[#0B5CAB] text-white font-bold rounded-2xl"
+          className="w-full py-3.5 bg-congress-blue-700 text-white font-bold rounded-2xl"
         >
           {isFrozen ? 'Unfreeze Account' : 'Freeze Account'}
         </button>

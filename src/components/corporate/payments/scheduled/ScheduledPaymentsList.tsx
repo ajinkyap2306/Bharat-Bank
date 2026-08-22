@@ -113,29 +113,29 @@ export const ScheduledPaymentsList: React.FC = () => {
 
   return (
     <div
-      className="min-h-full bg-[#F7F9FC] dark:bg-slate-950 max-w-[430px] mx-auto"
+      className="min-h-full bg-slate-50 dark:bg-slate-950 max-w-[430px] mx-auto"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {pullDistance > 0 && (
-        <div className="flex justify-center py-2 text-[#667085] text-xs" style={{ height: pullDistance }}>
+        <div className="flex justify-center py-2 text-slate-500 dark:text-slate-400 text-xs" style={{ height: pullDistance }}>
           {pullDistance > 72 ? 'Release to refresh' : 'Pull to refresh'}
         </div>
       )}
 
-      <header className="sticky top-0 z-20 bg-[#F7F9FC]/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-[#E4E7EC] dark:border-slate-800 safe-top">
+      <header className="sticky top-0 z-20 bg-slate-50/95 dark:bg-slate-950/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 safe-top">
         <ScheduledPaymentsHeader onBack={handleBack} onCreate={canCreatePayment ? handleCreate : undefined} />
         {summary && (
           <div className="px-4 pb-3 grid grid-cols-2 gap-2">
             <PayHomeCard className="p-3">
-              <p className="text-[11px] text-[#667085]">Upcoming</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Upcoming</p>
               <p className="text-[16px] font-bold mt-0.5">
                 {hideAmounts ? '••••••' : formatPaymentCurrency(summary.upcomingTotal, summary.currency)}
               </p>
             </PayHomeCard>
             <PayHomeCard className="p-3">
-              <p className="text-[11px] text-[#667085]">Pending Approval</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Pending Approval</p>
               <p className="text-[16px] font-bold mt-0.5">{summary.pendingApprovalCount}</p>
             </PayHomeCard>
           </div>
@@ -147,12 +147,12 @@ export const ScheduledPaymentsList: React.FC = () => {
         {loading ? (
           <ScheduledPaymentsSkeleton />
         ) : items.length === 0 ? (
-          <div className="mx-4 mt-6 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-8 text-center">
-            <CalendarClock className="w-10 h-10 text-[#667085] mx-auto mb-3" aria-hidden />
-            <p className="text-[15px] font-semibold text-[#111827] dark:text-white">
+          <div className="mx-4 mt-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center">
+            <CalendarClock className="w-10 h-10 text-slate-500 dark:text-slate-400 mx-auto mb-3" aria-hidden />
+            <p className="text-[15px] font-semibold text-slate-900 dark:text-white">
               No {activeTab.replace('_', ' ')} payments
             </p>
-            <p className="text-[13px] text-[#667085] mt-1">
+            <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">
               {activeTab === 'upcoming'
                 ? 'Scheduled payments will appear here after Checker approval.'
                 : `No ${activeTab.replace('_', ' ')} scheduled payments found.`}
@@ -161,14 +161,14 @@ export const ScheduledPaymentsList: React.FC = () => {
               <button
                 type="button"
                 onClick={handleCreate}
-                className="mt-4 text-sm font-semibold text-[#0B5CAB]"
+                className="mt-4 text-sm font-semibold text-congress-blue-700 dark:text-congress-blue-400"
               >
                 Create Scheduled Payment
               </button>
             )}
           </div>
         ) : (
-          <PayHomeCard className="divide-y divide-[#E4E7EC]/80 dark:divide-slate-800" ariaLabel={`${activeTab} scheduled payments`}>
+          <PayHomeCard className="divide-y divide-slate-200 dark:divide-slate-800/80 dark:divide-slate-800" ariaLabel={`${activeTab} scheduled payments`}>
             {items.map((item) => (
               <ScheduledPaymentItem
                 key={item.id}

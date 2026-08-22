@@ -54,7 +54,7 @@ export const CorporateNotificationsScreen: React.FC<CorporateNotificationsScreen
       initial={{ opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 24 }}
-      className="fixed inset-0 z-50 bg-[#F7F9FC] dark:bg-slate-950 flex flex-col"
+      className="fixed inset-0 z-50 bg-slate-50 dark:bg-slate-950 flex flex-col"
     >
       <div className="px-3 pt-3 pb-2 safe-top border-b border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div className="flex items-center gap-2 mb-3">
@@ -67,7 +67,7 @@ export const CorporateNotificationsScreen: React.FC<CorporateNotificationsScreen
           </button>
           <div className="flex items-center gap-2">
             <Bell className="w-5 h-5 text-congress-blue-700 dark:text-congress-blue-400" />
-            <h1 className="text-base font-bold text-[#111827] dark:text-white">Notifications</h1>
+            <h1 className="text-base font-bold text-slate-900 dark:text-white">Notifications</h1>
           </div>
         </div>
         <div className="flex gap-1 overflow-x-auto no-scrollbar">
@@ -79,7 +79,7 @@ export const CorporateNotificationsScreen: React.FC<CorporateNotificationsScreen
               className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
                 tab === t
                   ? 'bg-congress-blue-700 text-white'
-                  : 'bg-slate-100 dark:bg-slate-800 text-[#667085]'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
               }`}
             >
               {t}
@@ -90,7 +90,7 @@ export const CorporateNotificationsScreen: React.FC<CorporateNotificationsScreen
 
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
         {filtered.length === 0 ? (
-          <p className="text-sm text-[#667085] text-center py-16">No notifications in this category.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-16">No notifications in this category.</p>
         ) : (
           filtered.map((n) => (
             <button
@@ -107,11 +107,11 @@ export const CorporateNotificationsScreen: React.FC<CorporateNotificationsScreen
                 <NotifIcon type={n.type} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-bold text-[#111827] dark:text-white">{n.title}</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">{n.title}</p>
                     {!n.read && <span className="w-2 h-2 rounded-full bg-congress-blue-700 shrink-0 mt-1.5" />}
                   </div>
-                  <p className="text-xs text-[#667085] mt-0.5">{n.description}</p>
-                  <p className="text-[10px] text-[#667085] mt-1">{n.time}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{n.description}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">{n.time}</p>
                 </div>
               </div>
             </button>

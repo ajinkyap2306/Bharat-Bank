@@ -23,27 +23,27 @@ export const PaymentInformation: React.FC<PaymentInformationProps> = ({ details 
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center justify-between gap-3 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm min-h-13"
+        className="w-full flex items-center justify-between gap-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm min-h-13"
         aria-expanded={expanded}
       >
-        <span className="text-[15px] font-semibold text-[#111827] dark:text-white">
+        <span className="text-[15px] font-semibold text-slate-900 dark:text-white">
           Payment Information
         </span>
         {expanded ? (
-          <ChevronUp className="w-5 h-5 text-[#667085]" aria-hidden />
+          <ChevronUp className="w-5 h-5 text-slate-500 dark:text-slate-400" aria-hidden />
         ) : (
-          <ChevronDown className="w-5 h-5 text-[#667085]" aria-hidden />
+          <ChevronDown className="w-5 h-5 text-slate-500 dark:text-slate-400" aria-hidden />
         )}
       </button>
       {expanded && (
-        <div className="mt-2 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-4 shadow-sm">
+        <div className="mt-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
           {rows.map((row) => (
             <div
               key={row.label}
-              className="flex items-start justify-between gap-3 py-2.5 border-b border-[#E4E7EC]/60 dark:border-slate-800 last:border-0"
+              className="flex items-start justify-between gap-3 py-2.5 border-b border-slate-200 dark:border-slate-800/60 dark:border-slate-800 last:border-0"
             >
-              <span className="text-[13px] text-[#667085] shrink-0">{row.label}</span>
-              <span className="text-[13px] font-medium text-[#111827] dark:text-white text-right">
+              <span className="text-[13px] text-slate-500 dark:text-slate-400 shrink-0">{row.label}</span>
+              <span className="text-[13px] font-medium text-slate-900 dark:text-white text-right">
                 {row.value}
               </span>
             </div>

@@ -14,23 +14,23 @@ export const BatchLimitCheck: React.FC<BatchLimitCheckProps> = ({ batch }) => {
 
   return (
     <PayCard className={`p-4 ${exceeded ? 'border-rose-300' : ''}`}>
-      <h3 className="text-[13px] font-semibold text-[#111827] dark:text-white mb-3">Batch Limit</h3>
+      <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white mb-3">Batch Limit</h3>
       <dl className="space-y-2 text-[13px]">
         <div className="flex justify-between">
-          <dt className="text-[#667085]">Daily Bulk Payment Limit</dt>
+          <dt className="text-slate-500 dark:text-slate-400">Daily Bulk Payment Limit</dt>
           <dd className="font-medium">{formatPaymentCurrency(dailyLimit)}</dd>
         </div>
         <div className="flex justify-between">
-          <dt className="text-[#667085]">Used Today</dt>
+          <dt className="text-slate-500 dark:text-slate-400">Used Today</dt>
           <dd className="font-medium">{formatPaymentCurrency(usedToday)}</dd>
         </div>
         <div className="flex justify-between">
-          <dt className="text-[#667085]">This Batch</dt>
+          <dt className="text-slate-500 dark:text-slate-400">This Batch</dt>
           <dd className="font-semibold">{formatPaymentCurrency(batch.totalAmount)}</dd>
         </div>
-        <div className="flex justify-between pt-2 border-t border-[#E4E7EC] dark:border-slate-800">
-          <dt className="text-[#667085]">Remaining After</dt>
-          <dd className={`font-bold ${exceeded ? 'text-[#DC2626]' : 'text-[#111827] dark:text-white'}`}>
+        <div className="flex justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
+          <dt className="text-slate-500 dark:text-slate-400">Remaining After</dt>
+          <dd className={`font-bold ${exceeded ? 'text-[#DC2626]' : 'text-slate-900 dark:text-white'}`}>
             {formatPaymentCurrency(Math.max(0, remaining))}
           </dd>
         </div>
@@ -43,8 +43,8 @@ export const BatchLimitCheck: React.FC<BatchLimitCheckProps> = ({ batch }) => {
           </>
         ) : (
           <>
-            <CheckCircle className="w-4 h-4 text-[#16A34A]" aria-hidden />
-            <span className="text-[#16A34A]">Within Limit</span>
+            <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
+            <span className="text-emerald-600 dark:text-emerald-400">Within Limit</span>
           </>
         )}
       </div>

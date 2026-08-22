@@ -40,7 +40,7 @@ export const TransactionTypeIcon: React.FC<TransactionTypeIconProps> = ({ txn })
   return (
     <div
       className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-        isCredit ? 'bg-[#16A34A]/10 text-[#16A34A]' : 'bg-[#F7F9FC] dark:bg-slate-800 text-[#667085]'
+        isCredit ? 'bg-emerald-600/10 text-emerald-600 dark:text-emerald-400' : 'bg-slate-50 dark:bg-slate-950 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
       }`}
       aria-hidden
     >
@@ -55,12 +55,12 @@ interface TransactionStatusBadgeProps {
 
 export const TransactionStatusBadge: React.FC<TransactionStatusBadgeProps> = ({ status }) => {
   const styles: Record<string, string> = {
-    Completed: 'text-[#16A34A] bg-emerald-50 dark:bg-emerald-950/30',
-    Processing: 'text-[#667085] bg-slate-100 dark:bg-slate-800',
+    Completed: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30',
+    Processing: 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800',
     'Pending Approval': 'text-[#F59E0B] bg-amber-50 dark:bg-amber-950/30',
     Failed: 'text-[#DC2626] bg-rose-50 dark:bg-rose-950/30',
     Rejected: 'text-[#DC2626] bg-rose-50 dark:bg-rose-950/30',
-    Scheduled: 'text-[#667085] bg-slate-100 dark:bg-slate-800',
+    Scheduled: 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800',
   };
   const label =
     status === 'Pending Approval' ? 'Pending' : status === 'Processing' ? 'Processing' : status;

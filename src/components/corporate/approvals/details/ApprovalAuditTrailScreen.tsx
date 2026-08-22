@@ -30,7 +30,7 @@ export const ApprovalAuditTrailScreen: React.FC = () => {
   }, [setBottomNavHidden]);
 
   return (
-    <div className="-mx-3 min-h-full bg-[#F7F9FC] dark:bg-slate-950 pb-8">
+    <div className="-mx-3 min-h-full bg-slate-50 dark:bg-slate-950 pb-8">
       <ScreenHeader
         title="Audit Trail"
         subtitle={title}
@@ -42,16 +42,16 @@ export const ApprovalAuditTrailScreen: React.FC = () => {
         {AUDIT_EVENTS.map((event, index) => (
           <div key={event.id} className="flex gap-3">
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-[#0B5CAB]/10 text-[#0B5CAB] flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-full bg-congress-blue-50 dark:bg-congress-blue-950/40 text-congress-blue-700 dark:text-congress-blue-400 flex items-center justify-center shrink-0">
                 {index === AUDIT_EVENTS.length - 1 ? <Clock className="w-4 h-4" /> : <User className="w-4 h-4" />}
               </div>
-              {index < AUDIT_EVENTS.length - 1 && <div className="w-px flex-1 bg-[#E4E7EC] dark:bg-slate-800 my-1" />}
+              {index < AUDIT_EVENTS.length - 1 && <div className="w-px flex-1 bg-slate-200 dark:bg-slate-800 my-1" />}
             </div>
             <div className="flex-1 pb-4">
-              <p className="text-sm font-semibold text-[#111827] dark:text-white">{event.action}</p>
-              <p className="text-[12px] text-[#667085] mt-0.5">{event.actor}</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">{event.action}</p>
+              <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">{event.actor}</p>
               <p className="text-[11px] text-[#98A2B3] mt-1">{event.time}</p>
-              {event.note && <p className="text-[12px] text-[#667085] mt-2 bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 rounded-xl p-3">{event.note}</p>}
+              {event.note && <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3">{event.note}</p>}
             </div>
           </div>
         ))}

@@ -19,10 +19,10 @@ export const AccountStatusSection: React.FC<AccountStatusSectionProps> = ({
 }) => (
   <section className="px-4 space-y-3" aria-label="Account status">
     <CorpListCard className="p-4">
-      <p className="text-[14px] font-bold text-[#111827] dark:text-white mb-2">Account Status</p>
+      <p className="text-[14px] font-bold text-slate-900 dark:text-white mb-2">Account Status</p>
       <AccountStatusBadge status={status} />
       {status === 'Restricted' && (
-        <p className="text-[13px] text-[#667085] mt-2 leading-relaxed">
+        <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
           Some transactions may be unavailable. Contact your Relationship Manager.
         </p>
       )}
@@ -33,9 +33,9 @@ export const AccountStatusSection: React.FC<AccountStatusSectionProps> = ({
         <>
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 text-amber-500 fill-amber-500" aria-hidden />
-            <p className="text-[14px] font-bold text-[#111827] dark:text-white">Primary Account</p>
+            <p className="text-[14px] font-bold text-slate-900 dark:text-white">Primary Account</p>
           </div>
-          <p className="text-[13px] text-[#667085] mt-1.5 leading-relaxed">
+          <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
             Used as the default account for corporate payments.
           </p>
         </>
@@ -46,12 +46,12 @@ export const AccountStatusSection: React.FC<AccountStatusSectionProps> = ({
           className="w-full flex items-center justify-between gap-3 text-left min-h-11"
         >
           <div>
-            <p className="text-[14px] font-bold text-[#111827] dark:text-white">Set as Primary Account</p>
-            <p className="text-[13px] text-[#667085] mt-0.5">
+            <p className="text-[14px] font-bold text-slate-900 dark:text-white">Set as Primary Account</p>
+            <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-0.5">
               Use this account for corporate payments
             </p>
           </div>
-          <ChevronRight className="w-4 h-4 text-[#667085] shrink-0" />
+          <ChevronRight className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" />
         </button>
       ) : null}
     </CorpListCard>

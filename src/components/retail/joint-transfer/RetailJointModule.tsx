@@ -19,17 +19,21 @@ export const RetailJointModule: React.FC = () => {
   );
   const { setBottomNavHidden, closeDetailFlow, openDetailFlow } = useBanking();
   const path = location.pathname;
+  const isApprovalsRoute = path.startsWith('/retail/joint-approvals');
 
   useEffect(() => {
+    if (isApprovalsRoute) {
+      return undefined;
+    }
     setBottomNavHidden(true);
     openDetailFlow('retail-joint');
     return () => {
       setBottomNavHidden(false);
       closeDetailFlow();
     };
-  }, [setBottomNavHidden, openDetailFlow, closeDetailFlow]);
+  }, [isApprovalsRoute, setBottomNavHidden, openDetailFlow, closeDetailFlow]);
 
-  if (path.startsWith('/retail/joint-approvals')) {
+  if (isApprovalsRoute) {
     return <JointApprovalModule />;
   }
 

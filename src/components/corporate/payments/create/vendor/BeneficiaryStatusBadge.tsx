@@ -12,7 +12,7 @@ const STATUS_CONFIG: Record<
 > = {
   verified: {
     label: 'Verified',
-    className: 'bg-[#16A34A]/10 text-[#16A34A]',
+    className: 'bg-emerald-600/10 text-emerald-600 dark:text-emerald-400',
   },
   'pending-verification': {
     label: 'Verification Pending',
@@ -28,7 +28,7 @@ const STATUS_CONFIG: Record<
   },
   inactive: {
     label: 'Beneficiary Inactive',
-    className: 'bg-slate-100 text-[#667085] dark:bg-slate-800',
+    className: 'bg-slate-100 text-slate-500 dark:text-slate-400 dark:bg-slate-800',
   },
 };
 

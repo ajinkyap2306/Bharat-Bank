@@ -32,12 +32,12 @@ export const ApprovalSummary: React.FC<ApprovalSummaryProps> = ({
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="rounded-2xl bg-[#F7F9FC] dark:bg-slate-800/50 px-3 py-2.5"
+              className="rounded-2xl bg-slate-50 dark:bg-slate-950 dark:bg-slate-800/50 px-3 py-2.5"
             >
-              <p className="text-[11px] font-medium text-[#667085]">{stat.label}</p>
+              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
               <p
                 className={`text-[16px] font-extrabold tabular-nums mt-0.5 ${
-                  stat.urgent ? 'text-[#DC2626]' : 'text-[#111827] dark:text-white'
+                  stat.urgent ? 'text-[#DC2626]' : 'text-slate-900 dark:text-white'
                 }`}
               >
                 {stat.value}

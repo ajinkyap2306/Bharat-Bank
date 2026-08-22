@@ -9,7 +9,7 @@ interface LimitUtilizationProps {
 export const LimitUtilization: React.FC<LimitUtilizationProps> = ({ items }) => (
   <LimitsCard ariaLabel="Limit utilization">
     <div className="p-4">
-      <h2 className="text-[16px] font-semibold text-[#111827] dark:text-white mb-4">
+      <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white mb-4">
         Limit Utilization
       </h2>
       <div className="space-y-4">

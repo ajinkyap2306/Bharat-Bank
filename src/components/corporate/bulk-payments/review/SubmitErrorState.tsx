@@ -7,10 +7,10 @@ interface SubmitErrorStateProps {
 }
 
 export const SubmitErrorState: React.FC<SubmitErrorStateProps> = ({ onRetry, onReview }) => (
-  <div className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E4E7EC] dark:border-slate-800 p-6 text-center">
+  <div className="mx-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 text-center">
     <AlertCircle className="w-10 h-10 text-[#DC2626] mx-auto mb-3" aria-hidden />
-    <h2 className="text-[17px] font-semibold text-[#111827] dark:text-white">Unable to Submit Batch</h2>
-    <p className="text-[13px] text-[#667085] mt-2">The batch was not submitted. Please try again.</p>
+    <h2 className="text-[17px] font-semibold text-slate-900 dark:text-white">Unable to Submit Batch</h2>
+    <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-2">The batch was not submitted. Please try again.</p>
     <div className="flex gap-2 mt-5">
       <button
         type="button"
@@ -22,7 +22,7 @@ export const SubmitErrorState: React.FC<SubmitErrorStateProps> = ({ onRetry, onR
       <button
         type="button"
         onClick={onRetry}
-        className="flex-1 py-3 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11"
+        className="flex-1 py-3 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11"
       >
         Try Again
       </button>

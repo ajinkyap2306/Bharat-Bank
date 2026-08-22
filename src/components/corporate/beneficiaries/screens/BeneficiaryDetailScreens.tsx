@@ -41,14 +41,14 @@ export const BeneficiaryDetailScreen: React.FC<DetailProps> = ({
   const isActive = ben.status === 'Active' || ben.status === 'Cooling Period';
 
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-28">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-28">
       <ScreenHeader title="Beneficiary Details" onBack={onBack} edgeToEdge={false} />
 
       <BenCard className="p-4 mb-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-base font-bold text-[#111827] dark:text-white">{ben.name}</h2>
-            <p className="text-xs text-[#667085] mt-1">{ben.typeLabel}</p>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">{ben.name}</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{ben.typeLabel}</p>
           </div>
           <BenStatusBadge status={ben.status} />
         </div>
@@ -77,16 +77,16 @@ export const BeneficiaryDetailScreen: React.FC<DetailProps> = ({
       {isRejected && (
         <BenCard className="p-4 mt-4 border-rose-200 bg-rose-50/50">
           <p className="text-sm font-bold text-[#DC2626]">Beneficiary Rejected</p>
-          <p className="text-xs text-[#667085] mt-1">By {ben.rejectedBy}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">By {ben.rejectedBy}</p>
           <p className="text-xs mt-1">{ben.rejectionReason}</p>
-          <button type="button" onClick={onResubmit} className="mt-3 text-sm font-bold text-[#0B5CAB] min-h-11">
+          <button type="button" onClick={onResubmit} className="mt-3 text-sm font-bold text-congress-blue-700 dark:text-congress-blue-400 min-h-11">
             Edit & Resubmit
           </button>
         </BenCard>
       )}
 
       {isPending && isChecker && (
-        <div className="fixed bottom-0 left-0 right-0 p-3 flex gap-2 bg-[#F7F9FC]/95 backdrop-blur-md border-t">
+        <div className="fixed bottom-0 left-0 right-0 p-3 flex gap-2 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-t">
           <button
             type="button"
             onClick={onReturn}
@@ -104,7 +104,7 @@ export const BeneficiaryDetailScreen: React.FC<DetailProps> = ({
           <button
             type="button"
             onClick={onApprove}
-            className="flex-1 py-3.5 rounded-2xl bg-[#0B5CAB] text-white font-bold text-sm min-h-11"
+            className="flex-1 py-3.5 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm min-h-11"
           >
             Approve
           </button>
@@ -112,7 +112,7 @@ export const BeneficiaryDetailScreen: React.FC<DetailProps> = ({
       )}
 
       {isActive && !isChecker && (
-        <div className="fixed bottom-0 left-0 right-0 p-3 flex gap-2 bg-[#F7F9FC]/95 backdrop-blur-md border-t">
+        <div className="fixed bottom-0 left-0 right-0 p-3 flex gap-2 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-t">
           <button type="button" onClick={onEdit} className="flex-1 py-3.5 rounded-2xl border font-bold text-sm min-h-11">
             Edit Beneficiary
           </button>
@@ -127,9 +127,9 @@ export const BeneficiaryDetailScreen: React.FC<DetailProps> = ({
       )}
 
       {isPending && !isChecker && (
-        <div className="fixed bottom-0 left-0 right-0 p-3 bg-[#F7F9FC]/95 backdrop-blur-md border-t">
+        <div className="fixed bottom-0 left-0 right-0 p-3 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-t">
           <p className="text-center text-xs text-amber-600 font-bold mb-2">Pending Checker Approval</p>
-          <button type="button" disabled className="w-full py-3.5 rounded-2xl border text-[#667085] font-bold text-sm min-h-11">
+          <button type="button" disabled className="w-full py-3.5 rounded-2xl border text-slate-500 dark:text-slate-400 font-bold text-sm min-h-11">
             Awaiting Approval
           </button>
         </div>
@@ -143,7 +143,7 @@ export const ApproveConfirmScreen: React.FC<{ ben: CorporateBeneficiaryRecord; o
   onBack,
   onConfirm,
 }) => (
-  <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+  <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
     <ScreenHeader title="Approve Beneficiary?" onBack={onBack} edgeToEdge={false} />
     <BenCard className="p-4">
       <ReviewBenRow label="Beneficiary" value={ben.name} />
@@ -163,7 +163,7 @@ export const RejectReasonScreen: React.FC<{ onBack: () => void; onConfirm: (reas
 }) => {
   const [reason, setReason] = React.useState('');
   return (
-    <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+    <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title="Reject Beneficiary" onBack={onBack} edgeToEdge={false} />
       <BenCard className="p-4">
         <textarea
@@ -187,10 +187,10 @@ export const ConfirmActionScreen: React.FC<{
   onConfirm: () => void;
   danger?: boolean;
 }> = ({ title, message, confirmLabel, onBack, onConfirm, danger }) => (
-  <div className="-mx-3 bg-[#F7F9FC] dark:bg-slate-950 min-h-full pb-24">
+  <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
     <ScreenHeader title={title} onBack={onBack} edgeToEdge={false} />
     <BenCard className="p-4">
-      <p className="text-sm text-[#667085]">{message}</p>
+      <p className="text-sm text-slate-500 dark:text-slate-400">{message}</p>
     </BenCard>
     <StickyBenCTA label={confirmLabel} onClick={onConfirm} variant={danger ? 'danger' : 'primary'} />
   </div>

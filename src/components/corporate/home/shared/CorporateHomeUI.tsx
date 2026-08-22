@@ -29,7 +29,7 @@ export const CorpSectionHeader: React.FC<{
   <div className="flex items-center justify-between px-4 mb-2.5">
     <div className="flex items-center gap-2 min-w-0">
       <h2
-        className={`text-sm font-extrabold text-[#111827] dark:text-white tracking-tight ${
+        className={`text-sm font-extrabold text-slate-900 dark:text-white tracking-tight ${
           uppercase ? 'uppercase text-xs text-slate-500 dark:text-slate-400 tracking-wider' : ''
         }`}
       >
