@@ -48,10 +48,24 @@
     --color-text-secondary: #94A3B8;
   }
 
-  /* Remove default tap highlight on mobile devices */
+  /* Remove default tap highlight on mobile devices; hide scrollbars app-wide */
   * {
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
   }
 
   input, textarea {

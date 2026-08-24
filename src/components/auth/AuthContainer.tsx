@@ -237,7 +237,7 @@ export const AuthContainer: React.FC = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
-              className="flex flex-col flex-1 min-h-0 max-w-md mx-auto w-full z-10 pt-9 pb-24 safe-bottom overflow-y-auto overscroll-y-contain touch-pan-y [-webkit-overflow-scrolling:touch]"
+              className="flex flex-col flex-1 min-h-0 max-w-md mx-auto w-full z-10 pt-9 pb-24 safe-bottom overflow-y-auto no-scrollbar overscroll-y-contain touch-pan-y [-webkit-overflow-scrolling:touch]"
             >
             <div className="flex flex-col gap-3">
               <div className="flex items-center mb-2">
