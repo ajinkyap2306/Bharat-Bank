@@ -122,7 +122,7 @@ export const UpiPinSheet: React.FC<{
   amount,
   pin,
   isPaying,
-  pinLabel = 'Enter UPI PIN',
+  pinLabel = 'Enter TPIN',
   confirmLabel = 'Confirm Payment',
   pinError,
   onPinChange,
@@ -138,7 +138,7 @@ export const UpiPinSheet: React.FC<{
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-40 bg-black/50"
-          aria-label="Close UPI PIN"
+          aria-label="Close TPIN"
           onClick={isPaying ? undefined : onClose}
         />
         <motion.div

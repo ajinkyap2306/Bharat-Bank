@@ -183,19 +183,18 @@ export const SendMoneyFlow: React.FC<SendMoneyFlowProps> = ({ onClose }) => {
 
   const handleAuthConfirm = () => {
     if (authPin.length < 6) {
-      const message = needsApproval ? 'Enter your 6-digit TPIN.' : 'Enter your 6-digit UPI PIN.';
-      addToast({ type: 'error', title: needsApproval ? 'Invalid TPIN' : 'Invalid UPI PIN', message });
+      addToast({ type: 'error', title: 'Invalid TPIN', message: 'Enter your 6-digit TPIN.' });
       return;
     }
 
-    if (needsApproval) {
-      if (!verifyRetailJointUserTpin(retailActiveUserId, authPin)) {
-        setAuthError('Incorrect TPIN.');
-        setAuthPin('');
-        return;
-      }
-      setAuthError('');
+    if (!verifyRetailJointUserTpin(retailActiveUserId, authPin)) {
+      setAuthError('Incorrect TPIN.');
+      setAuthPin('');
+      return;
+    }
+    setAuthError('');
 
+    if (needsApproval) {
       if (!draft.recipient) return;
       const req = submitJointTransferRequest({
         fromAccountId: draft.fromAccountId,
@@ -405,7 +404,7 @@ export const SendMoneyFlow: React.FC<SendMoneyFlowProps> = ({ onClose }) => {
         )}
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 mt-4">
           <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-3">
-            {needsApproval ? 'Enter TPIN' : 'Enter UPI PIN'}
+            Enter TPIN
           </label>
           <input
             type="password"
@@ -429,7 +428,7 @@ export const SendMoneyFlow: React.FC<SendMoneyFlowProps> = ({ onClose }) => {
               type="button"
               onClick={() => {
                 addToast({ type: 'info', title: 'Biometric', message: 'Fingerprint verified (demo).' });
-                setAuthPin('123456');
+                setAuthPin('654321');
               }}
               className="w-full mt-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-center gap-2"
             >

@@ -194,16 +194,21 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
   };
 
   const runPayment = () => {
-    if (!draft.merchant || !payAccount || authPin.length < 6) return;
+    if (!draft.merchant || !payAccount) return;
+
+    if (authPin.length < 6) {
+      setAuthError('Enter your 6-digit TPIN.');
+      return;
+    }
+
+    if (!verifyRetailJointUserTpin(retailActiveUserId, authPin)) {
+      setAuthError('Incorrect TPIN.');
+      setAuthPin('');
+      return;
+    }
+    setAuthError('');
 
     if (needsApproval) {
-      if (!verifyRetailJointUserTpin(retailActiveUserId, authPin)) {
-        setAuthError('Incorrect TPIN.');
-        setAuthPin('');
-        return;
-      }
-      setAuthError('');
-
       const req = submitJointTransferRequest({
         fromAccountId: payAccount.id,
         beneficiaryName: draft.merchant.name,
@@ -544,7 +549,7 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
           amount={amountNum}
           pin={authPin}
           isPaying={isPaying}
-          pinLabel={needsApproval ? 'Enter TPIN' : undefined}
+          pinLabel="Enter TPIN"
           confirmLabel={needsApproval ? 'Submit for Approval' : undefined}
           pinError={authError}
           onPinChange={(value) => {

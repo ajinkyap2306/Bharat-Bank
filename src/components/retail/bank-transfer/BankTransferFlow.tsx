@@ -338,23 +338,22 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
 
   const handleAuthConfirm = () => {
     if (authPin.length < 6) {
-      const message = needsApproval ? 'Enter your 6-digit TPIN.' : 'Enter your 6-digit UPI PIN.';
       addToast({
         type: 'error',
-        title: needsApproval ? 'Invalid TPIN' : 'Invalid UPI PIN',
-        message,
+        title: 'Invalid TPIN',
+        message: 'Enter your 6-digit TPIN.',
       });
       return;
     }
 
-    if (needsApproval) {
-      if (!verifyRetailJointUserTpin(retailActiveUserId, authPin)) {
-        setAuthError('Incorrect TPIN.');
-        setAuthPin('');
-        return;
-      }
-      setAuthError('');
+    if (!verifyRetailJointUserTpin(retailActiveUserId, authPin)) {
+      setAuthError('Incorrect TPIN.');
+      setAuthPin('');
+      return;
+    }
+    setAuthError('');
 
+    if (needsApproval) {
       if (!receiver) return;
       const req = submitJointTransferRequest({
         fromAccountId: draft.fromAccountId,
@@ -581,7 +580,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
         </div>
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 mt-4">
           <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-3">
-            {needsApproval ? 'Enter TPIN' : 'Enter UPI PIN'}
+            Enter TPIN
           </label>
           <input
             type="password"
