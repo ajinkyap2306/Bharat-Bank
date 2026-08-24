@@ -173,6 +173,11 @@ export const ChequeServicesModule: React.FC = () => {
     setPendingAction(null);
   };
 
+  const pendingNeedsApproval =
+    (pendingAction === 'request' && reqNeedsApproval) ||
+    (pendingAction === 'stop' && stopNeedsApproval) ||
+    (pendingAction === 'positive' && ppNeedsApproval);
+
   const jointNote = (needsApproval: boolean) =>
     needsApproval ? (
       <p className="text-xs text-slate-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-100 rounded-xl p-3">
@@ -539,7 +544,8 @@ export const ChequeServicesModule: React.FC = () => {
           setPendingAction(null);
         }}
         onSuccess={handleAuthSuccess}
-        title="Enter MPIN"
+        title={pendingNeedsApproval ? 'Enter TPIN' : 'Enter MPIN'}
+        pinType={pendingNeedsApproval ? 'tpin' : 'mpin'}
       />
     </div>
   );

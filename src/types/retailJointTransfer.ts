@@ -109,6 +109,7 @@ export interface RetailJointUser {
   customerNumber: string;
   demoPassword: string;
   demoMpin: string;
+  demoTpin: string;
   phone: string;
   email: string;
 }

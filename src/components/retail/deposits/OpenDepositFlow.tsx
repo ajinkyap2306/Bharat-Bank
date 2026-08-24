@@ -587,6 +587,7 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
         onClose={() => setIsAuthOpen(false)}
         onSuccess={handleAuthComplete}
         title={needsApproval ? `Submit ${type} for Approval` : `Confirm ${type} Deposit`}
+        pinType={needsApproval ? 'tpin' : 'mpin'}
       />
     </div>
   );

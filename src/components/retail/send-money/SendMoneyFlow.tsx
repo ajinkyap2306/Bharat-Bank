@@ -30,7 +30,7 @@ import {
 import {
   getJointStatusLabel,
   requiresJointApproval,
-  verifyRetailJointUserMpin,
+  verifyRetailJointUserTpin,
 } from '../../../data/retailJointTransferMock';
 import type { JointTransferRequest } from '../../../types/retailJointTransfer';
 import {
@@ -183,14 +183,14 @@ export const SendMoneyFlow: React.FC<SendMoneyFlowProps> = ({ onClose }) => {
 
   const handleAuthConfirm = () => {
     if (authPin.length < 6) {
-      const message = needsApproval ? 'Enter your 6-digit MPIN.' : 'Enter your 6-digit UPI PIN.';
-      addToast({ type: 'error', title: needsApproval ? 'Invalid MPIN' : 'Invalid UPI PIN', message });
+      const message = needsApproval ? 'Enter your 6-digit TPIN.' : 'Enter your 6-digit UPI PIN.';
+      addToast({ type: 'error', title: needsApproval ? 'Invalid TPIN' : 'Invalid UPI PIN', message });
       return;
     }
 
     if (needsApproval) {
-      if (!verifyRetailJointUserMpin(retailActiveUserId, authPin)) {
-        setAuthError('Incorrect MPIN.');
+      if (!verifyRetailJointUserTpin(retailActiveUserId, authPin)) {
+        setAuthError('Incorrect TPIN.');
         setAuthPin('');
         return;
       }
@@ -405,7 +405,7 @@ export const SendMoneyFlow: React.FC<SendMoneyFlowProps> = ({ onClose }) => {
         )}
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 mt-4">
           <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-3">
-            {needsApproval ? 'Enter MPIN' : 'Enter UPI PIN'}
+            {needsApproval ? 'Enter TPIN' : 'Enter UPI PIN'}
           </label>
           <input
             type="password"

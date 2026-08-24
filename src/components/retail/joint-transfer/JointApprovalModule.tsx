@@ -14,7 +14,7 @@ import {
   getJointRequestType,
   getJointRequestTypeLabel,
   getJointStatusLabel,
-  verifyRetailJointUserMpin,
+  verifyRetailJointUserTpin,
 } from '../../../data/retailJointTransferMock';
 import { playTransferSuccessChime } from '../../../data/retailBankTransferMock';
 import { BottomSheet } from '../../common/BottomSheet';
@@ -125,11 +125,11 @@ export const JointApprovalModule: React.FC = () => {
 
   const handleApproveAuth = async () => {
     if (authPin.length !== 6) {
-      setAuthError('Enter your 6-digit MPIN.');
+      setAuthError('Enter your 6-digit TPIN.');
       return;
     }
-    if (!verifyRetailJointUserMpin(retailActiveUserId, authPin)) {
-      setAuthError('Incorrect MPIN.');
+    if (!verifyRetailJointUserTpin(retailActiveUserId, authPin)) {
+      setAuthError('Incorrect TPIN.');
       setAuthPin('');
       return;
     }
@@ -306,7 +306,7 @@ export const JointApprovalModule: React.FC = () => {
           <p className="text-sm text-slate-500 mt-1">{getJointRequestListTitle(activeRequest)}</p>
         </div>
         <div className="bg-white dark:bg-slate-900 rounded-2xl border p-4 mt-4">
-          <label className="text-xs font-bold text-slate-600 block mb-3">Enter MPIN</label>
+          <label className="text-xs font-bold text-slate-600 block mb-3">Enter TPIN</label>
           <NumericPinInput
             value={authPin}
             onChange={(v) => {
@@ -316,7 +316,7 @@ export const JointApprovalModule: React.FC = () => {
             length={6}
             masked
             hasError={Boolean(authError)}
-            ariaLabel="MPIN"
+            ariaLabel="TPIN"
           />
           {authError && <p className="text-xs text-red-600 text-center mt-2">{authError}</p>}
         </div>

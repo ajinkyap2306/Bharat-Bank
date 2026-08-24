@@ -284,13 +284,20 @@ export function validateMpin(mpin: string, confirmMpin: string): string | null {
   return null;
 }
 
-const WEAK_TPINS = new Set(['0000', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999', '1234', '4321']);
+const WEAK_TPINS = new Set([
+  '000000', '111111', '222222', '333333', '444444', '555555',
+  '666666', '777777', '888888', '999999', '123456', '654321',
+  '121212', '112233', '123123',
+]);
 
 export function validateTpin(tpin: string, confirmTpin: string): string | null {
-  if (tpin.length !== 4) return 'TPIN must be 4 digits.';
+  if (tpin.length !== 6) return 'TPIN must be 6 digits.';
   if (tpin !== confirmTpin) return 'TPINs do not match.';
   if (WEAK_TPINS.has(tpin)) return 'This TPIN is too common. Choose a stronger TPIN.';
-  if (/^(\d)\1{3}$/.test(tpin)) return 'Avoid repeated digits in your TPIN.';
+  if (/^(\d)\1{5}$/.test(tpin)) return 'Avoid repeated digits in your TPIN.';
+  if ('0123456789'.includes(tpin) || '9876543210'.includes(tpin)) {
+    return 'Avoid sequential digits in your TPIN.';
+  }
   return null;
 }
 

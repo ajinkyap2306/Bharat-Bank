@@ -28,6 +28,7 @@ import {
   getJointStatusLabel,
   requiresJointApproval,
   verifyRetailJointUserMpin,
+  verifyRetailJointUserTpin,
 } from '../../../data/retailJointTransferMock';
 import { NumericPinInput } from '../../common/NumericPinInput';
 import {
@@ -233,11 +234,12 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
 
   const handleAuthConfirm = () => {
     if (authPin.length !== 6) {
-      setAuthError('Enter your 6-digit MPIN.');
+      setAuthError(needsApproval ? 'Enter your 6-digit TPIN.' : 'Enter your 6-digit MPIN.');
       return;
     }
-    if (!verifyRetailJointUserMpin(retailActiveUserId, authPin)) {
-      setAuthError('Incorrect MPIN.');
+    const verifyPin = needsApproval ? verifyRetailJointUserTpin : verifyRetailJointUserMpin;
+    if (!verifyPin(retailActiveUserId, authPin)) {
+      setAuthError(needsApproval ? 'Incorrect TPIN.' : 'Incorrect MPIN.');
       setAuthPin('');
       return;
     }
@@ -430,7 +432,9 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
           </p>
         )}
         <div className="bg-white dark:bg-slate-900 rounded-2xl border p-4 mt-4">
-          <label className="text-xs font-bold text-slate-600 block mb-3">Enter MPIN</label>
+          <label className="text-xs font-bold text-slate-600 block mb-3">
+            {needsApproval ? 'Enter TPIN' : 'Enter MPIN'}
+          </label>
           <NumericPinInput
             value={authPin}
             onChange={(v) => {
@@ -440,7 +444,7 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
             length={6}
             masked
             hasError={Boolean(authError)}
-            ariaLabel="MPIN"
+            ariaLabel={needsApproval ? 'TPIN' : 'MPIN'}
           />
           {authError && <p className="text-xs text-red-600 text-center mt-2">{authError}</p>}
         </div>

@@ -7,9 +7,17 @@ interface SecureAuthModalProps {
   onClose: () => void;
   onSuccess: () => void;
   title: string;
+  pinType?: 'mpin' | 'tpin';
 }
 
-export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({ isOpen, onClose, onSuccess, title }) => {
+export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  title,
+  pinType = 'mpin',
+}) => {
+  const pinLabel = pinType === 'tpin' ? 'TPIN' : 'MPIN';
   const [pin, setPin] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -63,7 +71,7 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({ isOpen, onClos
 
               <div className="space-y-1">
                 <h3 className="text-xl font-black text-slate-900 dark:text-white">{title}</h3>
-                <p className="text-xs text-slate-500">Enter your 6-digit MPIN to authorize</p>
+                <p className="text-xs text-slate-500">Enter your 6-digit {pinLabel} to authorize</p>
               </div>
 
               {/* PIN Display */}
@@ -115,7 +123,7 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({ isOpen, onClos
             {isProcessing && (
               <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center space-y-4">
                 <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                <p className="text-sm font-bold text-slate-900 dark:text-white tracking-widest uppercase">Verifying MPIN</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white tracking-widest uppercase">Verifying {pinLabel}</p>
               </div>
             )}
           </motion.div>

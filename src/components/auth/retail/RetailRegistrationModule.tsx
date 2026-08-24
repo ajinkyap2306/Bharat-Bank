@@ -163,7 +163,7 @@ export const RetailRegistrationModule: React.FC = () => {
         profileCode: draft.profileCode,
         customerId: draft.customerId || RETAIL_DEMO_CUSTOMER_ID,
         mpinSet: draft.mpin.length === 6,
-        tpinSet: draft.tpin.length === 4,
+        tpinSet: draft.tpin.length === 6,
         biometricEnabled,
         method: 'sim_verify',
       });
@@ -569,12 +569,11 @@ export const RetailRegistrationModule: React.FC = () => {
             <div className="flex-1 overflow-y-auto">
               <RegTitle
                 title="Set Your TPIN"
-                subtitle="Create a 4-digit TPIN to authorize transactions securely."
+                subtitle="Create a 6-digit TPIN to authorize transactions securely."
               />
               <div className="px-4 space-y-6">
                 <MpinInput
                   label="TPIN"
-                  length={4}
                   value={draft.tpin}
                   onChange={(v) => {
                     setDraft((d) => ({ ...d, tpin: v }));
@@ -583,7 +582,6 @@ export const RetailRegistrationModule: React.FC = () => {
                 />
                 <MpinInput
                   label="Confirm TPIN"
-                  length={4}
                   value={confirmTpin}
                   onChange={(v) => {
                     setConfirmTpin(v);

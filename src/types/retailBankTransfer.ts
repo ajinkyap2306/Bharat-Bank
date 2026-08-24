@@ -8,7 +8,6 @@ export type BankTransferStep =
   | 'bank-beneficiary'
   | 'bank-enter'
   | 'amount'
-  | 'review'
   | 'auth'
   | 'processing'
   | 'success'

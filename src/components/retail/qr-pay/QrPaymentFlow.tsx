@@ -33,7 +33,7 @@ import {
 import {
   getJointStatusLabel,
   requiresJointApproval,
-  verifyRetailJointUserMpin,
+  verifyRetailJointUserTpin,
 } from '../../../data/retailJointTransferMock';
 import type { JointTransferRequest } from '../../../types/retailJointTransfer';
 import { resetPaymentSuccessSound } from '../../../utils/paymentSuccessFeedback';
@@ -197,8 +197,8 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
     if (!draft.merchant || !payAccount || authPin.length < 6) return;
 
     if (needsApproval) {
-      if (!verifyRetailJointUserMpin(retailActiveUserId, authPin)) {
-        setAuthError('Incorrect MPIN.');
+      if (!verifyRetailJointUserTpin(retailActiveUserId, authPin)) {
+        setAuthError('Incorrect TPIN.');
         setAuthPin('');
         return;
       }
@@ -544,7 +544,7 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
           amount={amountNum}
           pin={authPin}
           isPaying={isPaying}
-          pinLabel={needsApproval ? 'Enter MPIN' : undefined}
+          pinLabel={needsApproval ? 'Enter TPIN' : undefined}
           confirmLabel={needsApproval ? 'Submit for Approval' : undefined}
           pinError={authError}
           onPinChange={(value) => {

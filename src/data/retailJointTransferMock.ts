@@ -17,6 +17,7 @@ export const RETAIL_JOINT_DEMO_USERS: Record<string, RetailJointUser> = {
     customerNumber: 'RB-RAHUL01',
     demoPassword: 'demo123',
     demoMpin: '582941',
+    demoTpin: '481729',
     phone: '+91 98200 45821',
     email: 'rahul.sharma@email.com',
   },
@@ -26,6 +27,7 @@ export const RETAIL_JOINT_DEMO_USERS: Record<string, RetailJointUser> = {
     customerNumber: 'RB-AMIT01',
     demoPassword: 'demo123',
     demoMpin: '739582',
+    demoTpin: '629384',
     phone: '+91 98190 33456',
     email: 'amit.sharma@email.com',
   },
@@ -51,6 +53,13 @@ export function verifyRetailJointUserMpin(userId: string, mpin: string): boolean
   const user = getRetailJointUser(userId);
   if (user) return user.demoMpin === mpin;
   if (userId === 'usr_ret_001') return mpin === '123456';
+  return false;
+}
+
+export function verifyRetailJointUserTpin(userId: string, tpin: string): boolean {
+  const user = getRetailJointUser(userId);
+  if (user) return user.demoTpin === tpin;
+  if (userId === 'usr_ret_001') return tpin === '654321';
   return false;
 }
 

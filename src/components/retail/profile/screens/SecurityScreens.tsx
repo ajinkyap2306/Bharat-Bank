@@ -165,7 +165,7 @@ export const ChangeTpinScreen: React.FC<ScreenProps> = ({ onNavigate, onBack }) 
 
   if (done) {
     return (
-      <SuccessState title="TPIN Changed" message="Your 4-digit transaction PIN has been updated." actionLabel="Done" onAction={() => onNavigate('security-center')} />
+      <SuccessState title="TPIN Changed" message="Your 6-digit transaction PIN has been updated." actionLabel="Done" onAction={() => onNavigate('security-center')} />
     );
   }
 
@@ -173,9 +173,9 @@ export const ChangeTpinScreen: React.FC<ScreenProps> = ({ onNavigate, onBack }) 
     <>
       <ProfileLayout title="Change TPIN" subtitle={step === 'verify' ? 'Verify your identity' : 'Set new TPIN'} onBack={onBack}>
         <InfoCard className="text-center space-y-4">
-          <p className="text-sm text-slate-600">TPIN is used to authorize high-value transactions. Enter a new 4-digit TPIN.</p>
+          <p className="text-sm text-slate-600">TPIN is used to authorize high-value transactions. Enter a new 6-digit TPIN.</p>
           <div className="flex justify-center gap-2">
-            {Array(4).fill(0).map((_, i) => (
+            {Array(6).fill(0).map((_, i) => (
               <div key={i} className="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-600" />
             ))}
           </div>
