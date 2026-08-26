@@ -74,7 +74,10 @@ import {
   RETAIL_SESSION_USER_KEY,
   buildJointTransactionId,
   buildJointTransferReference,
+  buildRetailJointApprovalExpiryIso,
+  autoRejectExpiredRetailJointRequests,
   canUserAccessJointAccount,
+  isRetailJointApprovalExpired,
   canUserApproveJointRequest,
   canUserDebitFromAccount,
   canUserInitiateJointRequest,
@@ -172,8 +175,6 @@ import {
   PrivacyPreferences,
 } from '../types/profile';
 import {
-  INITIAL_PERSONAL_INFO,
-  INITIAL_KYC_DETAILS,
   INITIAL_TRUSTED_DEVICES,
   INITIAL_ACTIVE_SESSIONS,
   INITIAL_LOGIN_ACTIVITY,
@@ -184,6 +185,7 @@ import {
   INITIAL_SECURITY_SETTINGS,
   INITIAL_PRIVACY_PREFS,
 } from '../data/profileMockData';
+import { getRetailProfileBundle, getRetailUserProfile } from '../data/retailProfileMock';
 
 export interface ToastMessage {
   id: string;
@@ -656,7 +658,8 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [jointTransferRequests, setJointTransferRequests] = useState<JointTransferRequest[]>(() => {
     try {
       const raw = localStorage.getItem(JOINT_TRANSFER_STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as JointTransferRequest[]) : [];
+      const parsed = raw ? (JSON.parse(raw) as JointTransferRequest[]) : [];
+      return autoRejectExpiredRetailJointRequests(parsed);
     } catch {
       return [];
     }
@@ -666,11 +669,33 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     updater: JointTransferRequest[] | ((prev: JointTransferRequest[]) => JointTransferRequest[])
   ) => {
     setJointTransferRequests((prev) => {
-      const next = typeof updater === 'function' ? updater(prev) : updater;
+      const updated = typeof updater === 'function' ? updater(prev) : updater;
+      const next = autoRejectExpiredRetailJointRequests(updated);
       localStorage.setItem(JOINT_TRANSFER_STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   };
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      persistJointRequests((prev) => prev);
+    }, 30000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(JOINT_TRANSFER_STORAGE_KEY);
+      const parsed = raw ? (JSON.parse(raw) as JointTransferRequest[]) : [];
+      const next = autoRejectExpiredRetailJointRequests(parsed);
+      if (JSON.stringify(next) !== JSON.stringify(parsed)) {
+        localStorage.setItem(JOINT_TRANSFER_STORAGE_KEY, JSON.stringify(next));
+        setJointTransferRequests(next);
+      }
+    } catch {
+      // ignore storage parse errors
+    }
+  }, []);
 
   const clearCorporateAuthFlow = () => {
     setCorporateLoginVerified(false);
@@ -759,8 +784,9 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [primaryCorporateAccountId, setPrimaryCorporateAccountId] = useState('acc_corp_op_01');
   const [corporateHiddenAccountIds, setCorporateHiddenAccountIds] = useState<string[]>([]);
   const [corporateDefaultPaymentAccountId, setCorporateDefaultPaymentAccountId] = useState('acc_corp_op_01');
-  const [personalInfo, setPersonalInfo] = useState<PersonalInfo>(INITIAL_PERSONAL_INFO);
-  const [kycDetails] = useState<KycDetails>(INITIAL_KYC_DETAILS);
+  const [personalInfoOverrides, setPersonalInfoOverrides] = useState<
+    Record<string, Partial<PersonalInfo>>
+  >({});
   const [trustedDevices, setTrustedDevices] = useState<TrustedDevice[]>(INITIAL_TRUSTED_DEVICES);
   const [activeSessions, setActiveSessions] = useState<ActiveSession[]>(INITIAL_ACTIVE_SESSIONS);
   const [loginActivity] = useState<LoginActivityEvent[]>(INITIAL_LOGIN_ACTIVITY);
@@ -791,28 +817,24 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   });
 
   // Active user depending on bankingType
+  const retailProfileBundle = getRetailProfileBundle(retailActiveUserId);
+  const personalInfo: PersonalInfo = {
+    ...retailProfileBundle.personalInfo,
+    ...personalInfoOverrides[retailActiveUserId],
+  };
+  const kycDetails: KycDetails = {
+    ...retailProfileBundle.kycDetails,
+    nationalIdMasked: personalInfo.nationalIdMasked,
+  };
+
   const user =
     bankingType === 'retail'
       ? (() => {
-          const jointUser = getRetailJointUser(retailActiveUserId);
-          if (jointUser) {
-            return {
-              ...INITIAL_RETAIL_USER,
-              id: jointUser.id,
-              name: jointUser.name,
-              customerNumber: jointUser.customerNumber,
-              phone: jointUser.phone,
-              email: jointUser.email,
-            };
+          const baseUser = getRetailUserProfile(retailActiveUserId);
+          if (retailRegistration && retailActiveUserId === 'usr_ret_001') {
+            return { ...baseUser, customerNumber: retailRegistration.userId };
           }
-          if (retailRegistration) {
-            return {
-              ...INITIAL_RETAIL_USER,
-              customerNumber: retailRegistration.userId,
-              name: INITIAL_RETAIL_USER.name,
-            };
-          }
-          return INITIAL_RETAIL_USER;
+          return baseUser;
         })()
       : corporateSession
         ? corporateDemoUserToProfile(corporateSession)
@@ -850,7 +872,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setCorporateTab('home');
     }
     const displayName =
-      welcomeName ?? (type === 'retail' ? 'Arjun' : corporateSession?.name ?? 'User');
+      welcomeName ??
+      (type === 'retail'
+        ? user.name.split(' ')[0]
+        : corporateSession?.name ?? 'User');
     addToast({
       type: 'success',
       title: `Welcome, ${displayName}`,
@@ -948,7 +973,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const getPendingJointRequestsInitiatedByUser = (userId: string) =>
     jointTransferRequests.filter(
-      (r) => r.initiatedByUserId === userId && r.status === 'pending_joint_approval'
+      (r) =>
+        r.initiatedByUserId === userId &&
+        r.status === 'pending_joint_approval' &&
+        !isRetailJointApprovalExpired(r)
     );
 
   const getJointRequestsForUser = (userId: string) =>
@@ -998,7 +1026,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return null;
     }
 
-    const now = formatJointTimestamp();
+    const createdDate = new Date();
+    const now = formatJointTimestamp(createdDate);
+    const createdAtIso = createdDate.toISOString();
+    const expiresAtIso = buildRetailJointApprovalExpiryIso(createdDate);
     const request: JointTransferRequest = {
       id: `jar_${Date.now()}`,
       reference: buildJointTransferReference(),
@@ -1020,6 +1051,8 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       isSelfTransfer: false,
       approvalHistory: [{ actorName: user.name, action: 'initiated', timestamp: now }],
       createdAt: now,
+      createdAtIso,
+      expiresAtIso,
     };
 
     persistJointRequests((prev) => [request, ...prev]);
@@ -1077,7 +1110,10 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return null;
     }
 
-    const now = formatJointTimestamp();
+    const createdDate = new Date();
+    const now = formatJointTimestamp(createdDate);
+    const createdAtIso = createdDate.toISOString();
+    const expiresAtIso = buildRetailJointApprovalExpiryIso(createdDate);
     const request: JointTransferRequest = {
       id: `jtr_${Date.now()}`,
       reference: buildJointTransferReference(),
@@ -1101,6 +1137,8 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         { actorName: user.name, action: 'initiated', timestamp: now },
       ],
       createdAt: now,
+      createdAtIso,
+      expiresAtIso,
     };
 
     const next = [request, ...jointTransferRequests];
@@ -3386,7 +3424,11 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     corporateAccounts.filter((a) => !corporateHiddenAccountIds.includes(a.id));
 
   const updatePersonalInfo = (updates: Partial<PersonalInfo>) => {
-    setPersonalInfo((prev) => ({ ...prev, ...updates }));
+    if (bankingType !== 'retail') return;
+    setPersonalInfoOverrides((prev) => ({
+      ...prev,
+      [retailActiveUserId]: { ...prev[retailActiveUserId], ...updates },
+    }));
   };
 
   const updateNotificationPrefs = (updates: Partial<NotificationPreferences>) => {
@@ -3483,7 +3525,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setPrimaryCorporateAccountId('acc_corp_op_01');
     setCorporateHiddenAccountIds([]);
     setCorporateDefaultPaymentAccountId('acc_corp_op_01');
-    setPersonalInfo(INITIAL_PERSONAL_INFO);
+    setPersonalInfoOverrides({});
     setTrustedDevices(INITIAL_TRUSTED_DEVICES);
     setActiveSessions(INITIAL_ACTIVE_SESSIONS);
     setServiceRequests(INITIAL_SERVICE_REQUESTS);

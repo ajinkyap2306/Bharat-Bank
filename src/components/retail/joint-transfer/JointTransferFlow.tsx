@@ -25,6 +25,7 @@ import {
   validateTransferModeForAmount,
 } from '../../../data/retailBankTransferMock';
 import {
+  formatRetailJointApprovalExpiryLabel,
   getJointStatusLabel,
   requiresJointApproval,
   canUserActAsJointChecker,
@@ -342,12 +343,16 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
           <CheckCircle2 className="w-14 h-14 text-emerald-600 mb-3" />
           <h2 className="text-lg font-bold">Request Submitted</h2>
           <p className="text-sm text-slate-500 mt-2 max-w-xs">
-            Your transfer request has been sent to the other joint holder for approval.
+            Your transfer request has been sent to the other joint holder for approval. It must be approved by 11:59:59 PM today.
           </p>
           <div className="w-full mt-6 bg-white dark:bg-slate-900 rounded-2xl border p-4 text-left space-y-2">
             <ReviewRow label="Amount" value={`₹${submittedRequest.amount.toLocaleString('en-IN')}`} />
             <ReviewRow label="To" value={submittedRequest.beneficiaryName} />
             <ReviewRow label="Status" value={getJointStatusLabel(submittedRequest.status)} />
+            <ReviewRow
+              label="Validity"
+              value={formatRetailJointApprovalExpiryLabel(submittedRequest)}
+            />
             <ReviewRow label="Reference" value={submittedRequest.reference} />
           </div>
         </div>
@@ -376,9 +381,18 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
           <ReviewRow label="Initiated By" value={viewingRequest.initiatedByName} />
           <ReviewRow label="Approver" value={viewingRequest.approverName} />
           <ReviewRow label="Created" value={viewingRequest.createdAt} />
+          {viewingRequest.status === 'pending_joint_approval' && (
+            <ReviewRow
+              label="Validity"
+              value={formatRetailJointApprovalExpiryLabel(viewingRequest)}
+            />
+          )}
           <ReviewRow label="Reference" value={viewingRequest.reference} />
           {viewingRequest.status === 'rejected' && viewingRequest.rejectedByName && (
             <ReviewRow label="Rejected by" value={viewingRequest.rejectedByName} />
+          )}
+          {viewingRequest.status === 'rejected' && viewingRequest.rejectReason && (
+            <ReviewRow label="Reason" value={viewingRequest.rejectReason} />
           )}
           {isInitiator && viewingRequest.status === 'pending_joint_approval' && (
             <p className="text-xs text-slate-500 pt-2">

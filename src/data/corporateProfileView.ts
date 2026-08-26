@@ -153,8 +153,8 @@ export function getCorporateProfileView(
     linkedAccounts: isChecker ? ALL_ACCOUNTS : MAKER_ACCOUNTS,
     notificationPrefs: isChecker ? CHECKER_NOTIFICATIONS : MAKER_NOTIFICATIONS,
     security: {
-      lastLogin: CORPORATE_PROFILE_DATA.user.lastLogin,
-      lastLoginDevice: CORPORATE_PROFILE_DATA.user.lastLoginDevice,
+      lastLogin: `${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })} • ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`,
+      lastLoginDevice: isChecker ? 'Android • Chrome' : 'iPhone • Mobile App',
     },
   };
 }

@@ -75,6 +75,10 @@ export interface JointTransferRequest {
   toAccountId?: string;
   approvalHistory: JointApprovalHistoryEntry[];
   createdAt: string;
+  /** ISO timestamp for reliable same-day expiry checks (retail maker-checker only). */
+  createdAtIso?: string;
+  /** ISO timestamp — pending requests auto-reject after this (end of submission day, 11:59:59 PM). */
+  expiresAtIso?: string;
   approvedAt?: string;
   completedAt?: string;
   rejectedByName?: string;

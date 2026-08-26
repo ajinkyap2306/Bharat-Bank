@@ -9,6 +9,7 @@ import {
   canUserApproveJointRequest,
   canUserActAsJointChecker,
   canUserInitiateJointRequest,
+  formatRetailJointApprovalExpiryLabel,
   getJointRequestListAmount,
   getJointRequestListTitle,
   getJointRequestProcessingTitle,
@@ -35,6 +36,7 @@ function JointRequestCard({
   subtitle,
   statusLabel,
   statusClassName = 'text-amber-700',
+  expiryLabel,
 }: {
   req: JointTransferRequest;
   accounts: BankAccount[];
@@ -42,6 +44,7 @@ function JointRequestCard({
   subtitle?: string;
   statusLabel: string;
   statusClassName?: string;
+  expiryLabel?: string;
 }) {
   const reqAccount = accounts.find((a) => a.id === req.fromAccountId);
   return (
@@ -60,6 +63,9 @@ function JointRequestCard({
         {reqAccount?.maskedNumber ?? 'Joint Savings ••••4582'}
       </p>
       {subtitle && <p className="text-xs text-slate-500">{subtitle}</p>}
+      {expiryLabel && (
+        <p className="text-[10px] font-semibold text-amber-700 mt-1">{expiryLabel}</p>
+      )}
       <p className={`text-[10px] font-semibold mt-2 ${statusClassName}`}>● {statusLabel}</p>
     </button>
   );
@@ -185,6 +191,7 @@ export const JointApprovalModule: React.FC = () => {
                       accounts={accounts}
                       onSelect={() => navigate(`/retail/joint-approvals/${req.id}`)}
                       subtitle={`Initiated by: ${req.initiatedByName}`}
+                      expiryLabel={formatRetailJointApprovalExpiryLabel(req)}
                       statusLabel="Pending Approval"
                     />
                   ))}
@@ -206,6 +213,7 @@ export const JointApprovalModule: React.FC = () => {
                       accounts={accounts}
                       onSelect={() => navigate(`/retail/joint-approvals/${req.id}`)}
                       subtitle={`Awaiting approval from ${req.approverName}`}
+                      expiryLabel={formatRetailJointApprovalExpiryLabel(req)}
                       statusLabel={getJointStatusLabel(req.status)}
                     />
                   ))}
@@ -294,6 +302,9 @@ export const JointApprovalModule: React.FC = () => {
             {getJointRequestListAmount(activeRequest)}
           </p>
           <ReviewRow label="Rejected by" value={updated?.rejectedByName ?? user.name} />
+          {updated?.rejectReason && (
+            <ReviewRow label="Reason" value={updated.rejectReason} />
+          )}
           <ReviewRow label="Reference" value={activeRequest.reference} />
           <ReviewRow label="Status" value="Rejected" />
         </div>
@@ -383,6 +394,12 @@ export const JointApprovalModule: React.FC = () => {
           <ReviewRow label="Reference" value={activeRequest.reference} />
           <ReviewRow label="Initiated By" value={activeRequest.initiatedByName} />
           <ReviewRow label="Created" value={activeRequest.createdAt} />
+          {activeRequest.status === 'pending_joint_approval' && (
+            <ReviewRow
+              label="Validity"
+              value={formatRetailJointApprovalExpiryLabel(activeRequest)}
+            />
+          )}
         </div>
 
         {canApprove ? (
@@ -405,6 +422,11 @@ export const JointApprovalModule: React.FC = () => {
         ) : (
           <div className="text-center mt-4 space-y-2">
             <p className="text-xs text-slate-500">● {getJointStatusLabel(activeRequest.status)}</p>
+            {activeRequest.status === 'pending_joint_approval' && (
+              <p className="text-xs font-semibold text-amber-700">
+                {formatRetailJointApprovalExpiryLabel(activeRequest)}
+              </p>
+            )}
             {isInitiator && activeRequest.status === 'pending_joint_approval' && (
               <p className="text-xs text-slate-500">
                 Awaiting approval from {activeRequest.approverName}.

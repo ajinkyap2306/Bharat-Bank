@@ -17,23 +17,33 @@ export const Header: React.FC = () => {
     isDarkMode, 
     toggleDarkMode, 
     notifications,
-    openScanner 
+    setRetailTab,
   } = useBanking();
   
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  const openRetailProfile = () => setRetailTab('profile');
 
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-30 w-full safe-top bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors">
         <div className="px-4 py-2.5 flex items-center justify-between gap-3">
           {/* User / Profile Info */}
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="relative">
+          <button
+            type="button"
+            onClick={bankingType === 'retail' ? openRetailProfile : undefined}
+            className={`flex items-center gap-2.5 min-w-0 text-left rounded-xl -ml-1 pl-1 pr-2 py-1 transition-colors ${
+              bankingType === 'retail'
+                ? 'active:bg-slate-100 dark:active:bg-slate-800 cursor-pointer'
+                : 'cursor-default'
+            }`}
+            aria-label={bankingType === 'retail' ? `Open profile for ${user.name}` : undefined}
+          >
+            <div className="relative shrink-0">
               <img
                 src={user.avatar}
-                alt={user.name}
+                alt=""
                 className="w-9 h-9 rounded-full object-cover ring-2 ring-blue-600/30 dark:ring-blue-500/30 shadow-xs"
               />
               <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center">
@@ -54,7 +64,7 @@ export const Header: React.FC = () => {
                 {bankingType === 'retail' ? user.name : user.companyName}
               </h2>
             </div>
-          </div>
+          </button>
 
           {/* Right Action Icons */}
           <div className="flex items-center gap-1.5 shrink-0">

@@ -157,6 +157,92 @@ export function formatJointDate(date = new Date()): string {
   });
 }
 
+/** Retail maker-checker approvals are valid only until 11:59:59 PM on the day of submission. */
+export const RETAIL_JOINT_APPROVAL_AUTO_REJECT_REASON =
+  'Request expired — approval was not completed by end of day (11:59:59 PM).';
+
+export function getRetailJointApprovalEndOfDay(fromDate: Date): Date {
+  const end = new Date(fromDate);
+  end.setHours(23, 59, 59, 999);
+  return end;
+}
+
+export function buildRetailJointApprovalExpiryIso(createdAt: Date = new Date()): string {
+  return getRetailJointApprovalEndOfDay(createdAt).toISOString();
+}
+
+export function getJointRequestCreatedDate(request: JointTransferRequest): Date {
+  if (request.createdAtIso) {
+    const parsed = new Date(request.createdAtIso);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+
+  const idMatch = request.id.match(/^(?:jtr|jar)_(\d+)$/);
+  if (idMatch) {
+    const fromId = new Date(Number(idMatch[1]));
+    if (!Number.isNaN(fromId.getTime())) return fromId;
+  }
+
+  return new Date();
+}
+
+export function getRetailJointApprovalExpiresAt(request: JointTransferRequest): Date {
+  if (request.expiresAtIso) {
+    const parsed = new Date(request.expiresAtIso);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+  return getRetailJointApprovalEndOfDay(getJointRequestCreatedDate(request));
+}
+
+export function isRetailJointApprovalExpired(
+  request: JointTransferRequest,
+  now = new Date()
+): boolean {
+  if (request.status !== 'pending_joint_approval') return false;
+  return now.getTime() > getRetailJointApprovalExpiresAt(request).getTime();
+}
+
+export function formatRetailJointApprovalExpiryLabel(request: JointTransferRequest): string {
+  const expiresAt = getRetailJointApprovalExpiresAt(request);
+  const now = new Date();
+  const timeStr = expiresAt.toLocaleTimeString('en-IN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  if (expiresAt.toDateString() === now.toDateString()) {
+    return `Valid until ${timeStr} today`;
+  }
+
+  if (isRetailJointApprovalExpired(request, now)) {
+    return `Expired on ${formatJointDate(expiresAt)} at ${timeStr}`;
+  }
+
+  return `Valid until ${formatJointDate(expiresAt)} at ${timeStr}`;
+}
+
+export function autoRejectExpiredRetailJointRequests(
+  requests: JointTransferRequest[],
+  now = new Date()
+): JointTransferRequest[] {
+  return requests.map((request) => {
+    if (!isRetailJointApprovalExpired(request, now)) return request;
+
+    const rejectTime = formatJointTimestamp(now);
+    return {
+      ...request,
+      status: 'rejected',
+      rejectedByName: 'System',
+      rejectReason: RETAIL_JOINT_APPROVAL_AUTO_REJECT_REASON,
+      approvalHistory: [
+        ...request.approvalHistory,
+        { actorName: 'System', action: 'rejected', timestamp: rejectTime },
+      ],
+    };
+  });
+}
+
 export function getJointApproverUserId(_account: BankAccount, initiatorUserId: string): string | null {
   if (!canUserInitiateJointRequest(initiatorUserId)) return null;
   const checker = Object.values(RETAIL_JOINT_DEMO_USERS).find((u) => u.role === 'checker');
@@ -168,6 +254,7 @@ export function canUserApproveJointRequest(
   userId: string
 ): boolean {
   if (!canUserActAsJointChecker(userId)) return false;
+  if (isRetailJointApprovalExpired(request)) return false;
   return (
     request.status === 'pending_joint_approval' &&
     request.approverUserId === userId &&
