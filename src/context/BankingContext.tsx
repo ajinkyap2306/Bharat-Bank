@@ -66,6 +66,7 @@ import type { CorporateDemoUser } from '../types/corporateDemoUser';
 import type { RetailRegistrationResult } from '../types/retailRegistration';
 import { RETAIL_REGISTRATION_STORAGE_KEY } from '../data/retailRegistrationMock';
 import { LOGIN_OFFER } from '../data/preLoginMock';
+import { clearAllDemoTourKeys } from '../data/demoTourMock';
 import type { JointRequestPayload, JointRequestType, JointTransferRequest } from '../types/retailJointTransfer';
 import {
   INITIAL_JOINT_ACCOUNTS,
@@ -3533,6 +3534,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setAppPrefs(INITIAL_APP_PREFS);
     setSecuritySettings(INITIAL_SECURITY_SETTINGS);
     setPrivacyPrefs(INITIAL_PRIVACY_PREFS);
+    clearAllDemoTourKeys();
     addToast({
       type: 'info',
       title: 'Data Reset',

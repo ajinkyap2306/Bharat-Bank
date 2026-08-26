@@ -4,7 +4,8 @@ import {
   Moon, 
   Sun, 
   ShieldCheck, 
-  User, 
+  User,
+  Clock,
 } from 'lucide-react';
 import { useBanking } from '../../context/BankingContext';
 import { NotificationsModal } from './NotificationsModal';
@@ -28,7 +29,7 @@ export const Header: React.FC = () => {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-30 w-full safe-top bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors">
-        <div className="px-4 py-2.5 flex items-center justify-between gap-3">
+        <div className="px-4 py-3 flex items-center justify-between gap-3">
           {/* User / Profile Info */}
           <button
             type="button"
@@ -51,18 +52,27 @@ export const Header: React.FC = () => {
               </span>
             </div>
 
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 truncate">
                   {bankingType === 'retail' ? 'Welcome back' : 'Enterprise Portal'}
                 </span>
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase tracking-wider bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase tracking-wider bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 shrink-0">
                   {bankingType === 'retail' ? 'Retail' : 'Corporate'}
                 </span>
               </div>
-              <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white leading-tight truncate mt-0.5">
                 {bankingType === 'retail' ? user.name : user.companyName}
               </h2>
+              {bankingType === 'retail' && user.lastLogin && (
+                <p className="flex items-center gap-1 mt-1 text-[10px] leading-snug text-slate-600 dark:text-slate-400">
+                  <Clock className="w-3 h-3 shrink-0 text-slate-400 dark:text-slate-500" aria-hidden />
+                  <span className="line-clamp-2">
+                    <span className="font-semibold text-slate-500 dark:text-slate-400">Last login:</span>{' '}
+                    {user.lastLogin}
+                  </span>
+                </p>
+              )}
             </div>
           </button>
 

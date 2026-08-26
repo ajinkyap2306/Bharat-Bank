@@ -14,6 +14,7 @@ export interface CorporateDemoUser {
   canApprove: boolean;
   canSubmitPayment: boolean;
   canCreateBulk: boolean;
+  lastLogin: string;
 }
 
 export function isCorporateApprover(role: CorporateDemoRole): boolean {

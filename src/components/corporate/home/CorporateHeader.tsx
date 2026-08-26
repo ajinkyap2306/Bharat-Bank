@@ -1,9 +1,10 @@
 import React from 'react';
-import { Bell, Building2 } from 'lucide-react';
+import { Bell, Building2, Clock } from 'lucide-react';
 
 interface CorporateHeaderProps {
   companyName: string;
   userName: string;
+  lastLogin?: string;
   avatarUrl: string;
   unreadCount: number;
   onProfileClick: () => void;
@@ -15,6 +16,7 @@ interface CorporateHeaderProps {
 export const CorporateHeader: React.FC<CorporateHeaderProps> = ({
   companyName,
   userName,
+  lastLogin,
   avatarUrl,
   unreadCount,
   onProfileClick,
@@ -48,16 +50,27 @@ export const CorporateHeader: React.FC<CorporateHeaderProps> = ({
             <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-50 dark:border-slate-950" />
           </div>
 
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 min-w-0">
-              <h1 className="text-sm font-bold text-slate-900 dark:text-white leading-tight truncate">
+              <h1 className="text-sm font-bold text-slate-900 dark:text-white leading-tight truncate min-w-0">
                 {userName}
               </h1>
               <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-extrabold uppercase tracking-wider bg-congress-blue-50 dark:bg-congress-blue-950/60 text-congress-blue-700 dark:text-congress-blue-400 shrink-0">
                 Corporate
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{companyName}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate leading-tight mt-0.5">
+              {companyName}
+            </p>
+            {lastLogin && (
+              <p className="flex items-center gap-1 mt-1 text-[10px] leading-snug text-slate-600 dark:text-slate-400">
+                <Clock className="w-3 h-3 shrink-0 text-slate-400 dark:text-slate-500" aria-hidden />
+                <span className="line-clamp-2">
+                  <span className="font-semibold text-slate-500 dark:text-slate-400">Last login:</span>{' '}
+                  {lastLogin}
+                </span>
+              </p>
+            )}
           </div>
         </button>
 

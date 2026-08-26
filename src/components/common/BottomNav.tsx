@@ -103,6 +103,8 @@ export const BottomNav: React.FC = () => {
         {bankingType === 'retail' ? (
           <div className="grid grid-cols-5 items-end px-1 pt-2 pb-1.5 max-w-lg mx-auto">
             <button
+              type="button"
+              data-tour="nav-home"
               onClick={() => {
                 setRetailTab('home');
                 navigate('/');
@@ -118,6 +120,8 @@ export const BottomNav: React.FC = () => {
             </button>
 
             <button
+              type="button"
+              data-tour="nav-payments"
               onClick={() => {
                 setRetailTab('transfers');
                 leaveRetailRootRoutes();
@@ -135,6 +139,7 @@ export const BottomNav: React.FC = () => {
             {hasRetailJointApprovalAccess ? (
               <button
                 type="button"
+                data-tour="nav-approvals"
                 onClick={() => {
                   setRetailTab('approvals');
                   navigate('/retail/joint-approvals');
@@ -163,6 +168,8 @@ export const BottomNav: React.FC = () => {
               </button>
             ) : (
               <button
+                type="button"
+                data-tour="nav-accounts"
                 onClick={() => {
                   setRetailTab('accounts');
                   navigate('/retail/accounts');
@@ -182,6 +189,8 @@ export const BottomNav: React.FC = () => {
 
             {hasRetailJointApprovalAccess ? (
               <button
+                type="button"
+                data-tour="nav-accounts"
                 onClick={() => {
                   setRetailTab('accounts');
                   navigate('/retail/accounts');
@@ -199,6 +208,8 @@ export const BottomNav: React.FC = () => {
               </button>
             ) : (
               <button
+                type="button"
+                data-tour="nav-services"
                 onClick={() => {
                   setRetailTab('services');
                   leaveRetailRootRoutes();
@@ -221,6 +232,8 @@ export const BottomNav: React.FC = () => {
             )}
 
             <button
+              type="button"
+              data-tour="nav-profile"
               onClick={() => {
                 setRetailTab('profile');
                 leaveRetailRootRoutes();
@@ -243,6 +256,7 @@ export const BottomNav: React.FC = () => {
           >
             <button
               type="button"
+              data-tour="nav-home"
               onClick={() => {
                 setCorporateTab('home');
                 navigate('/corporate/home');
@@ -260,6 +274,7 @@ export const BottomNav: React.FC = () => {
 
             <button
               type="button"
+              data-tour="nav-payments"
               onClick={() => {
                 setCorporateTab('payments');
                 navigate('/corporate/payments');
@@ -277,6 +292,7 @@ export const BottomNav: React.FC = () => {
 
             <button
               type="button"
+              data-tour="nav-approvals"
               onClick={() => {
                 setCorporateTab('approvals');
                 navigate('/corporate/approvals');
@@ -302,6 +318,7 @@ export const BottomNav: React.FC = () => {
 
             <button
               type="button"
+              data-tour="nav-accounts"
               onClick={() => {
                 setCorporateTab('accounts');
                 navigate('/corporate/accounts');
@@ -319,6 +336,7 @@ export const BottomNav: React.FC = () => {
 
             <button
               type="button"
+              data-tour="nav-more"
               onClick={() => {
                 setCorporateTab('more');
                 navigate('/corporate/more');

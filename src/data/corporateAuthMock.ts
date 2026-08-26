@@ -28,6 +28,7 @@ export const CORPORATE_DEMO_USERS: CorporateDemoUser[] = [
     canApprove: false,
     canSubmitPayment: true,
     canCreateBulk: true,
+    lastLogin: 'Yesterday, 04:22 PM',
   },
   {
     corporateId: CORPORATE_DEMO_COMPANY_ID,
@@ -43,6 +44,7 @@ export const CORPORATE_DEMO_USERS: CorporateDemoUser[] = [
     canApprove: true,
     canSubmitPayment: false,
     canCreateBulk: false,
+    lastLogin: 'Today, 09:15 AM',
   },
 ];
 
@@ -137,6 +139,6 @@ export function corporateDemoUserToProfile(user: CorporateDemoUser): UserProfile
     cin: 'U72200MH2018PTC309812',
     gstin: '27AABCA1234F1Z5',
     kycStatus: 'verified',
-    lastLogin: 'Today, from this device',
+    lastLogin: user.lastLogin,
   };
 }

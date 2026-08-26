@@ -171,6 +171,7 @@ export const CorporateHome: React.FC = () => {
       <CorporateHeader
         companyName={selectedEntity.name}
         userName={user.name}
+        lastLogin={user.lastLogin}
         avatarUrl={user.avatar}
         unreadCount={unreadNotifs}
         onProfileClick={() => {
@@ -182,7 +183,7 @@ export const CorporateHome: React.FC = () => {
         isLoading={isLoading && !data}
       />
 
-      <div className="space-y-4 pb-2 pt-1">
+      <div className="space-y-4 pb-2 pt-1" data-tour="corporate-home-dashboard">
         <AccountCarousel
           accounts={data?.accounts ?? []}
           isLoading={isLoading && !data}

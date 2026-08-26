@@ -6,6 +6,7 @@ import { BottomNav } from './components/common/BottomNav';
 import { ToastContainer } from './components/common/ToastContainer';
 import { ScannerModal } from './components/common/ScannerModal';
 import { SessionTimeoutSheet } from './components/common/SessionTimeoutSheet';
+import { DemoHelperTour } from './components/common/DemoHelperTour';
 import { OfflineBanner } from './components/common/OfflineBanner';
 import { PwaLifecycle } from './components/common/PwaLifecycle';
 import { AuthContainer } from './components/auth/AuthContainer';
@@ -299,7 +300,7 @@ const BankingAppContent: React.FC = () => {
 
       <main
         className={`flex-1 w-full overflow-y-auto no-scrollbar px-3 ${
-          showGlobalHeader ? 'pt-17' : 'pt-0'
+          showGlobalHeader ? 'pt-20' : 'pt-0'
         } ${showBottomNav ? 'pb-24' : 'pb-4'}`}
       >
         {bankingType === 'retail' ? (
@@ -348,6 +349,7 @@ const BankingAppContent: React.FC = () => {
 
       <BottomNav />
 
+      <DemoHelperTour />
       <ScannerModal />
       <SessionTimeoutSheet />
       <ToastContainer />

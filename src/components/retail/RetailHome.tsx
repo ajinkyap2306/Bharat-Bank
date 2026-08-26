@@ -225,7 +225,7 @@ export const RetailHome: React.FC = () => {
         </button>
       )}
       {/* 1. Account Cards Carousel */}
-      <div className="pt-1">
+      <div className="pt-1" data-tour="retail-home-dashboard">
         <div className="flex items-center justify-between px-1 mb-2">
           <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             Your Accounts

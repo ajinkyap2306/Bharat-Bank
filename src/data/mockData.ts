@@ -31,7 +31,7 @@ export const INITIAL_RETAIL_USER: UserProfile = {
   type: 'retail',
   customerNumber: 'RB-123456',
   kycStatus: 'verified',
-  lastLogin: 'Today, 09:42 AM from iPhone 16 Pro',
+  lastLogin: 'Today, 09:42 AM',
 };
 
 export const INITIAL_CORPORATE_USER: UserProfile = {
