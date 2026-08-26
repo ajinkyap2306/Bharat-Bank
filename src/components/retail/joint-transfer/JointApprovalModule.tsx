@@ -7,6 +7,8 @@ import type { BankAccount } from '../../../types/banking';
 import type { JointApprovalStep, JointTransferRequest } from '../../../types/retailJointTransfer';
 import {
   canUserApproveJointRequest,
+  canUserActAsJointChecker,
+  canUserInitiateJointRequest,
   getJointRequestListAmount,
   getJointRequestListTitle,
   getJointRequestProcessingTitle,
@@ -95,8 +97,12 @@ export const JointApprovalModule: React.FC = () => {
     setStep(requestId ? 'detail' : 'list');
   }, [requestId]);
 
-  const pendingToApprove = getPendingJointApprovalsForUser(retailActiveUserId);
-  const pendingSubmitted = getPendingJointRequestsInitiatedByUser(retailActiveUserId);
+  const pendingToApprove = canUserActAsJointChecker(retailActiveUserId)
+    ? getPendingJointApprovalsForUser(retailActiveUserId)
+    : [];
+  const pendingSubmitted = canUserInitiateJointRequest(retailActiveUserId)
+    ? getPendingJointRequestsInitiatedByUser(retailActiveUserId)
+    : [];
   const hasAnyRequests = pendingToApprove.length > 0 || pendingSubmitted.length > 0;
   const activeRequest = requestId ? getJointRequestById(requestId) : undefined;
   const fromAccount = activeRequest

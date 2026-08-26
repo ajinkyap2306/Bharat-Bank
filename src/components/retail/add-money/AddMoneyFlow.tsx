@@ -198,7 +198,7 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
 
   const handleAuthConfirm = () => {
     if (draft.sourceType === 'bank_account' && authPin.length < 6) {
-      addToast({ type: 'error', title: 'Invalid MPIN', message: 'Enter your 6-digit MPIN.' });
+      addToast({ type: 'error', title: 'Invalid TPIN', message: 'Enter your 6-digit TPIN.' });
       return;
     }
     if (draft.sourceType === 'debit_card' && cardOtp.length < 6) {
@@ -331,7 +331,7 @@ export const AddMoneyFlow: React.FC<AddMoneyFlowProps> = ({ onClose }) => {
         {draft.sourceType === 'bank_account' && (
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 mt-4">
             <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-3">
-              Enter MPIN
+              Enter TPIN
             </label>
             <input
               type="password"

@@ -27,7 +27,9 @@ import {
 import {
   getJointStatusLabel,
   requiresJointApproval,
-  verifyRetailJointUserMpin,
+  canUserActAsJointChecker,
+  canUserDebitFromAccount,
+  canUserInitiateJointRequest,
   verifyRetailJointUserTpin,
 } from '../../../data/retailJointTransferMock';
 import { NumericPinInput } from '../../common/NumericPinInput';
@@ -234,16 +236,20 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
 
   const handleAuthConfirm = () => {
     if (authPin.length !== 6) {
-      setAuthError(needsApproval ? 'Enter your 6-digit TPIN.' : 'Enter your 6-digit MPIN.');
+      setAuthError('Enter your 6-digit TPIN.');
       return;
     }
-    const verifyPin = needsApproval ? verifyRetailJointUserTpin : verifyRetailJointUserMpin;
-    if (!verifyPin(retailActiveUserId, authPin)) {
-      setAuthError(needsApproval ? 'Incorrect TPIN.' : 'Incorrect MPIN.');
+    if (!verifyRetailJointUserTpin(retailActiveUserId, authPin)) {
+      setAuthError('Incorrect TPIN.');
       setAuthPin('');
       return;
     }
     setAuthError('');
+
+    if (!canUserDebitFromAccount(retailActiveUserId, fromAccount)) {
+      setStep('unavailable');
+      return;
+    }
 
     if (needsApproval) {
       if (!receiver) return;
@@ -282,6 +288,20 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
     return (
       <AddMoneyLayout title="Fund Transfer" onBack={onClose}>
         <p className="text-sm text-slate-500">Account not found.</p>
+      </AddMoneyLayout>
+    );
+  }
+
+  if (!canUserInitiateJointRequest(retailActiveUserId) || canUserActAsJointChecker(retailActiveUserId)) {
+    return (
+      <AddMoneyLayout title="Fund Transfer" onBack={onClose}>
+        <div className="text-center px-2 pt-6">
+          <XCircle className="w-12 h-12 text-amber-600 mx-auto mb-3" />
+          <p className="text-sm text-slate-600">
+            Your role can only approve joint requests. Please sign in as the joint account maker to initiate transfers.
+          </p>
+        </div>
+        <StickyAddMoneyCTA label="Done" onClick={onClose} />
       </AddMoneyLayout>
     );
   }
@@ -433,7 +453,7 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
         )}
         <div className="bg-white dark:bg-slate-900 rounded-2xl border p-4 mt-4">
           <label className="text-xs font-bold text-slate-600 block mb-3">
-            {needsApproval ? 'Enter TPIN' : 'Enter MPIN'}
+            Enter TPIN
           </label>
           <NumericPinInput
             value={authPin}
@@ -444,7 +464,7 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
             length={6}
             masked
             hasError={Boolean(authError)}
-            ariaLabel={needsApproval ? 'TPIN' : 'MPIN'}
+            ariaLabel="TPIN"
           />
           {authError && <p className="text-xs text-red-600 text-center mt-2">{authError}</p>}
         </div>

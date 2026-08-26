@@ -12,7 +12,7 @@ import {
 import { useBanking } from '../../../context/BankingContext';
 import { ScreenHeader } from '../../common/ScreenHeader';
 import { SecureAuthModal } from '../../common/SecureAuthModal';
-import { requiresJointApproval } from '../../../data/retailJointTransferMock';
+import { requiresJointApproval, canUserInitiateJointTransaction } from '../../../data/retailJointTransferMock';
 import {
   ChequeBook,
   ChequeRecord,
@@ -55,6 +55,7 @@ export const ChequeServicesModule: React.FC = () => {
     setRetailTab,
     setBottomNavHidden,
     submitJointApprovalRequest,
+    retailActiveUserId,
   } = useBanking();
 
   const [screen, setScreen] = useState<ChequeScreen>('home');
@@ -349,7 +350,13 @@ export const ChequeServicesModule: React.FC = () => {
                   onChange={(e) => setReqAccountId(e.target.value)}
                   className="mt-1 w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm"
                 >
-                  {accounts.filter((a) => ['Savings', 'Current'].includes(a.accountType)).map((a) => (
+                  {accounts
+                    .filter(
+                      (a) =>
+                        ['Savings', 'Current'].includes(a.accountType) &&
+                        canUserInitiateJointTransaction(retailActiveUserId, a)
+                    )
+                    .map((a) => (
                     <option key={a.id} value={a.id}>
                       {a.jointAccountLabel ?? a.accountType} ({a.maskedNumber})
                       {requiresJointApproval(a) ? ' · Joint' : ''}
@@ -391,7 +398,13 @@ export const ChequeServicesModule: React.FC = () => {
                   onChange={(e) => setStopAccountId(e.target.value)}
                   className="mt-1 w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm"
                 >
-                  {accounts.filter((a) => ['Savings', 'Current'].includes(a.accountType)).map((a) => (
+                  {accounts
+                    .filter(
+                      (a) =>
+                        ['Savings', 'Current'].includes(a.accountType) &&
+                        canUserInitiateJointTransaction(retailActiveUserId, a)
+                    )
+                    .map((a) => (
                     <option key={a.id} value={a.id}>
                       {a.jointAccountLabel ?? a.maskedNumber}
                       {requiresJointApproval(a) ? ' · Joint' : ''}
@@ -494,7 +507,13 @@ export const ChequeServicesModule: React.FC = () => {
                   onChange={(e) => setPpAccountId(e.target.value)}
                   className="mt-1 w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm"
                 >
-                  {accounts.filter((a) => ['Savings', 'Current'].includes(a.accountType)).map((a) => (
+                  {accounts
+                    .filter(
+                      (a) =>
+                        ['Savings', 'Current'].includes(a.accountType) &&
+                        canUserInitiateJointTransaction(retailActiveUserId, a)
+                    )
+                    .map((a) => (
                     <option key={a.id} value={a.id}>
                       {a.jointAccountLabel ?? a.accountType} ({a.maskedNumber})
                       {requiresJointApproval(a) ? ' · Joint' : ''}
@@ -544,8 +563,7 @@ export const ChequeServicesModule: React.FC = () => {
           setPendingAction(null);
         }}
         onSuccess={handleAuthSuccess}
-        title={pendingNeedsApproval ? 'Enter TPIN' : 'Enter MPIN'}
-        pinType={pendingNeedsApproval ? 'tpin' : 'mpin'}
+        title="Enter TPIN"
       />
     </div>
   );

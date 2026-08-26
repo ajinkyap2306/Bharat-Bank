@@ -5,6 +5,7 @@ import { useBanking } from '../../../context/BankingContext';
 import {
   getOperatingInstructionLabel,
   getRetailJointUser,
+  canUserActAsJointChecker,
 } from '../../../data/retailJointTransferMock';
 import { AddMoneyLayout, StickyAddMoneyCTA } from '../add-money/shared/AddMoneyUI';
 
@@ -14,8 +15,9 @@ interface JointAccountOverviewProps {
 
 export const JointAccountOverview: React.FC<JointAccountOverviewProps> = ({ accountId }) => {
   const navigate = useNavigate();
-  const { accounts, user } = useBanking();
+  const { accounts, user, retailActiveUserId } = useBanking();
   const account = accounts.find((a) => a.id === accountId);
+  const isJointChecker = canUserActAsJointChecker(retailActiveUserId);
 
   if (!account?.isJointAccount) {
     return (
@@ -95,20 +97,37 @@ export const JointAccountOverview: React.FC<JointAccountOverviewProps> = ({ acco
           <span className="text-sm font-bold text-slate-900 dark:text-white">Account Details</span>
           <ChevronRight className="w-4 h-4 text-slate-400" />
         </button>
-        <button
-          type="button"
-          onClick={() => navigate(`/retail/joint-transfer/${accountId}`)}
-          className="w-full flex items-center gap-3 p-4 rounded-2xl bg-[#005DD4] text-white"
-        >
-          <ArrowLeftRight className="w-5 h-5" />
-          <span className="text-sm font-bold">Fund Transfer</span>
-        </button>
+        {isJointChecker ? (
+          <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+            <p className="text-sm font-bold text-amber-900 dark:text-amber-200">Approver role</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+              You can review and approve requests initiated by the joint account maker. Use your personal accounts for transfers; joint account debits are not permitted.
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate('/retail/joint-approvals')}
+              className="mt-3 w-full py-3 rounded-2xl bg-[#005DD4] text-white text-sm font-bold"
+            >
+              View Pending Approvals
+            </button>
+          </div>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => navigate(`/retail/joint-transfer/${accountId}`)}
+              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-[#005DD4] text-white"
+            >
+              <ArrowLeftRight className="w-5 h-5" />
+              <span className="text-sm font-bold">Fund Transfer</span>
+            </button>
+            <StickyAddMoneyCTA
+              label="Fund Transfer"
+              onClick={() => navigate(`/retail/joint-transfer/${accountId}`)}
+            />
+          </>
+        )}
       </div>
-
-      <StickyAddMoneyCTA
-        label="Fund Transfer"
-        onClick={() => navigate(`/retail/joint-transfer/${accountId}`)}
-      />
     </AddMoneyLayout>
   );
 };

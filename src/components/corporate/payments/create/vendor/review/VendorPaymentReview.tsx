@@ -36,6 +36,7 @@ import { HighValuePaymentWarning } from './HighValuePaymentWarning';
 import { SubmitPaymentButton } from './SubmitPaymentButton';
 import { PaymentSubmissionError } from './PaymentSubmissionError';
 import { PaymentReviewSkeleton } from './PaymentReviewSkeleton';
+import { useCorporateMakerGate } from '../../../../../../hooks/useCorporateMakerGate';
 
 const VENDOR_BASE_PATH = '/corporate/payments/create/vendor';
 const SUBMITTED_PATH = '/corporate/payments/create/vendor/submitted';
@@ -43,7 +44,8 @@ const SUBMITTED_PATH = '/corporate/payments/create/vendor/submitted';
 export const VendorPaymentReview: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { addToast, setBottomNavHidden, closeDetailFlow } = useBanking();
+  const { addToast, setBottomNavHidden, closeDetailFlow, canSubmitCorporatePayment } = useBanking();
+  const { blockIfChecker } = useCorporateMakerGate();
 
   const [draft, setDraft] = useState<VendorPaymentDraft | null>(null);
   const [loading, setLoading] = useState(true);
@@ -72,6 +74,7 @@ export const VendorPaymentReview: React.FC = () => {
     confirmed &&
     !isSubmitting &&
     !hasSubmissionError &&
+    canSubmitCorporatePayment &&
     (duplicateDismissed || !review.duplicateWarning);
 
   const submitLabel = review?.selfAuthorizeAllowed ? 'Submit Payment' : 'Submit for Approval';
@@ -116,11 +119,12 @@ export const VendorPaymentReview: React.FC = () => {
 
   const handleSubmit = useCallback(async () => {
     if (!draft || !canSubmit) return;
+    if (blockIfChecker('submit payments')) return;
 
     setSubmissionState('submitting');
     try {
-      await submitVendorPaymentForApproval(draft);
-      const submission = createVendorPaymentSubmission(draft, 'submitted');
+      await submitVendorPaymentForApproval(draft, false, canSubmitCorporatePayment);
+      const submission = createVendorPaymentSubmission(draft, 'submitted', canSubmitCorporatePayment);
       if (!submission) {
         throw new Error('SUBMIT_FAILED');
       }
@@ -130,7 +134,7 @@ export const VendorPaymentReview: React.FC = () => {
     } catch {
       setSubmissionState('error');
     }
-  }, [draft, canSubmit, navigate, addToast]);
+  }, [draft, canSubmit, navigate, addToast, blockIfChecker, canSubmitCorporatePayment]);
 
   if (loading || !review || !draft) {
     return (

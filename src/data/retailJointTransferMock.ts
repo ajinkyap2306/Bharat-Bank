@@ -3,6 +3,7 @@ import type {
   JointOperatingInstruction,
   JointRequestType,
   JointTransferRequest,
+  RetailJointRole,
   RetailJointUser,
 } from '../types/retailJointTransfer';
 
@@ -15,6 +16,7 @@ export const RETAIL_JOINT_DEMO_USERS: Record<string, RetailJointUser> = {
     id: 'usr_joint_rahul',
     name: 'Rahul Sharma',
     customerNumber: 'RB-RAHUL01',
+    role: 'maker',
     demoPassword: 'demo123',
     demoMpin: '582941',
     demoTpin: '481729',
@@ -25,6 +27,7 @@ export const RETAIL_JOINT_DEMO_USERS: Record<string, RetailJointUser> = {
     id: 'usr_joint_amit',
     name: 'Amit Sharma',
     customerNumber: 'RB-AMIT01',
+    role: 'checker',
     demoPassword: 'demo123',
     demoMpin: '739582',
     demoTpin: '629384',
@@ -49,6 +52,32 @@ export function getRetailJointUser(userId: string): RetailJointUser | null {
   return RETAIL_JOINT_DEMO_USERS[userId] ?? null;
 }
 
+export function getRetailJointUserRole(userId: string): RetailJointRole | null {
+  return getRetailJointUser(userId)?.role ?? null;
+}
+
+export function canUserInitiateJointRequest(userId: string): boolean {
+  return getRetailJointUserRole(userId) === 'maker';
+}
+
+export function canUserActAsJointChecker(userId: string): boolean {
+  return getRetailJointUserRole(userId) === 'checker';
+}
+
+/** Retail checkers may debit individual accounts but not joint accounts; makers may debit all held accounts. */
+export function canUserInitiateJointTransaction(
+  userId: string,
+  account?: BankAccount
+): boolean {
+  if (!account?.isJointAccount) return true;
+  if (canUserActAsJointChecker(userId)) return false;
+  return canUserInitiateJointRequest(userId);
+}
+
+export function canUserDebitFromAccount(userId: string, account?: BankAccount): boolean {
+  return canUserInitiateJointTransaction(userId, account);
+}
+
 export function verifyRetailJointUserMpin(userId: string, mpin: string): boolean {
   const user = getRetailJointUser(userId);
   if (user) return user.demoMpin === mpin;
@@ -67,11 +96,12 @@ export function requiresJointApproval(account: BankAccount | undefined): boolean
   return account?.operatingInstruction === 'jointly_operated';
 }
 
-/** True when the logged-in retail user holds a jointly operated account (maker-checker applies). */
+/** True when a joint maker or checker user holds a jointly operated account. */
 export function userHasJointMakerCheckerAccess(
   accounts: BankAccount[],
   userId: string
 ): boolean {
+  if (!getRetailJointUserRole(userId)) return false;
   return accounts.some(
     (account) =>
       canUserAccessJointAccount(account, userId) && requiresJointApproval(account)
@@ -127,20 +157,17 @@ export function formatJointDate(date = new Date()): string {
   });
 }
 
-export function getJointApproverUserId(account: BankAccount, initiatorUserId: string): string | null {
-  if (account.primaryHolderUserId === initiatorUserId) {
-    return account.jointHolderUserIds?.[0] ?? null;
-  }
-  if (account.jointHolderUserIds?.includes(initiatorUserId)) {
-    return account.primaryHolderUserId ?? null;
-  }
-  return account.jointHolderUserIds?.find((id) => id !== initiatorUserId) ?? null;
+export function getJointApproverUserId(_account: BankAccount, initiatorUserId: string): string | null {
+  if (!canUserInitiateJointRequest(initiatorUserId)) return null;
+  const checker = Object.values(RETAIL_JOINT_DEMO_USERS).find((u) => u.role === 'checker');
+  return checker?.id ?? null;
 }
 
 export function canUserApproveJointRequest(
   request: JointTransferRequest,
   userId: string
 ): boolean {
+  if (!canUserActAsJointChecker(userId)) return false;
   return (
     request.status === 'pending_joint_approval' &&
     request.approverUserId === userId &&
@@ -266,5 +293,38 @@ export const INITIAL_JOINT_ACCOUNTS: BankAccount[] = [
     primaryHolderUserId: 'usr_joint_rahul',
     jointHolderUserIds: ['usr_joint_amit'],
     jointHolders: [{ name: 'Amit Sharma', relationship: 'Joint Holder' }],
+  },
+];
+
+/** Non-joint accounts held solely by the retail joint checker demo user (RB-AMIT01). */
+export const AMIT_INDIVIDUAL_ACCOUNTS: BankAccount[] = [
+  {
+    id: 'acc_amit_ind_sav',
+    accountNumber: '409288771199',
+    maskedNumber: '•••• •••• 7199',
+    accountType: 'Savings',
+    balance: 185000.0,
+    availableBalance: 185000.0,
+    currency: '₹',
+    ifsc: 'APEX0001048',
+    branch: 'Bandra Kurla Complex, Mumbai',
+    nickname: 'Personal Savings Account',
+    status: 'active',
+    interestRate: 6.25,
+    primaryHolderUserId: 'usr_joint_amit',
+  },
+  {
+    id: 'acc_amit_ind_cur',
+    accountNumber: '409288772288',
+    maskedNumber: '•••• •••• 2288',
+    accountType: 'Current',
+    balance: 92000.0,
+    availableBalance: 92000.0,
+    currency: '₹',
+    ifsc: 'APEX0001048',
+    branch: 'Bandra Kurla Complex, Mumbai',
+    nickname: 'Personal Current Account',
+    status: 'active',
+    primaryHolderUserId: 'usr_joint_amit',
   },
 ];

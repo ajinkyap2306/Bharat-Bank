@@ -351,7 +351,7 @@ export const FreezeAccountScreen: React.FC<{ accountId: string }> = ({ accountId
         isOpen={showAuth}
         onClose={() => setShowAuth(false)}
         onSuccess={handleFreeze}
-        title="Enter MPIN to freeze account"
+        title="Enter TPIN to freeze account"
       />
     </>
   );
@@ -779,7 +779,7 @@ export const BeneficiaryReviewScreen: React.FC<{ accountId: string }> = ({ accou
           setShowAuth(false);
           setDone(true);
         }}
-        title="Enter MPIN to add beneficiary"
+        title="Enter TPIN to add beneficiary"
       />
     </>
   );
@@ -889,7 +889,7 @@ export const BeneficiaryDetailScreen: React.FC<{ accountId: string; beneficiaryI
           setShowAuth(false);
           setDeactivated(true);
         }}
-        title="Enter MPIN to deactivate"
+        title="Enter TPIN to deactivate"
       />
     </>
   );
@@ -1027,7 +1027,7 @@ export const CloseAccountAuthScreen: React.FC<{ accountId: string }> = ({ accoun
     <>
       <AccountsScreenLayout title="Confirm Closure" onBack={() => navigate(`${base}/confirm`)}>
         <AccountsInfoCard>
-          <p className="text-sm text-slate-600">Enter MPIN or use biometric to confirm account closure.</p>
+          <p className="text-sm text-slate-600">Enter TPIN or use biometric to confirm account closure.</p>
           <button
             type="button"
             onClick={() => setShowAuth(true)}
@@ -1041,7 +1041,7 @@ export const CloseAccountAuthScreen: React.FC<{ accountId: string }> = ({ accoun
         isOpen={showAuth}
         onClose={() => setShowAuth(false)}
         onSuccess={() => navigate(`${base}/success`)}
-        title="Enter MPIN to confirm closure"
+        title="Enter TPIN to confirm closure"
       />
     </>
   );

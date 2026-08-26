@@ -36,7 +36,7 @@ const VENDOR_SUBMITTED_PATH = '/corporate/payments/create/vendor/submitted';
 export const CorporatePaymentsModule: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { setCorporateTab, setBottomNavHidden, closeDetailFlow, addToast } = useBanking();
+  const { setCorporateTab, setBottomNavHidden, closeDetailFlow, addToast, canSubmitCorporatePayment } = useBanking();
 
   const isPaymentsHome = useMemo(() => {
     const path = location.pathname;
@@ -141,6 +141,24 @@ export const CorporatePaymentsModule: React.FC = () => {
   useEffect(() => {
     setCorporateTab('payments');
   }, [setCorporateTab]);
+
+  useEffect(() => {
+    if (canSubmitCorporatePayment) return;
+    if (!isPaymentCreateFlow && !isMobilePay && !isScheduledCreate) return;
+    addToast({
+      type: 'info',
+      title: 'Permission required',
+      message: 'Your role cannot initiate payments. Please sign in as a Finance Maker.',
+    });
+    navigate('/corporate/payments', { replace: true });
+  }, [
+    canSubmitCorporatePayment,
+    isPaymentCreateFlow,
+    isMobilePay,
+    isScheduledCreate,
+    navigate,
+    addToast,
+  ]);
 
   useEffect(() => {
     if (!location.pathname.startsWith('/corporate/payments')) return;

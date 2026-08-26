@@ -191,8 +191,11 @@ export function buildBankTransferReview(draft: BankTransferDraft): SimplePayment
 }
 
 export function createSimplePaymentSubmission(
-  draft: SimplePaymentDraft
+  draft: SimplePaymentDraft,
+  canSubmitPayment = true
 ): VendorPaymentSubmissionData | null {
+  if (!canSubmitPayment) return null;
+
   const review =
     draft.flowKind === 'internal-transfer'
       ? buildInternalTransferReview(draft)
@@ -249,7 +252,10 @@ export function createSimplePaymentSubmission(
   };
 }
 
-export async function submitSimplePaymentForApproval(): Promise<void> {
+export async function submitSimplePaymentForApproval(canSubmitPayment = true): Promise<void> {
+  if (!canSubmitPayment) {
+    throw new Error('CHECKER_CANNOT_SUBMIT');
+  }
   await new Promise((r) => setTimeout(r, 800));
 }
 

@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
 import { SecureAuthModal } from '../../common/SecureAuthModal';
-import { getJointStatusLabel, requiresJointApproval } from '../../../data/retailJointTransferMock';
+import { getJointStatusLabel, requiresJointApproval, canUserInitiateJointTransaction } from '../../../data/retailJointTransferMock';
 import type { JointTransferRequest } from '../../../types/retailJointTransfer';
 
 interface OpenDepositFlowProps {
@@ -28,7 +28,7 @@ interface OpenDepositFlowProps {
 type Step = 'intro' | 'configure' | 'payout' | 'account' | 'review' | 'submitted' | 'success';
 
 export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose }) => {
-  const { accounts, createFixedDeposit, createRecurringDeposit, addToast, getDefaultDebitAccount, submitJointApprovalRequest } = useBanking();
+  const { accounts, createFixedDeposit, createRecurringDeposit, addToast, getDefaultDebitAccount, submitJointApprovalRequest, retailActiveUserId } = useBanking();
   const defaultDebit = getDefaultDebitAccount();
   const [step, setStep] = useState<Step>('intro');
   const [amount, setAmount] = useState(type === 'FD' ? 100000 : 10000);
@@ -365,7 +365,13 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
                   </div>
                 )}
                 <div className="space-y-3">
-                  {accounts.filter(a => a.accountType === 'Savings' || a.accountType === 'Current').map(acc => {
+                  {accounts
+                    .filter(
+                      (a) =>
+                        (a.accountType === 'Savings' || a.accountType === 'Current') &&
+                        canUserInitiateJointTransaction(retailActiveUserId, a)
+                    )
+                    .map((acc) => {
                     const isJoint = requiresJointApproval(acc);
                     return (
                     <button
@@ -587,7 +593,6 @@ export const OpenDepositFlow: React.FC<OpenDepositFlowProps> = ({ type, onClose 
         onClose={() => setIsAuthOpen(false)}
         onSuccess={handleAuthComplete}
         title={needsApproval ? `Submit ${type} for Approval` : `Confirm ${type} Deposit`}
-        pinType={needsApproval ? 'tpin' : 'mpin'}
       />
     </div>
   );

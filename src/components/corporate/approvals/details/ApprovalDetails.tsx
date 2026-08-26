@@ -179,7 +179,7 @@ export const ApprovalDetails: React.FC = () => {
     if (!detail) return;
     setActionLoading(true);
     try {
-      await submitApprovalAction('approve', detail, { comment: approverComment });
+      await submitApprovalAction('approve', detail, { comment: approverComment }, corporateSession?.role);
       setShowAuth(false);
       goToResult('approve', { comment: approverComment });
     } finally {
@@ -191,7 +191,7 @@ export const ApprovalDetails: React.FC = () => {
     if (!detail) return;
     setActionLoading(true);
     try {
-      await submitApprovalAction('reject', detail, { reason, comment: approverComment });
+      await submitApprovalAction('reject', detail, { reason, comment: approverComment }, corporateSession?.role);
       setShowReject(false);
       goToResult('reject', { reason, comment: approverComment });
     } finally {
@@ -203,7 +203,7 @@ export const ApprovalDetails: React.FC = () => {
     if (!detail) return;
     setActionLoading(true);
     try {
-      await submitApprovalAction('return', detail, { comment });
+      await submitApprovalAction('return', detail, { comment }, corporateSession?.role);
       setShowReturn(false);
       goToResult('return', { comment });
     } finally {

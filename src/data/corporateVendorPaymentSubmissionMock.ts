@@ -95,8 +95,11 @@ export function buildDefaultApprovalSteps(
 
 export function createVendorPaymentSubmission(
   draft: VendorPaymentDraft,
-  status: VendorPaymentSubmissionStatus = 'submitted'
+  status: VendorPaymentSubmissionStatus = 'submitted',
+  canSubmitPayment = true
 ): VendorPaymentSubmissionData | null {
+  if (!canSubmitPayment) return null;
+
   const review = buildVendorPaymentReview(draft);
   const beneficiary = getVendorBeneficiaryById(draft.beneficiaryId);
   const account = getVendorPaymentAccount(draft.accountId);

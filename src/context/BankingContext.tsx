@@ -69,12 +69,16 @@ import { LOGIN_OFFER } from '../data/preLoginMock';
 import type { JointRequestPayload, JointRequestType, JointTransferRequest } from '../types/retailJointTransfer';
 import {
   INITIAL_JOINT_ACCOUNTS,
+  AMIT_INDIVIDUAL_ACCOUNTS,
   JOINT_TRANSFER_STORAGE_KEY,
   RETAIL_SESSION_USER_KEY,
   buildJointTransactionId,
   buildJointTransferReference,
   canUserAccessJointAccount,
   canUserApproveJointRequest,
+  canUserDebitFromAccount,
+  canUserInitiateJointRequest,
+  canUserActAsJointChecker,
   formatJointTimestamp,
   getJointApproverUserId,
   getRetailJointUser,
@@ -223,6 +227,8 @@ interface BankingContextType {
   retailActiveUserId: string;
   /** True when retail user holds a jointly operated account (maker-checker flows apply). */
   hasRetailJointApprovalAccess: boolean;
+  canInitiateRetailJoint: boolean;
+  canApproveRetailJoint: boolean;
   setRetailSessionFromLogin: (customerNumber: string) => void;
   jointTransferRequests: JointTransferRequest[];
   submitJointTransferRequest: (params: {
@@ -691,6 +697,7 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [retailAccounts, setRetailAccounts] = useState<BankAccount[]>([
     ...INITIAL_RETAIL_ACCOUNTS,
     ...INITIAL_JOINT_ACCOUNTS,
+    ...AMIT_INDIVIDUAL_ACCOUNTS,
   ]);
   const [corporateAccounts, setCorporateAccounts] = useState<BankAccount[]>(INITIAL_CORPORATE_ACCOUNTS);
   const [retailTransactions, setRetailTransactions] = useState<Transaction[]>(INITIAL_RETAIL_TRANSACTIONS);
@@ -816,11 +823,19 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const canCreateCorporateBulk = corporateSession?.canCreateBulk ?? true;
   const accounts =
     bankingType === 'retail'
-      ? retailAccounts.filter((a) => canUserAccessJointAccount(a, retailActiveUserId))
+      ? retailAccounts.filter(
+          (a) =>
+            canUserAccessJointAccount(a, retailActiveUserId) &&
+            (retailActiveUserId === 'usr_ret_001' ? !a.isJointAccount : true)
+        )
       : corporateAccounts;
   const hasRetailJointApprovalAccess =
     bankingType === 'retail' &&
     userHasJointMakerCheckerAccess(retailAccounts, retailActiveUserId);
+  const canInitiateRetailJoint =
+    bankingType === 'retail' && canUserInitiateJointRequest(retailActiveUserId);
+  const canApproveRetailJoint =
+    bankingType === 'retail' && canUserActAsJointChecker(retailActiveUserId);
   const transactions = bankingType === 'retail' ? retailTransactions : corporateTransactions;
   const beneficiaries = bankingType === 'retail' ? retailBeneficiaries : corporateBeneficiaries;
   const cards = bankingType === 'retail' ? retailCards : corporateCards;
@@ -963,6 +978,15 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const fromAccount = retailAccounts.find((a) => a.id === fromAccountId);
     if (!fromAccount) return null;
 
+    if (!canUserDebitFromAccount(retailActiveUserId, fromAccount)) {
+      addToast({
+        type: 'info',
+        title: 'Permission required',
+        message: 'Joint account requests can only be initiated by the joint account maker.',
+      });
+      return null;
+    }
+
     const approverUserId = getJointApproverUserId(fromAccount, retailActiveUserId);
     const approverUser = approverUserId ? getRetailJointUser(approverUserId) : null;
     if (!approverUserId || !approverUser) {
@@ -1032,6 +1056,15 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }): JointTransferRequest | null => {
     const fromAccount = retailAccounts.find((a) => a.id === fromAccountId);
     if (!fromAccount) return null;
+
+    if (!canUserDebitFromAccount(retailActiveUserId, fromAccount)) {
+      addToast({
+        type: 'info',
+        title: 'Permission required',
+        message: 'Joint account requests can only be initiated by the joint account maker.',
+      });
+      return null;
+    }
 
     const approverUserId = getJointApproverUserId(fromAccount, retailActiveUserId);
     const approverUser = approverUserId ? getRetailJointUser(approverUserId) : null;
@@ -1262,6 +1295,31 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         message: 'Debits are blocked on this account. Unfreeze to continue transfers.',
       });
       throw new Error('Account frozen');
+    }
+
+    if (
+      bankingType === 'corporate' &&
+      !canSubmitCorporatePayment
+    ) {
+      addToast({
+        type: 'info',
+        title: 'Permission required',
+        message: 'Your role cannot initiate payments. Please sign in as a Finance Maker.',
+      });
+      throw new Error('Corporate checker cannot initiate');
+    }
+
+    if (
+      bankingType === 'retail' &&
+      fromAccount &&
+      !canUserDebitFromAccount(retailActiveUserId, fromAccount)
+    ) {
+      addToast({
+        type: 'info',
+        title: 'Permission required',
+        message: 'Joint account transfers can only be initiated by the joint account maker.',
+      });
+      throw new Error('Joint checker cannot debit joint account');
     }
 
     const refNum = `${mode}${Math.floor(1000000000 + Math.random() * 9000000000)}`;
@@ -3472,6 +3530,8 @@ export const BankingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       completeRetailRegistration,
       retailActiveUserId,
       hasRetailJointApprovalAccess,
+      canInitiateRetailJoint,
+      canApproveRetailJoint,
       setRetailSessionFromLogin,
       jointTransferRequests,
       submitJointTransferRequest,

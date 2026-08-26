@@ -27,6 +27,7 @@ import { SubmitPaymentButton } from '../vendor/review/SubmitPaymentButton';
 import { PaymentSubmissionError } from '../vendor/review/PaymentSubmissionError';
 import { SimplePaymentProgress } from '../shared/SimplePaymentProgress';
 import { PayCard, ReviewRow } from '../../shared/CorporatePaymentsUI';
+import { useCorporateMakerGate } from '../../../../../hooks/useCorporateMakerGate';
 
 const BASE_PATH = '/corporate/payments/create/internal-transfer';
 const SUBMITTED_PATH = '/corporate/payments/create/vendor/submitted';
@@ -34,7 +35,8 @@ const SUBMITTED_PATH = '/corporate/payments/create/vendor/submitted';
 export const InternalTransferReview: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setBottomNavHidden, closeDetailFlow } = useBanking();
+  const { setBottomNavHidden, closeDetailFlow, canSubmitCorporatePayment } = useBanking();
+  const { blockIfChecker } = useCorporateMakerGate();
 
   const [draft, setDraft] = useState<InternalTransferDraft | null>(null);
   const [confirmed, setConfirmed] = useState(false);
@@ -52,7 +54,8 @@ export const InternalTransferReview: React.FC = () => {
     review.withinDailyLimit &&
     confirmed &&
     !isSubmitting &&
-    !hasSubmissionError;
+    !hasSubmissionError &&
+    canSubmitCorporatePayment;
 
   useEffect(() => {
     setBottomNavHidden(true);
@@ -77,10 +80,11 @@ export const InternalTransferReview: React.FC = () => {
 
   const handleSubmit = useCallback(async () => {
     if (!draft || !canSubmit) return;
+    if (blockIfChecker('submit payments')) return;
     setSubmissionState('submitting');
     try {
-      await submitSimplePaymentForApproval();
-      const submission = createSimplePaymentSubmission(draft);
+      await submitSimplePaymentForApproval(canSubmitCorporatePayment);
+      const submission = createSimplePaymentSubmission(draft, canSubmitCorporatePayment);
       if (!submission) throw new Error('SUBMIT_FAILED');
       saveVendorPaymentSubmission(submission);
       sessionStorage.removeItem('vendorPaymentSubmissionToastShown');
@@ -88,7 +92,7 @@ export const InternalTransferReview: React.FC = () => {
     } catch {
       setSubmissionState('error');
     }
-  }, [draft, canSubmit, navigate]);
+  }, [draft, canSubmit, navigate, blockIfChecker, canSubmitCorporatePayment]);
 
   if (!review || !draft) {
     return (

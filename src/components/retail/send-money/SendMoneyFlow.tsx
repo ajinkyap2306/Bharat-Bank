@@ -30,6 +30,7 @@ import {
 import {
   getJointStatusLabel,
   requiresJointApproval,
+  canUserInitiateJointTransaction,
   verifyRetailJointUserTpin,
 } from '../../../data/retailJointTransferMock';
 import type { JointTransferRequest } from '../../../types/retailJointTransfer';
@@ -60,7 +61,10 @@ export const SendMoneyFlow: React.FC<SendMoneyFlowProps> = ({ onClose }) => {
 
   const defaultDebit = getDefaultDebitAccount();
   const debitAccounts = accounts.filter(
-    (a) => (a.accountType === 'Savings' || a.accountType === 'Current') && a.status !== 'frozen'
+    (a) =>
+      (a.accountType === 'Savings' || a.accountType === 'Current') &&
+      a.status !== 'frozen' &&
+      canUserInitiateJointTransaction(retailActiveUserId, a)
   );
 
   const [step, setStep] = useState<SendMoneyStep>('home');

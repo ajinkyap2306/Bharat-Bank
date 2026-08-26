@@ -361,9 +361,16 @@ export async function fetchApprovalDetail(
 export async function submitApprovalAction(
   action: 'approve' | 'reject' | 'return',
   detail: CorporateApprovalDetail,
-  payload: { reason?: string; comment?: string }
+  payload: { reason?: string; comment?: string },
+  viewerRole?: CorporateDemoRole | null
 ): Promise<ApprovalActionResult> {
   await new Promise((r) => setTimeout(r, 1200));
+
+  if (!viewerRole || viewerRole === 'maker') {
+    if (action === 'approve' || action === 'reject' || action === 'return') {
+      throw new Error('MAKER_CANNOT_APPROVE');
+    }
+  }
 
   if (action === 'approve') {
     const scheduleId = getScheduleIdByApprovalId(detail.approvalId);

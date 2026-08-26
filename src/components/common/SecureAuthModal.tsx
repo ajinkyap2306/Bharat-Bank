@@ -15,7 +15,7 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
   onClose,
   onSuccess,
   title,
-  pinType = 'mpin',
+  pinType = 'tpin',
 }) => {
   const pinLabel = pinType === 'tpin' ? 'TPIN' : 'MPIN';
   const [pin, setPin] = useState('');

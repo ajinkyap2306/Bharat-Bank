@@ -171,7 +171,7 @@ export const ScheduledTransfersModule: React.FC = () => {
           }
           setShowAuth(false);
         }}
-        title="Authenticate"
+        title="Enter TPIN"
       />
     </div>
   );

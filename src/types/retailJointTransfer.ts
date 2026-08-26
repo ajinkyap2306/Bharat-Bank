@@ -103,10 +103,13 @@ export type JointApprovalStep =
   | 'success'
   | 'rejected';
 
+export type RetailJointRole = 'maker' | 'checker';
+
 export interface RetailJointUser {
   id: string;
   name: string;
   customerNumber: string;
+  role: RetailJointRole;
   demoPassword: string;
   demoMpin: string;
   demoTpin: string;

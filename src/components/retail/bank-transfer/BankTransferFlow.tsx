@@ -29,6 +29,7 @@ import {
 import {
   getJointStatusLabel,
   requiresJointApproval,
+  canUserDebitFromAccount,
   verifyRetailJointUserTpin,
 } from '../../../data/retailJointTransferMock';
 import type { JointTransferRequest } from '../../../types/retailJointTransfer';
@@ -48,9 +49,12 @@ interface BankTransferFlowProps {
 
 const SELF_ACCOUNT_TYPES = new Set(['Savings', 'Current']);
 
-function eligibleSelfAccounts(accounts: BankAccount[]): BankAccount[] {
+function eligibleSelfAccounts(accounts: BankAccount[], userId: string): BankAccount[] {
   return accounts.filter(
-    (a) => SELF_ACCOUNT_TYPES.has(a.accountType) && a.status !== 'frozen'
+    (a) =>
+      SELF_ACCOUNT_TYPES.has(a.accountType) &&
+      a.status !== 'frozen' &&
+      canUserDebitFromAccount(userId, a)
   );
 }
 
@@ -66,8 +70,6 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
     executeSelfTransfer,
     addToast,
     setBottomNavHidden,
-    getDefaultDebitAccount,
-    defaultDebitAccountId,
     lookupBanlName,
     transferRepeat,
     clearTransferRepeat,
@@ -75,15 +77,16 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
     submitJointTransferRequest,
   } = useBanking();
 
-  const defaultDebit = getDefaultDebitAccount();
-  const selfAccounts = eligibleSelfAccounts(accounts);
+  const selfAccounts = eligibleSelfAccounts(accounts, retailActiveUserId);
+  const defaultDebit =
+    selfAccounts[0] ?? accounts.find((a) => canUserDebitFromAccount(retailActiveUserId, a));
   const payees = bankBeneficiaries(beneficiaries);
 
   const [step, setStep] = useState<BankTransferStep>('home');
   const [draft, setDraft] = useState<BankTransferDraft>(() => ({
     path: null,
-    fromAccountId: defaultDebit.id,
-    toAccountId: selfAccounts.find((a) => a.id !== defaultDebit.id)?.id ?? '',
+    fromAccountId: selfAccounts[0]?.id ?? '',
+    toAccountId: selfAccounts.find((a) => a.id !== selfAccounts[0]?.id)?.id ?? '',
     beneficiaryId: null,
     manualReceiver: null,
     accountNumber: '',
@@ -120,6 +123,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
   const toAccount = accounts.find((a) => a.id === draft.toAccountId);
   const selectedBeneficiary = payees.find((b) => b.id === draft.beneficiaryId);
   const needsApproval = requiresJointApproval(fromAccount);
+  const canDebitFromSelected = canUserDebitFromAccount(retailActiveUserId, fromAccount);
 
   const receiver = useMemo(() => {
     if (draft.path === 'self' && toAccount) {
@@ -154,7 +158,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
 
   useEffect(() => {
     setSelectedDebitFromDefault();
-  }, [defaultDebitAccountId]);
+  }, [retailActiveUserId, accounts]);
 
   useEffect(() => {
     setBottomNavHidden(step !== 'home');
@@ -179,11 +183,11 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
       amount: String(transferRepeat.amount),
       note: transferRepeat.remarks || '',
       transferMode: mode,
-      fromAccountId: defaultDebit.id,
+      fromAccountId: defaultDebit?.id ?? selfAccounts[0]?.id ?? '',
     }));
     setStep(match ? 'amount' : 'bank-beneficiary');
     clearTransferRepeat();
-  }, [transferRepeat, payees, clearTransferRepeat, defaultDebit.id]);
+  }, [transferRepeat, payees, clearTransferRepeat, defaultDebit?.id, selfAccounts]);
 
   useEffect(() => {
     if (!availableModes.includes(draft.transferMode)) {
@@ -192,14 +196,29 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
   }, [amountNum, availableModes, draft.transferMode]);
 
   function setSelectedDebitFromDefault() {
-    const debit = getDefaultDebitAccount();
-    const others = eligibleSelfAccounts(accounts).filter((a) => a.id !== debit.id);
+    const debit = selfAccounts[0];
+    if (!debit) return;
+    const others = selfAccounts.filter((a) => a.id !== debit.id);
     setDraft((d) => ({
       ...d,
       fromAccountId: debit.id,
       toAccountId: d.toAccountId && d.toAccountId !== debit.id ? d.toAccountId : others[0]?.id ?? '',
     }));
   }
+
+  useEffect(() => {
+    if (!selfAccounts.length) return;
+    if (!selfAccounts.some((a) => a.id === draft.fromAccountId)) {
+      setDraft((d) => ({
+        ...d,
+        fromAccountId: selfAccounts[0].id,
+        toAccountId:
+          d.toAccountId && d.toAccountId !== selfAccounts[0].id
+            ? d.toAccountId
+            : selfAccounts.find((a) => a.id !== selfAccounts[0].id)?.id ?? '',
+      }));
+    }
+  }, [selfAccounts, draft.fromAccountId]);
 
   const goBack = useCallback(() => {
     if (['processing', 'success', 'failed'].includes(step)) {
@@ -352,6 +371,16 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
       return;
     }
     setAuthError('');
+
+    if (!fromAccount || !canDebitFromSelected) {
+      addToast({
+        type: 'info',
+        title: 'Permission required',
+        message: 'Joint account transfers can only be initiated by the joint account maker.',
+      });
+      setStep('unavailable');
+      return;
+    }
 
     if (needsApproval) {
       if (!receiver) return;

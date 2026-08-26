@@ -33,6 +33,7 @@ import {
 import {
   getJointStatusLabel,
   requiresJointApproval,
+  canUserInitiateJointTransaction,
   verifyRetailJointUserTpin,
 } from '../../../data/retailJointTransferMock';
 import type { JointTransferRequest } from '../../../types/retailJointTransfer';
@@ -83,8 +84,15 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
   const [lastResult, setLastResult] = useState<QrPaymentResult | null>(null);
   const [submittedRequest, setSubmittedRequest] = useState<JointTransferRequest | null>(null);
 
+  const payableAccounts = useMemo(
+    () => accounts.filter((a) => canUserInitiateJointTransaction(retailActiveUserId, a)),
+    [accounts, retailActiveUserId]
+  );
   const primaryAccount = getPrimaryAccount();
-  const payAccount = accounts.find((a) => a.id === draft.accountId) || primaryAccount;
+  const payAccount =
+    payableAccounts.find((a) => a.id === draft.accountId) ||
+    payableAccounts.find((a) => a.id === primaryAccount?.id) ||
+    payableAccounts[0];
   const needsApproval = requiresJointApproval(payAccount);
   const fromLabel = payAccount
     ? `${payAccount.accountType} ${payAccount.maskedNumber}`
@@ -104,10 +112,11 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
   }, []);
 
   useEffect(() => {
-    if (primaryAccount && !draft.accountId) {
-      setDraft((d) => ({ ...d, accountId: primaryAccount.id }));
+    const defaultAccount = payableAccounts[0] ?? primaryAccount;
+    if (defaultAccount && !draft.accountId) {
+      setDraft((d) => ({ ...d, accountId: defaultAccount.id }));
     }
-  }, [primaryAccount, draft.accountId]);
+  }, [primaryAccount, payableAccounts, draft.accountId]);
 
   const resetFlow = useCallback(() => {
     setStep('scanner');
@@ -164,9 +173,9 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
   };
 
   const cyclePayAccount = () => {
-    if (accounts.length <= 1) return;
-    const idx = accounts.findIndex((a) => a.id === draft.accountId);
-    const next = accounts[(idx + 1) % accounts.length];
+    if (payableAccounts.length <= 1) return;
+    const idx = payableAccounts.findIndex((a) => a.id === draft.accountId);
+    const next = payableAccounts[(idx + 1) % payableAccounts.length];
     setDraft((d) => ({ ...d, accountId: next.id }));
   };
 
@@ -530,7 +539,7 @@ export const QrPaymentFlow: React.FC<QrPaymentFlowProps> = ({ onClose }) => {
                   <p className="text-[11px] text-blue-700 font-semibold mt-1">Jointly Operated · Approval required</p>
                 )}
               </div>
-              {accounts.length > 1 && <ChevronRight className="w-5 h-5 text-slate-400 shrink-0" />}
+              {payableAccounts.length > 1 && <ChevronRight className="w-5 h-5 text-slate-400 shrink-0" />}
             </button>
           </div>
 

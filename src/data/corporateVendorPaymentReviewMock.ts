@@ -127,8 +127,12 @@ export function recalculateReviewFromDraft(
 
 export async function submitVendorPaymentForApproval(
   _draft: VendorPaymentDraft,
-  simulateError = false
+  simulateError = false,
+  canSubmitPayment = true
 ): Promise<void> {
+  if (!canSubmitPayment) {
+    throw new Error('CHECKER_CANNOT_SUBMIT');
+  }
   await new Promise((resolve) => setTimeout(resolve, 1500));
   if (simulateError) {
     throw new Error('SUBMIT_FAILED');
