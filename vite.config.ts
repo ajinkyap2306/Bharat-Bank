@@ -17,7 +17,7 @@ export default defineConfig(() => {
         ],
         manifest: {
           name: 'Bharat Corporate Banking',
-          short_name: 'Bharat Corp',
+          short_name: 'Nexa 2',
           description:
             'Bharat Co-operative Bank corporate and retail digital banking — secure payments, approvals, and account services.',
           theme_color: '#005dd4',

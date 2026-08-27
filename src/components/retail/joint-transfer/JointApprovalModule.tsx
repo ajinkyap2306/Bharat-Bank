@@ -294,19 +294,34 @@ export const JointApprovalModule: React.FC = () => {
 
   if (step === 'rejected') {
     const updated = getJointRequestById(activeRequest.id);
+    const isExecutionFailed = updated?.status === 'failed';
     return (
-      <AddMoneyLayout title="Request Rejected" onBack={goHome}>
+      <AddMoneyLayout
+        title={isExecutionFailed ? 'Transfer Failed' : 'Request Rejected'}
+        onBack={goHome}
+      >
         <div className="text-center pt-4">
           <XCircle className="w-14 h-14 text-red-600 mx-auto mb-3" />
           <p className="text-2xl font-extrabold tabular-nums">
             {getJointRequestListAmount(activeRequest)}
           </p>
-          <ReviewRow label="Rejected by" value={updated?.rejectedByName ?? user.name} />
-          {updated?.rejectReason && (
-            <ReviewRow label="Reason" value={updated.rejectReason} />
+          {isExecutionFailed ? (
+            <p className="text-sm text-slate-500 mt-2 px-4">
+              Approval was recorded but the transfer could not be completed. Please try again or contact support.
+            </p>
+          ) : (
+            <>
+              <ReviewRow label="Rejected by" value={updated?.rejectedByName ?? user.name} />
+              {updated?.rejectReason && (
+                <ReviewRow label="Reason" value={updated.rejectReason} />
+              )}
+            </>
           )}
           <ReviewRow label="Reference" value={activeRequest.reference} />
-          <ReviewRow label="Status" value="Rejected" />
+          <ReviewRow
+            label="Status"
+            value={isExecutionFailed ? 'Failed' : 'Rejected'}
+          />
         </div>
         <StickyAddMoneyCTA label="Done" onClick={goHome} />
       </AddMoneyLayout>

@@ -92,11 +92,12 @@ export function verifyRetailJointUserTpin(userId: string, tpin: string): boolean
   return false;
 }
 
+/** Any jointly held account requires maker-checker approval before debit. */
 export function requiresJointApproval(account: BankAccount | undefined): boolean {
-  return account?.operatingInstruction === 'jointly_operated';
+  return Boolean(account?.isJointAccount);
 }
 
-/** True when a joint maker or checker user holds a jointly operated account. */
+/** True when a joint maker or checker user holds at least one joint account. */
 export function userHasJointMakerCheckerAccess(
   accounts: BankAccount[],
   userId: string
@@ -380,6 +381,39 @@ export const INITIAL_JOINT_ACCOUNTS: BankAccount[] = [
     primaryHolderUserId: 'usr_joint_rahul',
     jointHolderUserIds: ['usr_joint_amit'],
     jointHolders: [{ name: 'Amit Sharma', relationship: 'Joint Holder' }],
+  },
+];
+
+/** Non-joint accounts held solely by Rahul (RB-RAHUL01) — transfers skip maker-checker. */
+export const RAHUL_INDIVIDUAL_ACCOUNTS: BankAccount[] = [
+  {
+    id: 'acc_rahul_ind_sav',
+    accountNumber: '409288771188',
+    maskedNumber: '•••• •••• 7188',
+    accountType: 'Savings',
+    balance: 215000.0,
+    availableBalance: 215000.0,
+    currency: '₹',
+    ifsc: 'APEX0001048',
+    branch: 'Bandra Kurla Complex, Mumbai',
+    nickname: 'Personal Savings Account',
+    status: 'active',
+    interestRate: 6.25,
+    primaryHolderUserId: 'usr_joint_rahul',
+  },
+  {
+    id: 'acc_rahul_ind_cur',
+    accountNumber: '409288772177',
+    maskedNumber: '•••• •••• 2177',
+    accountType: 'Current',
+    balance: 78000.0,
+    availableBalance: 78000.0,
+    currency: '₹',
+    ifsc: 'APEX0001048',
+    branch: 'Bandra Kurla Complex, Mumbai',
+    nickname: 'Personal Current Account',
+    status: 'active',
+    primaryHolderUserId: 'usr_joint_rahul',
   },
 ];
 

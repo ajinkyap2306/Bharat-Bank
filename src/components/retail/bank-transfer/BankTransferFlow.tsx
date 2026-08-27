@@ -78,6 +78,10 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
   } = useBanking();
 
   const selfAccounts = eligibleSelfAccounts(accounts, retailActiveUserId);
+  const selfAccountIds = useMemo(
+    () => selfAccounts.map((a) => a.id).join(','),
+    [selfAccounts]
+  );
   const defaultDebit =
     selfAccounts[0] ?? accounts.find((a) => canUserDebitFromAccount(retailActiveUserId, a));
   const payees = bankBeneficiaries(beneficiaries);
@@ -123,7 +127,6 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
   const toAccount = accounts.find((a) => a.id === draft.toAccountId);
   const selectedBeneficiary = payees.find((b) => b.id === draft.beneficiaryId);
   const needsApproval = requiresJointApproval(fromAccount);
-  const canDebitFromSelected = canUserDebitFromAccount(retailActiveUserId, fromAccount);
 
   const receiver = useMemo(() => {
     if (draft.path === 'self' && toAccount) {
@@ -158,7 +161,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
 
   useEffect(() => {
     setSelectedDebitFromDefault();
-  }, [retailActiveUserId, accounts]);
+  }, [retailActiveUserId, selfAccountIds]);
 
   useEffect(() => {
     setBottomNavHidden(step !== 'home');
@@ -372,7 +375,11 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
     }
     setAuthError('');
 
-    if (!fromAccount || !canDebitFromSelected) {
+    const debitAccount = accounts.find((a) => a.id === draft.fromAccountId);
+    const jointApprovalRequired = requiresJointApproval(debitAccount);
+    const canDebitFromSelected = canUserDebitFromAccount(retailActiveUserId, debitAccount);
+
+    if (!debitAccount || !canDebitFromSelected) {
       addToast({
         type: 'info',
         title: 'Permission required',
@@ -382,7 +389,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
       return;
     }
 
-    if (needsApproval) {
+    if (jointApprovalRequired) {
       if (!receiver) return;
       const req = submitJointTransferRequest({
         fromAccountId: draft.fromAccountId,
@@ -446,7 +453,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
   };
 
   const accountCard = (account: BankAccount, selected: boolean, onSelect: () => void) => {
-    const isJoint = requiresJointApproval(account);
+    const isJoint = Boolean(account.isJointAccount);
     const accountTitle = account.jointAccountLabel ?? `${account.accountType} Account`;
     return (
       <RadioSelectCard
@@ -454,7 +461,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
         selected={selected}
         title={accountTitle}
         subtitle={account.maskedNumber}
-        meta={`Available ₹${account.availableBalance.toLocaleString('en-IN')}${isJoint ? ' · Jointly Operated' : ''}`}
+        meta={`Available ₹${account.availableBalance.toLocaleString('en-IN')}${isJoint ? ' · Joint Account' : ''}`}
         onSelect={onSelect}
       />
     );
