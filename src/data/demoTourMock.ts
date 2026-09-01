@@ -22,21 +22,27 @@ export function getDemoTourStorageKey(
   return `${DEMO_TOUR_KEY_PREFIX}corporate_${corporateRole ?? 'maker'}_v1`;
 }
 
+function clearDemoTourKeysFrom(storage: Storage): void {
+  for (let i = storage.length - 1; i >= 0; i--) {
+    const storageKey = storage.key(i);
+    if (storageKey?.startsWith(DEMO_TOUR_KEY_PREFIX)) {
+      storage.removeItem(storageKey);
+    }
+  }
+}
+
 export function hasCompletedDemoTour(key: string): boolean {
-  return Boolean(localStorage.getItem(key));
+  return Boolean(sessionStorage.getItem(key));
 }
 
 export function markDemoTourFinished(key: string, skipped = false): void {
-  localStorage.setItem(key, skipped ? 'skipped' : 'completed');
+  sessionStorage.setItem(key, skipped ? 'skipped' : 'completed');
 }
 
 export function clearAllDemoTourKeys(): void {
-  for (let i = localStorage.length - 1; i >= 0; i--) {
-    const storageKey = localStorage.key(i);
-    if (storageKey?.startsWith(DEMO_TOUR_KEY_PREFIX)) {
-      localStorage.removeItem(storageKey);
-    }
-  }
+  clearDemoTourKeysFrom(sessionStorage);
+  // Remove legacy keys from localStorage (tour used to persist there).
+  clearDemoTourKeysFrom(localStorage);
 }
 
 export function getRetailDemoTourSteps(hasJointApprovalAccess: boolean): DemoTourStep[] {
