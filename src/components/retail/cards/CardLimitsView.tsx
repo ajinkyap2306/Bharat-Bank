@@ -289,7 +289,7 @@ export const CardLimitsView: React.FC<CardLimitsViewProps> = ({
       <SecureAuthModal
         isOpen={isAuthOpen}
         title="Confirm New Limits"
-        subtitle="Authenticate with MPIN or Biometrics to apply these transaction limits to the card switch."
+        subtitle="Authenticate with your 6-digit MPIN or Biometrics to apply these transaction limits to the card switch."
         requiredActionDesc="Updating daily limits across card networks"
         onSuccess={handleAuthSuccess}
         onCancel={() => setIsAuthOpen(false)}

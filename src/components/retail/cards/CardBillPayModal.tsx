@@ -252,8 +252,9 @@ export const CardBillPayModal: React.FC<CardBillPayModalProps> = ({
           {/* Secure MPIN Auth */}
           <SecureAuthModal
             isOpen={isAuthOpen}
+            pinType="tpin"
             title="Authenticate Card Bill Payment"
-            subtitle={`Confirm payment of ₹${currentPayAmount.toLocaleString('en-IN')} to Bharat Credit Card.`}
+            subtitle={`Enter your 6-digit TPIN to confirm payment of ₹${currentPayAmount.toLocaleString('en-IN')} to Bharat Credit Card.`}
             requiredActionDesc={`Settling credit card bill of ₹${currentPayAmount.toLocaleString('en-IN')}`}
             onSuccess={handleAuthSuccess}
             onCancel={() => setIsAuthOpen(false)}

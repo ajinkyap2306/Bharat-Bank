@@ -28,7 +28,7 @@ export const ChangePinModal: React.FC<ChangePinModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  // Steps: 1: Auth, 2: Enter PIN, 3: Confirm PIN, 4: OTP, 5: Success
+  // Steps: 1: Auth (6-digit MPIN), 2: Enter ATM PIN, 3: Confirm ATM PIN, 4: OTP, 5: Success
   const [step, setStep] = useState<number>(1);
   const [authPin, setAuthPin] = useState('');
   const [newPin, setNewPin] = useState('');
@@ -46,13 +46,16 @@ export const ChangePinModal: React.FC<ChangePinModalProps> = ({
     return repeated || sequential;
   };
 
+  const MPIN_LENGTH = 6;
+  const ATM_PIN_LENGTH = 4;
+
   const handleKeyPress = (num: string) => {
     setErrorMsg(null);
     if (step === 1) {
-      if (authPin.length < 4) {
+      if (authPin.length < MPIN_LENGTH) {
         const next = authPin + num;
         setAuthPin(next);
-        if (next.length === 4) {
+        if (next.length === MPIN_LENGTH) {
           setTimeout(() => {
             setStep(2);
             setAuthPin('');
@@ -60,10 +63,10 @@ export const ChangePinModal: React.FC<ChangePinModalProps> = ({
         }
       }
     } else if (step === 2) {
-      if (newPin.length < 4) {
+      if (newPin.length < ATM_PIN_LENGTH) {
         const next = newPin + num;
         setNewPin(next);
-        if (next.length === 4) {
+        if (next.length === ATM_PIN_LENGTH) {
           if (isWeakPin(next)) {
             setErrorMsg('PIN is too weak (avoid 1234, 1111). Choose a stronger combination.');
           } else {
@@ -74,10 +77,10 @@ export const ChangePinModal: React.FC<ChangePinModalProps> = ({
         }
       }
     } else if (step === 3) {
-      if (confirmPin.length < 4) {
+      if (confirmPin.length < ATM_PIN_LENGTH) {
         const next = confirmPin + num;
         setConfirmPin(next);
-        if (next.length === 4) {
+        if (next.length === ATM_PIN_LENGTH) {
           if (next !== newPin) {
             setErrorMsg('PINs do not match. Please re-enter.');
             setConfirmPin('');
@@ -175,15 +178,15 @@ export const ChangePinModal: React.FC<ChangePinModalProps> = ({
               </div>
               <h4 className="text-sm font-bold text-slate-900 dark:text-white">Step 1: Enter Current MPIN</h4>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs">
-                Authenticate with your existing 4-digit mobile banking MPIN.
+                Authenticate with your existing 6-digit mobile banking MPIN.
               </p>
 
               {/* Pin Dots */}
-              <div className="flex items-center gap-3 my-5">
-                {[0, 1, 2, 3].map(i => (
+              <div className="flex items-center gap-2 my-5">
+                {Array.from({ length: MPIN_LENGTH }, (_, i) => (
                   <div
                     key={i}
-                    className={`w-3.5 h-3.5 rounded-full border-2 transition-all ${
+                    className={`w-3 h-3 rounded-full border-2 transition-all ${
                       i < authPin.length
                         ? 'bg-blue-600 border-blue-600 scale-110'
                         : 'border-slate-300 dark:border-slate-700'
@@ -200,7 +203,7 @@ export const ChangePinModal: React.FC<ChangePinModalProps> = ({
               <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-2">
                 <KeyRound className="w-6 h-6" />
               </div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white">Step 2: Enter 4-Digit New PIN</h4>
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white">Step 2: Enter 4-Digit New ATM PIN</h4>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs">
                 Choose a secure 4-digit PIN for ATM withdrawals and POS payments.
               </p>
@@ -227,7 +230,7 @@ export const ChangePinModal: React.FC<ChangePinModalProps> = ({
               <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-2">
                 <ShieldCheck className="w-6 h-6" />
               </div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white">Step 3: Confirm 4-Digit New PIN</h4>
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white">Step 3: Confirm 4-Digit New ATM PIN</h4>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs">
                 Re-enter your new PIN to ensure accuracy.
               </p>
@@ -287,7 +290,7 @@ export const ChangePinModal: React.FC<ChangePinModalProps> = ({
               <div>
                 <h4 className="text-base font-bold text-slate-900 dark:text-white">PIN Changed Successfully</h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs">
-                  Your new 4-digit PIN is active immediately for ATM and POS transactions.
+                  Your new 4-digit ATM PIN is active immediately for ATM and POS transactions.
                 </p>
               </div>
 

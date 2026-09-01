@@ -157,7 +157,7 @@ export async function verifyPreferenceAuth(
 ): Promise<boolean> {
   await new Promise((r) => setTimeout(r, 600));
   if (method === 'biometric') return true;
-  return code === '1234' || (code?.length ?? 0) >= 4;
+  return code === '123456' || (code?.length ?? 0) >= 6;
 }
 
 export function getStoredPrimaryAccountId() {

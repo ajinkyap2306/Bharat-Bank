@@ -20,7 +20,7 @@ export const ApprovalAuthenticationSheet: React.FC<ApprovalAuthenticationSheetPr
   const [mpin, setMpin] = useState('');
 
   const canConfirm =
-    !processing && (method === 'biometric' || mpin.length >= 4);
+    !processing && (method === 'biometric' || mpin.length >= 6);
 
   const handleClose = () => {
     setMpin('');
@@ -73,13 +73,13 @@ export const ApprovalAuthenticationSheet: React.FC<ApprovalAuthenticationSheetPr
             <NumericPinInput
               value={mpin}
               onChange={setMpin}
-              length={4}
+              length={6}
               masked
               autoFocus
               autoComplete="off"
               ariaLabel="Corporate MPIN"
             />
-            <p className="text-[11px] text-center text-slate-500 dark:text-slate-400">Demo MPIN: 1234</p>
+            <p className="text-[11px] text-center text-slate-500 dark:text-slate-400">Demo MPIN: 123456</p>
           </>
         )}
 

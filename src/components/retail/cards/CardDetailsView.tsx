@@ -398,7 +398,7 @@ export const CardDetailsView: React.FC<CardDetailsViewProps> = ({
       <SecureAuthModal
         isOpen={isAuthModalOpen}
         title="Reveal Card Details"
-        subtitle="Authenticate with your MPIN or Biometrics to view full 16-digit card number and CVV."
+        subtitle="Authenticate with your 6-digit MPIN or Biometrics to view full 16-digit card number and CVV."
         requiredActionDesc="Viewing unmasked card credentials"
         onSuccess={handleAuthSuccess}
         onCancel={() => setIsAuthModalOpen(false)}

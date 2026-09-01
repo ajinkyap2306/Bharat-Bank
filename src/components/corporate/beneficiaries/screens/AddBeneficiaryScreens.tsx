@@ -286,17 +286,17 @@ export const AuthScreen: React.FC<{ title: string; onBack: () => void; onConfirm
     <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title={title} onBack={onBack} edgeToEdge={false} />
       <BenCard className="p-4">
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Enter MPIN to confirm this action.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Enter your 6-digit MPIN to confirm this action.</p>
         <input
           type="password"
           maxLength={6}
           value={mpin}
           onChange={(e) => setMpin(e.target.value.replace(/\D/g, ''))}
-          placeholder="Enter MPIN"
+          placeholder="Enter 6-digit MPIN"
           className="w-full p-3 rounded-xl border text-center text-lg tracking-widest font-mono"
         />
       </BenCard>
-      <StickyBenCTA label="Authenticate" onClick={onConfirm} disabled={mpin.length < 4} />
+      <StickyBenCTA label="Authenticate" onClick={onConfirm} disabled={mpin.length < 6} />
     </div>
   );
 };

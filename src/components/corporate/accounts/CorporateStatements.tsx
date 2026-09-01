@@ -16,6 +16,7 @@ import {
   fetchStatementAccounts,
   getPeriodRange,
 } from '../../../services/corporateAccountStatementsService';
+import { sendStatementToRegisteredEmail } from '../../../utils/statementDelivery';
 import { StatementHeader } from './statements/StatementHeader';
 import { StatementAccountSelector } from './statements/StatementAccountSelector';
 import { StatementPeriodSelector } from './statements/StatementPeriodSelector';
@@ -71,7 +72,7 @@ function filterTransactions(
 
 export const CorporateStatements: React.FC<CorporateStatementsProps> = ({ accountId }) => {
   const navigate = useNavigate();
-  const { setBottomNavHidden, setCorporateTab, addToast } = useBanking();
+  const { setBottomNavHidden, setCorporateTab, addToast, user, corporateSession } = useBanking();
 
   const [accounts, setAccounts] = useState<StatementAccountOption[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState(accountId);
@@ -173,12 +174,36 @@ export const CorporateStatements: React.FC<CorporateStatementsProps> = ({ accoun
     setPeriod('custom');
   };
 
+  const registeredEmail = corporateSession?.email ?? user.email;
+
   const handleDownload = (format: 'PDF' | 'CSV') => {
     addToast({
       type: 'success',
       title: 'Statement Downloaded',
       message: `Statement downloaded successfully as ${format}.`,
     });
+  };
+
+  const handleSendToEmail = async () => {
+    try {
+      await sendStatementToRegisteredEmail({
+        email: registeredEmail,
+        accountLabel,
+        periodLabel,
+        format: 'PDF',
+      });
+      addToast({
+        type: 'success',
+        title: 'Statement Sent',
+        message: `Your account statement has been sent to ${registeredEmail}.`,
+      });
+    } catch {
+      addToast({
+        type: 'error',
+        title: 'Unable to Send',
+        message: 'No registered email found on your profile.',
+      });
+    }
   };
 
   const handleShare = async (format: 'pdf' | 'csv') => {
@@ -340,8 +365,10 @@ export const CorporateStatements: React.FC<CorporateStatementsProps> = ({ accoun
 
       {isReady && !isEmpty && (
         <StatementDownloadActions
+          registeredEmail={registeredEmail}
           onDownloadPdf={() => handleDownload('PDF')}
           onDownloadCsv={() => handleDownload('CSV')}
+          onSendEmail={() => void handleSendToEmail()}
           onShare={() => setShowShare(true)}
         />
       )}

@@ -68,7 +68,7 @@ export const AuthScreen: React.FC<{
             maxLength={6}
             value={mpin}
             onChange={(e) => setMpin(e.target.value.replace(/\D/g, ''))}
-            placeholder="Enter MPIN"
+            placeholder="Enter 6-digit MPIN"
             className="w-full p-3 rounded-xl border text-center text-lg tracking-widest font-mono"
           />
         )}
@@ -91,7 +91,7 @@ export const AuthScreen: React.FC<{
       <StickyApprovalCTA
         label="Authorize"
         onClick={onConfirm}
-        disabled={method === 'mpin' ? mpin.length < 4 : method === 'otp' ? otp.length < 6 : false}
+        disabled={method === 'mpin' ? mpin.length < 6 : method === 'otp' ? otp.length < 6 : false}
       />
     </div>
   );

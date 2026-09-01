@@ -233,7 +233,7 @@ export const BlockCardModal: React.FC<BlockCardModalProps> = ({
           <SecureAuthModal
             isOpen={isAuthOpen}
             title="Authenticate Card Blocking"
-            subtitle="Enter your 4-digit MPIN or use Biometrics to finalize permanent card blocking."
+            subtitle="Enter your 6-digit MPIN or use Biometrics to finalize permanent card blocking."
             requiredActionDesc={`Permanently blocking ${card.network} card (${selectedReason})`}
             onSuccess={handleAuthSuccess}
             onCancel={() => setIsAuthOpen(false)}

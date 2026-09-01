@@ -123,7 +123,7 @@ export const FreezeCardModal: React.FC<FreezeCardModalProps> = ({
           <SecureAuthModal
             isOpen={isAuthOpen}
             title={isFreezing ? 'Authenticate Card Freeze' : 'Authenticate Card Unfreeze'}
-            subtitle="Enter your 4-digit MPIN or use Biometrics to confirm card status update."
+            subtitle="Enter your 6-digit MPIN or use Biometrics to confirm card status update."
             requiredActionDesc={isFreezing ? 'Freezing card transactions' : 'Unfreezing card transactions'}
             onSuccess={handleAuthSuccess}
             onCancel={() => setIsAuthOpen(false)}

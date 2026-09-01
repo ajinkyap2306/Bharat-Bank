@@ -29,7 +29,7 @@ export const AuthenticationSheet: React.FC<AuthenticationSheetProps> = ({
     onClose();
   };
 
-  const canSubmit = method === 'biometric' || mpin.length >= 4;
+  const canSubmit = method === 'biometric' || mpin.length >= 6;
 
   return (
     <BottomSheet isOpen={isOpen} onClose={handleClose} title={title} subtitle={subtitle}>
@@ -63,11 +63,11 @@ export const AuthenticationSheet: React.FC<AuthenticationSheetProps> = ({
               maxLength={6}
               value={mpin}
               onChange={(e) => setMpin(e.target.value.replace(/\D/g, ''))}
-              placeholder="Enter MPIN"
+              placeholder="Enter 6-digit MPIN"
               className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-center text-lg tracking-widest font-mono min-h-12"
               autoComplete="off"
             />
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center mt-2">Demo MPIN: 1234</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center mt-2">Demo MPIN: 123456</p>
           </div>
         ) : (
           <button

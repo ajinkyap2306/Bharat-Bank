@@ -4,6 +4,7 @@ import {
   FileText, 
   Download, 
   Share2, 
+  Mail,
   ChevronRight, 
   Calendar,
   AlertCircle,
@@ -11,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useBanking } from '../../../context/BankingContext';
 import { Statement } from '../../../types/banking';
+import { sendStatementToRegisteredEmail } from '../../../utils/statementDelivery';
 
 interface StatementListProps {
   accountId?: string;
@@ -18,7 +20,7 @@ interface StatementListProps {
 }
 
 const StatementList: React.FC<StatementListProps> = ({ accountId, onPreview }) => {
-  const { statements, accounts, addToast } = useBanking();
+  const { statements, accounts, addToast, user } = useBanking();
   
   const selectedAccount = accountId ? accounts.find(a => a.id === accountId) : accounts[0];
   const filteredStatements = statements.filter(s => s.accountId === selectedAccount?.id);
@@ -30,6 +32,29 @@ const StatementList: React.FC<StatementListProps> = ({ accountId, onPreview }) =
       title: 'Download Started',
       message: `${format.toUpperCase()} Statement for ${stmt.period} is downloading.`,
     });
+  };
+
+  const handleSendEmail = async (e: React.MouseEvent, stmt: Statement) => {
+    e.stopPropagation();
+    try {
+      await sendStatementToRegisteredEmail({
+        email: user.email,
+        accountLabel: selectedAccount?.nickname || selectedAccount?.accountType || 'Account',
+        periodLabel: stmt.period,
+        format: 'PDF',
+      });
+      addToast({
+        type: 'success',
+        title: 'Statement Sent',
+        message: `${stmt.period} statement sent to ${user.email}.`,
+      });
+    } catch {
+      addToast({
+        type: 'error',
+        title: 'Unable to Send',
+        message: 'No registered email found on your profile.',
+      });
+    }
   };
 
   return (
@@ -64,8 +89,16 @@ const StatementList: React.FC<StatementListProps> = ({ accountId, onPreview }) =
                   <button
                     onClick={(e) => handleDownload(e, stmt, 'pdf')}
                     className="p-2 text-slate-400 hover:text-blue-600 transition-colors"
+                    aria-label={`Download ${stmt.period} statement`}
                   >
                     <Download className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={(e) => void handleSendEmail(e, stmt)}
+                    className="p-2 text-slate-400 hover:text-violet-600 transition-colors"
+                    aria-label={`Email ${stmt.period} statement`}
+                  >
+                    <Mail className="w-5 h-5" />
                   </button>
                   <button
                     onClick={(e) => {
@@ -95,7 +128,7 @@ const StatementList: React.FC<StatementListProps> = ({ accountId, onPreview }) =
           <h3 className="font-bold text-lg">Custom Statement</h3>
         </div>
         <p className="text-blue-100 text-sm mb-6 leading-relaxed">
-          Need transactions for a specific period? Generate a custom statement in PDF or CSV format instantly.
+          Need transactions for a specific period? Generate a custom statement in PDF or CSV format instantly, or send it to your registered email ({user.email}).
         </p>
         <button className="w-full py-3 bg-white text-blue-600 rounded-xl font-bold active:scale-95 transition-transform">
           Generate Now

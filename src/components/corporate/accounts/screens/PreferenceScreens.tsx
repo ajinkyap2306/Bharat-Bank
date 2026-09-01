@@ -195,13 +195,13 @@ export const AuthConfirmScreen: React.FC<AuthConfirmScreenProps> = ({
           maxLength={6}
           value={mpin}
           onChange={(e) => setMpin(e.target.value.replace(/\D/g, ''))}
-          placeholder="Enter MPIN"
+          placeholder="Enter 6-digit MPIN"
           className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-center text-lg tracking-widest font-mono"
         />
         <button
           type="button"
           onClick={onConfirm}
-          disabled={mpin.length < 4}
+          disabled={mpin.length < 6}
           className="w-full py-3 rounded-2xl bg-congress-blue-700 text-white font-bold text-sm disabled:opacity-50"
         >
           Authenticate

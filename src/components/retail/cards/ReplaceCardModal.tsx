@@ -282,7 +282,7 @@ export const ReplaceCardModal: React.FC<ReplaceCardModalProps> = ({
           <SecureAuthModal
             isOpen={isAuthOpen}
             title="Authenticate Card Replacement"
-            subtitle="Enter your 4-digit MPIN or use Biometrics to confirm new card dispatch."
+            subtitle="Enter your 6-digit MPIN or use Biometrics to confirm new card dispatch."
             requiredActionDesc={`Dispatching ${cardVariant} to ${addressType} address`}
             onSuccess={handleAuthSuccess}
             onCancel={() => setIsAuthOpen(false)}

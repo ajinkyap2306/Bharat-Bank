@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  ShieldCheck, 
-  Fingerprint, 
-  Delete, 
-  X, 
-  Lock, 
+import {
+  ShieldCheck,
+  Fingerprint,
+  Delete,
+  X,
+  Lock,
   AlertCircle,
-  ScanFace
 } from 'lucide-react';
+
+const PIN_LENGTH = 6;
+const DEMO_MPIN = '123456';
+const DEMO_TPIN = '654321';
 
 interface SecureAuthModalProps {
   isOpen: boolean;
   title?: string;
   subtitle?: string;
+  pinType?: 'mpin' | 'tpin';
   onSuccess: () => void;
   onCancel: () => void;
   requiredActionDesc?: string;
@@ -22,7 +26,8 @@ interface SecureAuthModalProps {
 export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
   isOpen,
   title = 'Verify Identity',
-  subtitle = 'Enter your 4-digit MPIN or use Biometrics to authenticate this secure card action.',
+  subtitle,
+  pinType = 'mpin',
   onSuccess,
   onCancel,
   requiredActionDesc,
@@ -31,18 +36,21 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
   const [isError, setIsError] = useState(false);
   const [isBiometricScanning, setIsBiometricScanning] = useState(false);
 
+  const pinLabel = pinType === 'tpin' ? 'TPIN' : 'MPIN';
+  const demoPin = pinType === 'tpin' ? DEMO_TPIN : DEMO_MPIN;
+  const defaultSubtitle = `Enter your 6-digit ${pinLabel} or use Biometrics to authenticate this secure card action.`;
+
   if (!isOpen) return null;
 
   const handleKeyPress = (num: string) => {
-    if (pin.length < 4) {
+    if (pin.length < PIN_LENGTH) {
       const nextPin = pin + num;
       setPin(nextPin);
       setIsError(false);
 
-      if (nextPin.length === 4) {
-        // Verify PIN (Mock MPIN is 1234 or any 4 digit except 0000 for test error)
+      if (nextPin.length === PIN_LENGTH) {
         setTimeout(() => {
-          if (nextPin === '0000') {
+          if (nextPin === '000000') {
             setIsError(true);
             setPin('');
           } else {
@@ -55,7 +63,7 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
   };
 
   const handleDelete = () => {
-    setPin(prev => prev.slice(0, -1));
+    setPin((prev) => prev.slice(0, -1));
     setIsError(false);
   };
 
@@ -77,7 +85,6 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           className="w-full max-w-md bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center overflow-hidden"
         >
-          {/* Header */}
           <div className="w-full flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
@@ -96,7 +103,6 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
             </button>
           </div>
 
-          {/* Action Context */}
           {requiredActionDesc && (
             <div className="w-full mt-3 p-2.5 rounded-xl bg-blue-50/70 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/40 flex items-center gap-2 text-xs text-blue-800 dark:text-blue-300">
               <ShieldCheck className="w-4 h-4 shrink-0 text-blue-600 dark:text-blue-400" />
@@ -105,16 +111,15 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
           )}
 
           <p className="text-xs text-slate-500 dark:text-slate-400 text-center mt-3 max-w-xs">
-            {subtitle}
+            {subtitle ?? defaultSubtitle}
           </p>
 
-          {/* PIN Indicators */}
           <div className="my-6">
-            <div className={`flex items-center gap-4 ${isError ? 'animate-bounce' : ''}`}>
-              {[0, 1, 2, 3].map(i => (
+            <div className={`flex items-center gap-2.5 ${isError ? 'animate-bounce' : ''}`}>
+              {Array.from({ length: PIN_LENGTH }, (_, i) => (
                 <div
                   key={i}
-                  className={`w-4 h-4 rounded-full border-2 transition-all duration-200 ${
+                  className={`w-3.5 h-3.5 rounded-full border-2 transition-all duration-200 ${
                     i < pin.length
                       ? 'bg-blue-600 border-blue-600 scale-110 shadow-xs'
                       : 'border-slate-300 dark:border-slate-700 bg-transparent'
@@ -124,12 +129,11 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
             </div>
             {isError && (
               <p className="text-xs font-semibold text-rose-600 dark:text-rose-400 text-center mt-2 flex items-center justify-center gap-1">
-                <AlertCircle className="w-3.5 h-3.5" /> Incorrect MPIN. Try 1234.
+                <AlertCircle className="w-3.5 h-3.5" /> Incorrect {pinLabel}. Try {demoPin}.
               </p>
             )}
           </div>
 
-          {/* Biometric Scan Trigger / Status */}
           {isBiometricScanning ? (
             <div className="w-full py-12 flex flex-col items-center justify-center gap-3">
               <div className="relative">
@@ -146,9 +150,8 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
               </p>
             </div>
           ) : (
-            /* Numeric Keypad */
             <div className="w-full max-w-[280px] grid grid-cols-3 gap-3">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                 <button
                   key={num}
                   type="button"
@@ -158,7 +161,6 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
                   {num}
                 </button>
               ))}
-              {/* Biometric Action button */}
               <button
                 type="button"
                 onClick={handleBiometricAuth}
@@ -167,7 +169,6 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
               >
                 <Fingerprint className="w-5 h-5" />
               </button>
-              {/* 0 */}
               <button
                 type="button"
                 onClick={() => handleKeyPress('0')}
@@ -175,7 +176,6 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
               >
                 0
               </button>
-              {/* Backspace */}
               <button
                 type="button"
                 onClick={handleDelete}
@@ -187,10 +187,10 @@ export const SecureAuthModal: React.FC<SecureAuthModalProps> = ({
             </div>
           )}
 
-          {/* Quick Demo Help */}
           <div className="mt-4 text-center">
             <span className="text-[10px] text-slate-400 dark:text-slate-500">
-              Demo MPIN: <strong className="text-slate-600 dark:text-slate-300">1234</strong> or tap Fingerprint icon
+              Demo {pinLabel}: <strong className="text-slate-600 dark:text-slate-300">{demoPin}</strong> or tap
+              Fingerprint icon
             </span>
           </div>
         </motion.div>

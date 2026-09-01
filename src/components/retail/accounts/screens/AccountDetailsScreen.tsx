@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileDown, Layers, X } from 'lucide-react';
+import { FileDown, Layers, Mail, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useBanking } from '../../../../context/BankingContext';
 import { Transaction } from '../../../../types/banking';
 import { MiniStatementSheet } from '../../../common/MiniStatementSheet';
 import { shareAccountDetails } from '../../../../utils/shareAccountDetails';
+import { maskRegisteredEmail, sendStatementToRegisteredEmail } from '../../../../utils/statementDelivery';
 import {
   AccountsScreenLayout,
   AccountsStickyCTA,
@@ -69,6 +70,28 @@ export const AccountDetailsScreen: React.FC<{ accountId: string }> = ({ accountI
     });
   };
 
+  const handleSendStatementEmail = async () => {
+    try {
+      await sendStatementToRegisteredEmail({
+        email: user.email,
+        accountLabel: account.nickname || account.accountType,
+        periodLabel: 'Latest statement',
+        format: 'PDF',
+      });
+      addToast({
+        type: 'success',
+        title: 'Statement Sent',
+        message: `Your e-statement has been sent to ${user.email}.`,
+      });
+    } catch {
+      addToast({
+        type: 'error',
+        title: 'Unable to Send',
+        message: 'No registered email found on your profile.',
+      });
+    }
+  };
+
   return (
     <AccountsScreenLayout
       title="Account Details"
@@ -84,12 +107,15 @@ export const AccountDetailsScreen: React.FC<{ accountId: string }> = ({ accountI
         copied={copied}
       />
 
-      <div className="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
         <div>
           <h4 className="text-xs font-bold text-slate-900 dark:text-white">Download e-Statement</h4>
           <p className="text-[11px] text-slate-400">Official digitally signed statement</p>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+            Registered email: {maskRegisteredEmail(user.email)}
+          </p>
         </div>
-        <div className="flex gap-1.5">
+        <div className="flex flex-wrap gap-1.5">
           <button
             type="button"
             onClick={() => setShowMiniStatement(true)}
@@ -103,6 +129,13 @@ export const AccountDetailsScreen: React.FC<{ accountId: string }> = ({ accountI
             className="px-3 py-1.5 rounded-xl bg-congress-blue-50 text-congress-blue-700 text-xs font-bold flex items-center gap-1"
           >
             <FileDown className="w-3.5 h-3.5" /> PDF
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleSendStatementEmail()}
+            className="px-3 py-1.5 rounded-xl bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300 text-xs font-bold flex items-center gap-1"
+          >
+            <Mail className="w-3.5 h-3.5" /> Email
           </button>
         </div>
       </div>

@@ -14,17 +14,17 @@ interface AuthScreenProps {
 }
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ title, onBack, onConfirm }) => {
-  const [mpin, setMpin] = useState('');
+  const [tpin, setTpin] = useState('');
   const [otp, setOtp] = useState('');
-  const [method, setMethod] = useState<'mpin' | 'otp' | 'biometric'>('mpin');
+  const [method, setMethod] = useState<'tpin' | 'otp' | 'biometric'>('tpin');
 
   return (
     <div className="-mx-3 bg-slate-50 dark:bg-slate-950 min-h-full pb-24">
       <ScreenHeader title={title} onBack={onBack} edgeToEdge={false} />
       <PayCard className="p-4 space-y-4">
-        <p className="text-sm text-slate-500 dark:text-slate-400">Authenticate to authorize this payment.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Enter your 6-digit TPIN to authorize this payment.</p>
         <div className="flex gap-2">
-          {(['mpin', 'otp', 'biometric'] as const).map((m) => (
+          {(['tpin', 'otp', 'biometric'] as const).map((m) => (
             <button
               key={m}
               type="button"
@@ -33,17 +33,17 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ title, onBack, onConfirm
                 method === m ? 'bg-congress-blue-700 text-white' : 'bg-slate-100 text-slate-500 dark:text-slate-400'
               }`}
             >
-              {m}
+              {m === 'tpin' ? 'TPIN' : m}
             </button>
           ))}
         </div>
-        {method === 'mpin' && (
+        {method === 'tpin' && (
           <input
             type="password"
             maxLength={6}
-            value={mpin}
-            onChange={(e) => setMpin(e.target.value.replace(/\D/g, ''))}
-            placeholder="Enter MPIN"
+            value={tpin}
+            onChange={(e) => setTpin(e.target.value.replace(/\D/g, ''))}
+            placeholder="Enter 6-digit TPIN"
             className="w-full p-3 rounded-xl border text-center text-lg tracking-widest font-mono"
           />
         )}
@@ -66,7 +66,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ title, onBack, onConfirm
       <StickyPayCTA
         label="Authorize"
         onClick={onConfirm}
-        disabled={method === 'mpin' ? mpin.length < 4 : method === 'otp' ? otp.length < 6 : false}
+        disabled={method === 'tpin' ? tpin.length < 6 : method === 'otp' ? otp.length < 6 : false}
       />
     </div>
   );

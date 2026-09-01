@@ -7,6 +7,7 @@ import {
 } from '../../../../data/corporateAccountsMock';
 import { useBanking } from '../../../../context/BankingContext';
 import { AccountsCard, MenuRow } from '../shared/CorporateAccountsUI';
+import { sendStatementToRegisteredEmail } from '../../../../utils/statementDelivery';
 
 interface StatementsScreenProps {
   accountId: string;
@@ -104,12 +105,35 @@ export const StatementPreviewScreen: React.FC<StatementPreviewScreenProps> = ({
   periodLabel,
   onBack,
 }) => {
-  const { addToast } = useBanking();
+  const { addToast, user, corporateSession } = useBanking();
   const account = getAccountById(accountId);
   const txns = getTransactionsForAccount(accountId);
+  const registeredEmail = corporateSession?.email ?? user.email;
 
   const download = (format: string) => {
     addToast({ type: 'success', title: `Downloaded ${format}`, message: `Statement for ${periodLabel} saved.` });
+  };
+
+  const sendToEmail = async () => {
+    try {
+      await sendStatementToRegisteredEmail({
+        email: registeredEmail,
+        accountLabel: account?.nickname || account?.companyName || 'Corporate account',
+        periodLabel,
+        format: 'PDF',
+      });
+      addToast({
+        type: 'success',
+        title: 'Statement Sent',
+        message: `Statement for ${periodLabel} sent to ${registeredEmail}.`,
+      });
+    } catch {
+      addToast({
+        type: 'error',
+        title: 'Unable to Send',
+        message: 'No registered email found on your profile.',
+      });
+    }
   };
 
   return (
@@ -140,10 +164,16 @@ export const StatementPreviewScreen: React.FC<StatementPreviewScreenProps> = ({
           ))}
         </AccountsCard>
 
-        <div className="px-3 grid grid-cols-3 gap-2">
-          <button type="button" onClick={() => download('PDF')} className="py-2.5 rounded-xl border border-slate-200 text-xs font-bold">Download PDF</button>
-          <button type="button" onClick={() => download('CSV')} className="py-2.5 rounded-xl border border-slate-200 text-xs font-bold">Download CSV</button>
-          <button type="button" onClick={() => addToast({ type: 'info', title: 'Shared', message: 'Statement link copied.' })} className="py-2.5 rounded-xl bg-congress-blue-700 text-white text-xs font-bold">Share</button>
+        <div className="px-3 space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <button type="button" onClick={() => download('PDF')} className="py-2.5 rounded-xl border border-slate-200 text-xs font-bold">Download PDF</button>
+            <button type="button" onClick={() => void sendToEmail()} className="py-2.5 rounded-xl border border-congress-blue-700/30 text-congress-blue-700 dark:text-congress-blue-400 text-xs font-bold">Send to Email</button>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <button type="button" onClick={() => download('CSV')} className="py-2.5 rounded-xl border border-slate-200 text-xs font-bold">Download CSV</button>
+            <button type="button" onClick={() => addToast({ type: 'info', title: 'Shared', message: 'Statement link copied.' })} className="py-2.5 rounded-xl bg-congress-blue-700 text-white text-xs font-bold">Share</button>
+          </div>
+          <p className="text-[10px] text-center text-slate-500 dark:text-slate-400">Registered email: {registeredEmail}</p>
         </div>
       </div>
     </div>

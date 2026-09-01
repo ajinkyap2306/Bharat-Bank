@@ -50,8 +50,13 @@ export const LoanAuthStep: React.FC<LoanAuthStepProps> = ({
 
   const handleConfirmSubmit = () => {
     const val = authMode === 'mpin' ? pin : otp;
-    if (authMode !== 'biometric' && val.length < 4) {
-      setErrorMsg('Please enter your complete security code.');
+    const requiredLength = 6;
+    if (authMode !== 'biometric' && val.length < requiredLength) {
+      setErrorMsg(
+        authMode === 'mpin'
+          ? 'Please enter your complete 6-digit MPIN.'
+          : 'Please enter your complete 6-digit OTP.'
+      );
       return;
     }
 

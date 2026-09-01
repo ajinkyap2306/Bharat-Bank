@@ -84,8 +84,8 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
 
   const handleVerifyOtp = (e: React.FormEvent) => {
     e.preventDefault();
-    if (otp.length < 4) {
-      setErrorMsg('Please enter a valid OTP.');
+    if (otp.length < 6) {
+      setErrorMsg('Please enter the 6-digit OTP.');
       return;
     }
 
