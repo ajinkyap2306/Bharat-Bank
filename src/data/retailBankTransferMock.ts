@@ -14,6 +14,13 @@ export const FUND_TRANSFER_TYPE_OPTIONS = [
     mode: null,
   },
   {
+    id: 'bharat-contact',
+    label: 'Send to Contact',
+    subtitle: 'Pay Bharat Bank customers from your phone contacts',
+    path: 'contact' as const,
+    mode: null,
+  },
+  {
     id: 'imps',
     label: 'IMPS',
     subtitle: 'Instant transfer 24×7 · up to ₹5 lakh',

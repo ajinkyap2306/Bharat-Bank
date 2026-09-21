@@ -56,6 +56,64 @@ export const INITIAL_NACH_MANDATES: NachMandate[] = [
   },
 ];
 
+export interface BharatPhoneContact {
+  id: string;
+  name: string;
+  mobile: string;
+  accountNumber: string;
+  ifsc: string;
+  bankName: string;
+}
+
+/** Simulates contacts saved on the user's mobile phone. */
+export const PHONE_SAVED_CONTACTS: { id: string; name: string; mobile: string }[] = [
+  { id: 'ph_1', name: 'Rahul Verma', mobile: '9820045821' },
+  { id: 'ph_2', name: 'Priya Sharma', mobile: '9876543210' },
+  { id: 'ph_3', name: 'Sneha Mehta', mobile: '9988776655' },
+  { id: 'ph_4', name: 'Amit Patel', mobile: '9819023456' },
+  { id: 'ph_5', name: 'Kavita Desai', mobile: '9765432109' },
+  { id: 'ph_6', name: 'Vikram Singh', mobile: '9890123456' },
+];
+
+export function isBharatBankCustomer(contact: MobilePayContact): boolean {
+  return contact.bankName.toLowerCase().includes('bharat');
+}
+
+export function getBharatBankPhoneContacts(): BharatPhoneContact[] {
+  return PHONE_SAVED_CONTACTS.flatMap((phone) => {
+    const resolved = lookupMobilePayContact(phone.mobile);
+    if (!isBharatBankCustomer(resolved)) return [];
+    return [
+      {
+        id: phone.id,
+        name: phone.name,
+        mobile: phone.mobile,
+        accountNumber: resolved.accountNumber,
+        ifsc: resolved.ifsc,
+        bankName: resolved.bankName,
+      },
+    ];
+  });
+}
+
+export function resolveBharatBankPhoneContact(
+  mobile: string,
+  name?: string
+): BharatPhoneContact | null {
+  const digits = mobile.replace(/\D/g, '').slice(-10);
+  if (digits.length !== 10) return null;
+  const resolved = lookupMobilePayContact(digits);
+  if (!isBharatBankCustomer(resolved)) return null;
+  return {
+    id: `ph_pick_${digits}`,
+    name: name?.trim() || resolved.name,
+    mobile: digits,
+    accountNumber: resolved.accountNumber,
+    ifsc: resolved.ifsc,
+    bankName: resolved.bankName,
+  };
+}
+
 export const MOBILE_PAY_CONTACTS: MobilePayContact[] = [
   {
     id: 'mc_1',
@@ -82,6 +140,22 @@ export const MOBILE_PAY_CONTACTS: MobilePayContact[] = [
     bankName: 'ICICI Bank',
     accountNumber: '55556666909033',
     ifsc: 'UTIB0009876',
+  },
+  {
+    id: 'mc_4',
+    name: 'Kavita Desai',
+    mobile: '9765432109',
+    bankName: 'Bharat Co-operative Bank',
+    accountNumber: '409288445566',
+    ifsc: 'APEX0001048',
+  },
+  {
+    id: 'mc_5',
+    name: 'Vikram Singh',
+    mobile: '9890123456',
+    bankName: 'Bharat Co-operative Bank',
+    accountNumber: '409288778899',
+    ifsc: 'APEX0001048',
   },
 ];
 

@@ -1,10 +1,11 @@
-export type BankTransferPath = 'self' | 'bank';
+export type BankTransferPath = 'self' | 'bank' | 'contact';
 
 export type BankTransferMode = 'IMPS' | 'NEFT' | 'RTGS';
 
 export type BankTransferStep =
   | 'home'
   | 'self'
+  | 'contact-picker'
   | 'bank-beneficiary'
   | 'bank-enter'
   | 'amount'
@@ -21,6 +22,7 @@ export interface ManualReceiver {
   maskedAccount: string;
   bankName: string;
   ifsc: string;
+  mobile?: string;
 }
 
 export interface BankTransferDraft {

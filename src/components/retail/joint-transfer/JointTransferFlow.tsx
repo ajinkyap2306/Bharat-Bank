@@ -7,11 +7,14 @@ import {
   Building2,
   CheckCircle2,
   Clock,
+  Contact,
   Plus,
   Search,
   XCircle,
   Zap,
 } from 'lucide-react';
+import type { BharatPhoneContact } from '../../../data/level3Mock';
+import type { ManualReceiver } from '../../../types/retailBankTransfer';
 import { useBanking } from '../../../context/BankingContext';
 import type { Beneficiary, BankAccount } from '../../../types/banking';
 import type { BankTransferMode } from '../../../types/retailBankTransfer';
@@ -21,9 +24,11 @@ import {
   FUND_TRANSFER_TYPE_OPTIONS,
   defaultTransferMode,
   getAvailableTransferModes,
+  maskAccountNumber,
   playTransferSuccessChime,
   validateTransferModeForAmount,
 } from '../../../data/retailBankTransferMock';
+import { ContactTransferPicker } from '../bank-transfer/ContactTransferPicker';
 import {
   formatRetailJointApprovalExpiryLabel,
   getJointStatusLabel,
@@ -49,7 +54,7 @@ interface JointTransferFlowProps {
   onClose: () => void;
 }
 
-type Path = 'self' | 'bank';
+type Path = 'self' | 'bank' | 'contact';
 
 const SELF_TYPES = new Set(['Savings', 'Current']);
 
@@ -57,6 +62,7 @@ interface Draft {
   path: Path | null;
   toAccountId: string;
   beneficiaryId: string | null;
+  manualReceiver: ManualReceiver | null;
   amount: string;
   note: string;
   transferMode: BankTransferMode;
@@ -77,6 +83,7 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
     executeTransfer,
     getJointRequestById,
     getJointRequestsForUser,
+    addToast,
   } = useBanking();
 
   const fromAccount = accounts.find((a) => a.id === accountId);
@@ -91,6 +98,7 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
     path: null,
     toAccountId: selfAccounts[0]?.id ?? '',
     beneficiaryId: null,
+    manualReceiver: null,
     amount: '',
     note: '',
     transferMode: 'IMPS',
@@ -144,8 +152,35 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
         account: selectedBeneficiary.maskedAccount,
       };
     }
+    if (draft.manualReceiver) {
+      return {
+        name: draft.manualReceiver.name,
+        bank: draft.manualReceiver.bankName,
+        account: draft.manualReceiver.maskedAccount,
+      };
+    }
     return null;
-  }, [draft.path, toAccount, selectedBeneficiary]);
+  }, [draft.path, toAccount, selectedBeneficiary, draft.manualReceiver]);
+
+  const selectPhoneContact = (contact: BharatPhoneContact) => {
+    setDraft((d) => ({
+      ...d,
+      path: 'contact',
+      beneficiaryId: null,
+      manualReceiver: {
+        name: contact.name,
+        accountNumber: contact.accountNumber,
+        maskedAccount: maskAccountNumber(contact.accountNumber),
+        bankName: contact.bankName,
+        ifsc: contact.ifsc,
+        mobile: contact.mobile,
+      },
+      amount: '',
+      note: '',
+    }));
+    setAmountError('');
+    setStep('amount');
+  };
 
   const validateAmount = (available = fromAccount?.availableBalance) => {
     if (!draft.amount || amountNum <= 0) {
@@ -174,10 +209,23 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
       setStep('self');
       return;
     }
+    if (option.path === 'contact') {
+      setDraft((d) => ({
+        ...d,
+        path: 'contact',
+        beneficiaryId: null,
+        manualReceiver: null,
+        amount: '',
+        note: '',
+      }));
+      setStep('contact-picker');
+      return;
+    }
     setDraft((d) => ({
       ...d,
       path: 'bank',
       beneficiaryId: null,
+      manualReceiver: null,
       amount: '',
       note: '',
       transferMode: option.mode ?? 'IMPS',
@@ -187,15 +235,23 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
 
   const fundTransferIcons: Record<(typeof FUND_TRANSFER_TYPE_OPTIONS)[number]['id'], React.ReactNode> = {
     'within-bank': <ArrowLeftRight className="w-5 h-5" />,
+    'bharat-contact': <Contact className="w-5 h-5" />,
     imps: <Zap className="w-5 h-5" />,
     neft: <Clock className="w-5 h-5" />,
     rtgs: <Building2 className="w-5 h-5" />,
   };
 
+  const transferModeForDraft =
+    draft.path === 'self' || draft.path === 'contact' ? 'Internal' : draft.transferMode;
+
   const goBack = useCallback(() => {
     if (step === 'home') onClose();
-    else if (step === 'self' || step === 'bank-beneficiary') setStep('home');
-    else if (step === 'amount') setStep(draft.path === 'self' ? 'self' : 'bank-beneficiary');
+    else if (step === 'self' || step === 'bank-beneficiary' || step === 'contact-picker') setStep('home');
+    else if (step === 'amount') {
+      if (draft.path === 'self') setStep('self');
+      else if (draft.path === 'contact') setStep('contact-picker');
+      else setStep('bank-beneficiary');
+    }
     else if (step === 'auth') setStep('amount');
     else if (step === 'request-detail') onClose();
     else onClose();
@@ -224,7 +280,17 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
           beneficiaryAccount: selectedBeneficiary.accountNumber,
           bankName: selectedBeneficiary.bankName,
           amount: amountNum,
-          mode: draft.transferMode,
+          mode: transferModeForDraft,
+          remarks: draft.note,
+        });
+      } else if (draft.manualReceiver) {
+        executeTransfer({
+          fromAccountId: accountId,
+          beneficiaryName: draft.manualReceiver.name,
+          beneficiaryAccount: draft.manualReceiver.accountNumber,
+          bankName: draft.manualReceiver.bankName,
+          amount: amountNum,
+          mode: transferModeForDraft,
           remarks: draft.note,
         });
       }
@@ -261,7 +327,7 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
         beneficiaryBank: receiver.bank,
         beneficiaryAccountMasked: receiver.account,
         amount: amountNum,
-        mode: draft.path === 'self' ? 'Internal' : draft.transferMode,
+        mode: transferModeForDraft,
         note: draft.note,
         isSelfTransfer: draft.path === 'self',
         toAccountId: draft.path === 'self' ? draft.toAccountId : undefined,
@@ -543,6 +609,19 @@ export const JointTransferFlow: React.FC<JointTransferFlowProps> = ({ accountId,
           onClick={() => {
             if (validateAmount(fromAccount.availableBalance)) setStep('auth');
           }}
+        />
+      </AddMoneyLayout>
+    );
+  }
+
+  if (step === 'contact-picker') {
+    return (
+      <AddMoneyLayout title="Send to Contact" subtitle="Bharat Bank customers" onBack={goBack}>
+        <ContactTransferPicker
+          onSelect={selectPhoneContact}
+          onInvalidContact={(message) =>
+            addToast({ type: 'error', title: 'Contact not eligible', message })
+          }
         />
       </AddMoneyLayout>
     );

@@ -88,6 +88,7 @@ export interface JointTransferRequest {
 export type JointTransferStep =
   | 'home'
   | 'self'
+  | 'contact-picker'
   | 'bank-beneficiary'
   | 'amount'
   | 'auth'

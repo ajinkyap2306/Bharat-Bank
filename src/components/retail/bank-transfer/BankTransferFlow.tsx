@@ -7,11 +7,13 @@ import {
   Building2,
   CheckCircle2,
   Clock,
+  Contact,
   Plus,
   Search,
   XCircle,
   Zap,
 } from 'lucide-react';
+import type { BharatPhoneContact } from '../../../data/level3Mock';
 import { useBanking } from '../../../context/BankingContext';
 import type { Beneficiary, BankAccount } from '../../../types/banking';
 import type { BankTransferDraft, BankTransferResult, BankTransferStep } from '../../../types/retailBankTransfer';
@@ -42,6 +44,7 @@ import {
   SourceOptionCard,
   StickyAddMoneyCTA,
 } from '../add-money/shared/AddMoneyUI';
+import { ContactTransferPicker } from './ContactTransferPicker';
 
 interface BankTransferFlowProps {
   onClose: () => void;
@@ -229,16 +232,37 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
       return;
     }
     if (step === 'home') onClose();
-    else if (step === 'self' || step === 'bank-beneficiary') setStep('home');
+    else if (step === 'self' || step === 'bank-beneficiary' || step === 'contact-picker') setStep('home');
     else if (step === 'bank-enter') setStep('bank-beneficiary');
     else if (step === 'amount') {
-      if (draft.manualReceiver) setStep('bank-enter');
+      if (draft.path === 'contact') setStep('contact-picker');
+      else if (draft.manualReceiver) setStep('bank-enter');
       else setStep('bank-beneficiary');
     } else if (step === 'auth') {
       if (draft.path === 'self') setStep('self');
       else setStep('amount');
     }
   }, [step, onClose, draft.path, draft.manualReceiver]);
+
+  const selectPhoneContact = (contact: BharatPhoneContact) => {
+    setDraft((d) => ({
+      ...d,
+      path: 'contact',
+      beneficiaryId: null,
+      manualReceiver: {
+        name: contact.name,
+        accountNumber: contact.accountNumber,
+        maskedAccount: maskAccountNumber(contact.accountNumber),
+        bankName: contact.bankName,
+        ifsc: contact.ifsc,
+        mobile: contact.mobile,
+      },
+      amount: '',
+      note: '',
+    }));
+    setAmountError('');
+    setStep('amount');
+  };
 
   const validateAmount = (balance?: number) => {
     if (!draft.amount.trim() || amountNum <= 0) {
@@ -274,6 +298,21 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
       setStep('self');
       return;
     }
+    if (option.path === 'contact') {
+      setDraft((d) => ({
+        ...d,
+        path: 'contact',
+        beneficiaryId: null,
+        manualReceiver: null,
+        accountNumber: '',
+        confirmAccountNumber: '',
+        ifsc: '',
+        amount: '',
+        note: '',
+      }));
+      setStep('contact-picker');
+      return;
+    }
     setDraft((d) => ({
       ...d,
       path: 'bank',
@@ -291,10 +330,14 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
 
   const fundTransferIcons: Record<(typeof FUND_TRANSFER_TYPE_OPTIONS)[number]['id'], React.ReactNode> = {
     'within-bank': <ArrowLeftRight className="w-5 h-5" />,
+    'bharat-contact': <Contact className="w-5 h-5" />,
     imps: <Zap className="w-5 h-5" />,
     neft: <Clock className="w-5 h-5" />,
     rtgs: <Building2 className="w-5 h-5" />,
   };
+
+  const transferModeForDraft =
+    draft.path === 'self' || draft.path === 'contact' ? 'Internal' : draft.transferMode;
 
   const runProcessing = () => {
     setStep('processing');
@@ -325,7 +368,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
             beneficiaryAccount: benAccount,
             bankName: receiver.bank,
             amount: amountNum,
-            mode: draft.transferMode,
+            mode: transferModeForDraft,
             remarks: draft.note || undefined,
           });
         } else {
@@ -336,7 +379,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
           transactionId: buildTransferTransactionId(),
           referenceNumber: txn.referenceNumber,
           amount: amountNum,
-          mode: draft.path === 'self' ? 'Internal' : draft.transferMode,
+          mode: transferModeForDraft,
           receiverLabel: receiver?.name ?? 'Recipient',
           receiverBank: receiver?.bank ?? '',
           receiverAccount: receiver?.account ?? '',
@@ -398,7 +441,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
         beneficiaryBank: receiver.bank,
         beneficiaryAccountMasked: receiver.account,
         amount: amountNum,
-        mode: draft.path === 'self' ? 'Internal' : draft.transferMode,
+        mode: transferModeForDraft,
         note: draft.note || undefined,
         isSelfTransfer: draft.path === 'self',
         toAccountId: draft.path === 'self' ? draft.toAccountId : undefined,
@@ -640,16 +683,26 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
     );
   }
 
-  if (step === 'amount' && draft.path === 'bank') {
+  if (step === 'amount' && (draft.path === 'bank' || draft.path === 'contact')) {
     return (
-      <AddMoneyLayout title="Transfer Amount" onBack={goBack}>
+      <AddMoneyLayout
+        title={draft.path === 'contact' ? 'Send to Contact' : 'Transfer Amount'}
+        onBack={goBack}
+      >
         {receiver && (
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Receiver</p>
             <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">{receiver.name}</p>
             <p className="text-xs text-slate-500 mt-0.5">
-              {receiver.bank} · {receiver.account}
+              {draft.path === 'contact' && draft.manualReceiver?.mobile
+                ? `+91 ${draft.manualReceiver.mobile} · ${receiver.bank}`
+                : `${receiver.bank} · ${receiver.account}`}
             </p>
+            {draft.path === 'contact' && (
+              <p className="text-xs text-emerald-600 mt-1 font-medium">
+                Bharat Bank customer · {receiver.account}
+              </p>
+            )}
           </div>
         )}
         <AmountField
@@ -663,7 +716,7 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
         <p className="text-xs text-slate-500 px-1">
           Available Balance ₹{(fromAccount?.availableBalance ?? 0).toLocaleString('en-IN')}
         </p>
-        {availableModes.length > 0 && (
+        {draft.path === 'bank' && availableModes.length > 0 && (
           <div>
             <p className="text-xs font-bold text-slate-500 mb-2">Transfer Type</p>
             <div className="space-y-2">
@@ -725,6 +778,19 @@ export const BankTransferFlow: React.FC<BankTransferFlowProps> = ({ onClose }) =
           onClick={() => {
             if (validateAmount()) goToAuth();
           }}
+        />
+      </AddMoneyLayout>
+    );
+  }
+
+  if (step === 'contact-picker') {
+    return (
+      <AddMoneyLayout title="Send to Contact" subtitle="Bharat Bank customers" onBack={goBack}>
+        <ContactTransferPicker
+          onSelect={selectPhoneContact}
+          onInvalidContact={(message) =>
+            addToast({ type: 'error', title: 'Contact not eligible', message })
+          }
         />
       </AddMoneyLayout>
     );
